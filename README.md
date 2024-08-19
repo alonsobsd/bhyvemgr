@@ -1,2 +1,2 @@
 # bhyvemgr
-Bhyve Manager GUI developed on Lazarus/Freepascal
+Bhyve Manager GUI written in Lazarus/Freepascal
