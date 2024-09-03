@@ -30,7 +30,7 @@ doas (security/doas), remote-viewer (net-mgmt/virt-viewer), sudo (security/sudo)
 # Bhyvemgr configuration
 ## Network configuration
 
-### Quick config
+### Quick configuration
 If you want use bhyve without much network configuration, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network enviorenment if you want virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
 
 Add the following lines to your **/etc/rc.conf** file
@@ -43,7 +43,7 @@ ifconfig_bhyve0_descr="bhyve manager bridge"
 ```
 bhyvemgr add each tap interface to this bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
 
-### Best config
+### Best configuration
 On another hand, if you want use bhyve with a much complete network configuration (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign one ip address to it. This will be used like a gateway ip address for each virtual machine. A subnet 10.0.0.0/24 will be used in this guide.
 
 ```sh
@@ -52,15 +52,13 @@ cloned_interfaces="bridge0"
 ifconfig_bridge0_name="bhyve0"
 ifconfig_bhyve0="inet 10.0.0.1 netmask 255.255.255.0"
 ifconfig_bhyve0_descr="bhyve manager bridge"
-pf_enable="YES
+pf_enable="YES"
+dnsmasq_enable="YES"
 ```
 #### Dnsmasq
 
-Dnsmasq is used for bring dhcp and dns features to our virtual machine network environment. bhyvemgr will add a entry to dnsmasq config (ip address, mac and vm name) when a virtual machine is created. Add a dnsmasq entry to **/etc/rc.conf** file
+Dnsmasq is used for bring dhcp and dns features to our virtual machine network environment. bhyvemgr will add a entry to dnsmasq config (ip address, mac and vm name) when a virtual machine is created.
 
-```sh
-# sysrc dnsmasq_enable="YES"
-```
 Create some dnsmasq directories for store virtual machine config files. In this sample, I am using **acm** like my bhyvemgr user
 
 ```sh
@@ -105,19 +103,9 @@ For sudo if your user is part of wheel group
 ```sh
 %wheel ALL=(ALL:ALL) NOPASSWD: ALL
 ```
-or 
-
-```sh
-acm ALL=(ALL:ALL) NOPASSWD: ALL
-```
 For doas if your user is part of wheel group
 ```sh
 permit nopass :wheel
-```
-or
-
-```sh
-permit nopass acm
 ```
 Otherwise, if it panics you use the following
 
@@ -128,16 +116,7 @@ For sudo if your user is part of wheel group
 /usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
 /usr/sbin/service dnsmasq restart, /sbin/zfs create * zroot/bhyvemgr/*, /sbin/zfs destroy * zroot/bhyvemgr/*
 ```
-or
-
-```sh
-acm ALL=(ALL) NOPASSWD: /usr/sbin/bhyve -k *, /usr/sbin/bhyvectl --vm=* destroy,
-/usr/sbin/chmod 750 /zroot/bhyvemgr, /bin/chown acm: /zroot/bhyvemgr, /sbin/ifconfig bhyve0 addm *,
-/usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
-/usr/sbin/service dnsmasq restart, /sbin/zfs create * zroot/bhyvemgr/*, /sbin/zfs destroy * zroot/bhyvemgr/*
-```
 For doas if your user is part of wheel group
-
 ```sh
 permit nopass :wheel as root cmd bhyve
 permit nopass :wheel as root cmd bhyvectl
@@ -152,19 +131,36 @@ permit nopass :wheel as root cmd rm
 permit nopass :wheel as root cmd service
 permit nopass :wheel as root cmd zfs
 ```
-or
+#### PF configuration
 
 ```sh
-permit nopass acm as root cmd bhyve
-permit nopass acm as root cmd bhyvectl
-permit nopass acm as root cmd chmod
-permit nopass acm as root cmd chown
-permit nopass acm as root cmd ifconfig
-permit nopass acm as root cmd install
-permit nopass acm as root cmd kill
-permit nopass acm as root cmd kldload
-permit nopass acm as root cmd pgrep
-permit nopass acm as root cmd rm
-permit nopass acm as root cmd service
-permit nopass acm as root cmd zfs
+ext_if="em0"
+
+tcp_services={ ssh, http, https, ntp, domain}
+udp_services={ ntp, domain }
+ksm_service="1688"
+
+set block-policy return
+scrub in on $ext_if all fragment reassemble
+set skip on lo
+
+nat on $ext_if from 10.0.0.0/24 to any -> ($ext_if:0)
+
+block in all
+pass out quick keep state
+antispoof for $ext_if inet
+
+pass in inet proto icmp all icmp-type echoreq
+pass out inet proto icmp all icmp-type echoreq
+
+pass in inet proto tcp from 10.0.0.0/24 to any port $tcp_services flags S/SA keep state
+pass in inet proto tcp from 10.0.0.0/24 to any port $udp_services flags S/SA keep state
+pass in inet proto tcp from 10.0.0.0/24 to any port $ksm_service flags S/SA keep state
+pass in inet proto tcp from 10.0.0.1 to any port bootps flags S/SA keep state
+pass in inet proto tcp from 10.0.0.1 to any port bootpc flags S/SA keep state
+
+pass in quick on bhyve0 proto udp from port bootpc to port bootps keep state
+pass out quick on bhyve0 proto udp from port bootps to port bootps keep state
+
+pass out quick on $ext_if inet proto { tcp udp } from any to any
 ```
