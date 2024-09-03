@@ -131,7 +131,7 @@ permit nopass :wheel as root cmd zfs
 ```
 ### PF configuration
 
-PF is used bring packets filter and NAT features to our local environment. Take a look at the following PF configuration sample. In this guide I use a em0 like a local interface and 10.0.0.0/24 subnet for virtual machines. 10.0.0.1 is the ip address used by bhyve0 bridge and this is where dnsmasq is listening. Change it according to your own needs.
+PF is used bring packets filter and NAT features to our local environment. Take a look at the following PF configuration sample. In this guide **em0** isused like a local interface and **10.0.0.0/24** subnet for virtual machines. **10.0.0.1** is the ip address used by **bhyve0** bridge and this is where dnsmasq is listening. Change it according to your own needs.
 
 ```sh
 ext_if="em0"
