@@ -1,5 +1,5 @@
 # Bhyvemgr
-Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It needs a bunch of tools mostly installed on base system and some installed from ports/packages. Currently it supports only amd64. The main goal is be a desktop user app for configure and run virtual machines easily and quickly on FreeBSD host.
+Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It needs a bunch of tools mostly installed on base system and some installed from ports/packages. Currently it supports only amd64. The main goal is to be a desktop user application to easily and quickly setup and run virtual machines on the FreeBSD host.
 
 ![image](https://github.com/user-attachments/assets/6e084335-2a11-451e-9848-d4bb9775ad19)
 
@@ -27,11 +27,9 @@ bhyve, bhyvectl, bhyveload, chown, chmod, ifconfig, install, kill, kldload, klds
 ## From ports/packages
 doas (security/doas), remote-viewer (net-mgmt/virt-viewer), sudo (security/sudo) and xfreerdp3 (net/freerdp3)
 
-# Bhyvemgr configuration
-## Network configuration
-
-### Quick configuration
-If you want use bhyve without much network configuration, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network enviorenment if you want virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
+# Network configuration
+## Quick configuration
+If you want use bhyve without much network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network enviorenment if you want virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
 
 Add the following lines to your **/etc/rc.conf** file
 
@@ -43,8 +41,8 @@ ifconfig_bhyve0_descr="bhyve manager bridge"
 ```
 bhyvemgr add each tap interface to this bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
 
-### Best configuration
-On another hand, if you want use bhyve with a much complete network configuration (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign one ip address to it. This will be used like a gateway ip address for each virtual machine. A subnet 10.0.0.0/24 will be used in this guide.
+## Best configuration
+On another hand, if you want use bhyve with a much complete network features (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign one ip address to it. This will be used like a gateway ip address for each virtual machine. A subnet 10.0.0.0/24 will be used in this guide.
 
 ```sh
 gateway_enable="YES"
@@ -55,7 +53,7 @@ ifconfig_bhyve0_descr="bhyve manager bridge"
 pf_enable="YES"
 dnsmasq_enable="YES"
 ```
-#### Dnsmasq
+### Dnsmasq
 
 Dnsmasq is used for bring dhcp and dns features to our virtual machine network environment. bhyvemgr will add a entry to dnsmasq config (ip address, mac and vm name) when a virtual machine is created.
 
@@ -95,19 +93,19 @@ It is necessary add **10.0.0.1** ip address to **/etc/resolv.conf** file for res
 ```sh
 domain 10.0.0.1
 ```
-#### sudo / doas configuration
+### sudo / doas configuration
 
 bhyve needs root privileges on FreeBSD. For these tasks, bhyvemgr use sudo or doas for mitigate some security issues. The laziest way to configurate sudo or doas is the following:
 
-For sudo if your user is part of wheel group
+For sudo if your user is part of wheel group. Also, an user can be defined there instead of wheel group (replace %wheel by acm for example).
 ```sh
 %wheel ALL=(ALL:ALL) NOPASSWD: ALL
 ```
-For doas if your user is part of wheel group
+For doas if your user is part of wheel group. Also, an user can be defined there instead of wheel group (replace :wheel by acm for example).
 ```sh
 permit nopass :wheel
 ```
-Otherwise, if it panics you use the following
+Otherwise, if you panic, use the following
 
 For sudo if your user is part of wheel group
 ```sh
@@ -131,7 +129,9 @@ permit nopass :wheel as root cmd rm
 permit nopass :wheel as root cmd service
 permit nopass :wheel as root cmd zfs
 ```
-#### PF configuration
+### PF configuration
+
+PF is used bring packets filter and NAT features to our local environment. Take a look at the following PF configuration sample. In this guide I use a em0 like a local interface and 10.0.0.0/24 subnet for virtual machines. 10.0.0.1 is the ip address used by bhyve0 bridge and this is where dnsmasq is listening. Change it according to your own needs.
 
 ```sh
 ext_if="em0"
@@ -164,3 +164,14 @@ pass out quick on bhyve0 proto udp from port bootps to port bootps keep state
 
 pass out quick on $ext_if inet proto { tcp udp } from any to any
 ```
+With this best configuration, bhyvemgr will add an entry for each virtual machine to dnsmasq. Dnsmasq will use this data for assign network configuration automatically to each virtual machine. Also, dnsmasq will be used like a dns server for resolv each virtual machine name or subdmomain. Virtual machine traffic will be management by packet filter rules.
+
+# Run bhyvemgr for the first time
+When bhyvemgr is started for the first time, it will create a initial config file. It is mandatory review, modify (if it is necessary) and press **Save settings** button from of **Settings form** the first time
+
+![image](https://github.com/user-attachments/assets/f603f708-2597-41bd-a80e-75101390ff1f)
+
+![image](https://github.com/user-attachments/assets/b15ccdc4-46a2-4ead-b18f-665d5f702c63)
+
+
+
