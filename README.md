@@ -17,9 +17,9 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - and more
 
 # TODO
-- Complete global settings edition
+- global settings entries
 - aarch64 support (depends of fix some Freepascal/Lazarus linking issues on FreeBSD/aarch64)
-- Log message
+- log message
 
 # Bhyvemgr dependencies
 ## From base system
@@ -31,13 +31,20 @@ doas (security/doas), remote-viewer (net-mgmt/virt-viewer), sudo (security/sudo)
 ## Network configuration
 
 ### Quick config
+If you want use bhyve without much network configuration, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network enviorenment if you want virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
+
+Add the following lines to your **/etc/rc.conf** file
+
 ```sh
 cloned_interfaces="bridge0"
 ifconfig_bridge0_name="bhyve0"
 ifconfig_bhyve0="addm em0 up"
 ifconfig_bhyve0_descr="bhyve manager bridge"
 ```
+bhyvemgr add each tap interface to this bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
+
 ### Best config
+On another hand, if you want use bhyve with a much complete network configuration (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign one ip address to it. This will be used like a gateway ip address for each virtual machine. A subnet 10.0.0.0/24 will be used in this guide.
 
 ```sh
 gateway_enable="YES"
@@ -47,14 +54,21 @@ ifconfig_bhyve0="inet 10.0.0.1 netmask 255.255.255.0"
 ifconfig_bhyve0_descr="bhyve manager bridge"
 pf_enable="YES
 ```
-
 #### Dnsmasq
+
+Dnsmasq is used for bring dhcp and dns features to our virtual machine network environment. bhyvemgr will add a entry to dnsmasq config (ip address, mac and vm name) when a virtual machine is created. Add a dnsmasq entry to **/etc/rc.conf** file
 
 ```sh
 # sysrc dnsmasq_enable="YES"
+```
+Create some dnsmasq directories for store virtual machine config files. In this sample, I am using **acm** like my bhyvemgr user
+
+```sh
 # install -d -m 770 -o root -g wheel /usr/local/etc/dnsmasq.d
 # install -d -m 770 -o acm /usr/local/etc/dnsmasq.d/bhyvemgr
 ```
+The following is a minimal dnsmasq configuration needed
+
 ```sh
 # ee /usr/local/etc/dnsmasq.conf
 ```
@@ -75,6 +89,7 @@ dhcp-option=option:router,10.0.0.1
 dhcp-option=option:dns-server,10.0.0.1
 conf-dir=/usr/local/etc/dnsmasq.d/bhyvemgr/,*.conf
 ```
+It is necessary add **10.0.0.1 ip** address to **/etc/resolv.conf** file for resolv each virtual machine from our FreeBSD host
 
 ```sh
 # ee /etc/resolv.conf
