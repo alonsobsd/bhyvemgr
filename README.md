@@ -5,7 +5,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 
 # Features
 - virtual machines management
-- devices management
+- devices management (support almost all bhyve pci devices with some exceptions)
 - dnsmasq support
 - vnc and xfreerdp client support
 - zfs/ufs support
@@ -18,7 +18,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 
 # TODO
 - global settings entries
-- aarch64 support (depends of fix some Freepascal/Lazarus linking issues on FreeBSD/aarch64)
+- FreeBSD/aarch64 support (depends of solved some Freepascal/Lazarus linking issues on FreeBSD/aarch64)
 - log message
 
 # Bhyvemgr dependencies
@@ -28,7 +28,7 @@ bhyve, bhyvectl, bhyveload, chown, chmod, ifconfig, install, kill, kldload, klds
 doas (security/doas), remote-viewer (net-mgmt/virt-viewer), sudo (security/sudo) and xfreerdp3 (net/freerdp3)
 
 # Network configuration
-## Quick configuration
+## Quick network configuration
 If you want use bhyve without much network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network enviorenment if you want virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
 
 Add the following lines to your **/etc/rc.conf** file
@@ -41,7 +41,7 @@ ifconfig_bhyve0_descr="bhyve manager bridge"
 ```
 bhyvemgr add each tap interface to this bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
 
-## Best configuration
+## Best network configuration
 On another hand, if you want use bhyve with a much complete network features (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign one ip address to it. This will be used like a gateway ip address for each virtual machine. A subnet 10.0.0.0/24 will be used in this guide.
 
 ```sh
@@ -164,7 +164,7 @@ pass out quick on bhyve0 proto udp from port bootps to port bootps keep state
 
 pass out quick on $ext_if inet proto { tcp udp } from any to any
 ```
-With this best configuration, bhyvemgr will add an entry for each virtual machine to dnsmasq. Dnsmasq will use this data for assign network configuration automatically to each virtual machine. Also, dnsmasq will be used like a dns server for resolv each virtual machine name or subdmomain. Virtual machine traffic will be management by packet filter rules.
+With this best configuration, bhyvemgr will add an entry for each virtual machine to dnsmasq, dnsmasq will use this data for assign network configuration automatically, dnsmasq will be used like a dns server for resolv each virtual machine name or subdmomain and virtual machines traffic will be management by packet filter rules.
 
 # Run bhyvemgr for the first time
 When bhyvemgr is started for the first time, it will create a initial config file. It is mandatory review, modify (if it is necessary) and press **Save settings** button from of **Settings form** the first time
@@ -173,5 +173,5 @@ When bhyvemgr is started for the first time, it will create a initial config fil
 
 ![image](https://github.com/user-attachments/assets/b15ccdc4-46a2-4ead-b18f-665d5f702c63)
 
-
+Enjoy creating and testing your virtual machines on FreeBSD
 
