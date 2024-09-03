@@ -89,7 +89,7 @@ dhcp-option=option:router,10.0.0.1
 dhcp-option=option:dns-server,10.0.0.1
 conf-dir=/usr/local/etc/dnsmasq.d/bhyvemgr/,*.conf
 ```
-It is necessary add **10.0.0.1 ip** address to **/etc/resolv.conf** file for resolv each virtual machine from our FreeBSD host
+It is necessary add **10.0.0.1** ip address to **/etc/resolv.conf** file for resolv each virtual machine name or subdomain **(fbsd15x634 or fbsd15x64.bsd.lan)** from our FreeBSD host
 
 ```sh
 # ee /etc/resolv.conf
@@ -97,23 +97,47 @@ It is necessary add **10.0.0.1 ip** address to **/etc/resolv.conf** file for res
 ```sh
 domain 10.0.0.1
 ```
-
 #### sudo / doas configuration
 
+bhyve needs root privileges on FreeBSD. For these tasks, bhyvemgr use sudo or doas for mitigate some security issues. The laziest way to configurate sudo or doas is the following:
+
+For sudo if your user is part of wheel group
 ```sh
 %wheel ALL=(ALL:ALL) NOPASSWD: ALL
 ```
+or 
 
+```sh
+acm ALL=(ALL:ALL) NOPASSWD: ALL
+```
+For doas if your user is part of wheel group
 ```sh
 permit nopass :wheel
 ```
+or
 
+```sh
+permit nopass acm
+```
+Otherwise, if it panics you use the following
+
+For sudo if your user is part of wheel group
 ```sh
 %wheel ALL=(ALL) NOPASSWD: /usr/sbin/bhyve -k *, /usr/sbin/bhyvectl --vm=* destroy,
 /usr/sbin/chmod 750 /zroot/bhyvemgr, /bin/chown acm: /zroot/bhyvemgr, /sbin/ifconfig bhyve0 addm *,
 /usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
 /usr/sbin/service dnsmasq restart, /sbin/zfs create * zroot/bhyvemgr/*, /sbin/zfs destroy * zroot/bhyvemgr/*
 ```
+or
+
+```sh
+acm ALL=(ALL) NOPASSWD: /usr/sbin/bhyve -k *, /usr/sbin/bhyvectl --vm=* destroy,
+/usr/sbin/chmod 750 /zroot/bhyvemgr, /bin/chown acm: /zroot/bhyvemgr, /sbin/ifconfig bhyve0 addm *,
+/usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
+/usr/sbin/service dnsmasq restart, /sbin/zfs create * zroot/bhyvemgr/*, /sbin/zfs destroy * zroot/bhyvemgr/*
+```
+For doas if your user is part of wheel group
+
 ```sh
 permit nopass :wheel as root cmd bhyve
 permit nopass :wheel as root cmd bhyvectl
@@ -127,4 +151,20 @@ permit nopass :wheel as root cmd pgrep
 permit nopass :wheel as root cmd rm
 permit nopass :wheel as root cmd service
 permit nopass :wheel as root cmd zfs
+```
+or
+
+```sh
+permit nopass acm as root cmd bhyve
+permit nopass acm as root cmd bhyvectl
+permit nopass acm as root cmd chmod
+permit nopass acm as root cmd chown
+permit nopass acm as root cmd ifconfig
+permit nopass acm as root cmd install
+permit nopass acm as root cmd kill
+permit nopass acm as root cmd kldload
+permit nopass acm as root cmd pgrep
+permit nopass acm as root cmd rm
+permit nopass acm as root cmd service
+permit nopass acm as root cmd zfs
 ```
