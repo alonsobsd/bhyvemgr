@@ -1,0 +1,433 @@
+object FormStorageDevice: TFormStorageDevice
+  Left = 586
+  Height = 576
+  Top = 208
+  Width = 593
+  BorderStyle = bsSingle
+  Caption = 'FormStorageDevice'
+  ClientHeight = 576
+  ClientWidth = 593
+  OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '3.4.0.0'
+  object GroupBox1: TGroupBox
+    Left = 8
+    Height = 200
+    Top = 8
+    Width = 575
+    Caption = 'General settings'
+    ClientHeight = 171
+    ClientWidth = 571
+    TabOrder = 0
+    object ComboBoxStorageDevice: TComboBox
+      Left = 80
+      Height = 32
+      Top = 8
+      Width = 232
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 0
+      OnChange = ComboBoxStorageDeviceChange
+    end
+    object ComboBoxStorageType: TComboBox
+      Left = 80
+      Height = 32
+      Top = 40
+      Width = 232
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 1
+      OnChange = ComboBoxStorageTypeChange
+    end
+    object Label1: TLabel
+      Left = 11
+      Height = 18
+      Top = 16
+      Width = 47
+      Caption = 'Storage'
+    end
+    object Label2: TLabel
+      Left = 11
+      Height = 18
+      Top = 48
+      Width = 29
+      Caption = 'Type'
+    end
+    object CheckBoxNoCache: TCheckBox
+      Left = 11
+      Height = 22
+      Top = 144
+      Width = 81
+      Caption = 'no cache'
+      TabOrder = 5
+    end
+    object CheckBoxNoDelete: TCheckBox
+      Left = 104
+      Height = 22
+      Top = 144
+      Width = 84
+      Caption = 'no delete'
+      TabOrder = 6
+    end
+    object CheckBoxSync: TCheckBox
+      Left = 200
+      Height = 22
+      Top = 144
+      Width = 55
+      Caption = 'sync'
+      TabOrder = 7
+    end
+    object CheckBoxReadOnly: TCheckBox
+      Left = 264
+      Height = 22
+      Top = 144
+      Width = 85
+      Caption = 'read-only'
+      TabOrder = 8
+    end
+    object Label10: TLabel
+      Left = 11
+      Height = 18
+      Top = 112
+      Width = 20
+      Caption = 'Ser'
+    end
+    object EditSer: TEdit
+      Left = 80
+      Height = 32
+      Top = 104
+      Width = 232
+      MaxLength = 20
+      TabOrder = 4
+      Text = 'EditSer'
+    end
+    object Label3: TLabel
+      Left = 12
+      Height = 18
+      Top = 80
+      Width = 28
+      Caption = 'Path'
+    end
+    object FileNameEditStoragePath: TFileNameEdit
+      Left = 81
+      Height = 32
+      Top = 72
+      Width = 480
+      InitialDir = '~/'
+      FilterIndex = 0
+      HideDirectories = False
+      ButtonWidth = 23
+      DirectInput = False
+      NumGlyphs = 1
+      MaxLength = 0
+      ReadOnly = True
+      TabOrder = 3
+    end
+    object Label17: TLabel
+      Left = 376
+      Height = 18
+      Top = 48
+      Width = 23
+      Caption = 'Size'
+    end
+    object SpinEditExDiskSize: TSpinEditEx
+      Left = 432
+      Height = 32
+      Top = 40
+      Width = 103
+      DirectInput = False
+      MaxLength = 0
+      TabOrder = 2
+      Increment = 10
+      MaxValue = 1024
+      MinValue = 10
+      NullValue = 10
+      Value = 20
+    end
+    object Label18: TLabel
+      Left = 544
+      Height = 18
+      Top = 48
+      Width = 17
+      Caption = 'GB'
+    end
+  end
+  object GroupBoxAhci: TGroupBox
+    Left = 8
+    Height = 112
+    Top = 216
+    Width = 575
+    Caption = 'AHCI settings'
+    ClientHeight = 83
+    ClientWidth = 571
+    Enabled = False
+    TabOrder = 1
+    object Label5: TLabel
+      Left = 408
+      Height = 18
+      Top = 16
+      Width = 33
+      Caption = 'Nmrr'
+    end
+    object Label4: TLabel
+      Left = 12
+      Height = 18
+      Top = 16
+      Width = 60
+      Caption = 'Sectorsize'
+    end
+    object Label11: TLabel
+      Left = 232
+      Height = 18
+      Top = 16
+      Width = 22
+      Caption = 'Rev'
+    end
+    object EditAhciRev: TEdit
+      Left = 265
+      Height = 32
+      Top = 8
+      Width = 103
+      MaxLength = 8
+      TabOrder = 1
+      Text = 'EditAhci'
+    end
+    object Label12: TLabel
+      Left = 12
+      Height = 18
+      Top = 48
+      Width = 38
+      Caption = 'Model'
+    end
+    object EditAhciModel: TEdit
+      Left = 80
+      Height = 32
+      Top = 40
+      Width = 287
+      MaxLength = 40
+      TabOrder = 3
+      Text = 'EditAhciModel'
+    end
+    object ComboBoxAhciNmrr: TComboBox
+      Left = 456
+      Height = 32
+      Top = 8
+      Width = 103
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 2
+      Text = '0'
+    end
+    object EditAhciSectorSize: TEdit
+      Left = 81
+      Height = 32
+      Top = 8
+      Width = 103
+      TabOrder = 0
+      Text = 'EditAhciSectorSize'
+    end
+  end
+  object GroupBoxNvme: TGroupBox
+    Left = 8
+    Height = 168
+    Top = 336
+    Width = 575
+    Caption = 'Nvme settings'
+    ClientHeight = 139
+    ClientWidth = 571
+    TabOrder = 2
+    object SpinEditExNvmeRam: TSpinEditEx
+      Left = 83
+      Height = 32
+      Top = 96
+      Width = 103
+      DirectInput = False
+      Enabled = False
+      MaxLength = 0
+      TabOrder = 7
+      Increment = 256
+      MaxValue = 8092
+      NullValue = 0
+      Value = 0
+    end
+    object Label6: TLabel
+      Left = 16
+      Height = 18
+      Top = 40
+      Width = 34
+      Caption = 'Maxq'
+    end
+    object Label7: TLabel
+      Left = 205
+      Height = 18
+      Top = 40
+      Width = 22
+      Caption = 'Qsz'
+    end
+    object Label8: TLabel
+      Left = 396
+      Height = 18
+      Top = 36
+      Width = 40
+      Caption = 'Ioslots'
+    end
+    object Label9: TLabel
+      Left = 16
+      Height = 18
+      Top = 72
+      Width = 37
+      Caption = 'Sectsz'
+    end
+    object Label13: TLabel
+      Left = 205
+      Height = 18
+      Top = 72
+      Width = 33
+      Caption = 'Eui64'
+    end
+    object Label14: TLabel
+      Left = 396
+      Height = 18
+      Top = 68
+      Width = 27
+      Caption = 'Dsm'
+    end
+    object Label15: TLabel
+      Left = 204
+      Height = 18
+      Top = 102
+      Width = 20
+      Caption = 'MB'
+    end
+    object CheckBoxNvmUseRam: TCheckBox
+      Left = 12
+      Height = 22
+      Top = 8
+      Width = 76
+      Caption = 'use ram'
+      TabOrder = 0
+      OnChange = CheckBoxNvmUseRamChange
+    end
+    object Label16: TLabel
+      Left = 18
+      Height = 18
+      Top = 104
+      Width = 27
+      Caption = 'Ram'
+    end
+    object EditNvmeMaxq: TEdit
+      Left = 83
+      Height = 32
+      Top = 32
+      Width = 85
+      NumbersOnly = True
+      TabOrder = 1
+      Text = 'EditNvmeMaxq'
+    end
+    object EditNvmeQsz: TEdit
+      Left = 261
+      Height = 32
+      Top = 32
+      Width = 85
+      NumbersOnly = True
+      TabOrder = 2
+      Text = 'EditNvmeQsz'
+    end
+    object EditNvmeIoslots: TEdit
+      Left = 452
+      Height = 32
+      Top = 32
+      Width = 85
+      NumbersOnly = True
+      TabOrder = 3
+      Text = 'EditNvmeIoslots'
+    end
+    object EditNvmeSectsz: TEdit
+      Left = 83
+      Height = 32
+      Top = 64
+      Width = 85
+      NumbersOnly = True
+      TabOrder = 4
+      Text = 'EditNvmeSectsz'
+    end
+    object EditNvmeEui64: TEdit
+      Left = 261
+      Height = 32
+      Top = 64
+      Width = 85
+      NumbersOnly = True
+      TabOrder = 5
+      Text = 'EditNvmeEui64'
+    end
+    object ComboBoxNvmeDsm: TComboBox
+      Left = 452
+      Height = 32
+      Top = 64
+      Width = 85
+      ItemHeight = 24
+      Items.Strings = (
+        'auto'
+        'enable'
+        'disable'
+      )
+      ReadOnly = True
+      TabOrder = 6
+      Text = 'auto'
+    end
+  end
+  object BitBtnSave: TBitBtn
+    Left = 240
+    Height = 30
+    Top = 512
+    Width = 112
+    Caption = 'Save'
+    Default = True
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      2000000000000004000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000A09093E0000000200000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000100F0E63292623FC1A1817A400000003000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000100F0E65252220E6090807351F1D1AC01B1917A5000000030000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000110F0E6725221FE506060528000000000201010A1F1C1ABE1B1917A70000
+      0003000000000000000000000000000000000000000000000000000000000000
+      00001513128206060527000000000000000000000000010101091E1C1ABC1B19
+      17A9010101040000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000010101091E1C
+      1ABA1B1917AB0101010400000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000101
+      01081E1B19B81C1A18AD01010105000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000010101071D1B19B61C1A18AF010101050000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000010101071D1B19B41B1917AA0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000010101060909083A0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000
+    }
+    Layout = blGlyphRight
+    ModalResult = 1
+    TabOrder = 3
+  end
+  object StatusBarStorageDevice: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 553
+    Width = 593
+    Panels = <>
+  end
+end

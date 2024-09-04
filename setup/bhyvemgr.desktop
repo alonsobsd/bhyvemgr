@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Bhyvemgr
+GenericName=Bhyve management GUI
+Comment=Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus for FreeBSD
+Exec=bhyvemgr %F
+Terminal=false
+Type=Application
+StartupNotify=true
+MimeType=text/plain;
+Categories=System
+Icon=bhyvemgr

@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <Version Value="12"/>
+    <BuildModes Active="Default"/>
+    <Units>
+      <Unit>
+        <Filename Value="bhyvemgr.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="88"/>
+        <CursorPos X="17" Y="111"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="20"/>
+        <TopLine Value="176"/>
+        <CursorPos X="8" Y="207"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_main.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormBhyveManager"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="2743"/>
+        <CursorPos X="33" Y="2762"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_configuration.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="19"/>
+        <TopLine Value="34"/>
+        <CursorPos Y="165"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_change_value.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormChangeValue"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_vm_create.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormVmCreate"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="73"/>
+        <CursorPos X="20" Y="73"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_global.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="21"/>
+        <TopLine Value="148"/>
+        <CursorPos Y="183"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_component.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="22"/>
+        <TopLine Value="445"/>
+        <CursorPos X="53" Y="449"/>
+        <UsageCount Value="201"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_util.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="18"/>
+        <UsageCount Value="203"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_thread.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="109"/>
+        <CursorPos X="29" Y="38"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_audio_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormAudioDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="7"/>
+        <TopLine Value="58"/>
+        <CursorPos Y="81"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_display_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormDisplayDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="8"/>
+        <TopLine Value="106"/>
+        <CursorPos X="78" Y="132"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_hostbridge_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormHostbridgeDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="9"/>
+        <TopLine Value="61"/>
+        <CursorPos X="65" Y="88"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_lpc_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormLpcDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="12"/>
+        <TopLine Value="114"/>
+        <CursorPos X="68" Y="134"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_network_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormNetworkDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="15"/>
+        <TopLine Value="71"/>
+        <CursorPos X="30" Y="89"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_storage_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormStorageDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="16"/>
+        <TopLine Value="164"/>
+        <CursorPos X="68" Y="220"/>
+        <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_about.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormAbout"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="17"/>
+        <TopLine Value="5"/>
+        <CursorPos X="15" Y="66"/>
+        <UsageCount Value="202"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_settings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormSettings"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="6"/>
+        <TopLine Value="441"/>
+        <CursorPos X="35" Y="450"/>
+        <UsageCount Value="204"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_share_folder_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormShareFolderDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="13"/>
+        <TopLine Value="62"/>
+        <CursorPos X="51" Y="20"/>
+        <UsageCount Value="135"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_console_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormConsoleDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="14"/>
+        <TopLine Value="72"/>
+        <CursorPos X="58" Y="17"/>
+        <UsageCount Value="127"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_passthru_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormPassthruDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="93"/>
+        <CursorPos X="71" Y="124"/>
+        <UsageCount Value="113"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_input_device.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormInputDevice"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="11"/>
+        <TopLine Value="71"/>
+        <CursorPos Y="71"/>
+        <UsageCount Value="108"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_rdp_connection.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormRdpConnection"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <EditorIndex Value="10"/>
+        <CursorPos Y="30"/>
+        <UsageCount Value="42"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_popupmenu.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="107"/>
+        <CursorPos X="5" Y="136"/>
+        <UsageCount Value="1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit_imagelist.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="64"/>
+        <CursorPos X="5" Y="93"/>
+        <UsageCount Value="1"/>
+      </Unit>
+      <Unit>
+        <Filename Value="unit1.pas"/>
+        <ComponentName Value="BhyveManagerForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="form_main"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="15"/>
+        <UsageCount Value="13"/>
+      </Unit>
+      <Unit>
+        <Filename Value="/usr/local/share/lazarus-3.4.0/lcl/include/treeview.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="420"/>
+        <CursorPos Y="441"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="/usr/local/share/lazarus-3.4.0/lcl/controls.pp"/>
+        <UnitName Value="Controls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1803"/>
+        <CursorPos Y="1820"/>
+        <UsageCount Value="5"/>
+      </Unit>
+      <Unit>
+        <Filename Value="form_rdp.pas"/>
+        <ComponentName Value="FormRdpConnection"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="form_rdp_connection"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="25"/>
+        <UsageCount Value="18"/>
+      </Unit>
+      <Unit>
+        <Filename Value="/usr/local/share/lazarus-3.4.0/components/lazutils/lazmethodlist.pas"/>
+        <UnitName Value="LazMethodList"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="184"/>
+        <CursorPos Y="201"/>
+        <UsageCount Value="8"/>
+      </Unit>
+    </Units>
+    <OtherDefines Count="1">
+      <Define0 Value="DEBUG"/>
+    </OtherDefines>
+    <JumpHistory HistoryIndex="27">
+      <Position>
+        <Filename Value="unit_util.pas"/>
+        <Caret Line="1659" Column="10" TopLine="1654"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2658" Column="3" TopLine="2655"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2715" Column="63" TopLine="2715"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="109" Column="15" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2614" Column="11" TopLine="2597"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2762" Column="66" TopLine="2749"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2674" Column="71" TopLine="2651"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2714" Column="22" TopLine="2687"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="516" Column="26" TopLine="500"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="517" Column="171" TopLine="500"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="622" Column="82" TopLine="595"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="623" Column="72" TopLine="596"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="642" Column="82" TopLine="615"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="643" Column="72" TopLine="616"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="800" Column="36" TopLine="772"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="813" Column="24" TopLine="785"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2467" Column="123" TopLine="2439"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2537" Column="20" TopLine="2509"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2575" Column="65" TopLine="2548"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2584" Column="75" TopLine="2557"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2606" Column="28" TopLine="2578"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2674" Column="77" TopLine="2646"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2714" Column="22" TopLine="2602"/>
+      </Position>
+      <Position>
+        <Filename Value="unit_util.pas"/>
+        <Caret Line="807" Column="48" TopLine="780"/>
+      </Position>
+      <Position>
+        <Filename Value="unit_util.pas"/>
+        <Caret Line="848" Column="10" TopLine="834"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2528" Column="108" TopLine="2515"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="194" Column="3" TopLine="192"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="808" Column="52" TopLine="792"/>
+      </Position>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="/usr/local/share/lazarus-3.4.0/lcl/controls.pp"/>
+        <Line Value="1820"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
+</CONFIG>

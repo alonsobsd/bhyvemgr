@@ -1,0 +1,352 @@
+object FormVmCreate: TFormVmCreate
+  Left = 514
+  Height = 633
+  Top = 189
+  Width = 733
+  BorderStyle = bsSingle
+  Caption = 'FormVmCreate'
+  ClientHeight = 633
+  ClientWidth = 733
+  OnShow = FormShow
+  Position = poMainFormCenter
+  ShowInTaskBar = stAlways
+  LCLVersion = '3.4.0.0'
+  object Label10: TLabel
+    Left = 53
+    Height = 18
+    Top = 536
+    Width = 75
+    Caption = 'Select media'
+  end
+  object FileNameEditBootMedia: TFileNameEdit
+    Left = 192
+    Height = 32
+    Top = 528
+    Width = 464
+    InitialDir = '~/'
+    Filter = 'ISO or Image file|*.iso; *.img'
+    FilterIndex = 0
+    HideDirectories = False
+    ButtonWidth = 23
+    DirectInput = False
+    NumGlyphs = 1
+    MaxLength = 0
+    TabOrder = 4
+  end
+  object CheckBoxUseMedia: TCheckBox
+    Left = 53
+    Height = 22
+    Top = 504
+    Width = 227
+    Caption = 'Use booting or installation media'
+    TabOrder = 3
+  end
+  object GroupBox1: TGroupBox
+    Left = 16
+    Height = 176
+    Top = 8
+    Width = 704
+    Caption = 'Name and operating system'
+    ClientHeight = 147
+    ClientWidth = 700
+    TabOrder = 0
+    object ComboBoxSystemVersion: TComboBox
+      Left = 464
+      Height = 32
+      Top = 72
+      Width = 184
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 3
+    end
+    object EditVmName: TEdit
+      Left = 107
+      Height = 32
+      Top = 8
+      Width = 264
+      CharCase = ecLowerCase
+      MaxLength = 229
+      TabOrder = 0
+      OnEditingDone = EditVmNameEditingDone
+      OnExit = EditVmNameExit
+    end
+    object EditVmFolderPath: TEdit
+      Left = 107
+      Height = 32
+      Top = 40
+      Width = 541
+      Enabled = False
+      ReadOnly = True
+      TabOrder = 1
+    end
+    object ComboBoxSystemType: TComboBox
+      Left = 107
+      Height = 32
+      Top = 72
+      Width = 184
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 2
+      OnChange = ComboBoxSystemTypeChange
+    end
+    object Label8: TLabel
+      Left = 368
+      Height = 18
+      Top = 80
+      Width = 45
+      Caption = 'Version'
+    end
+    object Label7: TLabel
+      Left = 32
+      Height = 18
+      Top = 76
+      Width = 29
+      Caption = 'Type'
+    end
+    object Label6: TLabel
+      Left = 32
+      Height = 18
+      Top = 48
+      Width = 39
+      Caption = 'Folder'
+    end
+    object Label3: TLabel
+      Left = 32
+      Height = 18
+      Top = 11
+      Width = 36
+      Caption = 'Name'
+    end
+    object Label12: TLabel
+      Left = 32
+      Height = 18
+      Top = 112
+      Width = 68
+      Caption = 'Description'
+    end
+    object EditVmDescription: TEdit
+      Left = 107
+      Height = 32
+      Top = 104
+      Width = 541
+      MaxLength = 80
+      TabOrder = 4
+    end
+  end
+  object GroupBox2: TGroupBox
+    Left = 16
+    Height = 160
+    Top = 192
+    Width = 704
+    Caption = 'Initial configuration'
+    ClientHeight = 131
+    ClientWidth = 700
+    TabOrder = 1
+    object Label1: TLabel
+      Left = 32
+      Height = 18
+      Top = 14
+      Width = 51
+      Caption = 'Memory'
+    end
+    object Label4: TLabel
+      Left = 216
+      Height = 18
+      Top = 16
+      Width = 20
+      Caption = 'MB'
+    end
+    object RadioButtonNotDisk: TRadioButton
+      Left = 32
+      Height = 22
+      Top = 56
+      Width = 163
+      Caption = 'Do not add virtual disk'
+      TabOrder = 1
+      OnChange = RadioButtonNotDiskChange
+    end
+    object RadioButtonNewDisk: TRadioButton
+      Left = 32
+      Height = 22
+      Top = 80
+      Width = 213
+      Caption = 'Create and use new virtual disk'
+      Checked = True
+      TabOrder = 2
+      TabStop = True
+      OnChange = RadioButtonNewDiskChange
+    end
+    object CheckBoxWaitVNC: TCheckBox
+      Left = 368
+      Height = 22
+      Top = 38
+      Width = 226
+      Caption = 'Wait for VNC connection for boot'
+      Checked = True
+      State = cbChecked
+      TabOrder = 4
+      OnChange = CheckBoxWaitVNCChange
+    end
+    object CheckBoxFramebuffer: TCheckBox
+      Left = 368
+      Height = 22
+      Top = 14
+      Width = 144
+      Caption = 'Enable framebuffer'
+      Checked = True
+      State = cbChecked
+      TabOrder = 3
+    end
+    object SpinEditExMemory: TSpinEditEx
+      Left = 107
+      Height = 32
+      Top = 8
+      Width = 103
+      DirectInput = False
+      MaxLength = 0
+      NumbersOnly = True
+      TabOrder = 0
+      Increment = 256
+      MaxValue = 32000
+      MinValue = 256
+      NullValue = 256
+      Value = 256
+    end
+    object CheckBoxOnlyLocalhost: TCheckBox
+      Left = 368
+      Height = 22
+      Top = 64
+      Width = 212
+      Caption = 'Only localhost VNC connection'
+      Checked = True
+      State = cbChecked
+      TabOrder = 5
+      OnChange = CheckBoxOnlyLocalhostChange
+    end
+  end
+  object GroupBoxNewVirtualDisk: TGroupBox
+    Left = 16
+    Height = 123
+    Top = 360
+    Width = 704
+    Caption = 'New virtual disk'
+    ClientHeight = 94
+    ClientWidth = 700
+    TabOrder = 2
+    Visible = False
+    object Label2: TLabel
+      Left = 384
+      Height = 18
+      Top = 32
+      Width = 23
+      Caption = 'Size'
+    end
+    object Label5: TLabel
+      Left = 552
+      Height = 18
+      Top = 32
+      Width = 17
+      Caption = 'GB'
+    end
+    object Label9: TLabel
+      Left = 32
+      Height = 18
+      Top = 16
+      Width = 29
+      Caption = 'Type'
+    end
+    object ComboBoxVirtualDeviceType: TComboBox
+      Left = 96
+      Height = 32
+      Top = 8
+      Width = 180
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 0
+    end
+    object Label11: TLabel
+      Left = 32
+      Height = 18
+      Top = 48
+      Width = 47
+      Caption = 'Storage'
+    end
+    object ComboBoxVirtualStorageType: TComboBox
+      Left = 96
+      Height = 32
+      Top = 42
+      Width = 180
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 1
+    end
+    object SpinEditExDiskSize: TSpinEditEx
+      Left = 440
+      Height = 32
+      Top = 24
+      Width = 103
+      DirectInput = False
+      MaxLength = 0
+      TabOrder = 2
+      Increment = 10
+      MaxValue = 1024
+      MinValue = 10
+      NullValue = 10
+      Value = 20
+    end
+  end
+  object BitBtnCreateVm: TBitBtn
+    Left = 208
+    Height = 35
+    Top = 568
+    Width = 344
+    Caption = 'Create Virtual Machine'
+    Default = True
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      2000000000000004000064000000640000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000003E0000000200000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000063000000FC000000A400000003000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000065000000E600000035000000C0000000A5000000030000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000067000000E500000028000000000000000A000000BE000000A70000
+      0003000000000000000000000000000000000000000000000000000000000000
+      0000000000820000002700000000000000000000000000000009000000BC0000
+      00A9000000040000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000090000
+      00BA000000AB0000000400000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0008000000B8000000AD00000005000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000007000000B6000000AF000000050000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000007000000B4000000AA0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000060000003A0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000
+    }
+    ModalResult = 1
+    ImageWidth = 16
+    TabOrder = 5
+  end
+  object StatusBarVmCreate: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 610
+    Width = 733
+    Panels = <>
+  end
+end

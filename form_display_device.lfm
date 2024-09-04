@@ -1,0 +1,166 @@
+object FormDisplayDevice: TFormDisplayDevice
+  Left = 926
+  Height = 329
+  Top = 356
+  Width = 343
+  BorderStyle = bsSingle
+  Caption = 'FormDisplayDevice'
+  ClientHeight = 329
+  ClientWidth = 343
+  OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '3.4.0.0'
+  object GroupBox1: TGroupBox
+    Left = 8
+    Height = 256
+    Top = 8
+    Width = 328
+    Caption = 'General settings'
+    ClientHeight = 227
+    ClientWidth = 324
+    TabOrder = 0
+    object ComboBoxResolution: TComboBox
+      Left = 80
+      Height = 32
+      Top = 152
+      Width = 152
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 5
+    end
+    object Label1: TLabel
+      Left = 11
+      Height = 18
+      Top = 160
+      Width = 64
+      Caption = 'Resolution'
+    end
+    object CheckBoxWaitVnc: TCheckBox
+      Left = 11
+      Height = 22
+      Top = 32
+      Width = 174
+      Caption = 'Wait for VNC connection'
+      TabOrder = 1
+    end
+    object Label4: TLabel
+      Left = 11
+      Height = 18
+      Top = 192
+      Width = 58
+      Caption = 'Password'
+    end
+    object EditPassword: TEdit
+      Left = 80
+      Height = 32
+      Top = 184
+      Width = 216
+      EchoMode = emPassword
+      PasswordChar = '*'
+      TabOrder = 6
+    end
+    object Label5: TLabel
+      Left = 11
+      Height = 18
+      Top = 128
+      Width = 23
+      Caption = 'Vga'
+    end
+    object ComboBoxVga: TComboBox
+      Left = 80
+      Height = 32
+      Top = 120
+      Width = 72
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 4
+    end
+    object CheckBoxUsePassword: TCheckBox
+      Left = 11
+      Height = 22
+      Top = 56
+      Width = 112
+      Caption = 'Use password'
+      TabOrder = 2
+      OnChange = CheckBoxUsePasswordChange
+    end
+    object CheckBoxOnlyLocalhost: TCheckBox
+      Left = 11
+      Height = 22
+      Top = 8
+      Width = 212
+      Caption = 'Only localhost VNC connection'
+      TabOrder = 0
+      OnChange = CheckBoxOnlyLocalhostChange
+    end
+    object Label6: TLabel
+      Left = 11
+      Height = 18
+      Top = 96
+      Width = 29
+      Caption = 'Host'
+    end
+    object EditHost: TEdit
+      Left = 80
+      Height = 32
+      Top = 88
+      Width = 152
+      ReadOnly = True
+      TabOrder = 3
+    end
+  end
+  object BitBtnSave: TBitBtn
+    Left = 128
+    Height = 30
+    Top = 272
+    Width = 96
+    Caption = 'Save'
+    Default = True
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      2000000000000004000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000A09093E0000000200000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000100F0E63292623FC1A1817A400000003000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000100F0E65252220E6090807351F1D1AC01B1917A5000000030000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000110F0E6725221FE506060528000000000201010A1F1C1ABE1B1917A70000
+      0003000000000000000000000000000000000000000000000000000000000000
+      00001513128206060527000000000000000000000000010101091E1C1ABC1B19
+      17A9010101040000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000010101091E1C
+      1ABA1B1917AB0101010400000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000101
+      01081E1B19B81C1A18AD01010105000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000010101071D1B19B61C1A18AF010101050000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000010101071D1B19B41B1917AA0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000010101060909083A0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000
+    }
+    Layout = blGlyphRight
+    ModalResult = 1
+    TabOrder = 1
+  end
+  object StatusBarDisplayDevice: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 306
+    Width = 343
+    Panels = <>
+  end
+end
