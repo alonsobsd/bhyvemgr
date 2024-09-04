@@ -169,9 +169,9 @@ With this best configuration, bhyvemgr will add an entry for each virtual machin
 # Run bhyvemgr for the first time
 When bhyvemgr is started for the first time, it will create a initial config file. It is mandatory review, modify (if it is necessary) and press **Save settings** button from of **Settings form** the first time
 
-![image](https://github.com/user-attachments/assets/f603f708-2597-41bd-a80e-75101390ff1f)
+![image](https://github.com/user-attachments/assets/35b0ea78-8449-4c08-bc13-c09977e0c30a)
 
-![image](https://github.com/user-attachments/assets/b15ccdc4-46a2-4ead-b18f-665d5f702c63)
+![image](https://github.com/user-attachments/assets/b57fd1af-0a19-49c9-a0a5-547ff6cc7033)
 
 Enjoy creating and testing your virtual machines on FreeBSD
 
