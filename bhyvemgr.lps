@@ -2,12 +2,12 @@
 <CONFIG>
   <ProjectSession>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="Release"/>
     <Units>
       <Unit>
         <Filename Value="bhyvemgr.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="88"/>
+        <TopLine Value="13"/>
         <CursorPos X="17" Y="111"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -28,8 +28,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="2743"/>
-        <CursorPos X="33" Y="2762"/>
+        <TopLine Value="2578"/>
+        <CursorPos X="3" Y="2525"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -38,7 +38,7 @@
         <Filename Value="unit_configuration.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="19"/>
-        <TopLine Value="34"/>
+        <TopLine Value="225"/>
         <CursorPos Y="165"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
@@ -70,7 +70,6 @@
       <Unit>
         <Filename Value="unit_global.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="21"/>
         <TopLine Value="148"/>
         <CursorPos Y="183"/>
@@ -90,6 +89,8 @@
         <Filename Value="unit_util.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="18"/>
+        <TopLine Value="108"/>
+        <CursorPos X="25" Y="141"/>
         <UsageCount Value="203"/>
         <Loaded Value="True"/>
       </Unit>
@@ -97,7 +98,7 @@
         <Filename Value="unit_thread.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="109"/>
+        <TopLine Value="82"/>
         <CursorPos X="29" Y="38"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
@@ -125,7 +126,6 @@
         <CursorPos X="78" Y="132"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_hostbridge_device.pas"/>
@@ -138,7 +138,6 @@
         <CursorPos X="65" Y="88"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_lpc_device.pas"/>
@@ -151,7 +150,6 @@
         <CursorPos X="68" Y="134"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_network_device.pas"/>
@@ -164,7 +162,6 @@
         <CursorPos X="30" Y="89"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_storage_device.pas"/>
@@ -177,7 +174,6 @@
         <CursorPos X="68" Y="220"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_about.pas"/>
@@ -185,9 +181,10 @@
         <ComponentName Value="FormAbout"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="17"/>
-        <TopLine Value="5"/>
-        <CursorPos X="15" Y="66"/>
+        <TopLine Value="49"/>
+        <CursorPos X="2" Y="69"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -200,7 +197,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="6"/>
         <TopLine Value="441"/>
-        <CursorPos X="35" Y="450"/>
+        <CursorPos Y="461"/>
         <UsageCount Value="204"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -214,9 +211,8 @@
         <EditorIndex Value="13"/>
         <TopLine Value="62"/>
         <CursorPos X="51" Y="20"/>
-        <UsageCount Value="135"/>
+        <UsageCount Value="144"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_console_device.pas"/>
@@ -227,9 +223,8 @@
         <EditorIndex Value="14"/>
         <TopLine Value="72"/>
         <CursorPos X="58" Y="17"/>
-        <UsageCount Value="127"/>
+        <UsageCount Value="136"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_passthru_device.pas"/>
@@ -240,9 +235,8 @@
         <EditorIndex Value="5"/>
         <TopLine Value="93"/>
         <CursorPos X="71" Y="124"/>
-        <UsageCount Value="113"/>
+        <UsageCount Value="122"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_input_device.pas"/>
@@ -253,9 +247,8 @@
         <EditorIndex Value="11"/>
         <TopLine Value="71"/>
         <CursorPos Y="71"/>
-        <UsageCount Value="108"/>
+        <UsageCount Value="117"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="form_rdp_connection.pas"/>
@@ -265,9 +258,8 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="10"/>
         <CursorPos Y="30"/>
-        <UsageCount Value="42"/>
+        <UsageCount Value="51"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="unit_popupmenu.pas"/>
@@ -325,71 +317,17 @@
         <CursorPos Y="201"/>
         <UsageCount Value="8"/>
       </Unit>
+      <Unit>
+        <Filename Value="version.inc"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="5"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
     <OtherDefines Count="1">
       <Define0 Value="DEBUG"/>
     </OtherDefines>
-    <JumpHistory HistoryIndex="27">
-      <Position>
-        <Filename Value="unit_util.pas"/>
-        <Caret Line="1659" Column="10" TopLine="1654"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2658" Column="3" TopLine="2655"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2715" Column="63" TopLine="2715"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="109" Column="15" TopLine="94"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2614" Column="11" TopLine="2597"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2762" Column="66" TopLine="2749"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2674" Column="71" TopLine="2651"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2714" Column="22" TopLine="2687"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="516" Column="26" TopLine="500"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="517" Column="171" TopLine="500"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="622" Column="82" TopLine="595"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="623" Column="72" TopLine="596"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="642" Column="82" TopLine="615"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="643" Column="72" TopLine="616"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="800" Column="36" TopLine="772"/>
-      </Position>
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="form_main.pas"/>
         <Caret Line="813" Column="24" TopLine="785"/>
@@ -441,6 +379,74 @@
       <Position>
         <Filename Value="form_main.pas"/>
         <Caret Line="808" Column="52" TopLine="792"/>
+      </Position>
+      <Position>
+        <Filename Value="bhyvemgr.lpr"/>
+        <Caret Line="111" Column="17" TopLine="13"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2365" Column="69" TopLine="2344"/>
+      </Position>
+      <Position>
+        <Filename Value="unit_util.pas"/>
+        <Caret Line="68" Column="86" TopLine="52"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="662" Column="62" TopLine="497"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="66" Column="15" TopLine="5"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="67" Column="15" TopLine="34"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="68" Column="15" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="67" Column="15" TopLine="35"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="77" Column="93" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="76" Column="93" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="75" Column="93" TopLine="60"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="89" Column="52" TopLine="62"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="88" Column="52" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="87" Column="52" TopLine="60"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="88" Column="52" TopLine="61"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="79" Column="40" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="form_about.pas"/>
+        <Caret Line="67" Column="3" TopLine="59"/>
       </Position>
     </JumpHistory>
     <RunParams>

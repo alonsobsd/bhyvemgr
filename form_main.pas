@@ -616,6 +616,7 @@ begin
 
     SpeedButtonVncVm.Enabled:=False;
     SpeedButtonRemoveVm.Enabled:=True;
+    SpeedButtonStartVm.Enabled:=True;
     SpeedButtonStopVm.Enabled:=False;
     SpeedButtonReloadVmConfig.Enabled:=True;
 
@@ -637,6 +638,7 @@ begin
   begin
     SpeedButtonVncVm.Enabled:=False;
     SpeedButtonStopVm.Enabled:=False;
+    SpeedButtonStartVm.Enabled:=True;
     SpeedButtonRemoveVm.Enabled:=True;
 
     if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
@@ -2578,19 +2580,21 @@ begin
     end;
 
     SpeedButtonRemoveVm.Enabled:=False;
+    SpeedButtonStartVm.Enabled:=False;
     SpeedButtonStopVm.Enabled:=True;
 
     SpeedButtonReloadVmConfig.Enabled:=False;
 
     VirtualMachinesTreeView.Selected.Text:=VirtualMachine.name+' : Running';
 
-    StatusBarBhyveManager.SimpleText := VirtualMachine.name+' VM has been started';
     StatusBarBhyveManager.Font.Color := clTeal;
+    StatusBarBhyveManager.SimpleText := VirtualMachine.name+' VM has been started';
   end
   else
   begin
     SpeedButtonRemoveVm.Enabled:=True;
     SpeedButtonVncVm.Enabled:=False;
+    SpeedButtonStartVm.Enabled:=True;
     SpeedButtonStopVm.Enabled:=False;
 
     SpeedButtonReloadVmConfig.Enabled:=True;

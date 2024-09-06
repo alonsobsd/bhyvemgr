@@ -140,7 +140,7 @@ begin
     except
       on E: Exception do
       begin
-        ShowMessage('An exception was raised: ' + E.Message);
+        MessageDlg('Error message', 'An exception was raised: ' + E.Message, mtError, [mbOK], 0);
       end;
     end;
   finally

@@ -44,6 +44,7 @@ type
   TFormAbout = class(TForm)
     Image1: TImage;
     Label1: TLabel;
+    LabelVersion: TLabel;
     Memo1: TMemo;
     procedure FormShow(Sender: TObject);
     procedure Label1Click(Sender: TObject);
@@ -65,6 +66,8 @@ implementation
 uses
   unit_global;
 
+{$I version.inc}
+
 { TFormAbout }
 
 procedure TFormAbout.Label1Click(Sender: TObject);
@@ -75,6 +78,7 @@ end;
 procedure TFormAbout.FormShow(Sender: TObject);
 begin
   Self.Caption:=FormBhyveManagerAboutTitle;
+  LabelVersion.Caption:='v'+BhyvemgrVersion;
 end;
 
 procedure TFormAbout.Label1MouseEnter(Sender: TObject);

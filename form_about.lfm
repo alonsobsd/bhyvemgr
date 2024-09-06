@@ -1,7 +1,7 @@
 object FormAbout: TFormAbout
-  Left = 604
+  Left = 694
   Height = 170
-  Top = 431
+  Top = 422
   Width = 420
   BorderStyle = bsSingle
   Caption = 'About'
@@ -255,7 +255,7 @@ object FormAbout: TFormAbout
   object Label1: TLabel
     Left = 16
     Height = 18
-    Top = 112
+    Top = 104
     Width = 95
     Caption = 'Bhyve Manager'
     Color = clHighlight
@@ -276,10 +276,19 @@ object FormAbout: TFormAbout
       ''
       'Copyright (c) 2024, Alonso Cárdenas <acardenas@bsd-peru.org>'
       ''
-      'Google Material design icon pack licensed by Apache License 2.0'
+      'Google Material design icon pack is under Apache License 2.0'
+      ''
+      'Big thanks to Lazarus and Free Pascal Team!'
     )
     ReadOnly = True
     ScrollBars = ssAutoVertical
     TabOrder = 0
+  end
+  object LabelVersion: TLabel
+    Left = 40
+    Height = 18
+    Top = 128
+    Width = 77
+    Caption = 'LabelVersion'
   end
 end
