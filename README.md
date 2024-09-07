@@ -12,12 +12,12 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - raw/zfs volume support
 - bridge/tap support
 - bhyve_config configuration variables support
-- sudo/doas support
+- basic sudo/doas support
 - ipv4 support
 - and more
 
 # TODO
-- global settings entries
+- Add missing global setting entries (bios,  board, chassis, system)
 - FreeBSD/aarch64 support (depends of solved some Freepascal/Lazarus linking issues on FreeBSD/aarch64)
 - log message
 
