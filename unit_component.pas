@@ -110,6 +110,9 @@ type
   function FillComboBooleanType(Combo: TComboBox):Boolean;
   function FillComboKeyboardLayout(Combo: TComboBox):Boolean;
   function FillComboBootrom(Combo: TComboBox):Boolean;
+  procedure FillComboTpmDevice(Combo: TComboBox);
+  procedure FillComboTpmType(Combo: TComboBox);
+  procedure FillComboTpmVersion(Combo: TComboBox);
   procedure FillComboResolution(Combo: TComboBox);
   function FillComboSystemType(Combo: TComboBox):Boolean;
   function FillComboSystemVersion(Combo: TComboBox; System: String ):Boolean;
@@ -414,6 +417,38 @@ begin
   Combo.Items.Add('BHYVE_UEFI.fd');
 { Combo.Items.Add('u-boot.bin'); }
   Result:=True;
+end;
+
+procedure FillComboTpmDevice(Combo: TComboBox);
+var
+  i : Integer;
+  TmpList : TStringList;
+begin
+  TmpList:=TStringList.Create();
+  TmpList.Text:=GetEventDeviceList('/dev', 'tpm*');
+  TmpList.Sorted:=True;
+
+  Combo.Clear;
+  Combo.items.Add(EmptyStr);
+
+  for i:=0 to TmpList.Count-1 do
+  begin
+    Combo.Items.Add(TmpList[i]);
+  end;
+
+  TmpList.Free;
+end;
+
+procedure FillComboTpmType(Combo: TComboBox);
+begin
+  Combo.items.Add(EmptyStr);
+  Combo.Items.Add('passthru');
+end;
+
+procedure FillComboTpmVersion(Combo: TComboBox);
+begin
+  Combo.items.Add(EmptyStr);
+  Combo.Items.Add('2.0');
 end;
 
 procedure FillComboResolution(Combo: TComboBox);

@@ -54,6 +54,7 @@ type
     StatusBarDisplayDevice: TStatusBar;
     procedure FormDeactivate(Sender: TObject);
     procedure FormHide(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
 
   public
@@ -77,6 +78,11 @@ uses
 procedure TFormRdpConnection.FormHide(Sender: TObject);
 begin
   FormAction:=EmptyStr;
+end;
+
+procedure TFormRdpConnection.FormShow(Sender: TObject);
+begin
+  ComboBoxResolution.SetFocus;
 end;
 
 procedure TFormRdpConnection.FormDeactivate(Sender: TObject);

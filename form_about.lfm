@@ -285,10 +285,12 @@ object FormAbout: TFormAbout
     TabOrder = 0
   end
   object LabelVersion: TLabel
-    Left = 40
+    Left = 0
     Height = 18
     Top = 128
-    Width = 77
+    Width = 128
+    Alignment = taCenter
+    AutoSize = False
     Caption = 'LabelVersion'
   end
 end

@@ -196,6 +196,7 @@ object FormVmCreate: TFormVmCreate
       Checked = True
       State = cbChecked
       TabOrder = 3
+      OnChange = CheckBoxFramebufferChange
     end
     object SpinEditExMemory: TSpinEditEx
       Left = 107

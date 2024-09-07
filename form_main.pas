@@ -359,7 +359,7 @@ begin
   GlobalSettingDefaultValueList.Values['keyboard.layout'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.path'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.type'] := EmptyStr;
-  GlobalSettingDefaultValueList.Values['tpm.version'] := '2.0';
+  GlobalSettingDefaultValueList.Values['tpm.version'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['rtc.use_localtime'] := 'true';
   GlobalSettingDefaultValueList.Values['uuid'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['virtio_msix'] := 'true';
@@ -718,6 +718,21 @@ begin
       FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
       FormChangeValue.Visible:=True;
     end;
+
+    if (SettingName = 'gdb.port')then
+    begin
+      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+
+      FormChangeValue.ShowComboBox();
+      FormChangeValue.ComboBoxValue.Clear;
+      FormChangeValue.SettingType:=SettingName;
+      FormChangeValue.ComboBoxValue.Items.Add('0');
+      FillComboIntegerType(FormChangeValue.ComboBoxValue, 60000, 60100, 1);
+      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+      FormChangeValue.Visible:=True;
+    end;
   end;
 
   if GlobalSettingTypeList.Values[extractVarName(GlobalSettingsTreeView.Selected.Text)] = 'String' then
@@ -746,6 +761,48 @@ begin
       FormChangeValue.ComboBoxValue.Clear;
       FormChangeValue.SettingType:=SettingName;
       FillComboKeyboardLayout(FormChangeValue.ComboBoxValue);
+      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+      FormChangeValue.Visible:=True;
+    end;
+
+    if SettingName = 'tpm.path' then
+    begin
+      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+
+      FormChangeValue.ShowComboBox();
+      FormChangeValue.ComboBoxValue.Clear;
+      FormChangeValue.SettingType:=SettingName;
+      FillComboTpmDevice(FormChangeValue.ComboBoxValue);
+      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+      FormChangeValue.Visible:=True;
+    end;
+
+    if SettingName = 'tpm.type' then
+    begin
+      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+
+      FormChangeValue.ShowComboBox();
+      FormChangeValue.ComboBoxValue.Clear;
+      FormChangeValue.SettingType:=SettingName;
+      FillComboTpmType(FormChangeValue.ComboBoxValue);
+      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+      FormChangeValue.Visible:=True;
+    end;
+
+    if SettingName = 'tpm.version' then
+    begin
+      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+
+      FormChangeValue.ShowComboBox();
+      FormChangeValue.ComboBoxValue.Clear;
+      FormChangeValue.SettingType:=SettingName;
+      FillComboTpmVersion(FormChangeValue.ComboBoxValue);
       FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
       FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
       FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
@@ -2718,6 +2775,7 @@ begin
 
     if CheckVmRunning(VirtualMachine.name) > 0 then
     begin
+      SpeedButtonStartVm.Enabled:=False;
       SpeedButtonStopVm.Enabled:=True;
       SpeedButtonRemoveVm.Enabled:=False;
       SpeedButtonReloadVmConfig.Enabled:=False;

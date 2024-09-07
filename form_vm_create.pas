@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ComCtrls, Spin, LCLType, SpinEx;
+  Buttons, ComCtrls, LCLType, SpinEx;
 
 type
 
@@ -76,6 +76,7 @@ type
     SpinEditExDiskSize: TSpinEditEx;
     SpinEditExMemory: TSpinEditEx;
     StatusBarVmCreate: TStatusBar;
+    procedure CheckBoxFramebufferChange(Sender: TObject);
     procedure CheckBoxOnlyLocalhostChange(Sender: TObject);
     procedure CheckBoxWaitVNCChange(Sender: TObject);
     procedure ComboBoxSystemTypeChange(Sender: TObject);
@@ -194,6 +195,19 @@ begin
   if CheckBoxOnlyLocalhost.Checked then
   begin
     CheckBoxFramebuffer.Checked:=True;
+  end;
+end;
+
+procedure TFormVmCreate.CheckBoxFramebufferChange(Sender: TObject);
+begin
+  if CheckBoxFramebuffer.Checked then
+  begin
+    CheckBoxOnlyLocalhost.Checked:=True;
+  end
+  else
+  begin
+    CheckBoxOnlyLocalhost.Checked:=False;
+    CheckBoxWaitVNC.Checked:=False;
   end;
 end;
 
