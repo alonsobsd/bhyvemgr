@@ -1,1 +1,1 @@
-const BhyvemgrVersion = '1.0.0';
+const BhyvemgrVersion = '1.0.1';

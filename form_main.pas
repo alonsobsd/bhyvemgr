@@ -1425,7 +1425,7 @@ begin
                   'ahci-hd':
                     begin
                       StorageAhciDevice := TStorageAhciDeviceClass(DeviceSettingsTreeView.Selected.Data);
-                      PciSlot:=StorageAhciDevice.pci+'.port.'+StorageAhciDevice.port.ToString;
+                      PciSlot:=StorageAhciDevice.pci;
 
                       case StorageAhciDevice.storage_type of
                           'image file': if StorageAhciDevice.device_type = 'hd' then RemoveFile(StorageAhciDevice.path);

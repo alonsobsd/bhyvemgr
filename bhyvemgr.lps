@@ -29,8 +29,8 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="1907"/>
-        <CursorPos X="4" Y="1932"/>
+        <TopLine Value="1407"/>
+        <CursorPos X="76" Y="1419"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -222,7 +222,7 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="15"/>
         <CursorPos X="58" Y="17"/>
-        <UsageCount Value="194"/>
+        <UsageCount Value="205"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -234,7 +234,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="84"/>
         <CursorPos X="71" Y="124"/>
-        <UsageCount Value="180"/>
+        <UsageCount Value="191"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -246,7 +246,7 @@
         <EditorIndex Value="12"/>
         <TopLine Value="71"/>
         <CursorPos Y="78"/>
-        <UsageCount Value="175"/>
+        <UsageCount Value="186"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -258,7 +258,7 @@
         <EditorIndex Value="11"/>
         <TopLine Value="67"/>
         <CursorPos X="4" Y="82"/>
-        <UsageCount Value="109"/>
+        <UsageCount Value="120"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -270,14 +270,14 @@
         <UnitName Value="form_main"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="15"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/share/lazarus-3.4.0/lcl/include/treeview.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="420"/>
         <CursorPos Y="441"/>
-        <UsageCount Value="4"/>
+        <UsageCount Value="3"/>
       </Unit>
       <Unit>
         <Filename Value="form_rdp.pas"/>
@@ -286,7 +286,7 @@
         <UnitName Value="form_rdp_connection"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="25"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="11"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/local/share/lazarus-3.4.0/components/lazutils/lazmethodlist.pas"/>
@@ -294,13 +294,13 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="184"/>
         <CursorPos Y="201"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="1"/>
       </Unit>
       <Unit>
         <Filename Value="version.inc"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="5"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="4"/>
       </Unit>
       <Unit>
         <Filename Value="form_vm_info.pas"/>
@@ -311,7 +311,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="23"/>
         <CursorPos X="36" Y="96"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="46"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -320,22 +320,6 @@
       <Define0 Value="DEBUG"/>
     </OtherDefines>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="form_vm_info.pas"/>
-        <Caret Line="58" Column="29" TopLine="40"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2559" TopLine="2531"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2536" Column="7" TopLine="2512"/>
-      </Position>
-      <Position>
-        <Filename Value="form_main.pas"/>
-        <Caret Line="2564" Column="68" TopLine="3619"/>
-      </Position>
       <Position>
         <Filename Value="form_main.pas"/>
         <Caret Line="1489" Column="83" TopLine="1478"/>
@@ -439,6 +423,22 @@
       <Position>
         <Filename Value="form_main.pas"/>
         <Caret Line="1494" Column="88" TopLine="1494"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="1919" Column="108" TopLine="1908"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="1360" Column="11" TopLine="1414"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="1087" Column="11" TopLine="1256"/>
+      </Position>
+      <Position>
+        <Filename Value="form_main.pas"/>
+        <Caret Line="2045" Column="15" TopLine="2244"/>
       </Position>
     </JumpHistory>
     <RunParams>
