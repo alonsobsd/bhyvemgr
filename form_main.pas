@@ -89,6 +89,7 @@ type
     procedure GlobalChangeValue(Sender: TObject);
     procedure AddDevice(Sender: TObject);
     procedure EditDevice(Sender: TObject);
+    procedure EditVirtualMachineInfo(Sender: TObject);
     procedure RemoveDevice(Sender: TObject);
     procedure RemoteDesktopProtocolVm(Sender: TObject);
     procedure SaveAudioDevice(Sender: TObject);
@@ -102,6 +103,7 @@ type
     procedure SaveShareFolderDevice(Sender: TObject);
     procedure SaveStorageDevice(Sender: TObject);
     procedure CreateVmClick(Sender: TObject);
+    procedure SaveVirtualMachineInfoClick(Sender: TObject);
     procedure SpeedButtonReloadVmConfigClick(Sender: TObject);
     procedure SpeedButtonRemoveVmClick(Sender: TObject);
     procedure SpeedButtonStartVmClick(Sender: TObject);
@@ -185,7 +187,7 @@ uses
   form_about, form_audio_device, form_change_value, form_console_device, form_display_device,
   form_hostbridge_device, form_input_device, form_lpc_device, form_network_device, form_passthru_device,
   form_rdp_connection, form_share_folder_device, form_storage_device, form_settings, form_vm_create,
-  unit_configuration, unit_global, unit_util;
+  form_vm_info, unit_configuration, unit_global, unit_util;
 
 { TFormBhyveManager }
 
@@ -196,6 +198,8 @@ begin
   FormChangeValue:= TFormChangeValue.Create(FormBhyveManager);
   FormVMCreate:=TFormVmCreate.Create(FormBhyveManager);
   FormVmCreate.Caption:=FormBhyveManagerCreateVmTitle;
+  FormVmInfo:=TFormVmInfo.Create(FormBhyveManager);
+  FormVmInfo.Caption:=FormBhyveManagerEditVmInfoTitle;
   FormRdpConnection:=TFormRdpConnection.Create(FormBhyveManager);
 
   FormBhyveManager.Caption:=FormBhyveManagerTitle;
@@ -216,6 +220,7 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[3].ImageIndex:=3;
 
   VirtualMachinesPopup.PopupMenu.Items[0].OnClick:=@SpeedButtonAddVmClick;
+  VirtualMachinesPopup.PopupMenu.Items[1].OnClick:=@EditVirtualMachineInfo;
   VirtualMachinesPopup.PopupMenu.Items[2].OnClick:=@SpeedButtonRemoveVmClick;
   VirtualMachinesPopup.PopupMenu.Items[3].OnClick:=@RemoteDesktopProtocolVm;
 
@@ -1329,6 +1334,29 @@ begin
   end;
 end;
 
+procedure TFormBhyveManager.EditVirtualMachineInfo(Sender: TObject);
+begin
+  if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
+  begin
+    GlobalNode:=VirtualMachinesTreeView.Selected;
+    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
+
+    FormVmInfo.BitBtnSave.OnClick:=@SaveVirtualMachineInfoClick;
+    FormVmInfo.Visible:=True;
+    FormVmInfo.ComboBoxVmType.Clear;
+    FillComboSystemType(FormVmInfo.ComboBoxVmType);
+    FormVmInfo.ComboBoxVmType.ItemIndex:=FormVmInfo.ComboBoxVmType.Items.IndexOf(VirtualMachine.system_type);
+    FillComboSystemVersion(FormVmInfo.ComboBoxVmVersion, FormVmInfo.ComboBoxVmType.Text);
+    FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachine.system_version);
+    FormVmInfo.EditVmName.Text:=VirtualMachine.name;
+    FormVmInfo.EditVmDescription.Text:=VirtualMachine.description;
+    if VirtualMachine.rdp = StrToBool('True') then
+      FormVmInfo.CheckBoxRDP.Checked:=True
+    else
+      FormVmInfo.CheckBoxRDP.Checked:=False;
+  end;
+end;
+
 procedure TFormBhyveManager.RemoveDevice(Sender: TObject);
 var
   i : Integer;
@@ -1461,22 +1489,25 @@ end;
 
 procedure TFormBhyveManager.RemoteDesktopProtocolVm(Sender: TObject);
 begin
-  if (FormRdpConnection.FormAction = EmptyStr) and (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
+  if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1)
+     and (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).rdp = True) then
   begin
-    FormRdpConnection.Caption:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+' VM';
-    FormRdpConnection.BitBtnConnect.OnClick:=@RemoteDesktopProtocolVm;
-    FormRdpConnection.FormStyle:=fsSystemStayOnTop;
-    FormRdpConnection.FormAction:='Connect';
-    FormRdpConnection.LoadDefaultValues();
-    FormRdpConnection.Show;
-  end
-  else if (FormRdpConnection.FormAction='Connect') then
-  begin
-    if not RdpConnect(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name, FormRdpConnection.EditUsername.Text, FormRdpConnection.EditPassword.Text, ExtractDelimited(1,FormRdpConnection.ComboBoxResolution.Text,['x']), ExtractDelimited(2,FormRdpConnection.ComboBoxResolution.Text,['x'])) then
-      ShowMessage('No se pudo conectar');
+    if (FormRdpConnection.FormAction = EmptyStr) then
+    begin
+      FormRdpConnection.Caption:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+' VM';
+      FormRdpConnection.BitBtnConnect.OnClick:=@RemoteDesktopProtocolVm;
+      FormRdpConnection.FormStyle:=fsSystemStayOnTop;
+      FormRdpConnection.FormAction:='Connect';
+      FormRdpConnection.LoadDefaultValues();
+      FormRdpConnection.Show;
+    end
+    else if (FormRdpConnection.FormAction='Connect') then
+    begin
+      RdpConnect(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name, FormRdpConnection.EditUsername.Text, FormRdpConnection.EditPassword.Text, ExtractDelimited(1,FormRdpConnection.ComboBoxResolution.Text,['x']), ExtractDelimited(2,FormRdpConnection.ComboBoxResolution.Text,['x']));
 
-    FormRdpConnection.FormAction:=EmptyStr;
-    FormRdpConnection.Hide;
+      FormRdpConnection.FormAction:=EmptyStr;
+      FormRdpConnection.Hide;
+    end;
   end;
 end;
 
@@ -2484,6 +2515,7 @@ begin
     NewVMConfig.SetOption('general','type' , FormVmCreate.ComboBoxSystemType.Text);
     NewVMConfig.SetOption('general','version', FormVmCreate.ComboBoxSystemVersion.Text);
     NewVMConfig.SetOption('general','image', PtrInt(FormVmCreate.ComboBoxSystemVersion.Items.Objects[FormVmCreate.ComboBoxSystemVersion.ItemIndex]).ToString);
+    NewVMConfig.SetOption('general','rdp', 'False');
 
     if UseDnsmasq = 'yes' then
     begin
@@ -2508,6 +2540,35 @@ begin
   begin
     FormVmCreate.StatusBarVmCreate.Font.Color:=clRed;
     FormVmCreate.StatusBarVmCreate.SimpleText:='You must fill all requeriments';
+  end;
+end;
+
+procedure TFormBhyveManager.SaveVirtualMachineInfoClick(Sender: TObject);
+var
+  Configuration : ConfigurationClass;
+begin
+  if FormVmInfo.FormValidate() then
+  begin
+    Configuration:= ConfigurationClass.Create(VmPath+ '/'+FormVmInfo.EditVmName.Text+'/'+FormVmInfo.EditVmName.Text+'.conf');
+
+    Configuration.SetOption('general','type' , FormVmInfo.ComboBoxVmType.Text);
+    Configuration.SetOption('general','version', FormVmInfo.ComboBoxVmVersion.Text);
+    Configuration.SetOption('general','image', PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]).ToString);
+    Configuration.SetOption('general','description', FormVmInfo.EditVmDescription.Text);
+    Configuration.SetOption('general','rdp', BoolToStr(FormVmInfo.CheckBoxRDP.Checked, 'True', 'False'));
+
+    Configuration.Free;
+
+    ResetTreeView(VirtualMachinesTreeView);
+    VirtualMachinesTreeView.Items.Clear;
+    FillVirtualMachineList();
+
+    FormVmInfo.Hide;
+  end
+  else
+  begin
+    FormVmInfo.StatusBarVmInfo.Font.Color:=clRed;
+    FormVmInfo.StatusBarVmInfo.SimpleText:='You must complete all form fields';
   end;
 end;
 
@@ -2733,7 +2794,7 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[1].Enabled:=True;
         VirtualMachinesPopup.PopupMenu.Items.Items[2].Enabled:=True;
 
-        if ExtractVarValue(VirtualMachinesTreeView.Selected.Text) = 'Running' then
+        if (ExtractVarValue(VirtualMachinesTreeView.Selected.Text) = 'Running') and (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).rdp = True) then
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=True
         else
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
@@ -3584,6 +3645,11 @@ begin
   VirtualMachine.system_type:=Configuration.GetOption('general','type');
   VirtualMachine.system_version:=Configuration.GetOption('general','version');
   VirtualMachine.image:=StrToInt(Configuration.GetOption('general','image'));
+
+  if Configuration.GetOption('general','rdp') = 'True' then
+    VirtualMachine.rdp:=True
+  else
+    VirtualMachine.rdp:=False;
 
   if UseDnsmasq = 'yes' then
     VirtualMachine.ipaddress:=Configuration.GetOption('general','ipaddress');

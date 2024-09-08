@@ -177,7 +177,8 @@ const
   FormBhyveManagerSettingsTitle = 'Bhyve Manager - Settings';
   FormBhyveManagerStorageDeviceTitle = 'Storage Device';
   FormBhyveManagerShareFolderDeviceTitle = 'Share folder device';
-  FormBhyveManagerCreateVmTitle = 'Bhyve Manager - Create Virtual Machine';
+  FormBhyveManagerCreateVmTitle = 'Bhyve Manager - Create virtual machine';
+  FormBhyveManagerEditVmInfoTitle = 'Bhyve Manager - Edit virtual machine info';
 
 var
   OsreldateVar: String;

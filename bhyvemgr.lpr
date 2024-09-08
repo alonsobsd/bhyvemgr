@@ -47,7 +47,7 @@ uses
   form_hostbridge_device, form_lpc_device, form_network_device,
   form_storage_device, form_about, form_settings, Dialogs,
   form_share_folder_device, form_console_device, form_passthru_device,
-  form_input_device, form_rdp_connection;
+  form_input_device, form_rdp_connection, form_vm_info;
 
 {$R *.res}
 var

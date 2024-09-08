@@ -190,7 +190,7 @@ begin
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Modify virtual machine';
+  PopupMenuItem.Caption:='Modify virtual machine info';
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
