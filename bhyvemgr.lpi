@@ -254,6 +254,7 @@
         <Filename Value="form_vm_info.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FormVmInfo"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>

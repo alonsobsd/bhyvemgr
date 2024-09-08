@@ -9,6 +9,7 @@ object FormVmInfo: TFormVmInfo
   ClientWidth = 584
   OnShow = FormShow
   Position = poMainFormCenter
+  ShowInTaskBar = stAlways
   LCLVersion = '3.4.0.0'
   object GroupBox1: TGroupBox
     Left = 8
@@ -48,7 +49,6 @@ object FormVmInfo: TFormVmInfo
       Height = 32
       Top = 0
       Width = 356
-      Enabled = False
       ReadOnly = True
       TabOrder = 0
     end

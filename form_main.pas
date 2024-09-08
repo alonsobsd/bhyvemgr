@@ -1198,7 +1198,7 @@ begin
             FormNetworkDevice.ComboBoxDevice.ItemIndex:=FormNetworkDevice.ComboBoxDevice.Items.IndexOf(NetworkDevice.device);
             FormNetworkDevice.FormAction:='Update';
 
-            if (NetworkDevice.mtu <> 1500) then FormNetworkDevice.SpinEditExMtu.Value:=NetworkDevice.mtu;
+            if ((NetworkDevice.mtu <> 1500) and (NetworkDevice.mtu <> 0)) then FormNetworkDevice.SpinEditExMtu.Value:=NetworkDevice.mtu else FormNetworkDevice.SpinEditExMtu.Value:=1500;
 
             FormNetworkDevice.Show;
           end;
@@ -1896,11 +1896,21 @@ begin
    PciSlot:=NetworkDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormNetworkDevice.ComboBoxDevice.Text;
-   if FormNetworkDevice.SpinEditExMtu.Text <> '1500' then TmpDevicesStringList.Values['pci.'+PciSlot+'.mtu']:=FormNetworkDevice.SpinEditExMtu.Text;
+
+   if FormNetworkDevice.SpinEditExMtu.Value = 1500 then
+   begin
+     if TmpDevicesStringList.IndexOfName('pci.'+PciSlot+'.mtu') <> -1 then
+       TmpDevicesStringList.Delete(TmpDevicesStringList.IndexOfName('pci.'+PciSlot+'.mtu'));
+   end
+   else
+   begin
+     TmpDevicesStringList.Values['pci.'+PciSlot+'.mtu']:=FormNetworkDevice.SpinEditExMtu.Text;
+   end;
 
    DeviceSettingsTreeView.Items.FindNodeWithText('device : '+NetworkDevice.device).Text:='device : '+FormNetworkDevice.ComboBoxDevice.Text;
 
    NetworkDevice.device:=FormNetworkDevice.ComboBoxDevice.Text;
+   NetworkDevice.mtu:=StrToInt(FormNetworkDevice.SpinEditExMtu.Text);
 
    FormNetworkDevice.Destroy;
 
@@ -2002,6 +2012,7 @@ begin
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormShareFolderDevice.ComboBoxDevice.Text;
    TmpDevicesStringList.Values['pci.'+PciSlot+'.sharename']:=FormShareFolderDevice.EditSharename.Text;
    TmpDevicesStringList.Values['pci.'+PciSlot+'.path']:=FormShareFolderDevice.DirectoryEditPath.Text;
+
    if FormShareFolderDevice.CheckBoxReadOnly.Checked then
      TmpDevicesStringList.Values['pci.'+PciSlot+'.ro']:=BoolToStr(FormShareFolderDevice.CheckBoxReadOnly.Checked, 'true', 'false')
    else

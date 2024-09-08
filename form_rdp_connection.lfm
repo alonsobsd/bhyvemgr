@@ -17,7 +17,7 @@ object FormRdpConnection: TFormRdpConnection
     Height = 144
     Top = 8
     Width = 328
-    Caption = 'Login'
+    Caption = 'RDP Login credentials'
     ClientHeight = 115
     ClientWidth = 324
     TabOrder = 0
