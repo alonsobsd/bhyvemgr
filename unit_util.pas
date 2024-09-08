@@ -453,6 +453,7 @@ begin
   PatternValueList:=TStringList.Create;
   RegexObj := TRegExpr.Create;
   RegexObj.Expression := Pattern;
+  PatternValue:=EmptyStr;
 
   for i:=StringList.Count-1 downto 0 do
   begin
@@ -509,6 +510,7 @@ begin
   PatternValueList:=TStringList.Create;
   RegexObj := TRegExpr.Create;
   RegexObj.Expression := Pattern;
+  PatternValue:=EmptyStr;
 
   Directories:=FindAllDirectories(VmPath, False);
   Directories.Sorted:=True;
@@ -577,6 +579,7 @@ begin
   PatternValueList:=TStringList.Create;
   RegexObj := TRegExpr.Create;
   RegexObj.Expression := Pattern;
+  PatternValue:=EmptyStr;
 
   Directories:=FindAllDirectories(VmPath, False);
   Directories.Sorted:=True;
@@ -649,6 +652,7 @@ begin
   PatternValueList:=TStringList.Create;
   RegexObj := TRegExpr.Create;
   RegexObj.Expression := Pattern;
+  PatternValue:=EmptyStr;
 
   if FileExists(VmPath+'/'+VmName+'/bhyve_config.conf') then
   begin
@@ -743,14 +747,14 @@ begin
   try
     FilePath.LoadFromFile(ConfigFile);
 
-    if FilePath.IndexOf('dhcp-host='+MacAddreess+','+VmName+','+IpAddress+',60m') = -1 then
+    if FilePath.IndexOf('dhcp-host='+MacAddreess+','+VmName+','+IpAddress+',5m') = -1 then
     begin
-      FilePath.Values['dhcp-host']:=MacAddreess+','+VmName+','+IpAddress+',60m';
+      FilePath.Values['dhcp-host']:=MacAddreess+','+VmName+','+IpAddress+',5m';
       FilePath.SaveToFile(ConfigFile);
       RestartDnsmasqService('dnsmasq');
     end;
   except
-    ShowMessage('Error saving data to '+ConfigFile+' file');
+    MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
   end;
 
   FilePath.Free;
