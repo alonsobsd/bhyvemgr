@@ -35,7 +35,7 @@ unit form_about;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, LCLIntf;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, LCLIntf, InterfaceBase;
 
 type
 
@@ -44,6 +44,7 @@ type
   TFormAbout = class(TForm)
     Image1: TImage;
     Label1: TLabel;
+    LabelArch: TLabel;
     LabelVersion: TLabel;
     Memo1: TMemo;
     procedure FormShow(Sender: TObject);
@@ -79,6 +80,7 @@ procedure TFormAbout.FormShow(Sender: TObject);
 begin
   Self.Caption:=FormBhyveManagerAboutTitle;
   LabelVersion.Caption:='v'+BhyvemgrVersion;
+  LabelArch.Caption:={$I %FPCTARGETCPU%}+'-'+GetLCLWidgetTypeName;
 end;
 
 procedure TFormAbout.Label1MouseEnter(Sender: TObject);

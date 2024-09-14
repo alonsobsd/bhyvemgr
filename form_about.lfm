@@ -1,12 +1,12 @@
 object FormAbout: TFormAbout
-  Left = 694
+  Left = 699
   Height = 170
   Top = 422
-  Width = 420
+  Width = 415
   BorderStyle = bsSingle
   Caption = 'About'
   ClientHeight = 170
-  ClientWidth = 420
+  ClientWidth = 415
   OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
@@ -14,7 +14,7 @@ object FormAbout: TFormAbout
   object Image1: TImage
     Left = 24
     Height = 72
-    Top = 32
+    Top = 16
     Width = 72
     Center = True
     Picture.Data = {
@@ -287,10 +287,19 @@ object FormAbout: TFormAbout
   object LabelVersion: TLabel
     Left = 0
     Height = 18
-    Top = 128
+    Top = 120
     Width = 128
     Alignment = taCenter
     AutoSize = False
     Caption = 'LabelVersion'
+  end
+  object LabelArch: TLabel
+    Left = 0
+    Height = 18
+    Top = 88
+    Width = 128
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'LabelArch'
   end
 end
