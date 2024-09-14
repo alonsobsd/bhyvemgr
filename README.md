@@ -1,5 +1,5 @@
 # Bhyvemgr
-Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It needs a bunch of tools mostly installed on base system and some installed from ports/packages. Currently it supports only amd64. The main goal is to be a desktop user application to easily and quickly setup and run virtual machines on the FreeBSD host.
+Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It needs a bunch of tools mostly installed on base system and some installed from ports/packages. Currently it supports amd64 and aarch64. The main goal is to be a desktop user application to easily and quickly setup and run virtual machines on the FreeBSD host.
 
 ![image](https://github.com/user-attachments/assets/82563dca-0bee-4fcb-9cdb-d1cb797b1997)
 
@@ -14,11 +14,12 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - bhyve_config configuration variables support
 - basic sudo/doas support
 - ipv4 support
+- aarch64 and amd64 support
 - and more
 
 # TODO
 - Add missing global setting entries (bios,  board, chassis, system)
-- FreeBSD/aarch64 support (depends of solved some Freepascal/Lazarus linking issues on FreeBSD/aarch64)
+- Review aarch64 support
 - log message
 
 # Bhyvemgr dependencies
