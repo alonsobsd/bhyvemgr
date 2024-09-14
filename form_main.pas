@@ -2421,9 +2421,23 @@ begin
 
     { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
     if GetOsreldate.ToInt64 >= 1500023 then
+    begin
+      {$ifdef CPUAMD64}
       NewBhyveConfig.Values['bootrom'] := BootRomUefiPath+ '/' +'BHYVE_UEFI.fd'
+      {$endif CPUAMD64}
+      {$ifdef CPUAARCH64}
+      NewBhyveConfig.Values['bootrom'] := BootRomUbootPath+ '/' +'u-boot.bin';
+      {$endif CPUAARCH64}
+    end
     else
+    begin
+      {$ifdef CPUAMD64}
       NewBhyveConfig.Values['lpc.bootrom']:=BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
+      {$endif CPUAMD64}
+      {$ifdef CPUAARCH64}
+      NewBhyveConfig.Values['lpc.bootrom']:=BootRomUbootPath+ '/' +'u-boot.bin';
+      {$endif CPUAARCH64}
+    end;
 
     NewBhyveConfig.Values['lpc.fwcfg']:='bhyve';
     NewBhyveConfig.Values['lpc.com1.path']:='/dev/nmdm-'+FormVmCreate.EditVmName.Text+'.1A';

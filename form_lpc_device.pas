@@ -67,7 +67,7 @@ type
     procedure CheckBoxCom4Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    procedure FillComboBootrom(Combo: TComboBox);
+
   public
     FormAction : String;
     function FormValidate():Boolean;
@@ -82,7 +82,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_global;
+  unit_component, unit_global;
 
 { TFormLpcDevice }
 
@@ -134,17 +134,17 @@ begin
   else if CheckBoxCom4.Checked and (Trim(EditCom4.Text) = EmptyStr) then Result:=False
 end;
 
-procedure TFormLpcDevice.FillComboBootrom(Combo: TComboBox);
-begin
-  Combo.Clear;
-  Combo.Items.Add('BHYVE_UEFI.fd');
-{ Combo.Items.Add('u-boot.bin'); }
-end;
-
 procedure TFormLpcDevice.LoadDefaultValues(VmName : String);
 begin
   FillComboBootrom(ComboBoxBootrom);
+
+  {$ifdef CPUAMD64}
   ComboBoxBootrom.ItemIndex:=ComboBoxBootrom.Items.IndexOf('BHYVE_UEFI.fd');
+  {$endif CPUAMD64}
+  {$ifdef CPUAARCH64}
+  ComboBoxBootrom.ItemIndex:=ComboBoxBootrom.Items.IndexOf('u-boot.bin');
+  {$endif CPUAARCH64}
+
   EditCom1.Text:='/dev/nmdm-'+VmName+'.1A';
   EditCom2.Text:='/dev/nmdm-'+VmName+'.2A';
   EditCom3.Text:='/dev/nmdm-'+VmName+'.3A';

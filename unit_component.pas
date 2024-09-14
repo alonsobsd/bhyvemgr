@@ -414,8 +414,12 @@ end;
 
 function FillComboBootrom(Combo: TComboBox): Boolean;
 begin
+{$ifdef CPUAARCH64}
+  Combo.Items.Add('u-boot.bin');
+{$endif CPUAARCH64}
+{$ifdef CPUAMD64}
   Combo.Items.Add('BHYVE_UEFI.fd');
-{ Combo.Items.Add('u-boot.bin'); }
+{$endif CPUAMD64}
   Result:=True;
 end;
 
