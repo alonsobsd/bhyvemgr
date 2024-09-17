@@ -40,7 +40,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, lazcontrols, form_main, unit_configuration, unit_device
+  Forms, UniqueInstanceRaw, lazcontrols, form_main, unit_configuration, unit_device
   { you can add units after this }
   ,SysUtils, form_vm_create, form_change_value, unit_global, unit_component,
   unit_util, unit_thread, form_audio_device, form_display_device,
@@ -54,70 +54,73 @@ var
   Configuration : ConfigurationClass;
 
 begin
-  Configuration:= ConfigurationClass.Create(GetUserDir + '.config/bhyvemgr/config.conf');
+  if not InstanceRunning('bhyvemgr') then
+  begin
+    Configuration:= ConfigurationClass.Create(GetUserDir + '.config/bhyvemgr/config.conf');
 
-  SetNewConfig(Configuration.GeneralConfig());
+    SetNewConfig(Configuration.GeneralConfig());
 
-  SetUseDnsmasq(configuration.getOption('general','use_dnsmasq'));
-  SetUseSudo(configuration.getOption('general','use_sudo'));
-  SetUseZfs(configuration.getOption('general','use_zfs'));
-  SetVmPath(configuration.getOption('general','vm_path'));
+    SetUseDnsmasq(configuration.getOption('general','use_dnsmasq'));
+    SetUseSudo(configuration.getOption('general','use_sudo'));
+    SetUseZfs(configuration.getOption('general','use_zfs'));
+    SetVmPath(configuration.getOption('general','vm_path'));
 
-  SetBhyveCmd(configuration.getOption('bhyve-tools','bhyve_cmd'));
-  SetBhyvectlCmd(configuration.getOption('bhyve-tools','bhyvectl_cmd'));
-  SetBhyveloadCmd(configuration.getOption('bhyve-tools','bhyveload_cmd'));
+    SetBhyveCmd(configuration.getOption('bhyve-tools','bhyve_cmd'));
+    SetBhyvectlCmd(configuration.getOption('bhyve-tools','bhyvectl_cmd'));
+    SetBhyveloadCmd(configuration.getOption('bhyve-tools','bhyveload_cmd'));
 
-  SetBridgeInterface(configuration.getOption('network','bridge_interface'));
-  SetSubnet(configuration.getOption('network','subnet'));
+    SetBridgeInterface(configuration.getOption('network','bridge_interface'));
+    SetSubnet(configuration.getOption('network','subnet'));
 
-  SetDoasCmd(configuration.getOption('user-tools','doas_cmd'));
-  SetSudoCmd(configuration.getOption('user-tools','sudo_cmd'));
+    SetDoasCmd(configuration.getOption('user-tools','doas_cmd'));
+    SetSudoCmd(configuration.getOption('user-tools','sudo_cmd'));
 
-  SetVncviewerCmd(configuration.getOption('remote-tools','vncviewer_cmd'));
-  SetXfreerdpCmd(configuration.getOption('remote-tools','xfreerdp_cmd'));
-  SetXfreerdpArgs(configuration.getOption('remote-tools','xfreerdp_args'));
+    SetVncviewerCmd(configuration.getOption('remote-tools','vncviewer_cmd'));
+    SetXfreerdpCmd(configuration.getOption('remote-tools','xfreerdp_cmd'));
+    SetXfreerdpArgs(configuration.getOption('remote-tools','xfreerdp_args'));
 
-  SetChownCmd(configuration.getOption('extra-tools','chown_cmd'));
-  SetChmodCmd(configuration.getOption('extra-tools','chmod_cmd'));
-  SetIfconfigCmd(configuration.getOption('extra-tools','ifconfig_cmd'));
-  SetInstallCmd(configuration.getOption('extra-tools','install_cmd'));
-  SetKillCmd(configuration.getOption('extra-tools','kill_cmd'));
-  SetKldloadCmd(configuration.getOption('extra-tools','kldload_cmd'));
-  SetKldstatCmd(configuration.getOption('extra-tools','kldstat_cmd'));
-  SetPciconfCmd(configuration.getOption('extra-tools','pciconf_cmd'));
-  SetPgrepCmd(configuration.getOption('extra-tools','pgrep_cmd'));
-  SetRmCmd(configuration.getOption('extra-tools','rm_cmd'));
-  SetServiceCmd(configuration.getOption('extra-tools','service_cmd'));
-  SetSysctlCmd(configuration.getOption('extra-tools','sysctl_cmd'));
-  SetTruncateCmd(configuration.getOption('extra-tools','truncate_cmd'));
-  SetZfsCmd(configuration.getOption('extra-tools','zfs_cmd'));
-  SetZpoolCmd(configuration.getOption('extra-tools','zpool_cmd'));
+    SetChownCmd(configuration.getOption('extra-tools','chown_cmd'));
+    SetChmodCmd(configuration.getOption('extra-tools','chmod_cmd'));
+    SetIfconfigCmd(configuration.getOption('extra-tools','ifconfig_cmd'));
+    SetInstallCmd(configuration.getOption('extra-tools','install_cmd'));
+    SetKillCmd(configuration.getOption('extra-tools','kill_cmd'));
+    SetKldloadCmd(configuration.getOption('extra-tools','kldload_cmd'));
+    SetKldstatCmd(configuration.getOption('extra-tools','kldstat_cmd'));
+    SetPciconfCmd(configuration.getOption('extra-tools','pciconf_cmd'));
+    SetPgrepCmd(configuration.getOption('extra-tools','pgrep_cmd'));
+    SetRmCmd(configuration.getOption('extra-tools','rm_cmd'));
+    SetServiceCmd(configuration.getOption('extra-tools','service_cmd'));
+    SetSysctlCmd(configuration.getOption('extra-tools','sysctl_cmd'));
+    SetTruncateCmd(configuration.getOption('extra-tools','truncate_cmd'));
+    SetZfsCmd(configuration.getOption('extra-tools','zfs_cmd'));
+    SetZpoolCmd(configuration.getOption('extra-tools','zpool_cmd'));
 
-  SetZfsZpool(configuration.getOption('zfs','zfs_zpool'));
-  SetZfsCreateOptions(configuration.getOption('zfs','zfs_create_options'));
+    SetZfsZpool(configuration.getOption('zfs','zfs_zpool'));
+    SetZfsCreateOptions(configuration.getOption('zfs','zfs_create_options'));
 
-{  if (UseZfs = 'yes') and (CheckKernelModule('zfs')) then
-    SetVmPath('/'+ZfsZpool+'/'+configuration.getOption('general','vm_path'))
-  else
-    SetVmPath('/usr/local/'+configuration.getOption('general','vm_path'));}
+  {  if (UseZfs = 'yes') and (CheckKernelModule('zfs')) then
+      SetVmPath('/'+ZfsZpool+'/'+configuration.getOption('general','vm_path'))
+    else
+      SetVmPath('/usr/local/'+configuration.getOption('general','vm_path'));}
 
-  Configuration.Free;
+    Configuration.Free;
 
-  LoadKernelModule('vmm');
-  LoadKernelModule('nmdm');
+    LoadKernelModule('vmm');
+    LoadKernelModule('nmdm');
 
-  SetOsreldate(Trim(CheckSysctl('kern.osreldate')));
+    SetOsreldate(Trim(CheckSysctl('kern.osreldate')));
 
-  {$IFDEF DEBUG}
-    if FileExists('heap.trc') then
-      DeleteFile('heap.trc');
-    SetHeapTraceOutput('heap.trc');
-  {$ENDIF DEBUG}
+    {$IFDEF DEBUG}
+      if FileExists('heap.trc') then
+        DeleteFile('heap.trc');
+      SetHeapTraceOutput('heap.trc');
+    {$ENDIF DEBUG}
 
-  RequireDerivedFormResource:=True;
-  Application.Scaled:=True;
-  Application.Initialize;
-  Application.CreateForm(TFormBhyveManager, FormBhyveManager);
-  Application.Run;
+    RequireDerivedFormResource:=True;
+    Application.Scaled:=True;
+    Application.Initialize;
+    Application.CreateForm(TFormBhyveManager, FormBhyveManager);
+    Application.Run;
+  end;
 end.
 

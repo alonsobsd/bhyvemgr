@@ -459,8 +459,7 @@ begin
     else
       CreateDirectory(VmPath, GetCurrentUserName());
 
-    StatusBarBhyveSettings.Font.Color:=clTeal;
-    StatusBarBhyveSettings.SimpleText:='Settings were saved';
+    MessageDlg('Settings information', 'Settings were saved successfully', mtInformation, [mbOK], 0);
 
     SetNewConfig(False);
   end;

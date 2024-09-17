@@ -861,7 +861,7 @@ var
   CloseMessage : String;
   Node : TTreeNode;
 begin
-  CloseMessage := 'You have running some VMs. You must stop them before of close bhyvemgr.'+sLineBreak+sLineBreak+'Do you really want to close?';
+  CloseMessage := 'bhyvemgr detects VMs running. You must stop them before of close this app.'+sLineBreak+sLineBreak+'Do you really want to close?';
 
   flag:=False;
 
@@ -1782,9 +1782,23 @@ begin
 
    { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
    if GetOsreldate.ToInt64 >= 1500023 then
-     TmpDevicesStringList.Values['bootrom']:=BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text
+   begin
+     {$ifdef CPUAMD64}
+     TmpDevicesStringList.Values['bootrom']:=BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     {$endif CPUAMD64}
+     {$ifdef CPUAARCH64}
+     TmpDevicesStringList.Values['bootrom']:=BootRomUbootPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     {$endif CPUAARCH64}
+   end
    else
+   begin
+     {$ifdef CPUAMD64}
      TmpDevicesStringList.Values['lpc.bootrom']:=BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     {$endif CPUAMD64}
+     {$ifdef CPUAARCH64}
+     TmpDevicesStringList.Values['lpc.bootrom']:=BootRomUbootPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     {$endif CPUAARCH64}
+   end;
 
    TmpDevicesStringList.Values['lpc.fwcfg']:='bhyve';
 
@@ -2556,10 +2570,12 @@ begin
     VirtualMachinesTreeView.Items.Clear;
     FillVirtualMachineList();
 
+    FormVmCreate.Hide;
+
+    MessageDlg('Create virtual machine information', 'A new '+FormVmCreate.EditVmName.Text+' VM was created', mtInformation, [mbOK], 0);
+
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText:='A new '+FormVmCreate.EditVmName.Text+' VM was created';
-
-    FormVmCreate.Hide;
   end
   else
   begin
@@ -2652,9 +2668,19 @@ begin
       FillVirtualMachineList();
 
       MessageDlg('Remove VM', VmName+ ' VM data has been removed', mtInformation, [mbOK], 0);
+
+      StatusBarBhyveManager.Font.Color:=clTeal;
+      StatusBarBhyveManager.SimpleText:=VmName+ ' VM data has been removed';
     end
     else
+    begin
       MessageDlg('Remove VM', VmName+ ' VM data was not removed', mtInformation, [mbOK], 0);
+
+      StatusBarBhyveManager.Font.Color:=clRed;
+      StatusBarBhyveManager.SimpleText:=VmName+ ' VM data was not removed';
+    end;
+
+
   end;
 end;
 
@@ -2819,7 +2845,9 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[1].Enabled:=True;
         VirtualMachinesPopup.PopupMenu.Items.Items[2].Enabled:=True;
 
-        if (ExtractVarValue(VirtualMachinesTreeView.Selected.Text) = 'Running') and (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).rdp = True) then
+        if (ExtractVarValue(VirtualMachinesTreeView.Selected.Text) = 'Running') and
+           (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).rdp = True) and
+           FileExists(XfreerdpCmd) then
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=True
         else
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
