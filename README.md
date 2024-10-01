@@ -13,6 +13,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - bridge/tap support
 - bhyve_config configuration variables support
 - basic sudo/doas support
+- uefi/uboot support only
 - ipv4 support
 - aarch64 and amd64 support
 - and more
