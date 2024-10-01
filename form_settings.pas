@@ -116,6 +116,7 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     procedure BitBtnSaveSettingsClick(Sender: TObject);
+    procedure CheckBoxUseDnsmasqChange(Sender: TObject);
     procedure CheckBoxUseZfsChange(Sender: TObject);
     procedure ComboBoxZpoolChange(Sender: TObject);
     procedure EditSubnetExit(Sender: TObject);
@@ -222,7 +223,7 @@ begin
   end
   else if not FileExists(FileNameEditXfreerdp.Text) or not (ExtractFileName(FileNameEditXfreerdp.Text) = 'xfreerdp3') then
   begin
-    StatusBarBhyveSettings.SimpleText:='freerdp support will not available. net/freerdp3 is not installed.';
+    StatusBarBhyveSettings.SimpleText:='freerdp support will not be available. net/freerdp3 is not installed.';
   end
   else if not FileExists(FileNameEditChown.Text) or not (ExtractFileName(FileNameEditChown.Text) = 'chown') then
   begin
@@ -466,6 +467,14 @@ begin
   ConfigFile.Free;
 end;
 
+procedure TFormSettings.CheckBoxUseDnsmasqChange(Sender: TObject);
+begin
+  if CheckBoxUseDnsmasq.Checked then
+    EditSubnet.Enabled:=True
+  else
+    EditSubnet.Enabled:=False;
+end;
+
 procedure TFormSettings.FillComboZpool();
 begin
   ComboBoxZpool.Clear;
@@ -480,9 +489,15 @@ begin
     CheckBoxUseZfs.Checked:=False;
 
   if UseDnsmasq = 'yes' then
-    CheckBoxUseDnsmasq.Checked:=True
+  begin
+    CheckBoxUseDnsmasq.Checked:=True;
+    EditSubnet.Enabled:=True;
+  end
   else
+  begin
     CheckBoxUseDnsmasq.Checked:=False;
+    EditSubnet.Enabled:=False;
+  end;
 
   if UseSudo = 'yes' then
     CheckBoxUseSudo.Checked:=True

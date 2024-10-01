@@ -82,9 +82,10 @@ begin
     SpinEditExValue.Visible:=True;
     SpinEditExValue.Name:='SpinEditExValue';
     SpinEditExValue.MinValue:=MinValue;
+    SpinEditExValue.NullValue:=MinValue;
+    SpinEditExValue.DirectInput:=True;
     SpinEditExValue.MaxValue:=(MaxValue div (1024**2));
     SpinEditExValue.Increment:=Increment;
-    SpinEditExValue.DirectInput:=False;
     SpinEditExValue.Parent:=Self;
     SpinEditExValue.Show;
   end

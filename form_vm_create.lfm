@@ -203,7 +203,6 @@ object FormVmCreate: TFormVmCreate
       Height = 32
       Top = 8
       Width = 103
-      DirectInput = False
       MaxLength = 0
       NumbersOnly = True
       TabOrder = 0
@@ -286,13 +285,12 @@ object FormVmCreate: TFormVmCreate
       Height = 32
       Top = 24
       Width = 103
-      DirectInput = False
       MaxLength = 0
       TabOrder = 2
       Increment = 10
       MaxValue = 1024
-      MinValue = 10
-      NullValue = 10
+      MinValue = 1
+      NullValue = 1
       Value = 20
     end
   end

@@ -1,7 +1,7 @@
 object FormSettings: TFormSettings
-  Left = 461
+  Left = 511
   Height = 671
-  Top = 143
+  Top = 147
   Width = 799
   BorderStyle = bsSingle
   Caption = 'FormSettings'
@@ -137,6 +137,7 @@ object FormSettings: TFormSettings
         Width = 249
         Caption = 'Use dnsmasq for DHCP/DNS support'
         TabOrder = 1
+        OnChange = CheckBoxUseDnsmasqChange
       end
       object CheckBoxUseZfs: TCheckBox
         Left = 240
