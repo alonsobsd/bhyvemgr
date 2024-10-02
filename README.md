@@ -94,7 +94,7 @@ It is necessary add **10.0.0.1** ip address to **/etc/resolv.conf** file for res
 # ee /etc/resolv.conf
 ```
 ```sh
-domain 10.0.0.1
+nameserver 10.0.0.1
 ```
 ### sudo / doas configuration
 
