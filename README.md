@@ -31,6 +31,8 @@ bhyve, bhyvectl, bhyveload, chown, chmod, ifconfig, install, kill, kldload, klds
 bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), remote-viewer (net-mgmt/virt-viewer), sudo (security/sudo) and xfreerdp3 (net/freerdp3)
 
 # Network configuration
+bhyvemgr can use two kind of network settings: *Quick network configuration* or *Best network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines.
+
 ## Quick network configuration
 If you want use bhyve without much network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network environment if you want virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
 
