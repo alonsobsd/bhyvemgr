@@ -78,6 +78,7 @@ type
     StatusBarVmCreate: TStatusBar;
     procedure CheckBoxFramebufferChange(Sender: TObject);
     procedure CheckBoxOnlyLocalhostChange(Sender: TObject);
+    procedure CheckBoxUseMediaChange(Sender: TObject);
     procedure CheckBoxWaitVNCChange(Sender: TObject);
     procedure ComboBoxSystemTypeChange(Sender: TObject);
     procedure EditVmNameEditingDone(Sender: TObject);
@@ -196,6 +197,14 @@ begin
   begin
     CheckBoxFramebuffer.Checked:=True;
   end;
+end;
+
+procedure TFormVmCreate.CheckBoxUseMediaChange(Sender: TObject);
+begin
+  if CheckBoxUseMedia.Checked then
+    FileNameEditBootMedia.Enabled:=True
+  else
+    FileNameEditBootMedia.Enabled:=False;
 end;
 
 procedure TFormVmCreate.CheckBoxFramebufferChange(Sender: TObject);

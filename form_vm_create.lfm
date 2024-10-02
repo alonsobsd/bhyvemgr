@@ -30,6 +30,7 @@ object FormVmCreate: TFormVmCreate
     ButtonWidth = 23
     DirectInput = False
     NumGlyphs = 1
+    Enabled = False
     MaxLength = 0
     TabOrder = 4
   end
@@ -40,6 +41,7 @@ object FormVmCreate: TFormVmCreate
     Width = 227
     Caption = 'Use booting or installation media'
     TabOrder = 3
+    OnChange = CheckBoxUseMediaChange
   end
   object GroupBox1: TGroupBox
     Left = 16
