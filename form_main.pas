@@ -1346,6 +1346,7 @@ begin
     FormVmInfo.ComboBoxVmType.Clear;
     FillComboSystemType(FormVmInfo.ComboBoxVmType);
     FormVmInfo.ComboBoxVmType.ItemIndex:=FormVmInfo.ComboBoxVmType.Items.IndexOf(VirtualMachine.system_type);
+    FormVmInfo.ComboBoxVmVersion.Clear;
     FillComboSystemVersion(FormVmInfo.ComboBoxVmVersion, FormVmInfo.ComboBoxVmType.Text);
     FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachine.system_version);
     FormVmInfo.EditVmName.Text:=VirtualMachine.name;
