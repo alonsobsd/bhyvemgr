@@ -44,6 +44,7 @@ type
 
   TFormSettings = class(TForm)
     BitBtnSaveSettings: TBitBtn;
+    BitBtnCloseSettings: TBitBtn;
     CheckBoxUseDnsmasq: TCheckBox;
     CheckBoxUseSudo: TCheckBox;
     CheckBoxUseZfs: TCheckBox;
@@ -115,6 +116,7 @@ type
     StatusBarBhyveSettings: TStatusBar;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    procedure BitBtnCloseSettingsClick(Sender: TObject);
     procedure BitBtnSaveSettingsClick(Sender: TObject);
     procedure CheckBoxUseDnsmasqChange(Sender: TObject);
     procedure CheckBoxUseZfsChange(Sender: TObject);
@@ -465,6 +467,11 @@ begin
     SetNewConfig(False);
   end;
   ConfigFile.Free;
+end;
+
+procedure TFormSettings.BitBtnCloseSettingsClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFormSettings.CheckBoxUseDnsmasqChange(Sender: TObject);

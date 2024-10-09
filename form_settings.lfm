@@ -721,7 +721,7 @@ object FormSettings: TFormSettings
     end
   end
   object BitBtnSaveSettings: TBitBtn
-    Left = 224
+    Left = 56
     Height = 35
     Top = 600
     Width = 344
@@ -774,5 +774,17 @@ object FormSettings: TFormSettings
     Top = 648
     Width = 799
     Panels = <>
+  end
+  object BitBtnCloseSettings: TBitBtn
+    Left = 400
+    Height = 35
+    Top = 600
+    Width = 344
+    Caption = 'Close settings'
+    Kind = bkClose
+    ModalResult = 2
+    ImageWidth = 16
+    OnClick = BitBtnCloseSettingsClick
+    TabOrder = 2
   end
 end
