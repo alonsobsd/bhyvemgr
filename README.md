@@ -21,6 +21,8 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 # TODO
 - Allow change VM (zfs/ufs) directory to custom ones
 - Add missing global setting entries (bios,  board, chassis, system)
+- Add TPM/swtpm support
+- Add uart device support
 - Review aarch64 support
 - log message
 
