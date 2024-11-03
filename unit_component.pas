@@ -367,6 +367,9 @@ begin
   { Index 21 }
   Image.Picture.LoadFromFile(DatadirPath+'images/systems/popos.png');
   SystemList.Add(Image.Picture.Bitmap, nil);
+  { Index 22 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/systems/linuxmint.png');
+  SystemList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;
 end;
@@ -447,7 +450,7 @@ procedure FillComboTpmType(Combo: TComboBox);
 begin
   Combo.items.Add(EmptyStr);
   Combo.Items.Add('passthru');
-  if GetOsreldate.ToInt64 > 1500023 then
+  if GetOsreldate.ToInt64 > 1500026 then
     Combo.Items.Add('swtpm');
 end;
 
@@ -507,6 +510,7 @@ begin
       combo.AddItem('EndeavourOS 2024.x', TObject(17));
       combo.AddItem('Fedora 40.x', TObject(4));
       combo.AddItem('Kali Linux 2024.x', TObject(18));
+      combo.AddItem('Linux Mint 22.x', TObject(22));
       combo.AddItem('Manjaro 24.x', TObject(19));
       combo.AddItem('Parrot 6.x', TObject(20));
       combo.AddItem('Pop! OS 22.x', TObject(21));

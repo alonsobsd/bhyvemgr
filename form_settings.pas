@@ -55,11 +55,13 @@ type
     EditZfsCreateOptions: TEdit;
     EditRdpArgs: TEdit;
     FileNameEditBhyve: TFileNameEdit;
+    FileNameEditDoas: TFileNameEdit;
     FileNameEditKldstat: TFileNameEdit;
     FileNameEditPgrep: TFileNameEdit;
     FileNameEditPciconf: TFileNameEdit;
     FileNameEditRm: TFileNameEdit;
     FileNameEditService: TFileNameEdit;
+    FileNameEditSudo: TFileNameEdit;
     FileNameEditSysctl: TFileNameEdit;
     FileNameEditTruncate: TFileNameEdit;
     FileNameEditZfs: TFileNameEdit;
@@ -67,8 +69,8 @@ type
     FileNameEditVncviewer: TFileNameEdit;
     FileNameEditBhyvectl: TFileNameEdit;
     FileNameEditXfreerdp: TFileNameEdit;
-    FileNameEditSudo: TFileNameEdit;
-    FileNameEditDoas: TFileNameEdit;
+    FileNameEditSwtpm: TFileNameEdit;
+    FileNameEditSwtpmIoctl: TFileNameEdit;
     FileNameEditBhyveload: TFileNameEdit;
     FileNameEditChown: TFileNameEdit;
     FileNameEditChmod: TFileNameEdit;
@@ -78,8 +80,9 @@ type
     FileNameEditKldload: TFileNameEdit;
     GroupBoxBhyvePaths: TGroupBox;
     GroupBoxRemoteToolPaths: TGroupBox;
-    GroupBoxUserToolPaths: TGroupBox;
+    GroupBoxSwtpmToolPaths: TGroupBox;
     GroupBoxExtraToolPaths: TGroupBox;
+    GroupBoxUserToolPaths: TGroupBox;
     GroupBoxZfsSettings: TGroupBox;
     GroupBoxNetworkSettings: TGroupBox;
     GroupBoxRemoteToolSettings: TGroupBox;
@@ -87,6 +90,8 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label30: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
     LabelNetmask: TLabel;
     Label14: TLabel;
     Label15: TLabel;
@@ -194,6 +199,20 @@ begin
     if not FileExists(FileNameEditDoas.Text) or not (ExtractFileName(FileNameEditDoas.Text) = 'doas') then
     begin
       StatusBarBhyveSettings.SimpleText:='doas was not found. Please install security/doas for fix it';
+      Result:=False;
+    end;
+  end;
+
+  if GetOsreldate.ToInt64 >= 1500026 then
+  begin
+    if not FileExists(FileNameEditSwtpm.Text) or not (ExtractFileName(FileNameEditSwtpm.Text) = 'swtpm') then
+    begin
+      StatusBarBhyveSettings.SimpleText:='swtpm binary was not found';
+      Result:=False;
+    end
+    else if not FileExists(FileNameEditSwtpmIoctl.Text) or not (ExtractFileName(FileNameEditSwtpmIoctl.Text) = 'swtpm_ioctl') then
+    begin
+      StatusBarBhyveSettings.SimpleText:='swtpm_iocl binary was not found';
       Result:=False;
     end;
   end;
@@ -418,6 +437,8 @@ begin
     ConfigFile.SetOption('extra-tools','pgrep_cmd', FileNameEditPgrep.Text);
     ConfigFile.SetOption('extra-tools','rm_cmd', FileNameEditRm.Text);
     ConfigFile.SetOption('extra-tools','service_cmd', FileNameEditService.Text);
+    ConfigFile.SetOption('extra-tools','swtpm_cmd', FileNameEditSwtpm.Text);
+    ConfigFile.SetOption('extra-tools','swtpm_ioctl_cmd', FileNameEditSwtpmIoctl.Text);
     ConfigFile.SetOption('extra-tools','sysctl_cmd', FileNameEditSysctl.Text);
     ConfigFile.SetOption('extra-tools','truncate_cmd', FileNameEditTruncate.Text);
     ConfigFile.SetOption('extra-tools','zfs_cmd', FileNameEditZfs.Text);
@@ -427,8 +448,8 @@ begin
     ConfigFile.SetOption('remote-tools','xfreerdp_cmd', FileNameEditXfreerdp.Text);
     ConfigFile.SetOption('remote-tools','xfreerdp_args', EditRdpArgs.Text);
 
-    ConfigFile.SetOption('user-tools','doas_cmd', FileNameEditDoas.Text);
-    ConfigFile.SetOption('user-tools','sudo_cmd', FileNameEditSudo.Text);
+    ConfigFile.SetOption('user-tools','doas_cmd', FileNameEditSwtpmIoctl.Text);
+    ConfigFile.SetOption('user-tools','sudo_cmd', FileNameEditSwtpm.Text);
 
     SetVmPath(EditVmPathSetting.Text);
     SetVncviewerCmd(FileNameEditVncviewer.Text);
@@ -439,8 +460,8 @@ begin
     SetBhyvectlCmd(FileNameEditBhyvectl.Text);
     SetBhyveloadCmd(FileNameEditBhyveload.Text);
 
-    SetSudoCmd(FileNameEditSudo.Text);
-    SetDoasCmd(FileNameEditDoas.Text);
+    SetSudoCmd(FileNameEditSwtpm.Text);
+    SetDoasCmd(FileNameEditSwtpmIoctl.Text);
     SetChownCmd(FileNameEditChown.Text);
     SetChmodCmd(FileNameEditChmod.Text);
     SetIfconfigCmd(FileNameEditIfconfig.Text);
@@ -452,6 +473,8 @@ begin
     SetPgrepCmd(FileNameEditPgrep.Text);
     SetRmCmd(FileNameEditRm.Text);
     SetServiceCmd(FileNameEditService.Text);
+    SetSwtpmCmd(FileNameEditSwtpm.Text);
+    SetSwtpmIoctlCmd(FileNameEditSwtpmIoctl.Text);
     SetSysctlCmd(FileNameEditSysctl.Text);
     SetTruncateCmd(FileNameEditTruncate.Text);
     SetZfsCmd(FileNameEditZfs.Text);
@@ -527,8 +550,8 @@ begin
   FileNameEditXfreerdp.Text:=XfreerdpCmd;
   EditRdpArgs.Text:=XfreerdpArgs;
 
-  FileNameEditDoas.Text:=DoasCmd;
-  FileNameEditSudo.Text:=SudoCmd;
+  FileNameEditSwtpmIoctl.Text:=DoasCmd;
+  FileNameEditSwtpm.Text:=SudoCmd;
 
   FileNameEditChown.Text:=ChownCmd;
   FileNameEditChmod.Text:=ChmodCmd;
@@ -541,6 +564,8 @@ begin
   FileNameEditPgrep.Text:=PgrepCmd;
   FileNameEditRm.Text:=RmCmd;
   FileNameEditService.Text:=ServiceCmd;
+  FileNameEditSwtpm.Text:=SwtpmCmd;
+  FileNameEditSwtpmIoctl.Text:=SwtpmIoctlCmd;
   FileNameEditSysctl.Text:=SysctlCmd;
   FileNameEditTruncate.Text:=TruncateCmd;
   FileNameEditZfs.Text:=ZfsCmd;
