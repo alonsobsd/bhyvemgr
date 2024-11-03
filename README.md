@@ -30,7 +30,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 ## From base system
 bhyve, bhyvectl, bhyveload, chown, chmod, ifconfig, install, kill, kldload, kldstat, pciconf, pgrep, rm, service, sysctl, truncate, zfs and zpool
 ## From ports/packages
-bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), remote-viewer (net-mgmt/virt-viewer), sudo (security/sudo) and xfreerdp3 (net/freerdp3)
+bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), remote-viewer (net-mgmt/virt-viewer), swtpm (sysutils/swtpm), sudo (security/sudo) and xfreerdp3 (net/freerdp3)
 
 # Network configuration
 bhyvemgr can use two kind of network settings: *Quick network configuration* or *Best network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines.
