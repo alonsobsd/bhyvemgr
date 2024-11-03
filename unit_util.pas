@@ -47,6 +47,7 @@ function CheckKernelModule(Module: String):Boolean;
 function CheckSysctl(Name: String):String;
 function CheckVmName(Name: String):Boolean;
 function CheckVmRunning(Name: String):Integer;
+function CheckTpmSocketRunning(Name: String):Integer;
 function CheckZfsDataset(Dataset: String): Boolean;
 function CheckZfsSupport():Boolean;
 function ChmodDir(Path: String):Boolean;
@@ -54,6 +55,7 @@ function ChownDir(Path: String):Boolean;
 function CreateDirectory(DirectoryName: String; UserName : String; DirMode : String = '700'):Boolean;
 function CreateFile(FileName: String; UserName : String; FileMode : String = '600'):Boolean;
 function CreateNetworkDevice(DeviceName: String; VmName : String; Mtu : String = '1500'):Boolean;
+function CreateTpmSocket(Path: String):Boolean;
 function DestroyNetworkInterface(IfName: String):Boolean;
 function DestroyVirtualMachine(VmName: String):Boolean;
 function ExtractCidr(Network: String): String;
@@ -867,6 +869,18 @@ begin
   end;
 end;
 
+function CheckTpmSocketRunning(Name: String): Integer;
+var
+  PidNumber : Integer;
+begin
+  Result:=-1;
+
+  PidNumber:=GetPidValue(VmPath+'/'+Name+'/tpm/swtpm.sock');
+
+  if PidNumber > 0 then
+    Result:=PidNumber
+end;
+
 function CheckZfsDataset(Dataset: String): Boolean;
 var
   zfs_cmd : String;
@@ -1039,6 +1053,34 @@ begin
     else
     begin
       Write(output);
+    end;
+  end;
+end;
+
+function CreateTpmSocket(Path: String): Boolean;
+var
+  swtpm_cmd : String;
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:=False;
+
+  swtpm_cmd:=SwtpmCmd;
+
+  parameters:=['socket', '--tpmstate', 'backend-uri=file:///'+Path+'swtpm.state', '--tpm2'];
+  parameters:=parameters+['--server', 'type=unixio,path='+Path+'swtpm.sock', '--log'];
+  parameters:=parameters+['file='+Path+'swtpm.log', '--flags', 'not-need-init', '--daemon'];
+
+  if FileExists(swtpm_cmd) and DirectoryExists(Path) then
+  begin
+    status:=RunCommand(swtpm_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=status
+    else
+    begin
+      WriteLn(output);
     end;
   end;
 end;

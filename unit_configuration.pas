@@ -152,6 +152,8 @@ begin
     ConfigFile.WriteString('extra-tools','pgrep_cmd', '/usr/bin/pgrep');
     ConfigFile.WriteString('extra-tools','rm_cmd', '/bin/rm');
     ConfigFile.WriteString('extra-tools','service_cmd', '/usr/sbin/service');
+    ConfigFile.WriteString('extra-tools','swtpm_cmd', '/usr/local/bin/swtpm');
+    ConfigFile.WriteString('extra-tools','swtpm_ioctl_cmd', '/usr/local/bin/swtpm_ioctl');
     ConfigFile.WriteString('extra-tools','sysctl_cmd', '/sbin/sysctl');
     ConfigFile.WriteString('extra-tools','truncate_cmd', '/usr/bin/truncate');
     ConfigFile.WriteString('extra-tools','zfs_cmd', '/sbin/zfs');

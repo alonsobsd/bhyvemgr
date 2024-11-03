@@ -90,6 +90,8 @@ begin
     SetPgrepCmd(configuration.getOption('extra-tools','pgrep_cmd'));
     SetRmCmd(configuration.getOption('extra-tools','rm_cmd'));
     SetServiceCmd(configuration.getOption('extra-tools','service_cmd'));
+    SetSwtpmCmd(configuration.getOption('extra-tools','swtpm_cmd'));
+    SetSwtpmIoctlCmd(configuration.getOption('extra-tools','swtpm_ioctl_cmd'));
     SetSysctlCmd(configuration.getOption('extra-tools','sysctl_cmd'));
     SetTruncateCmd(configuration.getOption('extra-tools','truncate_cmd'));
     SetZfsCmd(configuration.getOption('extra-tools','zfs_cmd'));

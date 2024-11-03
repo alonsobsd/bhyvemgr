@@ -73,6 +73,7 @@ type
     procedure DeviceSettingsTreeViewDeletion(Sender: TObject; Node: TTreeNode);
     procedure FormActivate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormShow(Sender: TObject);
     procedure MenuItemAboutClick(Sender: TObject);
     procedure MenuItemExitClick(Sender: TObject);
     procedure MenuItemSettingsClick(Sender: TObject);
@@ -193,6 +194,11 @@ uses
 
 procedure TFormBhyveManager.FormCreate(Sender: TObject);
 begin
+  { Temporary workaround when LCLGTK2 is used with latest version of Lazarus }
+  {$ifdef LCLGTK2}
+  FormBhyveManager.BorderStyle:=bsSizeable;
+  {$endif}
+
   FormSettings:= TFormSettings.Create(FormBhyveManager);
   FormAbout:= TFormAbout.Create(FormBhyveManager);
   FormChangeValue:= TFormChangeValue.Create(FormBhyveManager);
@@ -599,6 +605,7 @@ procedure TFormBhyveManager.VirtualMachineShowStatus(Status: Integer;
 var
   i : Integer;
 begin
+  { Rebooting }
   if Status = 0 then
   begin
     StatusBarBhyveManager.Font.Color:=clTeal;
@@ -608,6 +615,7 @@ begin
     MyVmThread.OnExitStatus := @VirtualMachineShowStatus;
     MyVmThread.Start;
   end
+  { Power off }
   else if Status = 1 then
   begin
     for i:=NetworkDeviceList.Count-1 downto 0 do
@@ -631,14 +639,22 @@ begin
     DestroyVirtualMachine(VmName);
     RemoveDirectory(VmName+'/vtcon', True);
 
+    if GetOsreldate.ToInt64 >= 1500026 then
+    begin
+      if CheckTpmSocketRunning(VmName) > 0 then
+        KillPid(CheckTpmSocketRunning(VmName));
+    end;
+
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText := Message;
   end
+  { Halted }
   else if Status = 2 then
   begin
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText := Message;
   end
+  { Other exit status }
   else if Status > 2 then
   begin
     SpeedButtonVncVm.Enabled:=False;
@@ -661,6 +677,12 @@ begin
       end;
       DestroyVirtualMachine(VmName);
       RemoveDirectory(VmName+'/vtcon', True);
+
+      if GetOsreldate.ToInt64 >= 1500026 then
+      begin
+        if CheckTpmSocketRunning(VmName) > 0 then
+          KillPid(CheckTpmSocketRunning(VmName));
+      end;
     end;
 
     StatusBarBhyveManager.SimpleText := EmptyStr;
@@ -680,6 +702,31 @@ begin
     GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUefiPath+'/'+FormChangeValue.ComboBoxValue.Text
   else if (FormChangeValue.SettingType = 'memory.size') then
     GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.SpinEditExValue.Text+'M'
+  else if (FormChangeValue.SettingType = 'tpm.type') then
+  begin
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.ComboBoxValue.Text;
+
+    case ExtractVarValue(GlobalSettingsTreeView.Selected.Text) of
+        'passthru':
+         begin
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : ';
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : 2.0';
+         end;
+        'swtpm':
+         begin
+           if GetOsreldate.ToInt64 >= 1500026 then
+           begin
+             GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock';
+             GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : 2.0';
+           end;
+         end;
+         else
+         begin
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : ';
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : ';
+         end;
+    end;
+  end
   else
     GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.ComboBoxValue.Text;
 
@@ -779,8 +826,27 @@ begin
       FormChangeValue.ShowComboBox();
       FormChangeValue.ComboBoxValue.Clear;
       FormChangeValue.SettingType:=SettingName;
-      FillComboTpmDevice(FormChangeValue.ComboBoxValue);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+
+      case ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) of
+          'passthru':
+          begin
+            FillComboTpmDevice(FormChangeValue.ComboBoxValue);
+            FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          end;
+          'swtpm':
+          begin
+            if GetOsreldate.ToInt64 >= 1500026 then
+            begin
+              FormChangeValue.ComboBoxValue.Clear;
+              FormChangeValue.ComboBoxValue.Items.Add(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock');
+            end;
+          end;
+          else
+          begin
+            FormChangeValue.ComboBoxValue.Clear;
+          end;
+      end;
+
       FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
       FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
       FormChangeValue.Visible:=True;
@@ -888,6 +954,15 @@ begin
     if MessageDlg(CloseMessage, mtConfirmation, [mbOk, mbCancel], 0) = mrCancel then
       CanClose := false;
   end;
+end;
+
+procedure TFormBhyveManager.FormShow(Sender: TObject);
+begin
+ { Temporary workaround when LCLGTK2 is used with latest version of Lazarus }
+  {$ifdef LCLGTK2}
+  FormBhyveManager.BorderStyle:=bsSingle;
+  FormBhyveManager.Height:=619;
+  {$endif}
 end;
 
 procedure TFormBhyveManager.MenuItemAboutClick(Sender: TObject);
@@ -2699,6 +2774,18 @@ begin
   if DeviceSettingsTreeView.Items.TopLvlItems[1].Count > 0 then
   begin
     CreateDirectory(VmPath+'/'+VirtualMachine.name+'/vtcon', GetCurrentUserName());
+  end;
+
+  { Remove this condition when bhyve will be updated on FreeBSD 13.x and 14.x }
+  if GetOsreldate.ToInt64 >= 1500026 then
+  begin
+    if (CheckTpmSocketRunning(VirtualMachine.name) = -1) and (ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) = 'swtpm') then
+    begin
+      if not (DirectoryExists(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)))) then
+        CreateDirectory(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)), GetCurrentUserName(), '750');
+
+      CreateTpmSocket(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)));
+    end;
   end;
 
   MyVmThread := VmThread.Create(VirtualMachine.name);

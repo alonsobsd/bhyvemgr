@@ -12,8 +12,9 @@ object FormBhyveManager: TFormBhyveManager
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object VirtualMachinesGroupBox: TGroupBox
     Left = 16
     Height = 424
@@ -46,8 +47,8 @@ object FormBhyveManager: TFormBhyveManager
     Height = 424
     Top = 64
     Width = 392
-    ActivePage = DeviceSettingsTabSheet
-    TabIndex = 1
+    ActivePage = GlobalSettingsTabSheet
+    TabIndex = 0
     TabOrder = 1
     object GlobalSettingsTabSheet: TTabSheet
       Caption = 'Global settings'

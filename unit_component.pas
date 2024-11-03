@@ -447,6 +447,8 @@ procedure FillComboTpmType(Combo: TComboBox);
 begin
   Combo.items.Add(EmptyStr);
   Combo.Items.Add('passthru');
+  if GetOsreldate.ToInt64 > 1500023 then
+    Combo.Items.Add('swtpm');
 end;
 
 procedure FillComboTpmVersion(Combo: TComboBox);

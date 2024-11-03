@@ -99,6 +99,10 @@ function GetServiceCmd:string;
 procedure SetServiceCmd(const Value:string);
 function GetSysctlCmd:string;
 procedure SetSysctlCmd(const Value:string);
+function GetSwtpmCmd:string;
+procedure SetSwtpmCmd(const Value:string);
+function GetSwtpmIoctlCmd:string;
+procedure SetSwtpmIoctlCmd(const Value:string);
 function GetTruncateCmd:string;
 procedure SetTruncateCmd(const Value:string);
 function GetZfsCmd:string;
@@ -145,6 +149,8 @@ property PgrepCmd:string read GetPgrepCmd write SetPgrepCmd;
 property RmCmd:string read GetRmCmd write SetRmCmd;
 property ServiceCmd:string read GetServiceCmd write SetServiceCmd;
 property SysctlCmd:string read GetSysctlCmd write SetSysctlCmd;
+property SwtpmCmd:string read GetSwtpmCmd write SetSwtpmCmd;
+property SwtpmIoctlCmd:string read GetSwtpmIoctlCmd write SetSwtpmIoctlCmd;
 property TruncateCmd:string read GetTruncateCmd write SetTruncateCmd;
 property ZfsCmd:string read GetZfsCmd write SetZfsCmd;
 property ZpoolCmd:string read GetZpoolCmd write SetZpoolCmd;
@@ -209,6 +215,8 @@ var
   RmCmdVar: String;
   ServiceCmdVar: String;
   SysctlCmdVar: String;
+  SwtpmCmdVar: String;
+  SwtpmIoctlCmdVar: String;
   TruncateCmdVar: String;
   ZfsCmdVar: String;
   ZpoolCmdVar: String;
@@ -499,6 +507,26 @@ end;
 procedure SetSysctlCmd(const Value: string);
 begin
   SysctlCmdVar := Value;
+end;
+
+function GetSwtpmCmd: string;
+begin
+  Result := SwtpmCmdVar;
+end;
+
+procedure SetSwtpmCmd(const Value: string);
+begin
+  SwtpmCmdVar := Value;
+end;
+
+function GetSwtpmIoctlCmd: string;
+begin
+  Result := SwtpmIoctlCmdVar;
+end;
+
+procedure SetSwtpmIoctlCmd(const Value: string);
+begin
+  SwtpmIoctlCmdVar := Value;
 end;
 
 function GetTruncateCmd: string;

@@ -10,14 +10,14 @@ object FormSettings: TFormSettings
   OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object PageControl1: TPageControl
     Left = 16
     Height = 576
     Top = 16
     Width = 768
-    ActivePage = TabSheet1
-    TabIndex = 0
+    ActivePage = TabSheet2
+    TabIndex = 1
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'General settings'
