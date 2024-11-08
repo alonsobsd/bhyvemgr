@@ -2505,7 +2505,6 @@ begin
     NewBhyveConfig.Values['cores']:='1';
     NewBhyveConfig.Values['rtc.use_localtime']:='true';
 
-    NewBhyveConfig.Values['acpi_tables']:='false';
     NewBhyveConfig.Values['x86.vmexit_on_hlt']:='true';
     NewBhyveConfig.Values['x86.strictmsr']:='false';
 
