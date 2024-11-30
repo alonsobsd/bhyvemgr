@@ -2285,8 +2285,8 @@ begin
 
             StorageVirtioBlkDevice:=FillDetailStorageVirtioBlkDevice(TmpDevicesStringList.Text, PciSlot, FormStorageDevice.ComboBoxStorageDevice.Text);
 
-            StorageNvmeDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Text+'G';
-            StorageNvmeDevice.storage_type:=FormStorageDevice.ComboBoxStorageType.Text;
+            StorageVirtioBlkDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Text+'G';
+            StorageVirtioBlkDevice.storage_type:=FormStorageDevice.ComboBoxStorageType.Text;
 
             case StorageVirtioBlkDevice.storage_type of
                 'image file':
