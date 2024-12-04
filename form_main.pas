@@ -608,6 +608,12 @@ begin
   { Rebooting }
   if Status = 0 then
   begin
+    if DirectoryExists(VmPath+'/'+VmName+'/vtcon') then
+    begin
+      RemoveDirectory(VmName+'/vtcon', True);
+      CreateDirectory(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName());
+    end;
+
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText := Message;
 
