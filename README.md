@@ -180,5 +180,10 @@ When bhyvemgr is started for the first time, it will create a initial config fil
 
 ![image](https://github.com/user-attachments/assets/b57fd1af-0a19-49c9-a0a5-547ff6cc7033)
 
+# Demo
+
+https://github.com/user-attachments/assets/4e761b97-926c-4bc6-8941-3897359e07e6
+
 Enjoy creating and testing your virtual machines on FreeBSD
+
 
