@@ -40,7 +40,7 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, UniqueInstanceRaw, lazcontrols, form_main, unit_configuration, unit_device
+  Forms, lazcontrols, form_main, unit_configuration, unit_device
   { you can add units after this }
   ,SysUtils, form_vm_create, form_change_value, unit_global, unit_component,
   unit_util, unit_thread, form_audio_device, form_display_device,

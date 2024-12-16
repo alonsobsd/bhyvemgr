@@ -10,7 +10,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="36"/>
-        <CursorPos X="10" Y="43"/>
+        <CursorPos X="8" Y="43"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit>
@@ -183,12 +183,10 @@
       </Unit>
       <Unit>
         <Filename Value="components/uniqueinstancebase.pas"/>
-        <IsPartOfProject Value="True"/>
         <UsageCount Value="20"/>
       </Unit>
       <Unit>
         <Filename Value="components/uniqueinstanceraw.pas"/>
-        <IsPartOfProject Value="True"/>
         <UsageCount Value="20"/>
       </Unit>
     </Units>
