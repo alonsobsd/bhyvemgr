@@ -1,0 +1,8 @@
+use/*/
+src/backup/
+src/lib/
+*.res
+*.compiled
+*.o
+*.ppu
+
