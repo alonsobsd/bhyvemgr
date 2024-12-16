@@ -110,6 +110,7 @@ type
   function FillComboBooleanType(Combo: TComboBox):Boolean;
   function FillComboKeyboardLayout(Combo: TComboBox):Boolean;
   function FillComboBootrom(Combo: TComboBox):Boolean;
+  function FillComboBootvars(Combo: TComboBox):Boolean;
   procedure FillComboTpmDevice(Combo: TComboBox);
   procedure FillComboTpmType(Combo: TComboBox);
   procedure FillComboTpmVersion(Combo: TComboBox);
@@ -422,6 +423,15 @@ begin
 {$endif CPUAARCH64}
 {$ifdef CPUAMD64}
   Combo.Items.Add('BHYVE_UEFI.fd');
+{$endif CPUAMD64}
+  Result:=True;
+end;
+
+function FillComboBootvars(Combo: TComboBox): Boolean;
+begin
+  Combo.Items.Add(EmptyStr);
+{$ifdef CPUAMD64}
+  Combo.Items.Add('uefi-vars.fd');
 {$endif CPUAMD64}
   Result:=True;
 end;

@@ -704,8 +704,31 @@ begin
   else
     StatusBarBhyveManager.SimpleText:='Value has been changed to '+FormChangeValue.ComboBoxValue.Text;
 
-  if (FormChangeValue.SettingType = 'bootrom') or (FormChangeValue.SettingType = 'bootvars') then
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUefiPath+'/'+FormChangeValue.ComboBoxValue.Text
+  if (FormChangeValue.SettingType = 'bootrom') then
+  begin
+    {$ifdef CPUAMD64}
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUefiPath+'/'+FormChangeValue.ComboBoxValue.Text;
+    {$endif CPUAMD64}
+    {$ifdef CPUAARCH64}
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUbootPath+'/'+FormChangeValue.ComboBoxValue.Text;
+    {$endif CPUAARCH64}
+  end
+  else if (FormChangeValue.SettingType = 'bootvars') then
+  begin
+    {$ifdef CPUAMD64}
+    if not (FormChangeValue.ComboBoxValue.Text = EmptyStr) then
+    begin
+      GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text;
+      if not FileExists(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text) then
+      begin
+        CreateFile(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text, GetCurrentUserName());
+        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text);
+      end;
+    end
+    else
+      GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : ';
+    {$endif CPUAMD64}
+  end
   else if (FormChangeValue.SettingType = 'memory.size') then
     GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.SpinEditExValue.Text+'M'
   else if (FormChangeValue.SettingType = 'tpm.type') then
@@ -805,6 +828,20 @@ begin
       FormChangeValue.ComboBoxValue.Clear;
       FormChangeValue.SettingType:=SettingName;
       FillComboBootrom(FormChangeValue.ComboBoxValue);
+      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
+      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+      FormChangeValue.Visible:=True;
+    end;
+
+    if SettingName = 'bootvars' then
+    begin
+      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+
+      FormChangeValue.ShowComboBox();
+      FormChangeValue.ComboBoxValue.Clear;
+      FormChangeValue.SettingType:=SettingName;
+      FillComboBootvars(FormChangeValue.ComboBoxValue);
       FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
       FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
       FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
