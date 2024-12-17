@@ -25,7 +25,6 @@ function priv_lazbuild
     fi
     declare -r COMPONENTS='use/components.txt'
     if [[ -d "${COMPONENTS%%/*}" ]]; then
-        git submodule update --init --recursive --force --remote
         if [[ -f "${COMPONENTS}" ]]; then
             while read -r; do
                 if [[ -n "${REPLY}" ]] &&
