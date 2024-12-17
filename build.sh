@@ -8,7 +8,7 @@ set -e
 
 # Set lazarus version, lazbuild patch and lazarus installation path
 export lazarusver=3.6.0
-export lazbuild=$(which lazbuild)
+export lazbuild=/usr/local/bin/lazbuild
 export lazarusdir=/usr/local/share/lazarus-$lazarusver
 
 # Set up widgetset: gtk2, qt5, or qt6
