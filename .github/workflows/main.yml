@@ -1,0 +1,29 @@
+name: bhyvemgr test
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: A job to run test in FreeBSD
+    steps:
+    - uses: actions/checkout@v4
+    - name: Test in FreeBSD
+      id: test
+      uses: vmactions/freebsd-vm@v1.1.5
+      with:
+        release: "15.0"
+        usesh: true
+        prepare: |
+          pkg update -f        
+          pkg install -y lazarus-qt6
+
+        run: |        
+          lazbuild --bm=Release --ws=qt6 bhyvemgr.lpi
