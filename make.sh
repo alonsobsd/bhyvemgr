@@ -19,7 +19,7 @@ function priv_lazbuild
                 sudo apt-get install -y lazarus{-ide-qt5,}
                 ;;
             freebsd)
-                sudo apt-get install -y lazarus-qt5
+                sudo pkg install -y lazarus-qt5
                 ;;
         esac
     fi
