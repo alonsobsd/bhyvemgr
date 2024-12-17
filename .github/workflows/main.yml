@@ -26,4 +26,4 @@ jobs:
           pkg install -y lazarus-qt6
 
         run: |        
-          lazbuild --bm=Release --ws=qt6 bhyvemgr.lpi
+          lazbuild --bm=Release --ws=qt6 --lazarusdir=/usr/local/share/lazarus-3.6.0 bhyvemgr.lpi
