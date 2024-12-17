@@ -20,12 +20,12 @@ fi
 
 build_release()
 {
-  cd src && $lazbuild --bm=Release --ws=$lcl --lazarusdir=$lazarusdir bhyvemgr.lpi
+  $lazbuild --bm=Release --ws=$lcl --lazarusdir=$lazarusdir src/bhyvemgr.lpi
 }
 
 build_debug()
 {
-  cd src && $lazbuild --bm=Debug --ws=$lcl --lazarusdir=$lazarusdir bhyvemgr.lpi
+  $lazbuild --bm=Debug --ws=$lcl --lazarusdir=$lazarusdir src/bhyvemgr.lpi
 }
 
 
