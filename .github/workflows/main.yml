@@ -8,22 +8,35 @@ on:
     branches:
       - master
       - main
-
+      
 jobs:
   test:
     runs-on: ubuntu-latest
     name: A job to run test in FreeBSD
     steps:
     - uses: actions/checkout@v4
-    - name: Test in FreeBSD
+    - name: Start FreeBSD VM
       id: test
       uses: vmactions/freebsd-vm@v1.1.5
       with:
         release: "15.0"
         usesh: true
         prepare: |
-          pkg update -f        
+          pkg update -f
           pkg install -y lazarus-qt6
-
-        run: |        
-          lazbuild --bm=Release --ws=qt6 --lazarusdir=/usr/local/share/lazarus-3.6.0 bhyvemgr.lpi
+          
+    - name: Build with lazarus-qt6
+      run: |
+        sh build.sh release qt6
+        
+    - name: Build with lazarus-qt5
+      run: |
+        pkg remove -y lazarus-qt6
+        pkg install -y lazarus-qt5
+        sh build.sh release qt5
+        
+    - name: Build with lazarus-gtk2
+      run: |
+        pkg remove -y lazarus-qt5
+        pkg install -y lazarus-gtk2
+        sh build.sh release gtk2
