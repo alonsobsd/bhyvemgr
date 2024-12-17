@@ -27,6 +27,7 @@ jobs:
 
         run: |
           set -e -x
+          chmod +x build.sh
            ./build.sh release qt6
           pkg remove -y lazarus-qt6
           pkg install -y lazarus-qt5
