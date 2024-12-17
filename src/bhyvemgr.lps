@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectSession>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="Release"/>
     <Units>
       <Unit>
         <Filename Value="bhyvemgr.lpr"/>
@@ -190,6 +190,9 @@
         <UsageCount Value="20"/>
       </Unit>
     </Units>
+    <OtherDefines Count="1">
+      <Define0 Value="DEBUG"/>
+    </OtherDefines>
     <JumpHistory>
       <Position>
         <Filename Value="unit_device.pas"/>
