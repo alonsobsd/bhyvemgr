@@ -32,5 +32,5 @@ jobs:
       uses: vmactions/freebsd-vm@v1
       with:
         usesh: true
-        prepare: pkg install -y bash
+        prepare: pkg install -y bash sudo
         run: bash -x make.sh build
