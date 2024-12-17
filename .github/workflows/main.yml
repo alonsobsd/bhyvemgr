@@ -21,21 +21,25 @@ jobs:
       with:
         release: "15.0"
         usesh: true
+        sync: sshfs        
         prepare: |
           pkg update -f
           pkg install -y lazarus-qt6
           
     - name: Build with lazarus-qt6
+      shell: freebsd {0}
       run: |
         sh build.sh release qt6
         
     - name: Build with lazarus-qt5
+      shell: freebsd {0}    
       run: |
         pkg remove -y lazarus-qt6
         pkg install -y lazarus-qt5
         sh build.sh release qt5
         
     - name: Build with lazarus-gtk2
+      shell: freebsd {0}    
       run: |
         pkg remove -y lazarus-qt5
         pkg install -y lazarus-gtk2
