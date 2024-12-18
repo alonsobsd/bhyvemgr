@@ -421,7 +421,7 @@ constructor TSystemTrayIcon.Create(component: TComponent);
 begin
   TrayIcon:=TTrayIcon.Create(component);
   TrayIcon.Hint:='Bhyve Management GUI';
-  TrayIcon.Icon.LoadFromFile('bhyvemgr.ico');
+  TrayIcon.Icon.LoadFromFile(DatadirPath+'images/additional/bhyvemgr.ico');
 end;
 
 function FillComboIntegerType(Combo: TComboBox; StartNumber: Integer;
