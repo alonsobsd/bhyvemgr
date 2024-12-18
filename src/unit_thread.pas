@@ -113,7 +113,7 @@ begin
         end
         else if ExitStatus = 1 then
         begin
-          ExitMessage:=AppVmName+' VM has been poweroff';
+          ExitMessage:=AppVmName+' VM has been powered off';
           Synchronize(@Showstatus);
         end
         else if ExitStatus = 2 then

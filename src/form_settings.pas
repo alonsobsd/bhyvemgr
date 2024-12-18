@@ -45,6 +45,7 @@ type
   TFormSettings = class(TForm)
     BitBtnSaveSettings: TBitBtn;
     BitBtnCloseSettings: TBitBtn;
+    CheckBoxUseSystray: TCheckBox;
     CheckBoxUseDnsmasq: TCheckBox;
     CheckBoxUseSudo: TCheckBox;
     CheckBoxUseZfs: TCheckBox;
@@ -417,7 +418,19 @@ begin
     else
     begin
       ConfigFile.SetOption('general', 'use_dnsmasq', 'no');
+      ConfigFile.SetOption('network', 'bridge_interface', EditBridgeInterface.Text);
       SetUseDnsmasq('no');
+    end;
+
+    if CheckBoxUseSystray.Checked then
+    begin
+      ConfigFile.SetOption('general', 'use_systray', 'yes');
+      SetUseSystray('yes');
+    end
+    else
+    begin
+      ConfigFile.SetOption('general', 'use_systray', 'no');
+      SetUseSystray('no');
     end;
 
     ConfigFile.SetOption('general','vm_path', EditVmPathSetting.Text);
@@ -448,8 +461,8 @@ begin
     ConfigFile.SetOption('remote-tools','xfreerdp_cmd', FileNameEditXfreerdp.Text);
     ConfigFile.SetOption('remote-tools','xfreerdp_args', EditRdpArgs.Text);
 
-    ConfigFile.SetOption('user-tools','doas_cmd', FileNameEditSwtpmIoctl.Text);
-    ConfigFile.SetOption('user-tools','sudo_cmd', FileNameEditSwtpm.Text);
+    ConfigFile.SetOption('user-tools','doas_cmd', FileNameEditDoas.Text);
+    ConfigFile.SetOption('user-tools','sudo_cmd', FileNameEditSudo.Text);
 
     SetVmPath(EditVmPathSetting.Text);
     SetVncviewerCmd(FileNameEditVncviewer.Text);
@@ -460,8 +473,8 @@ begin
     SetBhyvectlCmd(FileNameEditBhyvectl.Text);
     SetBhyveloadCmd(FileNameEditBhyveload.Text);
 
-    SetSudoCmd(FileNameEditSwtpm.Text);
-    SetDoasCmd(FileNameEditSwtpmIoctl.Text);
+    SetSudoCmd(FileNameEditSudo.Text);
+    SetDoasCmd(FileNameEditDoas.Text);
     SetChownCmd(FileNameEditChown.Text);
     SetChmodCmd(FileNameEditChmod.Text);
     SetIfconfigCmd(FileNameEditIfconfig.Text);
@@ -533,6 +546,11 @@ begin
     CheckBoxUseSudo.Checked:=True
   else
     CheckBoxUseSudo.Checked:=False;
+
+  if UseSystray = 'yes' then
+    CheckBoxUseSystray.Checked:=True
+  else
+    CheckBoxUseSystray.Checked:=False;
 
   EditBridgeInterface.Text:=BridgeInterface;
   EditSubnet.Text:=Subnet;

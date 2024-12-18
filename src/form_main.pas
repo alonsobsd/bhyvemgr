@@ -35,7 +35,7 @@ unit form_main;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, FileUtil, Graphics, Dialogs, StdCtrls, Menus,
+  Classes, SysUtils, Forms, Controls, FileUtil, Graphics, Dialogs, StdCtrls, Menus, ExtCtrls,
   ComCtrls, Buttons, RegExpr, StrUtils, unit_component, unit_device, unit_thread;
 
 type
@@ -70,6 +70,7 @@ type
     DeviceSettingsTreeView: TTreeView;
     GlobalSettingsTreeView: TTreeView;
     VirtualMachinesTreeView: TTreeView;
+    procedure ShowHideClick(Sender: TObject);
     procedure DeviceSettingsTreeViewDeletion(Sender: TObject; Node: TTreeNode);
     procedure FormActivate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -119,6 +120,8 @@ type
     DevicesPopup : TDevicesPopupMenu;
     VirtualMachinesPopup : TVirtualMachinesPopupMenu;
     GlobalSettingsPopup : TGlobalSettingsPopupMenu;
+    TrayIconPopup : TTrayIconPopupMenu;
+    TrayIcon : TSystemTrayIcon;
     DeviceImageList : TDeviceImageList;
     SystemImageList : TSystemImageList;
     ActionImageList : TActionImageList;
@@ -214,6 +217,23 @@ begin
   SystemImageList:=TSystemImageList.Create(FormBhyveManager);
   DeviceImageList:=TDeviceImageList.Create(FormBhyveManager);
   ActionImageList:=TActionImageList.Create(FormBhyveManager);
+
+  // System TrayIconPopup and TrayIcon
+  TrayIconPopup:=TTrayIconPopupMenu.Create(FormBhyveManager);
+  TrayIconPopup.PopupMenu.Images:=ActionImageList.ActionList;
+
+  TrayIconPopup.PopupMenu.Items[0].ImageIndex:=4;
+  TrayIconPopup.PopupMenu.Items[1].ImageIndex:=5;
+
+  TrayIconPopup.PopupMenu.Items[0].OnClick:=@ShowHideClick;
+  TrayIconPopup.PopupMenu.Items[1].OnClick:=@MenuItemExitClick;
+
+  TrayIcon:=TSystemTrayIcon.Create(FormBhyveManager);
+  TrayIcon.TrayIcon.OnClick:=@ShowHideClick;
+  TrayIcon.TrayIcon.PopUpMenu:=TrayIconPopup.PopupMenu;
+
+  if UseSystray = 'yes' then
+    TrayIcon.TrayIcon.Show;
 
   // Virtual Machine Popup Menu
   VirtualMachinesPopup:= TVirtualMachinesPopupMenu.Create(FormBhyveManager);
@@ -617,6 +637,14 @@ begin
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText := Message;
 
+    if UseSystray = 'yes' then
+    begin
+      TrayIcon.TrayIcon.BalloonHint:=Message;
+      TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
+      TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
+      TrayIcon.TrayIcon.ShowBalloonHint;
+    end;
+
     MyVmThread := VmThread.Create(VmName);
     MyVmThread.OnExitStatus := @VirtualMachineShowStatus;
     MyVmThread.Start;
@@ -653,12 +681,28 @@ begin
 
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText := Message;
+
+    if UseSystray = 'yes' then
+    begin
+      TrayIcon.TrayIcon.BalloonHint:=Message;
+      TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
+      TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
+      TrayIcon.TrayIcon.ShowBalloonHint;
+    end;
   end
   { Halted }
   else if Status = 2 then
   begin
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText := Message;
+
+    if UseSystray = 'yes' then
+    begin
+      TrayIcon.TrayIcon.BalloonHint:=Message;
+      TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
+      TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
+      TrayIcon.TrayIcon.ShowBalloonHint;
+    end;
   end
   { Other exit status }
   else if Status > 2 then
@@ -953,6 +997,14 @@ begin
   end;
 end;
 
+procedure TFormBhyveManager.ShowHideClick(Sender: TObject);
+begin
+ if not FormBhyveManager.IsVisible then
+   FormBhyveManager.Show
+ else
+   FormBhyveManager.Hide;
+end;
+
 procedure TFormBhyveManager.FormActivate(Sender: TObject);
 begin
   if NewConfig then
@@ -1036,6 +1088,8 @@ begin
   DevicesPopup.Free;
   GlobalSettingsPopup.Free;
   VirtualMachinesPopup.Free;
+  TrayIconPopup.Free;
+  TrayIcon.Free;
   NetworkDeviceList.Free;
   VirtualMachineList.Free;
 

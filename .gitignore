@@ -11,4 +11,4 @@ src/lib/*
 *.res
 *.compiled
 *.o
-*.ppu
+*.lps

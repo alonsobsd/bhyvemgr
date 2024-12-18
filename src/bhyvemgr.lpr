@@ -57,48 +57,48 @@ begin
   if not InstanceRunning('bhyvemgr') then
   begin
     Configuration:= ConfigurationClass.Create(GetUserDir + '.config/bhyvemgr/config.conf');
+    Configuration.GeneralConfig();
 
-    SetNewConfig(Configuration.GeneralConfig());
+    SetUseDnsmasq(Configuration.GetOption('general','use_dnsmasq'));
+    SetUseSudo(Configuration.GetOption('general','use_sudo'));
+    SetUseZfs(Configuration.GetOption('general','use_zfs'));
+    SetVmPath(Configuration.GetOption('general','vm_path'));
+    SetUseSystray(Configuration.GetOption('general','use_systray'));
 
-    SetUseDnsmasq(configuration.getOption('general','use_dnsmasq'));
-    SetUseSudo(configuration.getOption('general','use_sudo'));
-    SetUseZfs(configuration.getOption('general','use_zfs'));
-    SetVmPath(configuration.getOption('general','vm_path'));
+    SetBhyveCmd(Configuration.GetOption('bhyve-tools','bhyve_cmd'));
+    SetBhyvectlCmd(Configuration.GetOption('bhyve-tools','bhyvectl_cmd'));
+    SetBhyveloadCmd(Configuration.GetOption('bhyve-tools','bhyveload_cmd'));
 
-    SetBhyveCmd(configuration.getOption('bhyve-tools','bhyve_cmd'));
-    SetBhyvectlCmd(configuration.getOption('bhyve-tools','bhyvectl_cmd'));
-    SetBhyveloadCmd(configuration.getOption('bhyve-tools','bhyveload_cmd'));
+    SetBridgeInterface(Configuration.GetOption('network','bridge_interface'));
+    SetSubnet(Configuration.GetOption('network','subnet'));
 
-    SetBridgeInterface(configuration.getOption('network','bridge_interface'));
-    SetSubnet(configuration.getOption('network','subnet'));
+    SetDoasCmd(Configuration.GetOption('user-tools','doas_cmd'));
+    SetSudoCmd(Configuration.GetOption('user-tools','sudo_cmd'));
 
-    SetDoasCmd(configuration.getOption('user-tools','doas_cmd'));
-    SetSudoCmd(configuration.getOption('user-tools','sudo_cmd'));
+    SetVncviewerCmd(Configuration.GetOption('remote-tools','vncviewer_cmd'));
+    SetXfreerdpCmd(Configuration.GetOption('remote-tools','xfreerdp_cmd'));
+    SetXfreerdpArgs(Configuration.GetOption('remote-tools','xfreerdp_args'));
 
-    SetVncviewerCmd(configuration.getOption('remote-tools','vncviewer_cmd'));
-    SetXfreerdpCmd(configuration.getOption('remote-tools','xfreerdp_cmd'));
-    SetXfreerdpArgs(configuration.getOption('remote-tools','xfreerdp_args'));
+    SetChownCmd(Configuration.GetOption('extra-tools','chown_cmd'));
+    SetChmodCmd(Configuration.GetOption('extra-tools','chmod_cmd'));
+    SetIfconfigCmd(Configuration.GetOption('extra-tools','ifconfig_cmd'));
+    SetInstallCmd(Configuration.GetOption('extra-tools','install_cmd'));
+    SetKillCmd(Configuration.GetOption('extra-tools','kill_cmd'));
+    SetKldloadCmd(Configuration.GetOption('extra-tools','kldload_cmd'));
+    SetKldstatCmd(Configuration.GetOption('extra-tools','kldstat_cmd'));
+    SetPciconfCmd(Configuration.GetOption('extra-tools','pciconf_cmd'));
+    SetPgrepCmd(Configuration.GetOption('extra-tools','pgrep_cmd'));
+    SetRmCmd(Configuration.GetOption('extra-tools','rm_cmd'));
+    SetServiceCmd(Configuration.GetOption('extra-tools','service_cmd'));
+    SetSwtpmCmd(Configuration.GetOption('extra-tools','swtpm_cmd'));
+    SetSwtpmIoctlCmd(Configuration.GetOption('extra-tools','swtpm_ioctl_cmd'));
+    SetSysctlCmd(Configuration.GetOption('extra-tools','sysctl_cmd'));
+    SetTruncateCmd(Configuration.GetOption('extra-tools','truncate_cmd'));
+    SetZfsCmd(Configuration.GetOption('extra-tools','zfs_cmd'));
+    SetZpoolCmd(Configuration.GetOption('extra-tools','zpool_cmd'));
 
-    SetChownCmd(configuration.getOption('extra-tools','chown_cmd'));
-    SetChmodCmd(configuration.getOption('extra-tools','chmod_cmd'));
-    SetIfconfigCmd(configuration.getOption('extra-tools','ifconfig_cmd'));
-    SetInstallCmd(configuration.getOption('extra-tools','install_cmd'));
-    SetKillCmd(configuration.getOption('extra-tools','kill_cmd'));
-    SetKldloadCmd(configuration.getOption('extra-tools','kldload_cmd'));
-    SetKldstatCmd(configuration.getOption('extra-tools','kldstat_cmd'));
-    SetPciconfCmd(configuration.getOption('extra-tools','pciconf_cmd'));
-    SetPgrepCmd(configuration.getOption('extra-tools','pgrep_cmd'));
-    SetRmCmd(configuration.getOption('extra-tools','rm_cmd'));
-    SetServiceCmd(configuration.getOption('extra-tools','service_cmd'));
-    SetSwtpmCmd(configuration.getOption('extra-tools','swtpm_cmd'));
-    SetSwtpmIoctlCmd(configuration.getOption('extra-tools','swtpm_ioctl_cmd'));
-    SetSysctlCmd(configuration.getOption('extra-tools','sysctl_cmd'));
-    SetTruncateCmd(configuration.getOption('extra-tools','truncate_cmd'));
-    SetZfsCmd(configuration.getOption('extra-tools','zfs_cmd'));
-    SetZpoolCmd(configuration.getOption('extra-tools','zpool_cmd'));
-
-    SetZfsZpool(configuration.getOption('zfs','zfs_zpool'));
-    SetZfsCreateOptions(configuration.getOption('zfs','zfs_create_options'));
+    SetZfsZpool(Configuration.getOption('zfs','zfs_zpool'));
+    SetZfsCreateOptions(Configuration.getOption('zfs','zfs_create_options'));
 
   {  if (UseZfs = 'yes') and (CheckKernelModule('zfs')) then
       SetVmPath('/'+ZfsZpool+'/'+configuration.getOption('general','vm_path'))

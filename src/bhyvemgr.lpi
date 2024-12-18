@@ -26,7 +26,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="components"/>
+            <OtherUnitFiles Value="../components/uniqueinstance"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Parsing>
@@ -72,7 +72,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="components"/>
+            <OtherUnitFiles Value="../components/uniqueinstance"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <Linking>
@@ -260,11 +260,11 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="components/uniqueinstancebase.pas"/>
+        <Filename Value="../components/uniqueinstance/uniqueinstancebase.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="components/uniqueinstanceraw.pas"/>
+        <Filename Value="../components/uniqueinstance/uniqueinstanceraw.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -276,7 +276,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="components"/>
+      <OtherUnitFiles Value="../components/uniqueinstance"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>

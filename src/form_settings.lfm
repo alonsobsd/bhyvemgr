@@ -27,14 +27,14 @@ object FormSettings: TFormSettings
         Left = 24
         Height = 22
         Top = 24
-        Width = 178
+        Width = 174
         Caption = 'Use sudo instead of doas'
         TabOrder = 0
       end
       object GroupBoxZfsSettings: TGroupBox
         Left = 16
         Height = 112
-        Top = 192
+        Top = 216
         Width = 729
         Caption = 'ZFS settings'
         ClientHeight = 83
@@ -81,7 +81,7 @@ object FormSettings: TFormSettings
       object GroupBoxNetworkSettings: TGroupBox
         Left = 16
         Height = 112
-        Top = 56
+        Top = 88
         Width = 729
         Caption = 'Network settings'
         ClientHeight = 83
@@ -134,7 +134,7 @@ object FormSettings: TFormSettings
         Left = 496
         Height = 22
         Top = 24
-        Width = 249
+        Width = 245
         Caption = 'Use dnsmasq for DHCP/DNS support'
         TabOrder = 1
         OnChange = CheckBoxUseDnsmasqChange
@@ -143,7 +143,7 @@ object FormSettings: TFormSettings
         Left = 240
         Height = 22
         Top = 24
-        Width = 214
+        Width = 210
         Caption = 'Use ZFS support if it is available'
         TabOrder = 2
         OnChange = CheckBoxUseZfsChange
@@ -167,7 +167,7 @@ object FormSettings: TFormSettings
       object GroupBoxRemoteToolSettings: TGroupBox
         Left = 16
         Height = 112
-        Top = 328
+        Top = 344
         Width = 727
         Caption = 'Remote tool settings'
         ClientHeight = 83
@@ -188,6 +188,14 @@ object FormSettings: TFormSettings
           TabOrder = 0
           Text = 'EditRdpArgs'
         end
+      end
+      object CheckBoxUseSystray: TCheckBox
+        Left = 24
+        Height = 22
+        Top = 48
+        Width = 222
+        Caption = 'Enable systray icon (need restart)'
+        TabOrder = 7
       end
     end
     object TabSheet2: TTabSheet

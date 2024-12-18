@@ -83,6 +83,11 @@ constructor ConfigurationClass.Create(Path : String);
 begin
   PathFile:=Path;
   ConfigFile:=TIniFile.Create(PathFile);
+
+  if not FileExists(PathFile) then
+    SetNewConfig(True)
+  else
+    SetNewConfig(False);
 end;
 
 destructor ConfigurationClass.Destroy();
@@ -128,70 +133,134 @@ function ConfigurationClass.GeneralConfig:Boolean;
 var
   ZfsPoolList : TStringList;
 begin
-  Result:=False;
+  ZfsPoolList:=TStringList.Create;
 
-  if not FileExists(pathFile) then
-  begin
-    ZfsPoolList:=TStringList.Create;
-
+  if ConfigFile.ReadString('general','use_dnsmasq', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('general','use_dnsmasq', 'yes');
+
+  if ConfigFile.ReadString('general','use_sudo', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('general','use_sudo', 'yes');
 
+  if ConfigFile.ReadString('general','use_systray', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('general','use_systray', 'yes');
+
+  if ConfigFile.ReadString('bhyve-tools','bhyve_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('bhyve-tools','bhyve_cmd', '/usr/sbin/bhyve');
+
+  if ConfigFile.ReadString('bhyve-tools','bhyvectl_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('bhyve-tools','bhyvectl_cmd', '/usr/sbin/bhyvectl');
+
+  if ConfigFile.ReadString('bhyve-tools','bhyveload_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('bhyve-tools','bhyveload_cmd', '/usr/sbin/bhyveload');
 
+  if ConfigFile.ReadString('extra-tools','chown_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','chown_cmd', '/usr/sbin/chown');
+
+  if ConfigFile.ReadString('extra-tools','chmod_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','chmod_cmd', '/bin/chmod');
+
+  if ConfigFile.ReadString('extra-tools','ifconfig_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','ifconfig_cmd', '/sbin/ifconfig');
+
+  if ConfigFile.ReadString('extra-tools','install_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','install_cmd', '/usr/bin/install');
+
+  if ConfigFile.ReadString('extra-tools','kill_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','kill_cmd', '/bin/kill');
+
+  if ConfigFile.ReadString('extra-tools','kldload_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','kldload_cmd', '/sbin/kldload');
+
+  if ConfigFile.ReadString('extra-tools','kldstat_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','kldstat_cmd', '/sbin/kldstat');
+
+  if ConfigFile.ReadString('extra-tools','pciconf_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','pciconf_cmd', '/usr/sbin/pciconf');
+
+  if ConfigFile.ReadString('extra-tools','pgrep_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','pgrep_cmd', '/usr/bin/pgrep');
+
+  if ConfigFile.ReadString('extra-tools','rm_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','rm_cmd', '/bin/rm');
+
+  if ConfigFile.ReadString('extra-tools','service_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','service_cmd', '/usr/sbin/service');
+
+  if ConfigFile.ReadString('extra-tools','swtpm_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','swtpm_cmd', '/usr/local/bin/swtpm');
+
+  if ConfigFile.ReadString('extra-tools','swtpm_ioctl_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','swtpm_ioctl_cmd', '/usr/local/bin/swtpm_ioctl');
+
+  if ConfigFile.ReadString('extra-tools','sysctl_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','sysctl_cmd', '/sbin/sysctl');
+
+  if ConfigFile.ReadString('extra-tools','truncate_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','truncate_cmd', '/usr/bin/truncate');
+
+  if ConfigFile.ReadString('extra-tools','zfs_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','zfs_cmd', '/sbin/zfs');
+
+  if ConfigFile.ReadString('extra-tools','zpool_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','zpool_cmd', '/sbin/zpool');
 
+  if ConfigFile.ReadString('network','bridge_interface', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('network','bridge_interface', 'bhyve0');
+
+  if ConfigFile.ReadString('network','subnet', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('network','subnet', '10.0.0.0/24');
 
+  if ConfigFile.ReadString('remote-tools','vncviewer_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('remote-tools','vncviewer_cmd', '/usr/local/bin/remote-viewer');
+
+  if ConfigFile.ReadString('remote-tools','xfreerdp_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('remote-tools','xfreerdp_cmd', '/usr/local/bin/xfreerdp3');
+
+  if ConfigFile.ReadString('remote-tools','xfreerdp_args', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('remote-tools','xfreerdp_args', '/cert:tofu /sound:sys:oss /network:lan /bpp:24 /gfx:rfx:on /log-level:off');
 
+  if ConfigFile.ReadString('user-tools','doas_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('user-tools','doas_cmd', '/usr/local/bin/doas');
+
+  if ConfigFile.ReadString('user-tools','sudo_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('user-tools','sudo_cmd', '/usr/local/bin/sudo');
 
-    SetZpoolCmd('/sbin/zpool');
+  SetZpoolCmd('/sbin/zpool');
 
-    ZfsPoolList.Text:=GetZpoolList();
+  ZfsPoolList.Text:=GetZpoolList();
 
-    if ZfsPoolList.Count > 0 then
-     begin
+  if ZfsPoolList.Count > 0 then
+   begin
+     if ConfigFile.ReadString('zfs','zfs_zpool', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('zfs','zfs_zpool', ZfsPoolList[0]);
+
+     if ConfigFile.ReadString('zfs','zfs_create_options', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('zfs','zfs_create_options','-o compress=lz4');
-       ConfigFile.WriteString('general','use_zfs' , 'yes');
+
+     if ConfigFile.ReadString('general','use_zfs', EmptyStr) = EmptyStr then
+       ConfigFile.WriteString('general','use_zfs', 'yes');
+
+     if ConfigFile.ReadString('general','vm_path', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('general','vm_path', '/'+ZfsPoolList[0]+'/bhyvemgr');
-     end
-     else
-     begin
+   end
+   else
+   begin
+     if ConfigFile.ReadString('zfs','zfs_zpool', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('zfs','zfs_zpool', 'zroot');
+
+     if ConfigFile.ReadString('zfs','zfs_create_options', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('zfs','zfs_create_options','-o compress=lz4');
+
+     if ConfigFile.ReadString('general','use_zfs', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('general','use_zfs' , 'no');
+
+     if ConfigFile.ReadString('general','vm_path', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('general','vm_path', '/usr/local/bhyvemgr');
-     end;
+   end;
 
-     ZfsPoolList.Free;
+   ZfsPoolList.Free;
 
-     Result:=True;
-  end;
+   Result:=True;
 end;
 
 { BhyveConfigurationClass }

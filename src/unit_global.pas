@@ -50,6 +50,8 @@ function GetUseZfs:string;
 procedure SetUseZfs(const Value:string);
 function GetVmPath:string;
 procedure SetVmPath(const Value:string);
+function GetUseSystray:string;
+procedure SetUseSystray(const Value:string);
 { Bhyve section }
 function GetBhyveCmd:string;
 procedure SetBhyveCmd(const Value:string);
@@ -122,6 +124,7 @@ property UseDnsmasq:string read GetUseDnsmasq write SetUseDnsmasq;
 property UseSudo:string read GetUseSudo write SetUseSudo;
 property UseZfs:string read GetUseZfs write SetUseZfs;
 property VmPath:string read GetVmPath write SetVmPath;
+property UseSystray:string read GetUseSystray write SetUseSystray;
 { Bhyve section }
 property BhyveCmd:string read GetBhyveCmd write SetBhyveCmd;
 property BhyvectlCmd:string read GetBhyvectlCmd write SetBhyvectlCmd;
@@ -161,7 +164,7 @@ property ZfsCreateOptions:string read GetZfsCreateOptions write SetZfsCreateOpti
 const
   BhyveOui = '58:9c:fc:0';
   {$IFDEF DEBUG}
-  DatadirPath = '';
+  DatadirPath = '../';
   {$ELSE}
   DatadirPath = '/usr/local/share/bhyvemgr/';
   {$ENDIF}
@@ -185,6 +188,7 @@ const
   FormBhyveManagerShareFolderDeviceTitle = 'Share folder device';
   FormBhyveManagerCreateVmTitle = 'Bhyve Manager - Create virtual machine';
   FormBhyveManagerEditVmInfoTitle = 'Bhyve Manager - Edit virtual machine info';
+  TrayIconNotifytimeout = 3000;
 
 var
   OsreldateVar: String;
@@ -193,6 +197,7 @@ var
   UseSudoVar: String;
   UseZfsVar: String;
   VmPathVar: String;
+  UseSystrayVar: String;
   BhyveCmdVar: String;
   BhyvectlCmdVar: String;
   BhyveloadCmdVar: String;
@@ -273,10 +278,7 @@ end;
 
 procedure SetVmPath(const Value: string);
 begin
-  if Value = EmptyStr then
-    VmPathVar := GetUserDir + 'bhyvemgr'
-  else
-    VmPathVar := Value;
+  VmPathVar := Value;
 end;
 
 function GetOsreldate: string;
@@ -287,6 +289,16 @@ end;
 procedure SetOsreldate(const Value: string);
 begin
   OsreldateVar := Value;
+end;
+
+function GetUseSystray: string;
+begin
+  Result := UseSystrayVar;
+end;
+
+procedure SetUseSystray(const Value: string);
+begin
+  UseSystrayVar := Value;
 end;
 
 function GetBhyveCmd: string;

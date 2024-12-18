@@ -106,6 +106,25 @@ type
     private
     end;
 
+  { TTrayIconPopupMenu }
+
+  TTrayIconPopupMenu = Class(TObject)
+    PopupMenu : TPopupMenu;
+    PopupMenuItem : TMenuItem;
+    public
+      constructor Create(component : TComponent); overload;
+    private
+  end;
+
+  { TSystemTrayIcon }
+
+  TSystemTrayIcon = Class(TObject)
+    TrayIcon : TTrayIcon;
+    public
+      constructor Create(component : TComponent); overload;
+    private
+    end;
+
   function FillComboIntegerType(Combo: TComboBox; StartNumber : Integer; EndNumber : Integer; Increment : Integer):Boolean;
   function FillComboBooleanType(Combo: TComboBox):Boolean;
   function FillComboKeyboardLayout(Combo: TComboBox):Boolean;
@@ -286,6 +305,12 @@ begin
   { Index 3 }
   Image.Picture.LoadFromFile(DatadirPath+'images/menu/rdp.png');
   ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 4 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/hide.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 5 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/quit.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;
 end;
@@ -373,6 +398,30 @@ begin
   SystemList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;
+end;
+
+{ TTrayIconPopupMenu }
+
+constructor TTrayIconPopupMenu.Create(component: TComponent);
+begin
+  PopupMenu := TPopupMenu.Create(component);
+
+  PopupMenuItem := TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption := 'Show/Hide Bhyvemgr';
+  PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem := TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption := 'Quit Bhyvemgr';
+  PopupMenu.Items.Add(PopupMenuItem);
+end;
+
+{ TSystemTrayIcon }
+
+constructor TSystemTrayIcon.Create(component: TComponent);
+begin
+  TrayIcon:=TTrayIcon.Create(component);
+  TrayIcon.Hint:='Bhyve Management GUI';
+  TrayIcon.Icon.LoadFromFile('bhyvemgr.ico');
 end;
 
 function FillComboIntegerType(Combo: TComboBox; StartNumber: Integer;
