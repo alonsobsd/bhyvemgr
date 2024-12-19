@@ -1,35 +1,35 @@
 object FormLpcDevice: TFormLpcDevice
   Left = 654
-  Height = 328
+  Height = 346
   Top = 360
   Width = 345
   BorderStyle = bsSingle
   Caption = 'FormLpcDevice'
-  ClientHeight = 328
+  ClientHeight = 346
   ClientWidth = 345
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 256
+    Height = 272
     Top = 8
     Width = 328
     Caption = 'General settings'
-    ClientHeight = 227
+    ClientHeight = 243
     ClientWidth = 324
     TabOrder = 0
     object Label1: TLabel
       Left = 11
       Height = 18
-      Top = 112
+      Top = 144
       Width = 35
       Caption = 'Com2'
     end
     object Label2: TLabel
       Left = 11
       Height = 18
-      Top = 144
+      Top = 176
       Width = 35
       Caption = 'Com3'
     end
@@ -52,98 +52,114 @@ object FormLpcDevice: TFormLpcDevice
     object Label5: TLabel
       Left = 12
       Height = 18
-      Top = 80
+      Top = 112
       Width = 35
       Caption = 'Com1'
     end
     object Label6: TLabel
       Left = 11
       Height = 18
-      Top = 176
+      Top = 208
       Width = 36
       Caption = 'Com4'
     end
     object CheckBoxCom1: TCheckBox
       Left = 296
       Height = 20
-      Top = 80
-      Width = 28
-      TabOrder = 3
+      Top = 112
+      Width = 20
+      TabOrder = 4
       OnChange = CheckBoxCom1Change
     end
     object CheckBoxCom2: TCheckBox
       Left = 296
       Height = 20
-      Top = 112
-      Width = 28
-      TabOrder = 5
+      Top = 144
+      Width = 20
+      TabOrder = 6
       OnChange = CheckBoxCom2Change
     end
     object CheckBoxCom3: TCheckBox
       Left = 296
       Height = 20
-      Top = 144
-      Width = 28
-      TabOrder = 7
+      Top = 176
+      Width = 20
+      TabOrder = 8
       OnChange = CheckBoxCom3Change
     end
     object CheckBoxCom4: TCheckBox
       Left = 296
       Height = 20
-      Top = 176
-      Width = 28
-      TabOrder = 9
+      Top = 208
+      Width = 20
+      TabOrder = 10
       OnChange = CheckBoxCom4Change
     end
     object CheckBoxPcDebug: TCheckBox
       Left = 11
       Height = 22
       Top = 8
-      Width = 196
+      Width = 192
       Caption = 'Enable pc debug/test device'
       TabOrder = 0
     end
     object EditCom1: TEdit
       Left = 80
       Height = 32
-      Top = 72
-      Width = 208
-      Enabled = False
-      ReadOnly = True
-      TabOrder = 2
-    end
-    object EditCom2: TEdit
-      Left = 80
-      Height = 32
       Top = 104
       Width = 208
       Enabled = False
       ReadOnly = True
-      TabOrder = 4
+      TabOrder = 3
     end
-    object EditCom3: TEdit
+    object EditCom2: TEdit
       Left = 80
       Height = 32
       Top = 136
       Width = 208
       Enabled = False
       ReadOnly = True
-      TabOrder = 6
+      TabOrder = 5
     end
-    object EditCom4: TEdit
+    object EditCom3: TEdit
       Left = 80
       Height = 32
       Top = 168
       Width = 208
       Enabled = False
       ReadOnly = True
-      TabOrder = 8
+      TabOrder = 7
+    end
+    object EditCom4: TEdit
+      Left = 80
+      Height = 32
+      Top = 200
+      Width = 208
+      Enabled = False
+      ReadOnly = True
+      TabOrder = 9
+    end
+    object Label4: TLabel
+      Left = 11
+      Height = 18
+      Top = 80
+      Width = 54
+      Caption = 'Bootvars'
+    end
+    object ComboBoxBootvars: TComboBox
+      Left = 80
+      Height = 32
+      Top = 72
+      Width = 232
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 2
     end
   end
   object BitBtnSave: TBitBtn
     Left = 128
     Height = 30
-    Top = 271
+    Top = 288
     Width = 96
     Caption = 'Save'
     Default = True
@@ -190,7 +206,7 @@ object FormLpcDevice: TFormLpcDevice
   object StatusBarLpcDevice: TStatusBar
     Left = 0
     Height = 23
-    Top = 305
+    Top = 323
     Width = 345
     Panels = <>
   end

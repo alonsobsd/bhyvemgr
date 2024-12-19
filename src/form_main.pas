@@ -294,6 +294,11 @@ begin
   FillDeviceDetailList();
 end;
 
+{
+  This procedure is used to show a device menu when a group device or a device
+  is selected and mouse right button is pressed over it at Device settings page.
+  The menu includes three options: Add device, Edit device, and Delete device
+}
 procedure TFormBhyveManager.DeviceSettingsTreeViewMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -314,14 +319,11 @@ begin
    end;
 end;
 
-procedure TFormBhyveManager.GlobalSettingsTreeViewClick(Sender: TObject);
-begin
-  if (Assigned(GlobalSettingsTreeView.Selected)) and (GlobalSettingsTreeView.Selected.Level <> 0) then
-    StatusBarBhyveManager.SimpleText:=GlobalSettingsTreeView.Selected.Text
-  else
-    StatusBarBhyveManager.SimpleText:=EmptyStr;
-end;
-
+{
+  This procedure is used to show a global menu when an item is selected and
+  mouse right button is pressed over it at Global settings page. The menu
+  includes an option: Edit global setting
+}
 procedure TFormBhyveManager.GlobalSettingsTreeViewMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -331,6 +333,22 @@ begin
    end;
 end;
 
+{
+  This procedure is used to show an "option : value" string on status bar when a
+  item is clicked at Global settings page.
+}
+procedure TFormBhyveManager.GlobalSettingsTreeViewClick(Sender: TObject);
+begin
+  if (Assigned(GlobalSettingsTreeView.Selected)) and (GlobalSettingsTreeView.Selected.Level <> 0) then
+    StatusBarBhyveManager.SimpleText:=GlobalSettingsTreeView.Selected.Text
+  else
+    StatusBarBhyveManager.SimpleText:=EmptyStr;
+end;
+
+{
+  This procedure is used to show an "option : value" string on status bar when a
+  item is selected at Global settings page.
+}
 procedure TFormBhyveManager.GlobalSettingsTreeViewSelectionChanged(Sender: TObject);
 begin
   if Assigned(GlobalSettingsTreeView.Selected) and (GlobalSettingsTreeView.Selected.Level = 1) then
@@ -339,6 +357,9 @@ begin
     StatusBarBhyveManager.SimpleText:=EmptyStr;
 end;
 
+{
+  This procedure is used to fill Global settings page with main category names.
+}
 procedure TFormBhyveManager.FillGlobalCategoryList();
 var
   i: Integer;
@@ -366,6 +387,10 @@ begin
   GlobalCategoryList.Free;
 end;
 
+{
+  This procedure is used to load "Global setting" default keys, values, and types
+  for each main categories.
+}
 procedure TFormBhyveManager.FillGlobalCategoryDetailList();
 begin
   { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
@@ -468,6 +493,10 @@ begin
   GlobalSettingCategoryList.Values['x86.vmexit_on_pause'] := 'x86';
 end;
 
+{
+  This procedure is used to fill "Device settings page" with main category
+  names.
+}
 procedure TFormBhyveManager.FillDeviceCategoryList();
 var
   i: Integer;
@@ -500,6 +529,10 @@ begin
   DevicesCategoryList.Free;
 end;
 
+{
+  This procedure is used to load "Device setting" default keys, values, and
+  types for each main categories.
+}
 procedure TFormBhyveManager.FillDeviceDetailList();
 begin
   DevicesList.Values['hda'] := 'Audio';
@@ -522,6 +555,11 @@ begin
   DevicesList.Values['xhci'] := 'USB';
 end;
 
+{
+  This procedure is used to fill "Virtual machines" treeview with virtual
+  machine names and current state. Only virtual machines with bhyve_config.conf
+  and vmname.conf configuration files at VmPath are loaded.
+}
 procedure TFormBhyveManager.FillVirtualMachineList();
 var
   i : integer;
@@ -558,6 +596,10 @@ begin
   Directories.Free;
 end;
 
+{
+  This procedure is used to delete all content of a TreeView passed as
+   parameter.
+}
 procedure TFormBhyveManager.ResetTreeView(TreeView: TTreeView);
 var
   i : Integer;
@@ -577,6 +619,10 @@ begin
   end;
 end;
 
+{
+  This function is used to save bhyve_config.conf changes to virtual machine
+  directory.
+}
 function TFormBhyveManager.SaveVirtualMachineConfig(): Boolean;
 var
   TmpGlobalSettingList : TStringList;
@@ -620,6 +666,11 @@ begin
  end;
 end;
 
+{
+  This procedure runs rutines depending of a virtual machine status code when
+  MyVmThread thread calls an OnExitStatus event. The MyVmThread thread is used
+  to run a virtual machine from bhyvemgr.
+}
 procedure TFormBhyveManager.VirtualMachineShowStatus(Status: Integer;
   Message: String; VmName : String);
 var
@@ -741,73 +792,10 @@ begin
   end;
 end;
 
-procedure TFormBhyveManager.GlobalChangeValue(Sender: TObject);
-begin
-  if (FormChangeValue.SettingType = 'memory.size') then
-    StatusBarBhyveManager.SimpleText:='Value has been changed to '+FormChangeValue.SpinEditExValue.Text+'M'
-  else
-    StatusBarBhyveManager.SimpleText:='Value has been changed to '+FormChangeValue.ComboBoxValue.Text;
-
-  if (FormChangeValue.SettingType = 'bootrom') then
-  begin
-    {$ifdef CPUAMD64}
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUefiPath+'/'+FormChangeValue.ComboBoxValue.Text;
-    {$endif CPUAMD64}
-    {$ifdef CPUAARCH64}
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUbootPath+'/'+FormChangeValue.ComboBoxValue.Text;
-    {$endif CPUAARCH64}
-  end
-  else if (FormChangeValue.SettingType = 'bootvars') then
-  begin
-    {$ifdef CPUAMD64}
-    if not (FormChangeValue.ComboBoxValue.Text = EmptyStr) then
-    begin
-      GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text;
-      if not FileExists(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text) then
-      begin
-        CreateFile(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text, GetCurrentUserName());
-        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text);
-      end;
-    end
-    else
-      GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : ';
-    {$endif CPUAMD64}
-  end
-  else if (FormChangeValue.SettingType = 'memory.size') then
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.SpinEditExValue.Text+'M'
-  else if (FormChangeValue.SettingType = 'tpm.type') then
-  begin
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.ComboBoxValue.Text;
-
-    case ExtractVarValue(GlobalSettingsTreeView.Selected.Text) of
-        'passthru':
-         begin
-           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : ';
-           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : 2.0';
-         end;
-        'swtpm':
-         begin
-           if GetOsreldate.ToInt64 >= 1500026 then
-           begin
-             GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock';
-             GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : 2.0';
-           end;
-         end;
-         else
-         begin
-           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : ';
-           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : ';
-         end;
-    end;
-  end
-  else
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.ComboBoxValue.Text;
-
-  SaveVirtualMachineConfig();
-
-  FormChangeValue.Close;
-end;
-
+{
+  This procedure is used to generate a global setting form when this needs
+  changed. Also, it evaluates some rules before of generate some forms.
+}
 procedure TFormBhyveManager.OpenFormGlobalChangeValue(Sender: TObject);
 var
   SettingName : String;
@@ -982,29 +970,81 @@ begin
   end;
 end;
 
-procedure TFormBhyveManager.SpeedButtonAddVmClick(Sender: TObject);
+{
+  This procedure is used to save global setting changes to virtual machine
+  directory. Also, it evaluates some rules before of save the changes.
+}
+procedure TFormBhyveManager.GlobalChangeValue(Sender: TObject);
 begin
-  FormVmCreate.BitBtnCreateVm.OnClick:=@CreateVmClick;
-  FormVmCreate.Visible:=True;
-end;
+  if (FormChangeValue.SettingType = 'memory.size') then
+    StatusBarBhyveManager.SimpleText:='Value has been changed to '+FormChangeValue.SpinEditExValue.Text+'M'
+  else
+    StatusBarBhyveManager.SimpleText:='Value has been changed to '+FormChangeValue.ComboBoxValue.Text;
 
-procedure TFormBhyveManager.DeviceSettingsTreeViewDeletion(Sender: TObject;
-  Node: TTreeNode);
-begin
-  if assigned(TObject(Node.Data)) then
+  if (FormChangeValue.SettingType = 'bootrom') then
   begin
-    TObject(Node.Data).Free;
-  end;
+    {$ifdef CPUAMD64}
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUefiPath+'/'+FormChangeValue.ComboBoxValue.Text;
+    {$endif CPUAMD64}
+    {$ifdef CPUAARCH64}
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUbootPath+'/'+FormChangeValue.ComboBoxValue.Text;
+    {$endif CPUAARCH64}
+  end
+  else if (FormChangeValue.SettingType = 'bootvars') then
+  begin
+    {$ifdef CPUAMD64}
+    if not (FormChangeValue.ComboBoxValue.Text = EmptyStr) then
+    begin
+      GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text;
+      if not FileExists(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text) then
+      begin
+        CreateFile(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text, GetCurrentUserName());
+        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text);
+      end;
+    end
+    else
+      GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : ';
+    {$endif CPUAMD64}
+  end
+  else if (FormChangeValue.SettingType = 'memory.size') then
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.SpinEditExValue.Text+'M'
+  else if (FormChangeValue.SettingType = 'tpm.type') then
+  begin
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.ComboBoxValue.Text;
+
+    case ExtractVarValue(GlobalSettingsTreeView.Selected.Text) of
+        'passthru':
+         begin
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : ';
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : 2.0';
+         end;
+        'swtpm':
+         begin
+           if GetOsreldate.ToInt64 >= 1500026 then
+           begin
+             GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock';
+             GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : 2.0';
+           end;
+         end;
+         else
+         begin
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : ';
+           GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : ';
+         end;
+    end;
+  end
+  else
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+FormChangeValue.ComboBoxValue.Text;
+
+  SaveVirtualMachineConfig();
+
+  FormChangeValue.Close;
 end;
 
-procedure TFormBhyveManager.ShowHideClick(Sender: TObject);
-begin
- if not FormBhyveManager.IsVisible then
-   FormBhyveManager.Show
- else
-   FormBhyveManager.Hide;
-end;
-
+{
+  This procedure is used to call Settings form if not exists a bhyvemgr
+  configuration file.
+}
 procedure TFormBhyveManager.FormActivate(Sender: TObject);
 begin
   if NewConfig then
@@ -1014,6 +1054,10 @@ begin
   end;
 end;
 
+{
+  This procedure is used to avoid close bhyvemgr if there are virtual machines
+  on running state.
+}
 procedure TFormBhyveManager.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 var
@@ -1051,30 +1095,68 @@ begin
   end;
 end;
 
+{
+  This procedure is used like a temporary workaround to show bhyvemgr main
+  window correctly when LCLGTK2 is used with latest version of Lazarus.
+}
 procedure TFormBhyveManager.FormShow(Sender: TObject);
 begin
- { Temporary workaround when LCLGTK2 is used with latest version of Lazarus }
   {$ifdef LCLGTK2}
   FormBhyveManager.BorderStyle:=bsSingle;
   FormBhyveManager.Height:=619;
   {$endif}
 end;
 
+{
+  This procedure is used to show a Create Virtual Machine form and assign an
+  OnClick event.
+}
+procedure TFormBhyveManager.SpeedButtonAddVmClick(Sender: TObject);
+begin
+  FormVmCreate.BitBtnCreateVm.OnClick:=@CreateVmClick;
+  FormVmCreate.Visible:=True;
+end;
+
+{
+  This procedure is used to show or hide a systray icon if it is enable by default.
+}
+procedure TFormBhyveManager.ShowHideClick(Sender: TObject);
+begin
+ if not FormBhyveManager.IsVisible then
+   FormBhyveManager.Show
+ else
+   FormBhyveManager.Hide;
+end;
+
+{
+  This procedure is used to show "about" form when it is called from main menu.
+}
 procedure TFormBhyveManager.MenuItemAboutClick(Sender: TObject);
 begin
   FormAbout.Visible:=True;
 end;
 
+{
+  This procedure is used to close bhyvemgr when it is called from main menu or
+  systray icon.
+}
 procedure TFormBhyveManager.MenuItemExitClick(Sender: TObject);
 begin
   Close;
 end;
 
+{
+  This procedure is used to show "settings" form when it is called from main
+  menu.
+}
 procedure TFormBhyveManager.MenuItemSettingsClick(Sender: TObject);
 begin
   FormSettings.Visible:=True;
 end;
 
+{
+  This procedure is used to free memory from some components.
+}
 procedure TFormBhyveManager.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
   GlobalNode.Free;
@@ -1096,6 +1178,11 @@ begin
   TmpDevicesStringList.Free;
 end;
 
+{
+  This procedure is called when "Add device" option is selected from Device
+  settings treeview. A device form will be opened accord of main category
+  selected: Audio, Console, Display, etc.
+}
 procedure TFormBhyveManager.AddDevice(Sender: TObject);
 var
   Node : TTreeNode;
@@ -1167,6 +1254,7 @@ begin
               FormLpcDevice.BitBtnSave.OnClick:=@SaveLpcDevice;
               FormLpcDevice.FormStyle:=fsSystemStayOnTop;
               FormLpcDevice.LoadDefaultValues(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name);
+              FormLpcDevice.FormVmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
               FormLpcDevice.FormAction:='Add';
               FormLpcDevice.Show;
             end;
@@ -1256,6 +1344,11 @@ begin
   end;
 end;
 
+{
+  This procedure is called when "Edit device" option is selected from "Device
+  settings" treeview. A device form will be opened accord of device selected:
+  device : hda, device : virtio-console, device : fbuf, etc.
+}
 procedure TFormBhyveManager.EditDevice(Sender: TObject);
 var
   Node : TTreeNode;
@@ -1348,8 +1441,22 @@ begin
             FormLpcDevice.FormStyle:=fsSystemStayOnTop;
             FormLpcDevice.LoadDefaultValues(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name);
             FormLpcDevice.FormAction:='Update';
+            FormLpcDevice.FormVmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
 
-            FormLpcDevice.ComboBoxBootrom.ItemIndex:=FormLpcDevice.ComboBoxBootrom.Items.IndexOf(ExtractFileName(LPCDevice.bootrom));
+            { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+            if GetOsreldate.ToInt64 < 1500023 then
+            begin
+              FormLpcDevice.ComboBoxBootrom.ItemIndex:=FormLpcDevice.ComboBoxBootrom.Items.IndexOf(ExtractFileName(LPCDevice.bootrom));
+              FormLpcDevice.ComboBoxBootvars.ItemIndex:=FormLpcDevice.ComboBoxBootvars.Items.IndexOf(ExtractFileName(LPCDevice.bootvars));
+            end
+            else
+            begin
+              { GlobalSettingsTreeView = Global Settings / TopLvlItems[0] = System / Items[0] = bootroom }
+              FormLpcDevice.ComboBoxBootrom.ItemIndex:=FormLpcDevice.ComboBoxBootrom.Items.IndexOf(ExtractFileName(GlobalSettingsTreeView.Items.TopLvlItems[0].Items[0].Text));
+              { GlobalSettingsTreeView = Global Settings / TopLvlItems[0] = System / Items[1] = bootvars }
+              FormLpcDevice.ComboBoxBootvars.ItemIndex:=FormLpcDevice.ComboBoxBootvars.Items.IndexOf(ExtractFileName(GlobalSettingsTreeView.Items.TopLvlItems[0].Items[1].Text));
+            end;
+
             if LPCDevice.com1 <> EmptyStr then FormLpcDevice.CheckBoxCom1.Checked:=True;
             if LPCDevice.com2 <> EmptyStr then FormLpcDevice.CheckBoxCom2.Checked:=True;
             if LPCDevice.com3 <> EmptyStr then FormLpcDevice.CheckBoxCom3.Checked:=True;
@@ -1506,30 +1613,10 @@ begin
   end;
 end;
 
-procedure TFormBhyveManager.EditVirtualMachineInfo(Sender: TObject);
-begin
-  if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
-  begin
-    GlobalNode:=VirtualMachinesTreeView.Selected;
-    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
-
-    FormVmInfo.BitBtnSave.OnClick:=@SaveVirtualMachineInfoClick;
-    FormVmInfo.Visible:=True;
-    FormVmInfo.ComboBoxVmType.Clear;
-    FillComboSystemType(FormVmInfo.ComboBoxVmType);
-    FormVmInfo.ComboBoxVmType.ItemIndex:=FormVmInfo.ComboBoxVmType.Items.IndexOf(VirtualMachine.system_type);
-    FormVmInfo.ComboBoxVmVersion.Clear;
-    FillComboSystemVersion(FormVmInfo.ComboBoxVmVersion, FormVmInfo.ComboBoxVmType.Text);
-    FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachine.system_version);
-    FormVmInfo.EditVmName.Text:=VirtualMachine.name;
-    FormVmInfo.EditVmDescription.Text:=VirtualMachine.description;
-    if VirtualMachine.rdp = StrToBool('True') then
-      FormVmInfo.CheckBoxRDP.Checked:=True
-    else
-      FormVmInfo.CheckBoxRDP.Checked:=False;
-  end;
-end;
-
+{
+  This procedure is called when "Delete device" option is selected from "Device
+  settings" treeview. The device node will be deleted.
+}
 procedure TFormBhyveManager.RemoveDevice(Sender: TObject);
 var
   i : Integer;
@@ -1660,6 +1747,11 @@ begin
   end;
 end;
 
+{
+  This procedure is called when "RDP to virtual machine" option is
+  selected from "Virtual machines" treeview. An "RDP Login credentials"
+  form is opened to start a RDP connection to a virtual machine selected
+}
 procedure TFormBhyveManager.RemoteDesktopProtocolVm(Sender: TObject);
 begin
   if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1)
@@ -1684,6 +1776,9 @@ begin
   end;
 end;
 
+{
+  This procedure is used to save audio device settings
+}
 procedure TFormBhyveManager.SaveAudioDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -1730,6 +1825,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save console device settings
+}
 procedure TFormBhyveManager.SaveConsoleDevice(Sender: TObject);
 var
   i : Integer;
@@ -1788,6 +1886,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save audio display settings
+}
 procedure TFormBhyveManager.SaveDisplayDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -1856,6 +1957,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save hostbridge device settings.
+}
 procedure TFormBhyveManager.SaveHostbridgeDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -1900,6 +2004,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save input device settings
+}
 procedure TFormBhyveManager.SaveInputDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -1943,6 +2050,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save lpc device settings
+}
 procedure TFormBhyveManager.SaveLpcDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -1954,19 +2064,20 @@ begin
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:='lpc';
 
    { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
-   if GetOsreldate.ToInt64 >= 1500023 then
+   if GetOsreldate.ToInt64 < 1500023 then
    begin
      {$ifdef CPUAMD64}
-     TmpDevicesStringList.Values['bootrom']:=BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
-     {$endif CPUAMD64}
-     {$ifdef CPUAARCH64}
-     TmpDevicesStringList.Values['bootrom']:=BootRomUbootPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
-     {$endif CPUAARCH64}
-   end
-   else
-   begin
-     {$ifdef CPUAMD64}
-     TmpDevicesStringList.Values['lpc.bootrom']:=BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     TmpDevicesStringList.Values['lpc.bootrom']:= BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     if FormLpcDevice.ComboBoxBootvars.Text <> EmptyStr then
+     begin
+       TmpDevicesStringList.Values['lpc.bootvars']:= VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text;
+
+       if not FileExists(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text) then
+       begin
+         CreateFile(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text, GetCurrentUserName());
+         CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text);
+       end;
+     end;
      {$endif CPUAMD64}
      {$ifdef CPUAARCH64}
      TmpDevicesStringList.Values['lpc.bootrom']:=BootRomUbootPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
@@ -1996,6 +2107,29 @@ begin
  else if (FormLpcDevice.FormAction = 'Update') and FormLpcDevice.FormValidate() then
  begin
    PciSlot:=LPCDevice.pci;
+
+   if GetOsreldate.ToInt64 < 1500023 then
+   begin
+     {$ifdef CPUAMD64}
+     if FormLpcDevice.ComboBoxBootvars.Text = EmptyStr then
+     begin
+       if TmpDevicesStringList.IndexOfName('lpc.bootvars') <> -1 then
+         TmpDevicesStringList.Delete(TmpDevicesStringList.IndexOfName('lpc.bootvars'));
+       LPCDevice.bootvars:=EmptyStr;
+     end
+     else
+     begin
+       if not FileExists(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text) then
+       begin
+         CreateFile(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text, GetCurrentUserName());
+         CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text);
+       end;
+
+       TmpDevicesStringList.Values['lpc.bootvars']:= VmPath+'/'+FormLpcDevice.FormVmName+'/'+ FormLpcDevice.ComboBoxBootvars.Text;
+       LPCDevice.bootvars:= VmPath+'/'+FormLpcDevice.FormVmName+'/'+ FormLpcDevice.ComboBoxBootvars.Text;
+     end;
+     {$endif CPUAMD64}
+   end;
 
    if FormLpcDevice.CheckBoxCom1.Checked then
    begin
@@ -2052,6 +2186,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save network device settings
+}
 procedure TFormBhyveManager.SaveNetworkDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -2110,6 +2247,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save passthru device settings
+}
 procedure TFormBhyveManager.SavePassthruDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -2166,6 +2306,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save share folder device settings
+}
 procedure TFormBhyveManager.SaveShareFolderDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -2224,6 +2367,9 @@ begin
  end;
 end;
 
+{
+  This procedure is used to save storage device settings
+}
 procedure TFormBhyveManager.SaveStorageDevice(Sender: TObject);
 var
   PciSlot : String;
@@ -2568,6 +2714,10 @@ begin
   end;
 end;
 
+{
+  This procedure is used to save settings of a new virtual machine created from
+  "Create Virtual Machine" form.
+}
 procedure TFormBhyveManager.CreateVmClick(Sender: TObject);
 var
   NewVMConfig : ConfigurationClass;
@@ -2609,7 +2759,14 @@ begin
     if GetOsreldate.ToInt64 >= 1500023 then
     begin
       {$ifdef CPUAMD64}
-      NewBhyveConfig.Values['bootrom'] := BootRomUefiPath+ '/' +'BHYVE_UEFI.fd'
+      NewBhyveConfig.Values['bootrom'] := BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
+      if FormVmCreate.CheckBoxUEFIBootvars.Checked then
+      begin
+        NewBhyveConfig.Values['bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
+
+        CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
+        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
+      end;
       {$endif CPUAMD64}
       {$ifdef CPUAARCH64}
       NewBhyveConfig.Values['bootrom'] := BootRomUbootPath+ '/' +'u-boot.bin';
@@ -2619,6 +2776,13 @@ begin
     begin
       {$ifdef CPUAMD64}
       NewBhyveConfig.Values['lpc.bootrom']:=BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
+      if FormVmCreate.CheckBoxUEFIBootvars.Checked then
+      begin
+        NewBhyveConfig.Values['lpc.bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
+
+        CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
+        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
+      end;
       {$endif CPUAMD64}
       {$ifdef CPUAARCH64}
       NewBhyveConfig.Values['lpc.bootrom']:=BootRomUbootPath+ '/' +'u-boot.bin';
@@ -2756,6 +2920,38 @@ begin
   end;
 end;
 
+{
+  This procedure is called when "Modify virtual machine info" option is
+  selected from "Virtual machines" treeview. An "Edit virtual machine info"
+  form is opened to do some changes.
+}
+procedure TFormBhyveManager.EditVirtualMachineInfo(Sender: TObject);
+begin
+  if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
+  begin
+    GlobalNode:=VirtualMachinesTreeView.Selected;
+    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
+
+    FormVmInfo.BitBtnSave.OnClick:=@SaveVirtualMachineInfoClick;
+    FormVmInfo.Visible:=True;
+    FormVmInfo.ComboBoxVmType.Clear;
+    FillComboSystemType(FormVmInfo.ComboBoxVmType);
+    FormVmInfo.ComboBoxVmType.ItemIndex:=FormVmInfo.ComboBoxVmType.Items.IndexOf(VirtualMachine.system_type);
+    FormVmInfo.ComboBoxVmVersion.Clear;
+    FillComboSystemVersion(FormVmInfo.ComboBoxVmVersion, FormVmInfo.ComboBoxVmType.Text);
+    FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachine.system_version);
+    FormVmInfo.EditVmName.Text:=VirtualMachine.name;
+    FormVmInfo.EditVmDescription.Text:=VirtualMachine.description;
+    if VirtualMachine.rdp = StrToBool('True') then
+      FormVmInfo.CheckBoxRDP.Checked:=True
+    else
+      FormVmInfo.CheckBoxRDP.Checked:=False;
+  end;
+end;
+
+{
+  This procedure is used to save virtual machine info when it is modified.
+}
 procedure TFormBhyveManager.SaveVirtualMachineInfoClick(Sender: TObject);
 var
   Configuration : ConfigurationClass;
@@ -2785,12 +2981,22 @@ begin
   end;
 end;
 
+{
+  This procedure is used to call ResetTreeView and LoadDeviceSettingsValues
+  procedures. They will clean and load DeviceSettingsTreeView from
+  bhyve_config.conf file data.
+}
 procedure TFormBhyveManager.SpeedButtonReloadVmConfigClick(Sender: TObject);
 begin
   ResetTreeView(DeviceSettingsTreeView);
   LoadDeviceSettingsValues(VirtualMachine.name);
 end;
 
+{
+  This procedure is used to delete virtual machine from Virtual Machines
+  treeview and remove all data generated by a virtual machine: directories,
+  configuration files, disk images, sockets, etc.
+}
 procedure TFormBhyveManager.SpeedButtonRemoveVmClick(Sender: TObject);
 var
   Status : Boolean;
@@ -2856,6 +3062,11 @@ begin
   end;
 end;
 
+{
+  This procedure is used to run a virtual machine thread. Also this modify
+  configuration files, create network devices, etc required by the virtual
+  machine.
+}
 procedure TFormBhyveManager.SpeedButtonStartVmClick(Sender: TObject);
 var
   i : Integer;
@@ -2954,6 +3165,10 @@ begin
   end;
 end;
 
+{
+  This procedure is used to stop a virtual machine. It sends a -SIGTERM to
+  virtual machine main process.
+}
 procedure TFormBhyveManager.SpeedButtonStopVmClick(Sender: TObject);
 var
   PidNumber : Integer;
@@ -2969,6 +3184,10 @@ begin
   end
 end;
 
+{
+  This procedure is used to open a vnc connection if the virtual machine
+  supports it.
+}
 procedure TFormBhyveManager.SpeedButtonVncVmClick(Sender: TObject);
 var
   DisplayNode : TTreeNode;
@@ -2981,6 +3200,11 @@ begin
   end;
 end;
 
+{
+  This procedure is used to load Global settings treeview, Device Settings
+  treeview, and information of a virtual machine selected when a double click
+  event is generated.
+}
 procedure TFormBhyveManager.VirtualMachinesTreeViewDblClick(Sender: TObject);
 begin
   if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
@@ -3001,6 +3225,23 @@ begin
   end;
 end;
 
+{
+  This procedure is used to free all nodes from DeviceSettings TreeView to avoid
+  memory leaks.
+}
+procedure TFormBhyveManager.DeviceSettingsTreeViewDeletion(Sender: TObject;
+  Node: TTreeNode);
+begin
+  if assigned(TObject(Node.Data)) then
+  begin
+    TObject(Node.Data).Free;
+  end;
+end;
+
+{
+  This procedure is used to free all nodes from VirtualMachines TreeView to
+  avoid memory leaks.
+}
 procedure TFormBhyveManager.VirtualMachinesTreeViewDeletion(Sender: TObject;
   Node: TTreeNode);
 begin
@@ -3010,6 +3251,10 @@ begin
   end;
 end;
 
+{
+  This procedure is used to display a menu when a mouse right button is pressed
+  over a virtual machine name or a category.
+}
 procedure TFormBhyveManager.VirtualMachinesTreeViewMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -3017,10 +3262,15 @@ begin
    begin
      if (VirtualMachinesTreeView.Selected.Level = 0) then
       begin
+        // Add virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[0].Enabled:=True;
+        // Modify virtual machine info
         VirtualMachinesPopup.PopupMenu.Items.Items[1].Enabled:=False;
+        // Remove virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[2].Enabled:=False;
+        // RDP to virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
+
         VirtualMachinesPopup.PopupMenu.PopUp;
       end
       else if (VirtualMachinesTreeView.Selected.Level = 1) then
@@ -3041,6 +3291,11 @@ begin
    end;
 end;
 
+{
+  This procedure is used to load Global settings treeview, Device Settings
+  treeview, and information of a virtual machine selected when a click
+  event is generated.
+}
 procedure TFormBhyveManager.VirtualMachinesTreeViewSelectionChanged(
   Sender: TObject);
 begin
@@ -3106,6 +3361,10 @@ begin
   end;
 end;
 
+{
+  This procedure is used to extract audio device data from configuration data
+  and put them to AudioDevice class.
+}
 function TFormBhyveManager.FillDetailAudioDevice(Details: String; pci: String;
   device: String): TAudioDeviceClass;
 var
@@ -3134,6 +3393,10 @@ begin
   Result:=AudioDevice;
 end;
 
+{
+  This procedure is used to extract console device data from configuration data
+  and put them to SerialVirtioConsoleDevice class.
+}
 function TFormBhyveManager.FillDetailConsoleDevice(Details: String;
   pci: String; device: String; port : Integer): TSerialVirtioConsoleDeviceClass;
 var
@@ -3162,6 +3425,10 @@ begin
   Result:=SerialVirtioConsoleDevice;
 end;
 
+{
+  This procedure is used to extract display device data from configuration data
+  and put them to DisplayDevice class.
+}
 function TFormBhyveManager.FillDetailDisplayDevice(Details: String;
   pci: String; device: String): TDisplayDeviceClass;
 var
@@ -3198,6 +3465,10 @@ begin
   Result:=DisplayDevice;
 end;
 
+{
+  This procedure is used to extract hostbridge device data from configuration data
+  and put them to HostbridgeDevice class.
+}
 function TFormBhyveManager.FillDetailHostbridgeDevice(Details: String;
   pci: String; device: String): THostbridgeDeviceClass;
 var
@@ -3224,6 +3495,10 @@ begin
   Result:=HostBridgeDevice;
 end;
 
+{
+  This procedure is used to extract input device data from configuration data
+  and put them to InputDevice class.
+}
 function TFormBhyveManager.FillDetailInputDevice(Details: String; pci: String;
   device: String): TVirtioInputDeviceClass;
 var
@@ -3250,6 +3525,10 @@ begin
   Result:=InputDevice;
 end;
 
+{
+  This procedure is used to extract LPC device data from configuration data
+  and put them to LPCDevice class.
+}
 function TFormBhyveManager.FillDetailLpcDevice(Details: String; pci: String;
   device: String): TLPCDeviceClass;
 var
@@ -3258,7 +3537,7 @@ begin
   LPCDevice := TLPCDeviceClass.Create;
 
   RegexObj := TRegExpr.Create;
-  RegexObj.Expression := 'lpc.(\S+)=(\S+)';
+  RegexObj.Expression := 'lpc\.(\S+)=(\S+)';
 
   LPCDevice.pci:=pci;
   LPCDevice.device := device;
@@ -3284,6 +3563,10 @@ begin
   Result:=LPCDevice;
 end;
 
+{
+  This procedure is used to extract network device data from configuration data
+  and put them to NetworkDevice class.
+}
 function TFormBhyveManager.FillDetailNetworkDevice(Details: String;
   pci: String; device: String): TNetworkDeviceClass;
 var
@@ -3318,6 +3601,10 @@ begin
   Result:=NetworkDevice;
 end;
 
+{
+  This procedure is used to extract passthru device data from configuration data
+  and put them to PassthruDevice class.
+}
 function TFormBhyveManager.FillDetailPassthruDevice(Details: String;
   pci: String; device: String): TPassthruDeviceClass;
 var
@@ -3348,6 +3635,10 @@ begin
   Result:=PassthruDevice;
 end;
 
+{
+  This procedure is used to extract rng device data from configuration data
+  and put them to RNGDevice class.
+}
 function TFormBhyveManager.FillDetailRngDevice(Details: String; pci: String;
   device: String): TRNGDeviceClass;
 var
@@ -3374,6 +3665,10 @@ begin
   Result:=RNGDevice;
 end;
 
+{
+  This procedure is used to extract share folder device data from configuration
+  data and put them to ShareFolderDevice class.
+}
 function TFormBhyveManager.FillDetailShareFolderDevice(Details: String;
   pci: String; device: String): TShareFolderDeviceClass;
 var
@@ -3403,6 +3698,10 @@ begin
   Result:=ShareFolderDevice;
 end;
 
+{
+  This procedure is used to extract ahci storage device data from configuration
+  data and put them to StorageAhciDevice class.
+}
 function TFormBhyveManager.FillDetailStorageAhciDevice(Details: String;
   pci: String; device: String; port: Integer): TStorageAhciDeviceClass;
 var
@@ -3442,6 +3741,10 @@ begin
   Result:=StorageAhciDevice;
 end;
 
+{
+  This procedure is used to extract nvme storage device data from configuration
+  data and put them to StorageNvmeDevice class.
+}
 function TFormBhyveManager.FillDetailStorageNvmeDevice(Details: String;
   pci: String; device: String): TStorageNvmeDeviceClass;
 var
@@ -3482,6 +3785,10 @@ begin
   Result:=StorageNvmeDevice;
 end;
 
+{
+  This procedure is used to extract virtio-blk storage device data from
+  configuration data and put them to StorageVirtioBlkDevice class.
+}
 function TFormBhyveManager.FillDetailStorageVirtioBlkDevice(Details: String;
   pci: String; device: String): TStorageVirtioBlkDeviceClass;
 var
@@ -3516,6 +3823,10 @@ begin
   Result:=StorageVirtioBlkDevice;
 end;
 
+{
+  This procedure is used to extract usb xhci device data from configuration
+  data and put them to UsbXhciDevice class.
+}
 function TFormBhyveManager.FillDetailUsbXhciDevice(Details: String;
   pci: String; device: String; slot: Integer): TUsbXhciDeviceClass;
 var
@@ -3543,7 +3854,9 @@ begin
   Result:=UsbXhciDevice;
 end;
 
-{ Load default global settings from Virtual Machine bhyve_config.conf file }
+{
+  Load default global settings from Virtual Machine bhyve_config.conf file
+}
 function TFormBhyveManager.LoadGlobalSettingsValues(VmName: String): Boolean;
 var
   i: Integer;
@@ -3587,7 +3900,9 @@ begin
   Result:=True;
 end;
 
-{ Load default device settings from Virtual Machine bhyve_config.conf file }
+{
+  Load default device settings from Virtual Machine bhyve_config.conf file
+}
 function TFormBhyveManager.LoadDeviceSettingsValues(VmName: String): Boolean;
 var
   sl: TStringList;
@@ -3845,6 +4160,10 @@ begin
   end;
 end;
 
+{
+  Extract all network device settings from a Virtual Machine bhyve_config.conf
+  file.
+}
 function TFormBhyveManager.LoadNetworkDevice():TStringArray;
 var
   i : Integer;
@@ -3866,6 +4185,9 @@ begin
   Result:=DevicesArray;
 end;
 
+{
+  Load Virtual Machine data from vmname.conf file.
+}
 function TFormBhyveManager.LoadVirtualMachineData(ConfigPath: String
   ): TVirtualMachineClass;
 var

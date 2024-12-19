@@ -419,7 +419,9 @@ begin
     begin
       ConfigFile.SetOption('general', 'use_dnsmasq', 'no');
       ConfigFile.SetOption('network', 'bridge_interface', EditBridgeInterface.Text);
+
       SetUseDnsmasq('no');
+      SetBridgeInterface(EditBridgeInterface.Text);
     end;
 
     if CheckBoxUseSystray.Checked then

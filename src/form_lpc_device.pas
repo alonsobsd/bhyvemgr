@@ -50,6 +50,7 @@ type
     CheckBoxCom3: TCheckBox;
     CheckBoxCom4: TCheckBox;
     ComboBoxBootrom: TComboBox;
+    ComboBoxBootvars: TComboBox;
     EditCom1: TEdit;
     EditCom2: TEdit;
     EditCom3: TEdit;
@@ -58,6 +59,7 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     StatusBarLpcDevice: TStatusBar;
@@ -70,6 +72,7 @@ type
 
   public
     FormAction : String;
+    FormVmName : String;
     function FormValidate():Boolean;
     procedure LoadDefaultValues(VmName : String);
   end;
@@ -137,6 +140,7 @@ end;
 procedure TFormLpcDevice.LoadDefaultValues(VmName : String);
 begin
   FillComboBootrom(ComboBoxBootrom);
+  FillComboBootvars(ComboBoxBootvars);
 
   {$ifdef CPUAMD64}
   ComboBoxBootrom.ItemIndex:=ComboBoxBootrom.Items.IndexOf('BHYVE_UEFI.fd');
@@ -144,6 +148,13 @@ begin
   {$ifdef CPUAARCH64}
   ComboBoxBootrom.ItemIndex:=ComboBoxBootrom.Items.IndexOf('u-boot.bin');
   {$endif CPUAARCH64}
+
+  { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+  if GetOsreldate.ToInt64 > 1500023 then
+  begin
+    ComboBoxBootrom.Enabled:=False;
+    ComboBoxBootvars.Enabled:=False;
+  end;
 
   EditCom1.Text:='/dev/nmdm-'+VmName+'.1A';
   EditCom2.Text:='/dev/nmdm-'+VmName+'.2A';

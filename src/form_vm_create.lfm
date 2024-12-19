@@ -10,7 +10,7 @@ object FormVmCreate: TFormVmCreate
   OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.6.0.0'
   object Label10: TLabel
     Left = 53
     Height = 18
@@ -38,7 +38,7 @@ object FormVmCreate: TFormVmCreate
     Left = 53
     Height = 22
     Top = 504
-    Width = 227
+    Width = 223
     Caption = 'Use booting or installation media'
     TabOrder = 3
     OnChange = CheckBoxUseMediaChange
@@ -162,7 +162,7 @@ object FormVmCreate: TFormVmCreate
       Left = 32
       Height = 22
       Top = 56
-      Width = 163
+      Width = 159
       Caption = 'Do not add virtual disk'
       TabOrder = 1
       OnChange = RadioButtonNotDiskChange
@@ -171,7 +171,7 @@ object FormVmCreate: TFormVmCreate
       Left = 32
       Height = 22
       Top = 80
-      Width = 213
+      Width = 209
       Caption = 'Create and use new virtual disk'
       Checked = True
       TabOrder = 2
@@ -182,7 +182,7 @@ object FormVmCreate: TFormVmCreate
       Left = 368
       Height = 22
       Top = 38
-      Width = 226
+      Width = 222
       Caption = 'Wait for VNC connection for boot'
       Checked = True
       State = cbChecked
@@ -193,7 +193,7 @@ object FormVmCreate: TFormVmCreate
       Left = 368
       Height = 22
       Top = 14
-      Width = 144
+      Width = 140
       Caption = 'Enable framebuffer'
       Checked = True
       State = cbChecked
@@ -218,12 +218,22 @@ object FormVmCreate: TFormVmCreate
       Left = 368
       Height = 22
       Top = 64
-      Width = 212
+      Width = 208
       Caption = 'Only localhost VNC connection'
       Checked = True
       State = cbChecked
       TabOrder = 5
       OnChange = CheckBoxOnlyLocalhostChange
+    end
+    object CheckBoxUEFIBootvars: TCheckBox
+      Left = 368
+      Height = 22
+      Top = 88
+      Width = 152
+      Caption = 'Enable UEFI bootvars'
+      Checked = True
+      State = cbChecked
+      TabOrder = 6
     end
   end
   object GroupBoxNewVirtualDisk: TGroupBox

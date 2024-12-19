@@ -44,6 +44,7 @@ type
 
   TFormVmCreate = class(TForm)
     BitBtnCreateVm: TBitBtn;
+    CheckBoxUEFIBootvars: TCheckBox;
     CheckBoxOnlyLocalhost: TCheckBox;
     CheckBoxUseMedia: TCheckBox;
     CheckBoxFramebuffer: TCheckBox;
@@ -125,6 +126,7 @@ begin
   CheckBoxFramebuffer.Checked:=True;
   CheckBoxWaitVNC.Checked:=True;
   CheckBoxOnlyLocalhost.Checked:=True;
+  CheckBoxUEFIBootvars.Checked:=True;
 
   ComboBoxVirtualDeviceType.Clear;
   FillComboVirtualDeviceType(ComboBoxVirtualDeviceType);

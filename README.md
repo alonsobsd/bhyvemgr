@@ -36,7 +36,7 @@ bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), remote-viewer (n
 bhyvemgr can use two kind of network settings: *Quick network configuration* or *Best network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines.
 
 ## Quick network configuration
-If you want use bhyve without much network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network environment if you want virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
+If you want use bhyve without many network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network environment if you want that virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
 
 Add the following lines to your **/etc/rc.conf** file
 
@@ -49,7 +49,7 @@ ifconfig_bhyve0_descr="bhyve manager bridge"
 bhyvemgr add each tap interface to **bhyve0** bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
 
 ## Best network configuration
-On another hand, if you want use bhyve with a better network features (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign one ip address to it. This will be used like a gateway ip address for each virtual machine. A subnet **10.0.0.0/24** will be used in this guide.
+On another hand, if you want use bhyve with a better network features (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign an ip address to it. This will be used like a gateway by each virtual machine. A subnet **10.0.0.0/24** will be used in this guide.
 
 ```sh
 gateway_enable="YES"
@@ -92,7 +92,7 @@ dhcp-option=option:router,10.0.0.1
 dhcp-option=option:dns-server,10.0.0.1
 conf-dir=/usr/local/etc/dnsmasq.d/bhyvemgr/,*.conf
 ```
-It is necessary add **10.0.0.1** ip address to **/etc/resolv.conf** file for resolv each virtual machine name or subdomain **(fbsd15x634 or fbsd15x64.bsd.lan)** from our FreeBSD host
+It is necessary add **10.0.0.1** ip address into **/etc/resolv.conf** file if you want that each virtual machine name or subdomain **(fbsd15x634 or fbsd15x64.bsd.lan)** will be resolved from FreeBSD host.
 
 ```sh
 # ee /etc/resolv.conf
@@ -102,26 +102,26 @@ nameserver 10.0.0.1
 ```
 ### sudo / doas configuration
 
-bhyve needs root privileges on FreeBSD. For these tasks, bhyvemgr use sudo or doas for mitigate some security issues. The laziest way to configurate sudo or doas is the following:
+bhyve needs root privileges on FreeBSD. For these tasks, bhyvemgr uses sudo or doas to mitigate some security issues. The laziest way to configure sudo or doas (not recommended) is the following:
 
-For sudo if your user is part of wheel group. Also, an user can be defined there instead of wheel group (replace %wheel by acm for example).
+For sudo if user is part of wheel group. Also, an user can be defined there instead of wheel group (replace %wheel by acm for example).
 ```sh
 %wheel ALL=(ALL:ALL) NOPASSWD: ALL
 ```
-For doas if your user is part of wheel group. Also, an user can be defined there instead of wheel group (replace :wheel by acm for example).
+For doas if user is part of wheel group. Also, an user can be defined there instead of wheel group (replace :wheel by acm for example).
 ```sh
 permit nopass :wheel
 ```
 Otherwise, if you panic, use the following
 
-For sudo if your user is part of wheel group
+For sudo if user is part of wheel group
 ```sh
 %wheel ALL=(ALL) NOPASSWD: /usr/sbin/bhyve -k *, /usr/sbin/bhyvectl --vm=* destroy,
 /usr/sbin/chmod 750 /zroot/bhyvemgr, /bin/chown acm: /zroot/bhyvemgr, /sbin/ifconfig bhyve0 addm *,
 /usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
 /usr/sbin/service dnsmasq restart, /sbin/zfs create * zroot/bhyvemgr/*, /sbin/zfs destroy * zroot/bhyvemgr/*
 ```
-For doas if your user is part of wheel group
+For doas if user is part of wheel group
 ```sh
 permit nopass :wheel as root cmd bhyve
 permit nopass :wheel as root cmd bhyvectl
@@ -138,7 +138,7 @@ permit nopass :wheel as root cmd zfs
 ```
 ### PF configuration
 
-PF is used to bring packets filter and NAT features to our local environment. Take a look at the following PF configuration sample. In this guide **em0** is used like a local interface and **10.0.0.0/24** subnet for virtual machines. **10.0.0.1** is the ip address used by **bhyve0** bridge and this is where dnsmasq is listening. Change it according to your own needs.
+PF is used to bring packets filter and NAT features to our local environment. Take a look at the following PF configuration sample. In this guide **em0** is used like a local interface and **10.0.0.0/24** subnet for virtual machines. **10.0.0.1** is the ip address used by **bhyve0** bridge and this is where dnsmasq is listening. Change it according your own needs.
 
 ```sh
 ext_if="em0"
@@ -171,10 +171,10 @@ pass out quick on bhyve0 proto udp from port bootps to port bootps keep state
 
 pass out quick on $ext_if inet proto { tcp udp } from any to any
 ```
-With this best configuration, bhyvemgr will add an entry for each virtual machine to dnsmasq, dnsmasq will use this data for assign network configuration automatically, dnsmasq will provide a dns service for resolv each virtual machine name or subdmomain and virtual machines traffic will be management by packet filter rules.
+With this best configuration, bhyvemgr will add an entry for each virtual machine to dnsmasq, dnsmasq will use this data for assign network configuration automatically, this will provide a dns service to resolv each virtual machine name or subdmomain. Virtual machines traffic will be management by packet filter rules.
 
 # Run bhyvemgr for the first time
-When bhyvemgr is started for the first time, it will create a initial config file. It is mandatory review, modify (if it is necessary) and press **Save settings** button from of **Settings form** the first time
+When bhyvemgr starts in the first time, this will create a initial config file. It is mandatory to review, modify (if it is necessary) and press **Save settings** button from of **Settings form** the first time
 
 ![image](https://github.com/user-attachments/assets/35b0ea78-8449-4c08-bc13-c09977e0c30a)
 
