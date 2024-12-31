@@ -373,6 +373,7 @@ begin
   GlobalCategoryList.Add('ACPI');
   GlobalCategoryList.Add('Debugging');
   GlobalCategoryList.Add('TPM');
+  GlobalCategoryList.Add('BIOS');
   GlobalCategoryList.Add('x86');
 
   GlobalSettingsTreeView.Items.Clear;
@@ -393,65 +394,121 @@ end;
 }
 procedure TFormBhyveManager.FillGlobalCategoryDetailList();
 begin
-  { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+  // Remove when bhyve will updated on FreeBSD 13.x and 14.x
+  { System }
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
     GlobalSettingDefaultValueList.Values['bootrom'] := EmptyStr;
     GlobalSettingDefaultValueList.Values['bootvars'] := EmptyStr;
   end;
+  GlobalSettingDefaultValueList.Values['destroy_on_poweroff'] := 'false';
+  GlobalSettingDefaultValueList.Values['rtc.use_localtime'] := 'true';
+  GlobalSettingDefaultValueList.Values['uuid'] := EmptyStr;
+  GlobalSettingDefaultValueList.Values['virtio_msix'] := 'true';
+  GlobalSettingDefaultValueList.Values['keyboard.layout'] := EmptyStr;
+  { Processor }
   GlobalSettingDefaultValueList.Values['cpus'] := '1';
   GlobalSettingDefaultValueList.Values['cores'] := '1';
   GlobalSettingDefaultValueList.Values['threads'] := '1';
   GlobalSettingDefaultValueList.Values['sockets'] := '1';
+  { Memory  }
   GlobalSettingDefaultValueList.Values['memory.guest_in_core'] := 'false';
   GlobalSettingDefaultValueList.Values['memory.size'] := '256M';
   GlobalSettingDefaultValueList.Values['memory.wired'] := 'false';
+  { ACPI }
   GlobalSettingDefaultValueList.Values['acpi_tables'] := 'true';
   GlobalSettingDefaultValueList.Values['acpi_tables_in_memory'] := 'true';
-  GlobalSettingDefaultValueList.Values['destroy_on_poweroff'] := 'false';
+  { Debugging }
   GlobalSettingDefaultValueList.Values['gdb.address'] := 'localhost';
   GlobalSettingDefaultValueList.Values['gdb.port'] := '0';
   GlobalSettingDefaultValueList.Values['gdb.wait'] := 'false';
-  GlobalSettingDefaultValueList.Values['keyboard.layout'] := EmptyStr;
+  { TPM }
   GlobalSettingDefaultValueList.Values['tpm.path'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.type'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.version'] := EmptyStr;
-  GlobalSettingDefaultValueList.Values['rtc.use_localtime'] := 'true';
-  GlobalSettingDefaultValueList.Values['uuid'] := EmptyStr;
-  GlobalSettingDefaultValueList.Values['virtio_msix'] := 'true';
+  { x86 }
   GlobalSettingDefaultValueList.Values['x86.mptable'] := 'true';
   GlobalSettingDefaultValueList.Values['x86.x2apic'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.strictio'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.strictmsr'] := 'true';
   GlobalSettingDefaultValueList.Values['x86.vmexit_on_hlt'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.vmexit_on_pause'] := 'false';
+  { BIOS }
+  GlobalSettingDefaultValueList.Values['bios.vendor'] := 'BHYVE';
+  GlobalSettingDefaultValueList.Values['bios.version'] := '14.0';
+  GlobalSettingDefaultValueList.Values['bios.release_date'] := '10/17/2021';
+  GlobalSettingDefaultValueList.Values['system.family_name'] := 'Virtual Machine';
+  GlobalSettingDefaultValueList.Values['system.manufacturer'] := 'FreeBSD';
+  GlobalSettingDefaultValueList.Values['system.product_name'] := 'BHYVE';
+  GlobalSettingDefaultValueList.Values['system.serial_number'] := 'None';
+  GlobalSettingDefaultValueList.Values['system.sku'] := 'None';
+  GlobalSettingDefaultValueList.Values['system.version'] := '1.0';
+  GlobalSettingDefaultValueList.Values['board.manufacturer'] := 'FreeBSD';
+  GlobalSettingDefaultValueList.Values['board.product_name'] := 'BHYVE';
+  GlobalSettingDefaultValueList.Values['board.version'] := '1.0';
+  GlobalSettingDefaultValueList.Values['board.serial_number'] := 'None';
+  GlobalSettingDefaultValueList.Values['board.asset_tag'] := 'None';
+  GlobalSettingDefaultValueList.Values['board.location'] := 'None';
+  GlobalSettingDefaultValueList.Values['chassis.manufacturer'] := 'FreeBSD';
+  GlobalSettingDefaultValueList.Values['chassis.version'] := '1.0';
+  GlobalSettingDefaultValueList.Values['chassis.serial_number'] := 'None';
+  GlobalSettingDefaultValueList.Values['chassis.asset_tag'] := 'None';
+  GlobalSettingDefaultValueList.Values['chassis.sku'] := 'None';
 
-  { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+  // Remove when bhyve will updated on FreeBSD 13.x and 14.x
+  { System }
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
     GlobalSettingTypeList.Values['bootrom'] := 'String';
     GlobalSettingTypeList.Values['bootvars'] := 'String';
   end;
+  GlobalSettingTypeList.Values['keyboard.layout'] := 'String';
+  GlobalSettingTypeList.Values['rtc.use_localtime'] := 'Boolean';
+  GlobalSettingTypeList.Values['uuid'] := 'String';
+  GlobalSettingTypeList.Values['virtio_msix'] := 'Boolean';
+  GlobalSettingTypeList.Values['destroy_on_poweroff'] := 'Boolean';
+  { Processor }
   GlobalSettingTypeList.Values['cpus'] := 'Integer';
   GlobalSettingTypeList.Values['cores'] := 'Integer';
   GlobalSettingTypeList.Values['threads'] := 'Integer';
   GlobalSettingTypeList.Values['sockets'] := 'Integer';
+  { Memory }
   GlobalSettingTypeList.Values['memory.guest_in_core'] := 'Boolean';
   GlobalSettingTypeList.Values['memory.size'] := 'String';
   GlobalSettingTypeList.Values['memory.wired'] := 'Boolean';
+  { ACPI }
   GlobalSettingTypeList.Values['acpi_tables'] := 'Boolean';
   GlobalSettingTypeList.Values['acpi_tables_in_memory'] := 'Boolean';
-  GlobalSettingTypeList.Values['destroy_on_poweroff'] := 'Boolean';
+  { Debugging }
   GlobalSettingTypeList.Values['gdb.address'] := 'String';
   GlobalSettingTypeList.Values['gdb.port'] := 'Integer';
   GlobalSettingTypeList.Values['gdb.wait'] := 'Boolean';
-  GlobalSettingTypeList.Values['keyboard.layout'] := 'String';
+  { TPM }
   GlobalSettingTypeList.Values['tpm.path'] := 'String';
   GlobalSettingTypeList.Values['tpm.type'] := 'String';
   GlobalSettingTypeList.Values['tpm.version'] := 'String';
-  GlobalSettingTypeList.Values['rtc.use_localtime'] := 'Boolean';
-  GlobalSettingTypeList.Values['uuid'] := 'String';
-  GlobalSettingTypeList.Values['virtio_msix'] := 'Boolean';
+  { Bios }
+  GlobalSettingTypeList.Values['bios.vendor'] := 'String';
+  GlobalSettingTypeList.Values['bios.version'] := 'String';
+  GlobalSettingTypeList.Values['bios.release_date'] := 'String';
+  GlobalSettingTypeList.Values['system.family_name'] := 'String';
+  GlobalSettingTypeList.Values['system.manufacturer'] := 'String';
+  GlobalSettingTypeList.Values['system.product_name'] := 'String';
+  GlobalSettingTypeList.Values['system.serial_number'] := 'String';
+  GlobalSettingTypeList.Values['system.sku'] := 'String';
+  GlobalSettingTypeList.Values['system.version'] := 'String';
+  GlobalSettingTypeList.Values['board.manufacturer'] := 'String';
+  GlobalSettingTypeList.Values['board.product_name'] := 'String';
+  GlobalSettingTypeList.Values['board.version'] := 'String';
+  GlobalSettingTypeList.Values['board.serial_number'] := 'String';
+  GlobalSettingTypeList.Values['board.asset_tag'] := 'String';
+  GlobalSettingTypeList.Values['board.location'] := 'String';
+  GlobalSettingTypeList.Values['chassis.manufacturer'] := 'String';
+  GlobalSettingTypeList.Values['chassis.version'] := 'String';
+  GlobalSettingTypeList.Values['chassis.serial_number'] := 'String';
+  GlobalSettingTypeList.Values['chassis.asset_tag'] := 'String';
+  GlobalSettingTypeList.Values['chassis.sku'] := 'String';
+  { x86 }
   GlobalSettingTypeList.Values['x86.mptable'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.x2apic'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.strictio'] := 'Boolean';
@@ -459,7 +516,8 @@ begin
   GlobalSettingTypeList.Values['x86.vmexit_on_hlt'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.vmexit_on_pause'] := 'Boolean';
 
-  { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+  // Remove when bhyve will updated on FreeBSD 13.x and 14.x
+  { System }
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
     GlobalSettingCategoryList.Values['bootrom'] := 'System';
@@ -470,21 +528,48 @@ begin
   GlobalSettingCategoryList.Values['rtc.use_localtime'] := 'System';
   GlobalSettingCategoryList.Values['virtio_msix'] := 'System';
   GlobalSettingCategoryList.Values['uuid'] := 'System';
+  { Processor }
   GlobalSettingCategoryList.Values['cpus'] := 'Processor';
   GlobalSettingCategoryList.Values['cores'] := 'Processor';
   GlobalSettingCategoryList.Values['threads'] := 'Processor';
   GlobalSettingCategoryList.Values['sockets'] := 'Processor';
+  { Memory }
   GlobalSettingCategoryList.Values['memory.guest_in_core'] := 'Memory';
   GlobalSettingCategoryList.Values['memory.size'] := 'Memory';
   GlobalSettingCategoryList.Values['memory.wired'] := 'Memory';
+  { ACPI }
   GlobalSettingCategoryList.Values['acpi_tables'] := 'ACPI';
   GlobalSettingCategoryList.Values['acpi_tables_in_memory'] := 'ACPI';
+  { Debugging }
   GlobalSettingCategoryList.Values['gdb.address'] := 'Debugging';
   GlobalSettingCategoryList.Values['gdb.port'] := 'Debugging';
   GlobalSettingCategoryList.Values['gdb.wait'] := 'Debugging';
+  { TPM }
   GlobalSettingCategoryList.Values['tpm.path'] := 'TPM';
   GlobalSettingCategoryList.Values['tpm.type'] := 'TPM';
   GlobalSettingCategoryList.Values['tpm.version'] := 'TPM';
+  { Bios }
+  GlobalSettingCategoryList.Values['bios.vendor'] := 'BIOS';
+  GlobalSettingCategoryList.Values['bios.version'] := 'BIOS';
+  GlobalSettingCategoryList.Values['bios.release_date'] := 'BIOS';
+  GlobalSettingCategoryList.Values['system.family_name'] := 'BIOS';
+  GlobalSettingCategoryList.Values['system.manufacturer'] := 'BIOS';
+  GlobalSettingCategoryList.Values['system.product_name'] := 'BIOS';
+  GlobalSettingCategoryList.Values['system.serial_number'] := 'BIOS';
+  GlobalSettingCategoryList.Values['system.sku'] := 'BIOS';
+  GlobalSettingCategoryList.Values['system.version'] := 'BIOS';
+  GlobalSettingCategoryList.Values['board.manufacturer'] := 'BIOS';
+  GlobalSettingCategoryList.Values['board.product_name'] := 'BIOS';
+  GlobalSettingCategoryList.Values['board.version'] := 'BIOS';
+  GlobalSettingCategoryList.Values['board.serial_number'] := 'BIOS';
+  GlobalSettingCategoryList.Values['board.asset_tag'] := 'BIOS';
+  GlobalSettingCategoryList.Values['board.location'] := 'BIOS';
+  GlobalSettingCategoryList.Values['chassis.manufacturer'] := 'BIOS';
+  GlobalSettingCategoryList.Values['chassis.version'] := 'BIOS';
+  GlobalSettingCategoryList.Values['chassis.serial_number'] := 'BIOS';
+  GlobalSettingCategoryList.Values['chassis.asset_tag'] := 'BIOS';
+  GlobalSettingCategoryList.Values['chassis.sku'] := 'BIOS';
+  { x86 }
   GlobalSettingCategoryList.Values['x86.mptable'] := 'x86';
   GlobalSettingCategoryList.Values['x86.x2apic'] := 'x86';
   GlobalSettingCategoryList.Values['x86.strictio'] := 'x86';
@@ -818,33 +903,37 @@ begin
   begin
     SettingName:=extractVarName(GlobalSettingsTreeView.Selected.Text);
 
-    if (SettingName = 'cpus') or (SettingName = 'cores') or (SettingName = 'threads') or (SettingName = 'sockets')  then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+    case SettingName of
+        'cpus',
+        'cores',
+        'threads',
+        'sockets':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FillComboIntegerType(FormChangeValue.ComboBoxValue, 1, Trim(CheckSysctl('hw.vmm.maxcpu')).ToInteger, 1);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
-    end;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FillComboIntegerType(FormChangeValue.ComboBoxValue, 1, Trim(CheckSysctl('hw.vmm.maxcpu')).ToInteger, 1);
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'gdb.port':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-    if (SettingName = 'gdb.port')then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
-
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FormChangeValue.ComboBoxValue.Items.Add('0');
-      FillComboIntegerType(FormChangeValue.ComboBoxValue, 60000, 60100, 1);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FormChangeValue.ComboBoxValue.Items.Add('0');
+          FillComboIntegerType(FormChangeValue.ComboBoxValue, 60000, 60100, 1);
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
     end;
   end;
 
@@ -852,120 +941,153 @@ begin
   begin
     SettingName:=extractVarName(GlobalSettingsTreeView.Selected.Text);
 
-    if SettingName = 'bootrom' then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+    case SettingName of
+        'bootrom':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FillComboBootrom(FormChangeValue.ComboBoxValue);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
-    end;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FillComboBootrom(FormChangeValue.ComboBoxValue);
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'bootvars':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-    if SettingName = 'bootvars' then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FillComboBootvars(FormChangeValue.ComboBoxValue);
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'keyboard.layout':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FillComboBootvars(FormChangeValue.ComboBoxValue);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
-    end;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FillComboKeyboardLayout(FormChangeValue.ComboBoxValue);
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'tpm.path':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-    if SettingName = 'keyboard.layout' then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
 
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FillComboKeyboardLayout(FormChangeValue.ComboBoxValue);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
-    end;
-
-    if SettingName = 'tpm.path' then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
-
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-
-      case ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) of
-          'passthru':
-          begin
-            FillComboTpmDevice(FormChangeValue.ComboBoxValue);
-            FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          case ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) of
+              'passthru':
+              begin
+                FillComboTpmDevice(FormChangeValue.ComboBoxValue);
+                FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+              end;
+              'swtpm':
+              begin
+                if GetOsreldate.ToInt64 >= 1500026 then
+                begin
+                  FormChangeValue.ComboBoxValue.Clear;
+                  FormChangeValue.ComboBoxValue.Items.Add(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock');
+                end;
+              end;
+              else
+              begin
+                FormChangeValue.ComboBoxValue.Clear;
+              end;
           end;
-          'swtpm':
-          begin
-            if GetOsreldate.ToInt64 >= 1500026 then
-            begin
-              FormChangeValue.ComboBoxValue.Clear;
-              FormChangeValue.ComboBoxValue.Items.Add(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock');
-            end;
-          end;
-          else
-          begin
-            FormChangeValue.ComboBoxValue.Clear;
-          end;
-      end;
 
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
-    end;
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'tpm.type':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-    if SettingName = 'tpm.type' then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FillComboTpmType(FormChangeValue.ComboBoxValue);
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'tpm.version':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FillComboTpmType(FormChangeValue.ComboBoxValue);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
-    end;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FillComboTpmVersion(FormChangeValue.ComboBoxValue);
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'memory.size':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-    if SettingName = 'tpm.version' then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FormChangeValue.ShowSpinEx(256, Trim(CheckSysctl('hw.usermem')).ToInt64, 256);
+          FormChangeValue.SpinEditExValue.Value:=extractVarValue(GlobalSettingsTreeView.Selected.Text).Replace('M', EmptyStr).ToInt64;
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text)+' in MB';
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        'bios.vendor',
+        'bios.version',
+        'bios.release_date',
+        'system.family_name',
+        'system.manufacturer',
+        'system.product_name',
+        'system.serial_number',
+        'system.sku',
+        'system.version',
+        'board.manufacturer',
+        'board.product_name',
+        'board.version',
+        'board.serial_number',
+        'board.asset_tag',
+        'board.location',
+        'chassis.manufacturer',
+        'chassis.version',
+        'chassis.serial_number',
+        'chassis.asset_tag',
+        'chassis.sku':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
 
-      FormChangeValue.ShowComboBox();
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FillComboTpmVersion(FormChangeValue.ComboBoxValue);
-      FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
-    end;
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.ComboBoxValue.ReadOnly:=False;
+          FormChangeValue.ComboBoxValue.Items.Add(ExtractVarValue(GlobalSettingsTreeView.Selected.Text));
 
-    if SettingName = 'memory.size' then
-    begin
-      NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+          if extractVarValue(GlobalSettingsTreeView.Selected.Text) <> GlobalSettingDefaultValueList.Values[SettingName] then
+            FormChangeValue.ComboBoxValue.Items.Add(GlobalSettingDefaultValueList.Values[SettingName]);
 
-      FormChangeValue.ComboBoxValue.Clear;
-      FormChangeValue.SettingType:=SettingName;
-      FormChangeValue.ShowSpinEx(256, Trim(CheckSysctl('hw.usermem')).ToInt64, 256);
-      FormChangeValue.SpinEditExValue.Value:=extractVarValue(GlobalSettingsTreeView.Selected.Text).Replace('M', EmptyStr).ToInt64;
-      FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text)+' in MB';
-      FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
-      FormChangeValue.Visible:=True;
+          FormChangeValue.SettingType:=SettingName;
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
     end;
   end;
 end;
@@ -3860,15 +3982,11 @@ end;
 function TFormBhyveManager.LoadGlobalSettingsValues(VmName: String): Boolean;
 var
   i: Integer;
-  RegexObj: TRegExpr;
   TmpGlobalSettingsList : TStringList;
   ConfigSettingsFile: TStringList;
 begin
   TmpGlobalSettingsList:=TStringList.Create;
   TmpGlobalSettingsList.Text := GlobalSettingDefaultValueList.Text;
-
-  RegexObj := TRegExpr.Create;
-  RegexObj.Expression := '(\S+)=(\S+)';
 
   ConfigSettingsFile:=TStringList.Create;
   ConfigSettingsFile.LoadFromFile(VmPath + '/' + VmName + '/bhyve_config.conf');
@@ -3876,19 +3994,11 @@ begin
   for i:=ConfigSettingsFile.Count-1 downto 0 do
   begin
       if (ConfigSettingsFile[i].Contains('pci.')) or (ConfigSettingsFile[i].Contains('lpc.'))  then
-      begin
-        ConfigSettingsFile.Delete(i);
-      end;
+        ConfigSettingsFile.Delete(i)
+      else
+        TmpGlobalSettingsList.Values[ConfigSettingsFile.Names[i]]:= ConfigSettingsFile.ValueFromIndex[i];
   end;
 
-  if RegexObj.Exec(ConfigSettingsFile.Text) then
-  begin
-    repeat
-      TmpGlobalSettingsList.Values[RegexObj.Match[1]]:= RegexObj.Match[2];
-    until not RegexObj.ExecNext;
-  end;
-
-  RegexObj.Free;
   ConfigSettingsFile.Free;
 
   for i:=0 to GlobalSettingCategoryList.Count-1 do
