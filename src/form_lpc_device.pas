@@ -49,12 +49,12 @@ type
     CheckBoxCom2: TCheckBox;
     CheckBoxCom3: TCheckBox;
     CheckBoxCom4: TCheckBox;
+    ComboBoxCom1: TComboBox;
+    ComboBoxCom2: TComboBox;
+    ComboBoxCom3: TComboBox;
+    ComboBoxCom4: TComboBox;
     ComboBoxBootrom: TComboBox;
     ComboBoxBootvars: TComboBox;
-    EditCom1: TEdit;
-    EditCom2: TEdit;
-    EditCom3: TEdit;
-    EditCom4: TEdit;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
@@ -74,7 +74,7 @@ type
     FormAction : String;
     FormVmName : String;
     function FormValidate():Boolean;
-    procedure LoadDefaultValues(VmName : String);
+    procedure LoadDefaultValues();
   end;
 
 var
@@ -85,40 +85,40 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_component, unit_global;
+  unit_component, unit_global, unit_util;
 
 { TFormLpcDevice }
 
 procedure TFormLpcDevice.CheckBoxCom1Change(Sender: TObject);
 begin
   if CheckBoxCom1.Checked then
-    EditCom1.Enabled:=True
+    ComboBoxCom1.Enabled:=True
   else
-    EditCom1.Enabled:=False;
+    ComboBoxCom1.Enabled:=False;
 end;
 
 procedure TFormLpcDevice.CheckBoxCom2Change(Sender: TObject);
 begin
   if CheckBoxCom2.Checked then
-    EditCom2.Enabled:=True
+    ComboBoxCom2.Enabled:=True
   else
-    EditCom2.Enabled:=False;
+    ComboBoxCom2.Enabled:=False;
 end;
 
 procedure TFormLpcDevice.CheckBoxCom3Change(Sender: TObject);
 begin
   if CheckBoxCom3.Checked then
-    EditCom3.Enabled:=True
+    ComboBoxCom3.Enabled:=True
   else
-    EditCom3.Enabled:=False;
+    ComboBoxCom3.Enabled:=False;
 end;
 
 procedure TFormLpcDevice.CheckBoxCom4Change(Sender: TObject);
 begin
   if CheckBoxCom4.Checked then
-    EditCom4.Enabled:=True
+    ComboBoxCom4.Enabled:=True
   else
-    EditCom4.Enabled:=False;
+    ComboBoxCom4.Enabled:=False;
 end;
 
 procedure TFormLpcDevice.FormShow(Sender: TObject);
@@ -131,13 +131,13 @@ begin
   Result:=True;
 
   if ComboBoxBootrom.ItemIndex=-1 then Result:=False
-  else if CheckBoxCom1.Checked and (Trim(EditCom1.Text) = EmptyStr) then Result:=False
-  else if CheckBoxCom2.Checked and (Trim(EditCom2.Text) = EmptyStr) then Result:=False
-  else if CheckBoxCom3.Checked and (Trim(EditCom3.Text) = EmptyStr) then Result:=False
-  else if CheckBoxCom4.Checked and (Trim(EditCom4.Text) = EmptyStr) then Result:=False
+  else if CheckBoxCom1.Checked and (ComboBoxCom1.ItemIndex = -1) then Result:=False
+  else if CheckBoxCom2.Checked and (ComboBoxCom2.ItemIndex = -1) then Result:=False
+  else if CheckBoxCom3.Checked and (ComboBoxCom3.ItemIndex = -1) then Result:=False
+  else if CheckBoxCom4.Checked and (ComboBoxCom4.ItemIndex = -1) then Result:=False
 end;
 
-procedure TFormLpcDevice.LoadDefaultValues(VmName : String);
+procedure TFormLpcDevice.LoadDefaultValues();
 begin
   FillComboBootrom(ComboBoxBootrom);
   FillComboBootvars(ComboBoxBootvars);
@@ -156,10 +156,30 @@ begin
     ComboBoxBootvars.Enabled:=False;
   end;
 
-  EditCom1.Text:='/dev/nmdm-'+VmName+'.1A';
-  EditCom2.Text:='/dev/nmdm-'+VmName+'.2A';
-  EditCom3.Text:='/dev/nmdm-'+VmName+'.3A';
-  EditCom4.Text:='/dev/nmdm-'+VmName+'.4A';
+  ComboBoxCom1.Clear;
+  ComboBoxCom1.Enabled:=False;
+  ComboBoxCom1.Items.Add('/dev/nmdm-'+FormVmName+'.1A');
+
+  if (GetOsreldate.ToInt64 > 1500023) then
+  begin
+    if FormAction = 'Add' then
+    begin
+      ComboBoxCom1.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
+      ComboBoxCom1.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
+    end;
+  end;
+
+  ComboBoxCom2.Clear;
+  ComboBoxCom2.Enabled:=False;
+  ComboBoxCom2.Items.Add('/dev/nmdm-'+FormVmName+'.2A');
+
+  ComboBoxCom3.Clear;
+  ComboBoxCom3.Enabled:=False;
+  ComboBoxCom3.Items.Add('/dev/nmdm-'+FormVmName+'.3A');
+
+  ComboBoxCom4.Clear;
+  ComboBoxCom4.Enabled:=False;
+  ComboBoxCom4.Items.Add('/dev/nmdm-'+FormVmName+'.4A');
 end;
 
 end.

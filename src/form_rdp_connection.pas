@@ -59,6 +59,8 @@ type
 
   public
     FormAction : String;
+    FormUserName : String;
+    FormResolution : String;
     function FormValidate():Boolean;
     procedure LoadDefaultValues();
   end;
@@ -105,7 +107,16 @@ begin
   EditPassword.Clear;
   ComboBoxResolution.Clear;
   FillComboResolution(ComboBoxResolution);
-  ComboBoxResolution.ItemIndex:=ComboBoxResolution.Items.IndexOf('1024x768');
+
+  if FormUserName = EmptyStr then
+  begin
+    ComboBoxResolution.ItemIndex:=ComboBoxResolution.Items.IndexOf('1024x768');
+  end
+  else
+  begin
+    EditUsername.Text:=FormUserName;
+    ComboBoxResolution.ItemIndex:=ComboBoxResolution.Items.IndexOf(FormResolution);
+  end;
 end;
 
 end.

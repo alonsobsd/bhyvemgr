@@ -60,9 +60,10 @@ function DestroyNetworkInterface(IfName: String):Boolean;
 function DestroyVirtualMachine(VmName: String):Boolean;
 function ExtractCidr(Network: String): String;
 function ExtractNetMask(Cidr: Integer): String;
-function ExtractNumberValue(LineText: String; Suffix: String): String;
-function ExtractVarName(LineText: String): String;
-function ExtractVarValue(LineText: String): String;
+function ExtractNumberValue(TextLine: String; Suffix: String): String;
+function ExtractPortValue(TextLine: String): String;
+function ExtractVarName(TextLine: String): String;
+function ExtractVarValue(TextLine: String): String;
 function GenerateMacAddress(): String;
 function GenerateUuid(): String;
 function GetCurrentUserName(): String;
@@ -74,6 +75,7 @@ function GetNewPciSlotNumber(VmName : String): String;
 function GetNewPciSlotNumber(StringList : TStringList): String;
 function GetNewPciSlotNumber(StringList : TStringList; StartSlot : Integer): String;
 function GetNewAhciPortNumber(BusNumber : String; VmName : String): String;
+function GetNewComPortNumber(): String;
 function GetNewNetworkName(BackendType : String): String;
 function GetNewNetworkName(CurrentVmName : String; CurrentVmConfig : TStringList; BackendType : String; StartValue : Integer): String;
 function GetNewStorageName(DiskPath : String; IsZvol: Boolean): String;
@@ -1147,13 +1149,13 @@ begin
   end;
 end;
 
-function ExtractNumberValue(LineText: String; Suffix: String): String;
+function ExtractNumberValue(TextLine: String; Suffix: String): String;
 var
   RegText: TRegExpr;
 begin
   RegText := TRegExpr.Create('(\d+)'+Suffix);
 
-  if RegText.Exec(LineText) then
+  if RegText.Exec(TextLine) then
   begin
     Result:=RegText.Match[1];
   end;
@@ -1161,13 +1163,22 @@ begin
   RegText.Free
 end;
 
-function ExtractVarName(LineText: String): String;
+function ExtractPortValue(TextLine: String): String;
+var
+  TmpArray : TStringArray;
+begin
+  TmpArray:= TextLine.Split(':');
+
+  Result:=TmpArray[1];
+end;
+
+function ExtractVarName(TextLine: String): String;
 var
   RegText: TRegExpr;
 begin
   RegText := TRegExpr.Create('(.*)\s:');
 
-  if RegText.Exec(LineText) then
+  if RegText.Exec(TextLine) then
   begin
     Result:=RegText.Match[1];
   end;
@@ -1175,13 +1186,13 @@ begin
   RegText.Free
 end;
 
-function ExtractVarValue(LineText: String): String;
+function ExtractVarValue(TextLine: String): String;
 var
   RegText: TRegExpr;
 begin
   RegText := TRegExpr.Create('\S*\s:\s(.*)');
 
-  if RegText.Exec(LineText) then
+  if RegText.Exec(TextLine) then
     Result:=RegText.Match[1]
   else
     Result:=EmptyStr;
@@ -1241,6 +1252,15 @@ begin
   VtconName:=GetPatternValueFromConfigFile('pci.\d+\.\d+\.\d+.\S+.name=vtcon(\d+)', VmName);
 
   Result := VtconName;
+end;
+
+function GetNewComPortNumber(): String;
+var
+  PortNumber : String;
+begin
+  PortNumber:=GetPatternValueFromAllConfigFiles('tcp=\S+:(\d+)', FirstComPortNumber);
+
+  Result := PortNumber;
 end;
 
 function GetNewNetworkName(BackendType: String): String;
@@ -1433,7 +1453,7 @@ function GetNewVncPortNumber(): String;
 var
   PortNumber : String;
 begin
-  PortNumber:=GetPatternValueFromAllConfigFiles('pci.\d+.\d+.\d+.tcp=\S+:(\d+)', 5900);
+  PortNumber:=GetPatternValueFromAllConfigFiles('pci.\d+.\d+.\d+.tcp=\S+:(\d+)', FirstVncPortNumber);
 
   Result := PortNumber;
 end;

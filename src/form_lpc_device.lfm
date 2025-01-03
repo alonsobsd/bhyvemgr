@@ -68,7 +68,7 @@ object FormLpcDevice: TFormLpcDevice
       Height = 20
       Top = 112
       Width = 20
-      TabOrder = 4
+      TabOrder = 3
       OnChange = CheckBoxCom1Change
     end
     object CheckBoxCom2: TCheckBox
@@ -76,7 +76,7 @@ object FormLpcDevice: TFormLpcDevice
       Height = 20
       Top = 144
       Width = 20
-      TabOrder = 6
+      TabOrder = 4
       OnChange = CheckBoxCom2Change
     end
     object CheckBoxCom3: TCheckBox
@@ -84,7 +84,7 @@ object FormLpcDevice: TFormLpcDevice
       Height = 20
       Top = 176
       Width = 20
-      TabOrder = 8
+      TabOrder = 5
       OnChange = CheckBoxCom3Change
     end
     object CheckBoxCom4: TCheckBox
@@ -92,7 +92,7 @@ object FormLpcDevice: TFormLpcDevice
       Height = 20
       Top = 208
       Width = 20
-      TabOrder = 10
+      TabOrder = 6
       OnChange = CheckBoxCom4Change
     end
     object CheckBoxPcDebug: TCheckBox
@@ -102,42 +102,6 @@ object FormLpcDevice: TFormLpcDevice
       Width = 192
       Caption = 'Enable pc debug/test device'
       TabOrder = 0
-    end
-    object EditCom1: TEdit
-      Left = 80
-      Height = 32
-      Top = 104
-      Width = 208
-      Enabled = False
-      ReadOnly = True
-      TabOrder = 3
-    end
-    object EditCom2: TEdit
-      Left = 80
-      Height = 32
-      Top = 136
-      Width = 208
-      Enabled = False
-      ReadOnly = True
-      TabOrder = 5
-    end
-    object EditCom3: TEdit
-      Left = 80
-      Height = 32
-      Top = 168
-      Width = 208
-      Enabled = False
-      ReadOnly = True
-      TabOrder = 7
-    end
-    object EditCom4: TEdit
-      Left = 80
-      Height = 32
-      Top = 200
-      Width = 208
-      Enabled = False
-      ReadOnly = True
-      TabOrder = 9
     end
     object Label4: TLabel
       Left = 11
@@ -154,6 +118,42 @@ object FormLpcDevice: TFormLpcDevice
       ItemHeight = 30
       ReadOnly = True
       TabOrder = 2
+    end
+    object ComboBoxCom1: TComboBox
+      Left = 80
+      Height = 32
+      Top = 104
+      Width = 208
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 7
+    end
+    object ComboBoxCom2: TComboBox
+      Left = 80
+      Height = 32
+      Top = 136
+      Width = 208
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 8
+    end
+    object ComboBoxCom3: TComboBox
+      Left = 80
+      Height = 32
+      Top = 168
+      Width = 208
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 9
+    end
+    object ComboBoxCom4: TComboBox
+      Left = 80
+      Height = 32
+      Top = 200
+      Width = 208
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 10
     end
   end
   object BitBtnSave: TBitBtn

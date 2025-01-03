@@ -928,7 +928,7 @@ begin
           FormChangeValue.ComboBoxValue.Clear;
           FormChangeValue.SettingType:=SettingName;
           FormChangeValue.ComboBoxValue.Items.Add('0');
-          FillComboIntegerType(FormChangeValue.ComboBoxValue, 60000, 60100, 1);
+          FillComboIntegerType(FormChangeValue.ComboBoxValue, FirstGdbPortNumber, FirstGdbPortNumber + 100, 1);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
           FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
@@ -1375,9 +1375,9 @@ begin
               FormLpcDevice:=TFormLpcDevice.Create(FormBhyveManager);
               FormLpcDevice.BitBtnSave.OnClick:=@SaveLpcDevice;
               FormLpcDevice.FormStyle:=fsSystemStayOnTop;
-              FormLpcDevice.LoadDefaultValues(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name);
               FormLpcDevice.FormVmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
               FormLpcDevice.FormAction:='Add';
+              FormLpcDevice.LoadDefaultValues();
               FormLpcDevice.Show;
             end;
           end;
@@ -1561,9 +1561,9 @@ begin
             FormLpcDevice:=TFormLpcDevice.Create(FormBhyveManager);
             FormLpcDevice.BitBtnSave.OnClick:=@SaveLpcDevice;
             FormLpcDevice.FormStyle:=fsSystemStayOnTop;
-            FormLpcDevice.LoadDefaultValues(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name);
-            FormLpcDevice.FormAction:='Update';
             FormLpcDevice.FormVmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
+            FormLpcDevice.FormAction:='Update';
+            FormLpcDevice.LoadDefaultValues();
 
             { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
             if GetOsreldate.ToInt64 < 1500023 then
@@ -1579,10 +1579,43 @@ begin
               FormLpcDevice.ComboBoxBootvars.ItemIndex:=FormLpcDevice.ComboBoxBootvars.Items.IndexOf(ExtractFileName(GlobalSettingsTreeView.Items.TopLvlItems[0].Items[1].Text));
             end;
 
-            if LPCDevice.com1 <> EmptyStr then FormLpcDevice.CheckBoxCom1.Checked:=True;
-            if LPCDevice.com2 <> EmptyStr then FormLpcDevice.CheckBoxCom2.Checked:=True;
-            if LPCDevice.com3 <> EmptyStr then FormLpcDevice.CheckBoxCom3.Checked:=True;
-            if LPCDevice.com4 <> EmptyStr then FormLpcDevice.CheckBoxCom4.Checked:=True;
+            if LPCDevice.com1 <> EmptyStr then
+            begin
+              if (GetOsreldate.ToInt64 > 1500023) then
+              begin
+                if LPCDevice.com1.Contains('tcp=') then
+                begin
+                   FormLpcDevice.ComboBoxCom1.Items.Add('tcp=127.0.0.1:'+ExtractPortValue(LPCDevice.com1));
+                   FormLpcDevice.ComboBoxCom1.Items.Add('tcp=0.0.0.0:'+ExtractPortValue(LPCDevice.com1));
+                end
+                else
+                begin
+                  FormLpcDevice.ComboBoxCom1.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
+                  FormLpcDevice.ComboBoxCom1.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
+                end;
+              end;
+
+              FormLpcDevice.ComboBoxCom1.ItemIndex:=FormLpcDevice.ComboBoxCom1.Items.IndexOf(LPCDevice.com1);
+              FormLpcDevice.CheckBoxCom1.Checked:=True;
+            end;
+
+            if LPCDevice.com2 <> EmptyStr then
+            begin
+              FormLpcDevice.ComboBoxCom2.ItemIndex:=FormLpcDevice.ComboBoxCom2.Items.IndexOf(LPCDevice.com2);
+              FormLpcDevice.CheckBoxCom2.Checked:=True;
+            end;
+
+            if LPCDevice.com3 <> EmptyStr then
+            begin
+              FormLpcDevice.ComboBoxCom3.ItemIndex:=FormLpcDevice.ComboBoxCom3.Items.IndexOf(LPCDevice.com3);
+              FormLpcDevice.CheckBoxCom3.Checked:=True;
+            end;
+
+            if LPCDevice.com4 <> EmptyStr then
+            begin
+              FormLpcDevice.ComboBoxCom4.ItemIndex:=FormLpcDevice.ComboBoxCom4.Items.IndexOf(LPCDevice.com4);
+              FormLpcDevice.CheckBoxCom4.Checked:=True;
+            end;
 
             FormLpcDevice.Show;
           end;
@@ -1893,6 +1926,8 @@ begin
       RdpConnect(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name, FormRdpConnection.EditUsername.Text, FormRdpConnection.EditPassword.Text, ExtractDelimited(1,FormRdpConnection.ComboBoxResolution.Text,['x']), ExtractDelimited(2,FormRdpConnection.ComboBoxResolution.Text,['x']));
 
       FormRdpConnection.FormAction:=EmptyStr;
+      FormRdpConnection.FormUserName:=FormRdpConnection.EditUsername.Text;
+      FormRdpConnection.FormResolution:=FormRdpConnection.ComboBoxResolution.Text;
       FormRdpConnection.Hide;
     end;
   end;
@@ -2208,10 +2243,10 @@ begin
 
    TmpDevicesStringList.Values['lpc.fwcfg']:='bhyve';
 
-   if FormLpcDevice.CheckBoxCom1.Checked then TmpDevicesStringList.Values['lpc.com1.path']:=FormLpcDevice.EditCom1.Text;
-   if FormLpcDevice.CheckBoxCom2.Checked then TmpDevicesStringList.Values['lpc.com2.path']:=FormLpcDevice.EditCom2.Text;
-   if FormLpcDevice.CheckBoxCom3.Checked then TmpDevicesStringList.Values['lpc.com3.path']:=FormLpcDevice.EditCom3.Text;
-   if FormLpcDevice.CheckBoxCom4.Checked then TmpDevicesStringList.Values['lpc.com4.path']:=FormLpcDevice.EditCom4.Text;
+   if FormLpcDevice.CheckBoxCom1.Checked then TmpDevicesStringList.Values['lpc.com1.path']:=FormLpcDevice.ComboBoxCom1.Text;
+   if FormLpcDevice.CheckBoxCom2.Checked then TmpDevicesStringList.Values['lpc.com2.path']:=FormLpcDevice.ComboBoxCom2.Text;
+   if FormLpcDevice.CheckBoxCom3.Checked then TmpDevicesStringList.Values['lpc.com3.path']:=FormLpcDevice.ComboBoxCom3.Text;
+   if FormLpcDevice.CheckBoxCom4.Checked then TmpDevicesStringList.Values['lpc.com4.path']:=FormLpcDevice.ComboBoxCom4.Text;
 
    LPCDevice:=FillDetailLpcDevice(TmpDevicesStringList.Text, PciSlot, 'lpc');
 
@@ -2253,10 +2288,15 @@ begin
      {$endif CPUAMD64}
    end;
 
+   LPCDevice.com1:=EmptyStr;
+   LPCDevice.com2:=EmptyStr;
+   LPCDevice.com3:=EmptyStr;
+   LPCDevice.com4:=EmptyStr;
+
    if FormLpcDevice.CheckBoxCom1.Checked then
    begin
-     TmpDevicesStringList.Values['lpc.com1.path']:=FormLpcDevice.EditCom1.Text;
-     LPCDevice.com1:=FormLpcDevice.EditCom1.Text;
+     TmpDevicesStringList.Values['lpc.com1.path']:=FormLpcDevice.ComboBoxCom1.Text;
+     LPCDevice.com1:=FormLpcDevice.ComboBoxCom1.Text;
    end
    else
    begin
@@ -2266,8 +2306,8 @@ begin
 
    if FormLpcDevice.CheckBoxCom2.Checked then
    begin
-     TmpDevicesStringList.Values['lpc.com2.path']:=FormLpcDevice.EditCom2.Text;
-     LPCDevice.com2:=FormLpcDevice.EditCom2.Text;
+     TmpDevicesStringList.Values['lpc.com2.path']:=FormLpcDevice.ComboBoxCom2.Text;
+     LPCDevice.com2:=FormLpcDevice.ComboBoxCom2.Text;
    end
    else
    begin
@@ -2277,8 +2317,8 @@ begin
 
    if FormLpcDevice.CheckBoxCom3.Checked then
    begin
-     TmpDevicesStringList.Values['lpc.com3.path']:=FormLpcDevice.EditCom2.Text;
-     LPCDevice.com3:=FormLpcDevice.EditCom3.Text;
+     TmpDevicesStringList.Values['lpc.com3.path']:=FormLpcDevice.ComboBoxCom3.Text;
+     LPCDevice.com3:=FormLpcDevice.ComboBoxCom3.Text;
    end
    else
    begin
@@ -2288,8 +2328,8 @@ begin
 
    if FormLpcDevice.CheckBoxCom4.Checked then
    begin
-     TmpDevicesStringList.Values['lpc.com4.path']:=FormLpcDevice.EditCom2.Text;
-     LPCDevice.com4:=FormLpcDevice.EditCom4.Text;
+     TmpDevicesStringList.Values['lpc.com4.path']:=FormLpcDevice.ComboBoxCom4.Text;
+     LPCDevice.com4:=FormLpcDevice.ComboBoxCom4.Text;
    end
    else
    begin
@@ -3659,8 +3699,7 @@ begin
   LPCDevice := TLPCDeviceClass.Create;
 
   RegexObj := TRegExpr.Create;
-  RegexObj.Expression := 'lpc\.(\S+)=(\S+)';
-
+  RegexObj.Expression := 'lpc\.(\S+?)=(\S+)';
   LPCDevice.pci:=pci;
   LPCDevice.device := device;
 

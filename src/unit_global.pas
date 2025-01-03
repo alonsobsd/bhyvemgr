@@ -189,6 +189,9 @@ const
   FormBhyveManagerCreateVmTitle = 'Bhyve Manager - Create virtual machine';
   FormBhyveManagerEditVmInfoTitle = 'Bhyve Manager - Edit virtual machine info';
   TrayIconNotifytimeout = 3000;
+  FirstVncPortNumber = 5900;
+  FirstGdbPortNumber = 50000;
+  FirstComPortNumber = 60000;
 
 var
   OsreldateVar: String;
