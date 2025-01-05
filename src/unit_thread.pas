@@ -60,6 +60,22 @@ type
     property OnExitStatus: TExitStatusEvent read FOnExitStatus write FOnExitStatus;
   end;
 
+  { AppThread }
+
+  AppThread = class(TThread)
+  private
+    AppName : string;
+    AppResult : Boolean;
+    AppParams: TStringArray;
+    ExitMessage : String;
+    ExitStatus : Integer;
+    procedure ShowAppStatus;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(AppPath: String; Params: TStringArray);
+  end;
+
 implementation
 
 uses
@@ -165,6 +181,71 @@ begin
   AppParams:=[BhyveCmd, '-k', VmPath+'/'+VmName+'/bhyve_config.conf'];
 
   if FileExists(AppName) and FileExists(BhyveCmd) then
+  begin
+    inherited Create(True);
+    FreeOnTerminate := true;
+  end;
+end;
+
+{ AppThread }
+
+procedure AppThread.ShowAppStatus;
+begin
+  MessageDlg('Error message', ExitMessage, mtError, [mbOK], 0);
+end;
+
+procedure AppThread.Execute;
+var
+  AppProcess: TProcess;
+  I: Integer;
+begin
+  AppProcess := TProcess.Create(nil);
+
+  try
+    AppProcess.InheritHandles := False;
+    AppProcess.Options := [poWaitOnExit];
+    AppProcess.ShowWindow := swoShow;
+    for I := 1 to GetEnvironmentVariableCount do
+      AppProcess.Environment.Add(GetEnvironmentString(I));
+    AppProcess.Executable:= AppName;
+
+    for I:=0 to Length(AppParams)-1 do
+    begin
+      AppProcess.Parameters.Add(AppParams[I]);
+    end;
+
+    try
+      AppProcess.Execute;
+      ExitStatus:=AppProcess.ExitStatus;
+
+      if (ExitStatus = -1) then
+      begin
+        AppResult:=True;
+      end
+      else
+      begin
+        AppProcess.Terminate(1);
+      end;
+
+    except
+      on E: Exception do
+      begin
+        ExitStatus:=5;
+        ExitMessage:='An exception was raised: ' + E.Message;
+        Synchronize(@ShowAppStatus);
+      end;
+    end;
+  finally
+    AppProcess.Free;
+  end;
+end;
+
+constructor AppThread.Create(AppPath: String; Params: TStringArray);
+begin
+  AppName:=AppPath;
+  AppParams:=Params;
+
+  if FileExists(AppName) then
   begin
     inherited Create(True);
     FreeOnTerminate := true;

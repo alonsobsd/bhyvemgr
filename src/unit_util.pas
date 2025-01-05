@@ -96,7 +96,6 @@ function RemoveDnsmasqEntry(VmName: String):Boolean;
 function RestartDnsmasqService(Service : String):Boolean;
 function StopVirtualMachine(Pid : Integer):Boolean;
 function TruncateImage(ImagePath : String; ImageSize : String):Boolean;
-function VirtualMachineStart(VmName : String):Boolean;
 function VncConnect(VmHost : String; VmName : String):Boolean;
 function ZfsCreateDataset(ZfsPath : String):Boolean;
 function ZfsCreateZvol(ZfsPath : String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
@@ -106,52 +105,12 @@ function ZfsDestroy(ZfsPath : String; Recursive : Boolean = True; Force : Boolea
 implementation
 
 uses
-  unit_configuration, unit_global;
+  unit_configuration, unit_global, unit_thread;
+
+var
+  MyAppThread: AppThread;
 
 { Private functions }
-function AppStart(AppName: String; Params: TStringArray): Boolean;
-var
-  AppProcess: TProcess;
-  I: Integer;
-  ExitStatus : Integer;
-begin
-  Result:=False;
-
-  AppProcess := TProcess.Create(nil);
-
-  try
-    AppProcess.InheritHandles := False;
-    AppProcess.Options := [poDetached];
-
-    for I := 1 to GetEnvironmentVariableCount do
-      AppProcess.Environment.Add(GetEnvironmentString(I));
-    AppProcess.Executable:= AppName;
-
-    for I:=0 to Length(Params)-1 do
-    begin
-      AppProcess.Parameters.Add(Params[I]);
-    end;
-
-    try
-      AppProcess.Execute;
-      Sleep(100);
-      ExitStatus:=AppProcess.ExitStatus;
-
-      if (ExitStatus = -1) then
-        Result:=True
-      else
-        Result:=False;
-    except
-      on E: Exception do
-      begin
-        MessageDlg('Error message', 'An exception was raised: ' + E.Message, mtError, [mbOK], 0);
-      end;
-    end;
-  finally
-    AppProcess.Free;
-  end;
-end;
-
 function ExtractCidr(Network: String): String;
 var
   TmpArray : TStringArray;
@@ -379,6 +338,7 @@ var
   Oct4 : Integer;
 begin
   Result:=EmptyStr;
+  IpAddress:=EmptyStr;
 
   IpAddressValueList:=TStringList.Create;
 
@@ -1153,6 +1113,7 @@ function ExtractNumberValue(TextLine: String; Suffix: String): String;
 var
   RegText: TRegExpr;
 begin
+  Result:=EmptyStr;
   RegText := TRegExpr.Create('(\d+)'+Suffix);
 
   if RegText.Exec(TextLine) then
@@ -1176,6 +1137,8 @@ function ExtractVarName(TextLine: String): String;
 var
   RegText: TRegExpr;
 begin
+  Result:=EmptyStr;
+
   RegText := TRegExpr.Create('(.*)\s:');
 
   if RegText.Exec(TextLine) then
@@ -1291,6 +1254,7 @@ var
   DiskExt : String;
 begin
   flag:=True;
+  DiskName:=EmptyStr;
   c:=0;
 
   if IsZvol then
@@ -1368,6 +1332,7 @@ var
   PciSlotNumber : String;
 begin
   PciSlotNumber:='-1';
+  PatternValue:=EmptyStr;
 
   TmpList:=TStringList.Create;
   PatternValueList:=TStringList.Create;
@@ -1469,6 +1434,8 @@ var
   status : Boolean;
 begin
   Result:=EmptyStr;
+  TmpOutput:=EmptyStr;
+  PciDescripcion:=EmptyStr;
 
   pciconf_cmd:=PciconfCmd;
 
@@ -1511,6 +1478,7 @@ var
   status : Boolean;
 begin
   Result:=EmptyStr;
+  TmpOutput:=EmptyStr;
 
   PciList:=TStringList.Create();
 
@@ -1706,7 +1674,7 @@ var
   options : TStringArray;
   parameters : TStringArray;
 begin
-  Result:=False;
+  Result:=True;
 
   xfreerdp_cmd:=XfreerdpCmd;
   xfreerdp_args:=XfreerdpArgs;
@@ -1717,8 +1685,11 @@ begin
 
   if FileExists(xfreerdp_cmd) then
   begin
-    Result:=AppStart(xfreerdp_cmd, parameters);
-  end;
+    MyAppThread := AppThread.Create(xfreerdp_cmd, parameters);
+    MyAppThread.Start;
+  end
+  else
+    Result:=False;
 end;
 
 function RemoveDirectory(Directory: String; Recursive: Boolean): Boolean;
@@ -1846,37 +1817,21 @@ begin
   end;
 end;
 
-function VirtualMachineStart(VmName: String): Boolean;
-var
-  root_cmd : String;
-  bhyve_cmd : String;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  bhyve_cmd:=BhyveCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  if FileExists(bhyve_cmd) and FileExists(root_cmd) then
-  begin
-    Result:=AppStart(root_cmd, [bhyve_cmd, '-k', VmPath+'/'+VmName+'/bhyve_config.conf']);
-  end;
-end;
-
 function VncConnect(VmHost: String; VmName : String): Boolean;
 var
   vnc_cmd : String;
 begin
-  Result:=False;
+  Result:=True;
 
   vnc_cmd:=VncviewerCmd;
 
   if FileExists(vnc_cmd) then
   begin
-    Result:=AppStart(vnc_cmd, ['-t', 'bhyve - '+VmName, 'vnc://'+VmHost]);
-  end;
+    MyAppThread := AppThread.Create(vnc_cmd, ['-t', 'bhyve - '+VmName, 'vnc://'+VmHost]);
+    MyAppThread.Start;
+  end
+  else
+    Result:=False;
 end;
 
 function ZfsCreateDataset(ZfsPath: String): Boolean;
