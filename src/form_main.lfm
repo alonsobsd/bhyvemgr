@@ -14,7 +14,7 @@ object FormBhyveManager: TFormBhyveManager
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '3.8.0.0'
   object VirtualMachinesGroupBox: TGroupBox
     Left = 16
     Height = 424

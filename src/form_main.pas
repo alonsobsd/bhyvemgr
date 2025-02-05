@@ -2453,7 +2453,7 @@ begin
      TmpDevicesStringList.Values['pci.'+PciSlot+'.rom']:=FormPassthruDevice.FileNameEditRom.Text;
    end;
 
-   DeviceSettingsTreeView.Items.FindNodeWithText('device : '+PassthruDevice.device).Text:='device : '+FormPassthruDevice.ComboBoxDevice.Text;
+   DeviceSettingsTreeView.Items.FindNodeWithText('device : '+PassthruDevice.device+'-'+PassthruDevice.pptdev).Text:='device : '+PassthruDevice.device+'-'+FormPassthruDevice.ComboBoxDevice.Text;
 
    PassthruDevice.pptdev:=FormPassthruDevice.ComboBoxDevice.Text;
 
@@ -2896,7 +2896,14 @@ begin
     NewBhyveConfig:=TStringList.Create;
 
     if UseZfs = 'yes' then
-      ZfsCreateDataset(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text)
+    begin
+      if not DirectoryExists(VmPath) then
+      begin
+        CreateDirectory(VmPath, GetCurrentUserName());
+        ZfsCreateDataset(VmPath.Remove(0,1));
+      end;
+      ZfsCreateDataset(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text);
+    end
     else
       CreateDirectory(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName());
 
