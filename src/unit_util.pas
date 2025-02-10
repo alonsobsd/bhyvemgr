@@ -1671,17 +1671,33 @@ function RdpConnect(VmName: String; Username: String; Password: String;
 var
   xfreerdp_cmd : String;
   xfreerdp_args : String;
+  xfreerdp_args_file : String;
+  xfreerdp_args_list : TStringList;
   options : TStringArray;
   parameters : TStringArray;
+  i : Integer;
 begin
   Result:=True;
 
+  xfreerdp_args_list:= TStringList.Create();
+
+  xfreerdp_args:=TrimLeft(TrimRight(XfreerdpArgs));
+  xfreerdp_args_file:=VmPath+'/'+VmName+'/rdp.args';
   xfreerdp_cmd:=XfreerdpCmd;
-  xfreerdp_args:=XfreerdpArgs;
 
   options:=xfreerdp_args.Split(' ');
+  options:=['/u:'+Username, '/p:'+Password, '/v:'+VmName, '/w:'+Width, '/h:'+Height, '/t:Bhyve - '+VmName]+options;
 
-  parameters:=['/u:'+Username, '/p:'+Password, '/v:'+VmName, '/w:'+Width, '/h:'+Height, '/t:Bhyve - '+VmName]+options;
+  for i:=0 to Length(options)-1 do
+  begin
+    xfreerdp_args_list.Add(options[i]);
+  end;
+
+  if not FileExists(xfreerdp_args_file) then
+    CreateFile(xfreerdp_args_file, GetCurrentUserName(), '600');
+
+  xfreerdp_args_list.SaveToFile(xfreerdp_args_file);
+  parameters:=['/args-from:'+xfreerdp_args_file];
 
   if FileExists(xfreerdp_cmd) then
   begin
@@ -1690,6 +1706,8 @@ begin
   end
   else
     Result:=False;
+
+  xfreerdp_args_list.Free;
 end;
 
 function RemoveDirectory(Directory: String; Recursive: Boolean): Boolean;

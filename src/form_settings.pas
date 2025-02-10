@@ -206,6 +206,7 @@ begin
 
   if GetOsreldate.ToInt64 >= 1500026 then
   begin
+    {$ifdef CPUAMD64}
     if not FileExists(FileNameEditSwtpm.Text) or not (ExtractFileName(FileNameEditSwtpm.Text) = 'swtpm') then
     begin
       StatusBarBhyveSettings.SimpleText:='swtpm binary was not found';
@@ -216,6 +217,7 @@ begin
       StatusBarBhyveSettings.SimpleText:='swtpm_iocl binary was not found';
       Result:=False;
     end;
+    {$endif}
   end;
 
   if Trim(EditBridgeInterface.Text) = EmptyStr then
@@ -233,11 +235,13 @@ begin
     StatusBarBhyveSettings.SimpleText:='bhyvectl binary was not found';
     Result:=False;
   end
+  {$ifdef CPUAMD64}
   else if not FileExists(FileNameEditBhyveload.Text) or not (ExtractFileName(FileNameEditBhyveload.Text) = 'bhyveload') then
   begin
     StatusBarBhyveSettings.SimpleText:='bhyveload binary was not found';
     Result:=False;
   end
+  {$endif}
   else if not FileExists(FileNameEditVncviewer.Text) or not (ExtractFileName(FileNameEditVncviewer.Text) = 'remote-viewer') then
   begin
     StatusBarBhyveSettings.SimpleText:='vnc support will not available. net-mgmt/virt-viewer is not installed.';

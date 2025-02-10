@@ -220,6 +220,18 @@ begin
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
   PopupMenuItem.Caption:='RDP to virtual machine';
   PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:='-';
+  PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:='Copy VM name';
+  PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:='Copy COM1 command';
+  PopupMenu.Items.Add(PopupMenuItem);
 end;
 
 constructor TDeviceImageList.Create(component: TComponent);
@@ -310,6 +322,15 @@ begin
   ActionList.Add(Image.Picture.Bitmap, nil);
   { Index 5 }
   Image.Picture.LoadFromFile(DatadirPath+'images/menu/quit.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 6 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/ssh.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 7 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/com.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 8 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/vm.png');
   ActionList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;

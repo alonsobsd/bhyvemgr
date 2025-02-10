@@ -90,6 +90,9 @@ type
     procedure OpenFormGlobalChangeValue(Sender: TObject);
     procedure GlobalChangeValue(Sender: TObject);
     procedure AddDevice(Sender: TObject);
+    procedure CopyVmNameClick(Sender: TObject);
+    procedure CopyComCommandClick(Sender: TObject);
+    procedure CreateVmClick(Sender: TObject);
     procedure EditDevice(Sender: TObject);
     procedure EditVirtualMachineInfo(Sender: TObject);
     procedure RemoveDevice(Sender: TObject);
@@ -104,7 +107,6 @@ type
     procedure SavePassthruDevice(Sender: TObject);
     procedure SaveShareFolderDevice(Sender: TObject);
     procedure SaveStorageDevice(Sender: TObject);
-    procedure CreateVmClick(Sender: TObject);
     procedure SaveVirtualMachineInfoClick(Sender: TObject);
     procedure SpeedButtonReloadVmConfigClick(Sender: TObject);
     procedure SpeedButtonRemoveVmClick(Sender: TObject);
@@ -191,7 +193,7 @@ uses
   form_about, form_audio_device, form_change_value, form_console_device, form_display_device,
   form_hostbridge_device, form_input_device, form_lpc_device, form_network_device, form_passthru_device,
   form_rdp_connection, form_share_folder_device, form_storage_device, form_settings, form_vm_create,
-  form_vm_info, unit_configuration, unit_global, unit_util;
+  form_vm_info, unit_configuration, unit_global, unit_util, Clipbrd;
 
 { TFormBhyveManager }
 
@@ -244,11 +246,15 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[1].ImageIndex:=1;
   VirtualMachinesPopup.PopupMenu.Items[2].ImageIndex:=2;
   VirtualMachinesPopup.PopupMenu.Items[3].ImageIndex:=3;
+  VirtualMachinesPopup.PopupMenu.Items[5].ImageIndex:=8;
+  VirtualMachinesPopup.PopupMenu.Items[6].ImageIndex:=7;
 
   VirtualMachinesPopup.PopupMenu.Items[0].OnClick:=@SpeedButtonAddVmClick;
   VirtualMachinesPopup.PopupMenu.Items[1].OnClick:=@EditVirtualMachineInfo;
   VirtualMachinesPopup.PopupMenu.Items[2].OnClick:=@SpeedButtonRemoveVmClick;
   VirtualMachinesPopup.PopupMenu.Items[3].OnClick:=@RemoteDesktopProtocolVm;
+  VirtualMachinesPopup.PopupMenu.Items[5].OnClick:=@CopyVmNameClick;
+  VirtualMachinesPopup.PopupMenu.Items[6].OnClick:=@CopyComCommandClick;
 
   // Devices Popup Menu
   DevicesPopup:= TDevicesPopupMenu.Create(FormBhyveManager);
@@ -372,9 +378,13 @@ begin
   GlobalCategoryList.Add('Memory');
   GlobalCategoryList.Add('ACPI');
   GlobalCategoryList.Add('Debugging');
+  {$ifdef CPUAMD64}
   GlobalCategoryList.Add('TPM');
+  {$endif}
   GlobalCategoryList.Add('BIOS');
+  {$ifdef CPUAMD64}
   GlobalCategoryList.Add('x86');
+  {$endif}
 
   GlobalSettingsTreeView.Items.Clear;
 
@@ -399,8 +409,13 @@ begin
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
     GlobalSettingDefaultValueList.Values['bootrom'] := EmptyStr;
+    {$ifdef CPUAMD64}
     GlobalSettingDefaultValueList.Values['bootvars'] := EmptyStr;
+    {$endif}
   end;
+  {$ifdef CPUAARCH64}
+  GlobalSettingDefaultValueList.Values['console'] := 'stdio';
+  {$endif}
   GlobalSettingDefaultValueList.Values['destroy_on_poweroff'] := 'false';
   GlobalSettingDefaultValueList.Values['rtc.use_localtime'] := 'true';
   GlobalSettingDefaultValueList.Values['uuid'] := EmptyStr;
@@ -423,16 +438,20 @@ begin
   GlobalSettingDefaultValueList.Values['gdb.port'] := '0';
   GlobalSettingDefaultValueList.Values['gdb.wait'] := 'false';
   { TPM }
+  {$ifdef CPUAMD64}
   GlobalSettingDefaultValueList.Values['tpm.path'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.type'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.version'] := EmptyStr;
+  {$endif}
   { x86 }
+  {$ifdef CPUAMD64}
   GlobalSettingDefaultValueList.Values['x86.mptable'] := 'true';
   GlobalSettingDefaultValueList.Values['x86.x2apic'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.strictio'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.strictmsr'] := 'true';
   GlobalSettingDefaultValueList.Values['x86.vmexit_on_hlt'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.vmexit_on_pause'] := 'false';
+  {$endif}
   { BIOS }
   GlobalSettingDefaultValueList.Values['bios.vendor'] := 'BHYVE';
   GlobalSettingDefaultValueList.Values['bios.version'] := '14.0';
@@ -460,8 +479,14 @@ begin
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
     GlobalSettingTypeList.Values['bootrom'] := 'String';
+    {$ifdef CPUAMD64}
     GlobalSettingTypeList.Values['bootvars'] := 'String';
+    {$endif}
   end;
+
+  {$ifdef CPUAARCH64}
+  GlobalSettingTypeList.Values['console'] := 'String';
+  {$endif}
   GlobalSettingTypeList.Values['keyboard.layout'] := 'String';
   GlobalSettingTypeList.Values['rtc.use_localtime'] := 'Boolean';
   GlobalSettingTypeList.Values['uuid'] := 'String';
@@ -484,9 +509,11 @@ begin
   GlobalSettingTypeList.Values['gdb.port'] := 'Integer';
   GlobalSettingTypeList.Values['gdb.wait'] := 'Boolean';
   { TPM }
+  {$ifdef CPUAMD64}
   GlobalSettingTypeList.Values['tpm.path'] := 'String';
   GlobalSettingTypeList.Values['tpm.type'] := 'String';
   GlobalSettingTypeList.Values['tpm.version'] := 'String';
+  {$endif}
   { Bios }
   GlobalSettingTypeList.Values['bios.vendor'] := 'String';
   GlobalSettingTypeList.Values['bios.version'] := 'String';
@@ -509,20 +536,28 @@ begin
   GlobalSettingTypeList.Values['chassis.asset_tag'] := 'String';
   GlobalSettingTypeList.Values['chassis.sku'] := 'String';
   { x86 }
+  {$ifdef CPUAMD64}
   GlobalSettingTypeList.Values['x86.mptable'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.x2apic'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.strictio'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.strictmsr'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.vmexit_on_hlt'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.vmexit_on_pause'] := 'Boolean';
+  {$endif}
 
   // Remove when bhyve will updated on FreeBSD 13.x and 14.x
   { System }
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
     GlobalSettingCategoryList.Values['bootrom'] := 'System';
+    {$ifdef CPUAMD64}
     GlobalSettingCategoryList.Values['bootvars'] := 'System';
+    {$endif}
   end;
+
+  {$ifdef CPUAARCH64}
+  GlobalSettingCategoryList.Values['console'] := 'System';
+  {$endif}
   GlobalSettingCategoryList.Values['destroy_on_poweroff'] := 'System';
   GlobalSettingCategoryList.Values['keyboard.layout'] := 'System';
   GlobalSettingCategoryList.Values['rtc.use_localtime'] := 'System';
@@ -545,9 +580,11 @@ begin
   GlobalSettingCategoryList.Values['gdb.port'] := 'Debugging';
   GlobalSettingCategoryList.Values['gdb.wait'] := 'Debugging';
   { TPM }
+  {$ifdef CPUAMD64}
   GlobalSettingCategoryList.Values['tpm.path'] := 'TPM';
   GlobalSettingCategoryList.Values['tpm.type'] := 'TPM';
   GlobalSettingCategoryList.Values['tpm.version'] := 'TPM';
+  {$endif}
   { Bios }
   GlobalSettingCategoryList.Values['bios.vendor'] := 'BIOS';
   GlobalSettingCategoryList.Values['bios.version'] := 'BIOS';
@@ -570,12 +607,14 @@ begin
   GlobalSettingCategoryList.Values['chassis.asset_tag'] := 'BIOS';
   GlobalSettingCategoryList.Values['chassis.sku'] := 'BIOS';
   { x86 }
+  {$ifdef CPUAMD64}
   GlobalSettingCategoryList.Values['x86.mptable'] := 'x86';
   GlobalSettingCategoryList.Values['x86.x2apic'] := 'x86';
   GlobalSettingCategoryList.Values['x86.strictio'] := 'x86';
   GlobalSettingCategoryList.Values['x86.strictmsr'] := 'x86';
   GlobalSettingCategoryList.Values['x86.vmexit_on_hlt'] := 'x86';
   GlobalSettingCategoryList.Values['x86.vmexit_on_pause'] := 'x86';
+  {$endif}
 end;
 
 {
@@ -591,12 +630,18 @@ begin
 
   DevicesCategoryList.Add('Audio');
   DevicesCategoryList.Add('Console');
+  {$ifdef CPUAMD64}
   DevicesCategoryList.Add('Display');
+  {$endif}
   DevicesCategoryList.Add('Hostbridge');
   DevicesCategoryList.Add('Input');
+  {$ifdef CPUAMD64}
   DevicesCategoryList.Add('LPC');
+  {$endif}
   DevicesCategoryList.Add('Network');
+  {$ifdef CPUAMD64}
   DevicesCategoryList.Add('Passthru');
+  {$endif}
   DevicesCategoryList.Add('RNG');
   DevicesCategoryList.Add('Shared folders');
   DevicesCategoryList.Add('Storage');
@@ -621,14 +666,20 @@ end;
 procedure TFormBhyveManager.FillDeviceDetailList();
 begin
   DevicesList.Values['hda'] := 'Audio';
+  {$ifdef CPUAMD64}
   DevicesList.Values['fbuf'] := 'Display';
+  {$endif}
   DevicesList.Values['amdhostbridge'] := 'Hostbridge';
   DevicesList.Values['hostbridge'] := 'Hostbridge';
   DevicesList.Values['virtio-input'] := 'Input';
+  {$ifdef CPUAMD64}
   DevicesList.Values['lpc'] := 'LPC';
+  {$endif}
   DevicesList.Values['virtio-net'] := 'Network';
   DevicesList.Values['e1000'] := 'Network';
+  {$ifdef CPUAMD64}
   DevicesList.Values['passthru'] := 'Passthru';
+  {$endif}
   DevicesList.Values['virtio-rnd'] := 'RNG';
   DevicesList.Values['uart'] := 'Serial ports';
   DevicesList.Values['virtio-console'] := 'Console';
@@ -955,6 +1006,7 @@ begin
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
+        {$ifdef CPUAMD64}
         'bootvars':
         begin
           NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
@@ -968,6 +1020,25 @@ begin
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
+        {$endif}
+        {$ifdef CPUAARCH64}
+        'console':
+        begin
+          NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
+          VirtualMachine:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data);
+
+          FormChangeValue.ShowComboBox();
+          FormChangeValue.ComboBoxValue.Clear;
+          FormChangeValue.SettingType:=SettingName;
+          FormChangeValue.ComboBoxValue.Items.Add('/dev/nmdm-'+VirtualMachine.name+'.1A');
+          FormChangeValue.ComboBoxValue.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
+          FormChangeValue.ComboBoxValue.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
+          FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
+          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
+          FormChangeValue.Visible:=True;
+        end;
+        {$endif}
         'keyboard.layout':
         begin
           NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
@@ -1099,9 +1170,9 @@ end;
 procedure TFormBhyveManager.GlobalChangeValue(Sender: TObject);
 begin
   if (FormChangeValue.SettingType = 'memory.size') then
-    StatusBarBhyveManager.SimpleText:='Value has been changed to '+FormChangeValue.SpinEditExValue.Text+'M'
+    StatusBarBhyveManager.SimpleText:=FormChangeValue.SettingType+': value has been changed to '+FormChangeValue.SpinEditExValue.Text+'M'
   else
-    StatusBarBhyveManager.SimpleText:='Value has been changed to '+FormChangeValue.ComboBoxValue.Text;
+    StatusBarBhyveManager.SimpleText:=FormChangeValue.SettingType+': value has been changed to '+FormChangeValue.ComboBoxValue.Text;
 
   if (FormChangeValue.SettingType = 'bootrom') then
   begin
@@ -1463,6 +1534,42 @@ begin
             end;
           end;
     end;
+  end;
+end;
+
+procedure TFormBhyveManager.CopyVmNameClick(Sender: TObject);
+begin
+  if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Level <> 0) then
+    Clipboard.AsText:=VirtualMachinesTreeView.Selected.Text;
+end;
+
+procedure TFormBhyveManager.CopyComCommandClick(Sender: TObject);
+var
+  ComDevice : String;
+begin
+  if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Level <> 0) then
+  begin
+    VirtualMachine:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data);
+
+    {$ifdef CPUAARCH64}
+    ComDevice:=GlobalSettingsTreeView.Items.FindTopLvlNode('System').Items[1].Text;
+
+    if ComDevice.Contains('/dev/nmdm') then
+      Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachine.name+'.1B';
+
+    if ComDevice.Contains('tcp=') then
+      Clipboard.AsText:='netcat 127.0.0.1 '+ComDevice.Split('=')[1].Split(':')[1];
+    {$endif}
+    {$ifdef CPUAMD64}
+    LPCDevice:=TLPCDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('LPC').Items[0].Data);
+    ComDevice:=LPCDevice.com1;
+
+    if ComDevice.Contains('/dev/nmdm') then
+      Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachine.name+'.1B';
+
+    if ComDevice.Contains('tcp=') then
+      Clipboard.AsText:='netcat 127.0.0.1 '+ComDevice.Split('=')[1].Split(':')[1];
+    {$endif}
   end;
 end;
 
@@ -2921,8 +3028,10 @@ begin
     NewBhyveConfig.Values['cores']:='1';
     NewBhyveConfig.Values['rtc.use_localtime']:='true';
 
+    {$ifdef CPUAMD64}
     NewBhyveConfig.Values['x86.vmexit_on_hlt']:='true';
     NewBhyveConfig.Values['x86.strictmsr']:='false';
+    {$endif CPUAMD64}
 
     { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
     if GetOsreldate.ToInt64 >= 1500023 then
@@ -2953,15 +3062,21 @@ begin
         CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
       end;
       {$endif CPUAMD64}
-      {$ifdef CPUAARCH64}
-      NewBhyveConfig.Values['lpc.bootrom']:=BootRomUbootPath+ '/' +'u-boot.bin';
-      {$endif CPUAARCH64}
     end;
 
+    {$ifdef CPUAMD64}
     NewBhyveConfig.Values['lpc.fwcfg']:='bhyve';
     NewBhyveConfig.Values['lpc.com1.path']:='/dev/nmdm-'+FormVmCreate.EditVmName.Text+'.1A';
+    {$endif CPUAMD64}
+    {$ifdef CPUAARCH64}
+    NewBhyveConfig.Values['console']:='/dev/nmdm-'+FormVmCreate.EditVmName.Text+'.1A';
+    {$endif CPUAARCH64}
+
     NewBhyveConfig.Values['pci.0.0.0.device']:='hostbridge';
+
+    {$ifdef CPUAMD64}
     NewBhyveConfig.Values['pci.0.1.0.device']:='lpc';
+    {$endif}
 
     if FormVmCreate.CheckBoxUseMedia.Checked then
     begin
@@ -3032,6 +3147,7 @@ begin
     NewBhyveConfig.Values['pci.0.10.0.backend']:=GetNewNetworkName('tap');
     NewBhyveConfig.Values['pci.0.10.0.mac']:=MacAddress;
 
+    {$ifdef CPUAMD64}
     if FormVmCreate.CheckBoxFramebuffer.Checked then
     begin
       NewBhyveConfig.Values['pci.0.30.0.device']:='fbuf';
@@ -3046,6 +3162,7 @@ begin
 
     NewBhyveConfig.Values['pci.0.31.0.device']:='xhci';
     NewBhyveConfig.Values['pci.0.31.0.slot.1.device']:='tablet';
+    {$endif CPUAMD64}
 
     NewBhyveConfig.Sorted:=True;
 
@@ -3361,7 +3478,7 @@ procedure TFormBhyveManager.SpeedButtonVncVmClick(Sender: TObject);
 var
   DisplayNode : TTreeNode;
 begin
-  if DeviceSettingsTreeView.Items.TopLvlItems[2].Count = 1 then
+  if (DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Count = 1) AND (DeviceSettingsTreeView.Items.TopLvlItems[2].Text = 'Display') then
   begin
     DisplayNode:=DeviceSettingsTreeView.Items.TopLvlItems[2].Items[0];
     DisplayDevice:=TDisplayDeviceClass(DisplayNode.Data);
@@ -3439,6 +3556,10 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[2].Enabled:=False;
         // RDP to virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
+        // Copy virtual machine name
+        VirtualMachinesPopup.PopupMenu.Items.Items[5].Enabled:=False;
+        // Copy cu/netcat command to virtual machine
+        VirtualMachinesPopup.PopupMenu.Items.Items[6].Enabled:=False;
 
         VirtualMachinesPopup.PopupMenu.PopUp;
       end
@@ -3447,6 +3568,8 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[0].Enabled:=False;
         VirtualMachinesPopup.PopupMenu.Items.Items[1].Enabled:=True;
         VirtualMachinesPopup.PopupMenu.Items.Items[2].Enabled:=True;
+        VirtualMachinesPopup.PopupMenu.Items.Items[5].Enabled:=True;
+        VirtualMachinesPopup.PopupMenu.Items.Items[6].Enabled:=True;
 
         if (ExtractVarValue(VirtualMachinesTreeView.Selected.Text) = 'Running') and
            (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).rdp = True) and

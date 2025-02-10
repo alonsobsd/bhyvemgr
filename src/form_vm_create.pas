@@ -128,6 +128,13 @@ begin
   CheckBoxOnlyLocalhost.Checked:=True;
   CheckBoxUEFIBootvars.Checked:=True;
 
+  {$ifdef CPUAARCH64}
+  CheckBoxFramebuffer.Enabled:=False;
+  CheckBoxWaitVNC.Enabled:=False;
+  CheckBoxOnlyLocalhost.Enabled:=False;
+  CheckBoxUEFIBootvars.Enabled:=False;
+  {$endif}
+
   ComboBoxVirtualDeviceType.Clear;
   FillComboVirtualDeviceType(ComboBoxVirtualDeviceType);
   ComboBoxVirtualDeviceType.Items.Delete(ComboBoxVirtualDeviceType.Items.IndexOf('ahci-cd'));

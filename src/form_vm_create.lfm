@@ -10,7 +10,7 @@ object FormVmCreate: TFormVmCreate
   OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '3.8.0.0'
   object Label10: TLabel
     Left = 53
     Height = 18

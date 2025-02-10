@@ -10,7 +10,7 @@ object FormSettings: TFormSettings
   OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '3.8.0.0'
   object PageControl1: TPageControl
     Left = 16
     Height = 576
