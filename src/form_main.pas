@@ -153,7 +153,7 @@ type
     function LoadNetworkDevice():TStringArray;
     procedure ResetTreeView(TreeView : TTreeView);
     function SaveVirtualMachineConfig():Boolean;
-    procedure VirtualMachineShowStatus(Status: Integer; Message : String; VmName : String);
+    procedure VirtualMachineShowStatus(Status: Integer; Message : String; VmName : String; ErrorMessage : String);
   public
 
   end;
@@ -193,7 +193,7 @@ uses
   form_about, form_audio_device, form_change_value, form_console_device, form_display_device,
   form_hostbridge_device, form_input_device, form_lpc_device, form_network_device, form_passthru_device,
   form_rdp_connection, form_share_folder_device, form_storage_device, form_settings, form_vm_create,
-  form_vm_info, unit_configuration, unit_global, unit_util, Clipbrd;
+  form_vm_info, unit_configuration, unit_global, unit_util, Clipbrd, LazLogger;
 
 { TFormBhyveManager }
 
@@ -203,6 +203,12 @@ begin
   {$ifdef LCLGTK2}
   FormBhyveManager.BorderStyle:=bsSizeable;
   {$endif}
+
+  DebugLogger.UseStdOut:= False;
+  DebugLogger.CloseLogFileBetweenWrites:= true;
+  DebugLogger.LogName:= GetUserDir + '.config/bhyvemgr/bhyvemgr.log';
+
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyvemgr was started');
 
   FormSettings:= TFormSettings.Create(FormBhyveManager);
   FormAbout:= TFormAbout.Create(FormBhyveManager);
@@ -808,7 +814,7 @@ end;
   to run a virtual machine from bhyvemgr.
 }
 procedure TFormBhyveManager.VirtualMachineShowStatus(Status: Integer;
-  Message: String; VmName : String);
+  Message: String; VmName : String; ErrorMessage : String);
 var
   i : Integer;
 begin
@@ -832,12 +838,14 @@ begin
       TrayIcon.TrayIcon.ShowBalloonHint;
     end;
 
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
+
     MyVmThread := VmThread.Create(VmName);
     MyVmThread.OnExitStatus := @VirtualMachineShowStatus;
     MyVmThread.Start;
   end
-  { Power off }
-  else if Status = 1 then
+  { Powered off and Halted}
+  else if (Status = 1) OR (Status = 2) then
   begin
     for i:=NetworkDeviceList.Count-1 downto 0 do
     begin
@@ -876,20 +884,8 @@ begin
       TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
       TrayIcon.TrayIcon.ShowBalloonHint;
     end;
-  end
-  { Halted }
-  else if Status = 2 then
-  begin
-    StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText := Message;
 
-    if UseSystray = 'yes' then
-    begin
-      TrayIcon.TrayIcon.BalloonHint:=Message;
-      TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
-      TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
-      TrayIcon.TrayIcon.ShowBalloonHint;
-    end;
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
   end
   { Other exit status }
   else if Status > 2 then
@@ -924,6 +920,12 @@ begin
 
     StatusBarBhyveManager.SimpleText := EmptyStr;
     MessageDlg('Error message', Message, mtError, [mbOK], 0);
+
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
+
+    if ErrorMessage <> EmptyStr then
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : '+ErrorMessage);
+
     MyVmThread.Terminate;
   end;
 end;
@@ -1352,6 +1354,8 @@ end;
 }
 procedure TFormBhyveManager.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyvemgr was finished');
+
   GlobalNode.Free;
   GlobalSettingTypeList.Free;
   GlobalSettingDefaultValueList.Free;
@@ -1369,6 +1373,7 @@ begin
   VirtualMachineList.Free;
 
   TmpDevicesStringList.Free;
+  DebugLogger.Free;
 end;
 
 {
@@ -1388,7 +1393,9 @@ begin
     case Node.Text of
         'Audio':
           begin
-            FormAudioDevice:=TFormAudioDevice.Create(FormBhyveManager);
+            if not Assigned(FormAudioDevice) then
+              FormAudioDevice:=TFormAudioDevice.Create(FormBhyveManager);
+
             FormAudioDevice.BitBtnSave.OnClick:=@SaveAudioDevice;
             FormAudioDevice.FormStyle:=fsSystemStayOnTop;
             FormAudioDevice.LoadDefaultValues();
@@ -1397,7 +1404,9 @@ begin
           end;
         'Console':
           begin
-            FormConsoleDevice:=TFormConsoleDevice.Create(FormBhyveManager);
+            if not Assigned(FormConsoleDevice) then
+              FormConsoleDevice:=TFormConsoleDevice.Create(FormBhyveManager);
+
             FormConsoleDevice.BitBtnSave.OnClick:=@SaveConsoleDevice;
             FormConsoleDevice.FormStyle:=fsSystemStayOnTop;
             FormConsoleDevice.VtconName:='vtcon'+GetNewConsoleName(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name);
@@ -1410,7 +1419,9 @@ begin
           begin
             if (Node.Count = 0) then
             begin
-              FormDisplayDevice:=TFormDisplayDevice.Create(FormBhyveManager);
+              if not Assigned(FormDisplayDevice) then
+                FormDisplayDevice:=TFormDisplayDevice.Create(FormBhyveManager);
+
               FormDisplayDevice.BitBtnSave.OnClick:=@SaveDisplayDevice;
               FormDisplayDevice.FormStyle:=fsSystemStayOnTop;
               FormDisplayDevice.LoadDefaultValues();
@@ -1422,7 +1433,9 @@ begin
           begin
             if (Node.Count = 0) then
             begin
-              FormHostbridgeDevice:=TFormHostbridgeDevice.Create(FormBhyveManager);
+              if not Assigned(FormHostbridgeDevice) then
+                FormHostbridgeDevice:=TFormHostbridgeDevice.Create(FormBhyveManager);
+
               FormHostbridgeDevice.BitBtnSave.OnClick:=@SaveHostbridgeDevice;
               FormHostbridgeDevice.FormStyle:=fsSystemStayOnTop;
               FormHostbridgeDevice.LoadDefaultValues();
@@ -1432,7 +1445,9 @@ begin
           end;
         'Input':
           begin
-            FormInputDevice:=TFormInputDevice.Create(FormBhyveManager);
+            if not Assigned(FormInputDevice) then
+              FormInputDevice:=TFormInputDevice.Create(FormBhyveManager);
+
             FormInputDevice.BitBtnSave.OnClick:=@SaveInputDevice;
             FormInputDevice.FormStyle:=fsSystemStayOnTop;
             FormInputDevice.LoadDefaultValues();
@@ -1443,7 +1458,9 @@ begin
           begin
             if (Node.Count = 0) then
             begin
-              FormLpcDevice:=TFormLpcDevice.Create(FormBhyveManager);
+              if not Assigned(FormLpcDevice) then
+                FormLpcDevice:=TFormLpcDevice.Create(FormBhyveManager);
+
               FormLpcDevice.BitBtnSave.OnClick:=@SaveLpcDevice;
               FormLpcDevice.FormStyle:=fsSystemStayOnTop;
               FormLpcDevice.FormVmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
@@ -1454,7 +1471,9 @@ begin
           end;
         'Network':
           begin
-            FormNetworkDevice:=TFormNetworkDevice.Create(FormBhyveManager);
+            if not Assigned(FormNetworkDevice) then
+              FormNetworkDevice:=TFormNetworkDevice.Create(FormBhyveManager);
+
             FormNetworkDevice.BitBtnSave.OnClick:=@SaveNetworkDevice;
             FormNetworkDevice.FormStyle:=fsSystemStayOnTop;
             FormNetworkDevice.BackendDevice:=GetNewNetworkName(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name, TmpDevicesStringList, 'tap', 0);
@@ -1465,7 +1484,9 @@ begin
           end;
         'Passthru':
           begin
-            FormPassthruDevice:=TFormPassthruDevice.Create(FormBhyveManager);
+            if not Assigned(FormPassthruDevice) then
+              FormPassthruDevice:=TFormPassthruDevice.Create(FormBhyveManager);
+
             FormPassthruDevice.BitBtnSave.OnClick:=@SavePassthruDevice;
             FormPassthruDevice.FormStyle:=fsSystemStayOnTop;
             FormPassthruDevice.LoadDefaultValues();
@@ -1494,7 +1515,9 @@ begin
           end;
         'Shared folders':
           begin
-            FormShareFolderDevice:=TFormShareFolderDevice.Create(FormBhyveManager);
+            if not Assigned(FormShareFolderDevice) then
+              FormShareFolderDevice:=TFormShareFolderDevice.Create(FormBhyveManager);
+
             FormShareFolderDevice.BitBtnSave.OnClick:=@SaveShareFolderDevice;
             FormShareFolderDevice.FormStyle:=fsSystemStayOnTop;
             FormShareFolderDevice.LoadDefaultValues();
@@ -1503,7 +1526,9 @@ begin
           end;
         'Storage':
           begin
-            FormStorageDevice:=TFormStorageDevice.Create(FormBhyveManager);
+            if not Assigned(FormStorageDevice) then
+              FormStorageDevice:=TFormStorageDevice.Create(FormBhyveManager);
+
             FormStorageDevice.BitBtnSave.OnClick:=@SaveStorageDevice;
             FormStorageDevice.FormStyle:=fsSystemStayOnTop;
             FormStorageDevice.VmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
@@ -1591,7 +1616,9 @@ begin
           begin
             AudioDevice := TAudioDeviceClass(Node.Data);
 
-            FormAudioDevice:=TFormAudioDevice.Create(FormBhyveManager);
+            if not Assigned(FormAudioDevice) then
+              FormAudioDevice:=TFormAudioDevice.Create(FormBhyveManager);
+
             FormAudioDevice.BitBtnSave.OnClick:=@SaveAudioDevice;
             FormAudioDevice.FormStyle:=fsSystemStayOnTop;
             FormAudioDevice.LoadDefaultValues();
@@ -1604,7 +1631,9 @@ begin
           begin
             SerialVirtioConsoleDevice := TSerialVirtioConsoleDeviceClass(Node.Data);
 
-            FormConsoleDevice:=TFormConsoleDevice.Create(FormBhyveManager);
+            if not Assigned(FormConsoleDevice) then
+              FormConsoleDevice:=TFormConsoleDevice.Create(FormBhyveManager);
+
             FormConsoleDevice.BitBtnSave.OnClick:=@SaveConsoleDevice;
             FormConsoleDevice.FormStyle:=fsSystemStayOnTop;
             FormConsoleDevice.VtconName:=SerialVirtioConsoleDevice.name;
@@ -1619,13 +1648,23 @@ begin
           begin
             DisplayDevice := TDisplayDeviceClass(Node.Data);
 
-            FormDisplayDevice:=TFormDisplayDevice.Create(FormBhyveManager);
+            if not Assigned(FormDisplayDevice) then
+              FormDisplayDevice:=TFormDisplayDevice.Create(FormBhyveManager);
+
             FormDisplayDevice.BitBtnSave.OnClick:=@SaveDisplayDevice;
             FormDisplayDevice.FormStyle:=fsSystemStayOnTop;
             FormDisplayDevice.LoadDefaultValues();
             FormDisplayDevice.FormAction:='Update';
-            FormDisplayDevice.CheckBoxWaitVnc.Checked:=StrToBool(DisplayDevice.wait);
+            FormDisplayDevice.HostPort:=ExtractPortValue(DisplayDevice.tcp);
             FormDisplayDevice.EditHost.Text:=DisplayDevice.tcp;
+
+            if DisplayDevice.wait <> EmptyStr then
+              FormDisplayDevice.CheckBoxWaitVnc.Checked:=StrToBool(DisplayDevice.wait)
+            else
+              FormDisplayDevice.CheckBoxWaitVnc.Checked:=False;
+
+            if DisplayDevice.tcp.Contains('0.0.0.0') then
+              FormDisplayDevice.CheckBoxOnlyLocalhost.Checked:=False;
 
             if DisplayDevice.vga <> EmptyStr then FormDisplayDevice.ComboBoxVga.ItemIndex:=FormDisplayDevice.ComboBoxVga.Items.IndexOf(DisplayDevice.vga);
             if (DisplayDevice.w > 0) and (DisplayDevice.h > 0) then FormDisplayDevice.ComboBoxResolution.ItemIndex:=FormDisplayDevice.ComboBoxResolution.Items.IndexOf(DisplayDevice.w.ToString+'x'+DisplayDevice.h.ToString);
@@ -1641,7 +1680,9 @@ begin
           begin
             HostBridgeDevice := THostbridgeDeviceClass(Node.Data);
 
-            FormHostbridgeDevice:=TFormHostbridgeDevice.Create(FormBhyveManager);
+            if not Assigned(FormHostbridgeDevice) then
+              FormHostbridgeDevice:=TFormHostbridgeDevice.Create(FormBhyveManager);
+
             FormHostbridgeDevice.BitBtnSave.OnClick:=@SaveHostbridgeDevice;
             FormHostbridgeDevice.FormStyle:=fsSystemStayOnTop;
             FormHostbridgeDevice.LoadDefaultValues();
@@ -1653,7 +1694,9 @@ begin
           begin
             InputDevice := TVirtioInputDeviceClass(Node.Data);
 
-            FormInputDevice:=TFormInputDevice.Create(FormBhyveManager);
+            if not Assigned(FormInputDevice) then
+              FormInputDevice:=TFormInputDevice.Create(FormBhyveManager);
+
             FormInputDevice.BitBtnSave.OnClick:=@SaveInputDevice;
             FormInputDevice.FormStyle:=fsSystemStayOnTop;
             FormInputDevice.LoadDefaultValues();
@@ -1665,12 +1708,16 @@ begin
           begin
             LPCDevice := TLPCDeviceClass(Node.Data);
 
-            FormLpcDevice:=TFormLpcDevice.Create(FormBhyveManager);
+            if not Assigned(FormLpcDevice) then
+              FormLpcDevice:=TFormLpcDevice.Create(FormBhyveManager);
+
             FormLpcDevice.BitBtnSave.OnClick:=@SaveLpcDevice;
             FormLpcDevice.FormStyle:=fsSystemStayOnTop;
             FormLpcDevice.FormVmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
             FormLpcDevice.FormAction:='Update';
             FormLpcDevice.LoadDefaultValues();
+            FormLpcDevice.CheckBoxCom1.Checked:=False;
+
 
             { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
             if GetOsreldate.ToInt64 < 1500023 then
@@ -1730,7 +1777,9 @@ begin
           begin
             NetworkDevice := TNetworkDeviceClass(Node.Data);
 
-            FormNetworkDevice:=TFormNetworkDevice.Create(FormBhyveManager);
+            if not Assigned(FormNetworkDevice) then
+              FormNetworkDevice:=TFormNetworkDevice.Create(FormBhyveManager);
+
             FormNetworkDevice.BitBtnSave.OnClick:=@SaveNetworkDevice;
             FormNetworkDevice.FormStyle:=fsSystemStayOnTop;
             FormNetworkDevice.BackendDevice:=NetworkDevice.backend;
@@ -1747,7 +1796,9 @@ begin
           begin
             PassthruDevice := TPassthruDeviceClass(Node.Data);
 
-            FormPassthruDevice:=TFormPassthruDevice.Create(FormBhyveManager);
+            if not Assigned(FormPassthruDevice) then
+              FormPassthruDevice:=TFormPassthruDevice.Create(FormBhyveManager);
+
             FormPassthruDevice.BitBtnSave.OnClick:=@SavePassthruDevice;
             FormPassthruDevice.FormStyle:=fsSystemStayOnTop;
             FormPassthruDevice.LoadDefaultValues();
@@ -1767,7 +1818,9 @@ begin
           begin
             ShareFolderDevice := TShareFolderDeviceClass(Node.Data);
 
-            FormShareFolderDevice:=TFormShareFolderDevice.Create(FormBhyveManager);
+            if not Assigned(FormShareFolderDevice) then
+              FormShareFolderDevice:=TFormShareFolderDevice.Create(FormBhyveManager);
+
             FormShareFolderDevice.BitBtnSave.OnClick:=@SaveShareFolderDevice;
             FormShareFolderDevice.FormStyle:=fsSystemStayOnTop;
             if ShareFolderDevice.ro then FormShareFolderDevice.CheckBoxReadOnly.Checked:=True else FormShareFolderDevice.CheckBoxReadOnly.Checked:=False;
@@ -1781,7 +1834,9 @@ begin
           end;
         'Storage':
           begin
-            FormStorageDevice:=TFormStorageDevice.Create(FormBhyveManager);
+            if not Assigned(FormStorageDevice) then
+              FormStorageDevice:=TFormStorageDevice.Create(FormBhyveManager);
+
             FormStorageDevice.BitBtnSave.OnClick:=@SaveStorageDevice;
             FormStorageDevice.FormStyle:=fsSystemStayOnTop;
             FormStorageDevice.VmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
@@ -2064,7 +2119,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+AudioDevice.pci);
 
-   FormAudioDevice.Destroy;
+   FormAudioDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2078,7 +2133,7 @@ begin
    AudioDevice.play:=FormAudioDevice.EditPlayDevice.Text;
    AudioDevice.rec:=FormAudioDevice.EditRecDevice.Text;
 
-   FormAudioDevice.Destroy;
+   FormAudioDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2115,7 +2170,7 @@ begin
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+SerialVirtioConsoleDevice.pci);
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(SerialVirtioConsoleDevice.port));
 
-   FormConsoleDevice.Destroy;
+   FormConsoleDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2139,7 +2194,7 @@ begin
 
    SerialVirtioConsoleDevice.device:=FormConsoleDevice.ComboBoxDevice.Text;
 
-   FormConsoleDevice.Destroy;
+   FormConsoleDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2169,7 +2224,7 @@ begin
    TmpDevicesStringList.Values['pci.'+PciSlot+'.vga']:=FormDisplayDevice.ComboBoxVga.Text;
    if (FormDisplayDevice.CheckBoxUsePassword.Checked and (trim(FormDisplayDevice.EditPassword.Text) <> EmptyStr)) then TmpDevicesStringList.Values['pci.'+PciSlot+'.password']:=FormDisplayDevice.EditPassword.Text;
 
-   DisplayDevice:=FillDetailDisplayDevice(TmpDevicesStringList.Text, '0.'+PciSlot, 'fbuf');
+   DisplayDevice:=FillDetailDisplayDevice(TmpDevicesStringList.Text, PciSlot, 'fbuf');
 
    GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Display'), 'device : '+DisplayDevice.device);
    GlobalNode.Data:=DisplayDevice;
@@ -2178,7 +2233,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+DisplayDevice.pci);
 
-   FormDisplayDevice.Destroy;
+   FormDisplayDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2210,7 +2265,7 @@ begin
    DisplayDevice.vga:=FormDisplayDevice.ComboBoxVga.Text;
    DisplayDevice.pass:=Trim(FormDisplayDevice.EditPassword.Text);
 
-   FormDisplayDevice.Destroy;
+   FormDisplayDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2243,7 +2298,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+HostBridgeDevice.pci);
 
-   FormHostbridgeDevice.Destroy;
+   FormHostbridgeDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2257,7 +2312,7 @@ begin
 
    HostBridgeDevice.device:=FormHostbridgeDevice.ComboBoxHostbridgeDevice.Text;
 
-   FormHostbridgeDevice.Destroy;
+   FormHostbridgeDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2291,7 +2346,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+InputDevice.pci);
 
-   FormInputDevice.Destroy;
+   FormInputDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2303,7 +2358,7 @@ begin
 
    InputDevice.path:=FormInputDevice.ComboBoxInputDevice.Text;
 
-   FormInputDevice.Destroy;
+   FormInputDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2364,7 +2419,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+LPCDevice.pci);
 
-   FormLpcDevice.Destroy;
+   FormLpcDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2444,7 +2499,7 @@ begin
        TmpDevicesStringList.Delete(TmpDevicesStringList.IndexOfName('lpc.com4.path'));
    end;
 
-   FormLpcDevice.Destroy;
+   FormLpcDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2480,7 +2535,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+NetworkDevice.pci);
 
-   FormNetworkDevice.Destroy;
+   FormNetworkDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2489,6 +2544,7 @@ begin
    PciSlot:=NetworkDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormNetworkDevice.ComboBoxDevice.Text;
+   TmpDevicesStringList.Values['pci.'+PciSlot+'.backend']:=FormNetworkDevice.EditBackend.Text;
 
    if FormNetworkDevice.SpinEditExMtu.Value = 1500 then
    begin
@@ -2503,9 +2559,10 @@ begin
    DeviceSettingsTreeView.Items.FindNodeWithText('device : '+NetworkDevice.device).Text:='device : '+FormNetworkDevice.ComboBoxDevice.Text;
 
    NetworkDevice.device:=FormNetworkDevice.ComboBoxDevice.Text;
+   NetworkDevice.backend:=FormNetworkDevice.EditBackend.Text;
    NetworkDevice.mtu:=StrToInt(FormNetworkDevice.SpinEditExMtu.Text);
 
-   FormNetworkDevice.Destroy;
+   FormNetworkDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2540,7 +2597,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+PassthruDevice.pci);
 
-   FormPassthruDevice.Destroy;
+   FormPassthruDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2564,7 +2621,7 @@ begin
 
    PassthruDevice.pptdev:=FormPassthruDevice.ComboBoxDevice.Text;
 
-   FormPassthruDevice.Destroy;
+   FormPassthruDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2600,7 +2657,7 @@ begin
 
    DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+ShareFolderDevice.pci);
 
-   FormShareFolderDevice.Destroy;
+   FormShareFolderDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2625,7 +2682,7 @@ begin
 
    ShareFolderDevice.device:=FormShareFolderDevice.ComboBoxDevice.Text;
 
-   FormShareFolderDevice.Destroy;
+   FormShareFolderDevice.Hide;
 
    SaveVirtualMachineConfig();
  end
@@ -2679,7 +2736,7 @@ begin
             DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageAhciDevice.pci);
             DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(StorageAhciDevice.port));
 
-            FormStorageDevice.Destroy;
+            FormStorageDevice.Hide;
 
             SaveVirtualMachineConfig();
           end;
@@ -2724,7 +2781,7 @@ begin
             DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageAhciDevice.pci);
             DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(StorageAhciDevice.port));
 
-            FormStorageDevice.Destroy;
+            FormStorageDevice.Hide;
 
             SaveVirtualMachineConfig();
           end;
@@ -2778,7 +2835,7 @@ begin
 
             DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageNvmeDevice.pci);
 
-            FormStorageDevice.Destroy;
+            FormStorageDevice.Hide;
 
             SaveVirtualMachineConfig();
           end;
@@ -2817,7 +2874,7 @@ begin
 
             DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageVirtioBlkDevice.pci);
 
-            FormStorageDevice.Destroy;
+            FormStorageDevice.Hide;
 
             SaveVirtualMachineConfig();
           end;
@@ -2856,7 +2913,7 @@ begin
                 if StorageAhciDevice.sync <> FormStorageDevice.CheckBoxSync.Checked then StorageAhciDevice.sync:=FormStorageDevice.CheckBoxSync.Checked;
                 if StorageAhciDevice.ro <> FormStorageDevice.CheckBoxReadOnly.Checked then StorageAhciDevice.ro:=FormStorageDevice.CheckBoxReadOnly.Checked;
 
-                FormStorageDevice.Destroy;
+                FormStorageDevice.Hide;
 
                 SaveVirtualMachineConfig();
               end;
@@ -2896,7 +2953,7 @@ begin
                 if StorageAhciDevice.model <> FormStorageDevice.EditAhciModel.Text then StorageAhciDevice.model:=FormStorageDevice.EditAhciModel.Text;
                 if StorageAhciDevice.nmrr.ToString <> FormStorageDevice.ComboBoxAhciNmrr.Text then StorageAhciDevice.nmrr:=StrToInt(FormStorageDevice.ComboBoxAhciNmrr.Text);
 
-                FormStorageDevice.Destroy;
+                FormStorageDevice.Hide;
 
                 SaveVirtualMachineConfig();
               end;
@@ -2939,7 +2996,7 @@ begin
                 if StorageNvmeDevice.sectsz.ToString <> FormStorageDevice.EditNvmeSectsz.Text then StorageNvmeDevice.sectsz:=StrToInt(FormStorageDevice.EditNvmeSectsz.Text);
                 if StorageNvmeDevice.dsm <> FormStorageDevice.ComboBoxNvmeDsm.Text then StorageNvmeDevice.dsm:=FormStorageDevice.ComboBoxNvmeDsm.Text;
 
-                FormStorageDevice.Destroy;
+                FormStorageDevice.Hide;
 
                 SaveVirtualMachineConfig();
               end;
@@ -2970,7 +3027,7 @@ begin
                 if StorageVirtioBlkDevice.sync <> FormStorageDevice.CheckBoxSync.Checked then StorageVirtioBlkDevice.sync:=FormStorageDevice.CheckBoxSync.Checked;
                 if StorageVirtioBlkDevice.ro <> FormStorageDevice.CheckBoxReadOnly.Checked then StorageVirtioBlkDevice.ro:=FormStorageDevice.CheckBoxReadOnly.Checked;
 
-                FormStorageDevice.Destroy;
+                FormStorageDevice.Hide;
 
                 SaveVirtualMachineConfig();
               end;
@@ -3386,6 +3443,8 @@ begin
   MyVmThread.Start;
 
   Sleep(100);
+
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VirtualMachine.name+ ' VM have been started');
 
   if CheckVmRunning(VirtualMachine.name) > 0 then
   begin

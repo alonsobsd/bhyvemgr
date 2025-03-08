@@ -44,6 +44,7 @@ function AddDnsmasqEntry(VmName: String; IpAddress: String; MacAddreess : String
 function CheckBhyveSupport():Boolean;
 function CheckCidrRange(Subnet: String):Boolean;
 function CheckKernelModule(Module: String):Boolean;
+function CheckNetworkDeviceName(Name: String):Boolean;
 function CheckSysctl(Name: String):String;
 function CheckVmName(Name: String):Boolean;
 function CheckVmRunning(Name: String):Integer;
@@ -773,6 +774,22 @@ begin
       Write(output);
     end;
   end;
+end;
+
+function CheckNetworkDeviceName(Name: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^tap[0-9]+$|^vmnet[0-9]+$');
+
+  if RegText.Exec(Name) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
 end;
 
 function CheckSysctl(Name: String): String;

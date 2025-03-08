@@ -61,10 +61,10 @@ type
     procedure CheckBoxUsePasswordChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    HostPort : String;
     procedure FillComboVga(Combo: TComboBox);
   public
     FormAction : String;
+    HostPort : String;
     function FormValidate():Boolean;
     procedure LoadDefaultValues();
   end;
@@ -131,7 +131,10 @@ begin
   ComboBoxVga.ItemIndex:=ComboBoxVga.Items.IndexOf('io');
   ComboBoxResolution.ItemIndex:=ComboBoxResolution.Items.IndexOf('1024x768');
   CheckBoxOnlyLocalhost.Checked:=True;
+  CheckBoxWaitVnc.Checked:=True;
+  CheckBoxUsePassword.Checked:=False;
   EditPassword.Enabled:=False;
+  EditPassword.Clear;
   EditHost.Text:='127.0.0.1:'+HostPort;
 end;
 

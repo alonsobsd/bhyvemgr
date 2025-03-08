@@ -38,7 +38,7 @@ uses
   Classes, Dialogs, SysUtils;
 
 type
-  TExitStatusEvent = procedure(Status: Integer; Message : String; VmName : String) of Object;
+  TExitStatusEvent = procedure(Status: Integer; Message : String; VmName : String; ErrorMessage : String) of Object;
 
   { VmThread }
 
@@ -49,6 +49,7 @@ type
     AppVmPath : string;
     AppResult : String;
     AppParams: TStringArray;
+    ErrorMessage : String;
     ExitMessage : String;
     ExitStatus : Integer;
     FOnExitStatus: TExitStatusEvent;
@@ -67,6 +68,7 @@ type
     AppName : string;
     AppResult : Boolean;
     AppParams: TStringArray;
+    ErrorMessage : String;
     ExitMessage : String;
     ExitStatus : Integer;
     procedure ShowAppStatus;
@@ -87,7 +89,7 @@ procedure VmThread.ShowStatus;
 begin
   if Assigned(FOnExitStatus) then
   begin
-    FOnExitStatus(ExitStatus, ExitMessage, AppVmName);
+    FOnExitStatus(ExitStatus, ExitMessage, AppVmName, ErrorMessage);
   end;
 end;
 
@@ -95,26 +97,29 @@ procedure VmThread.Execute;
 var
   AppProcess: TProcess;
   I: Integer;
+  AppProcessOutput: TStringList;
 begin
   AppProcess := TProcess.Create(nil);
+  AppProcessOutput:= TStringList.Create;
+
+  AppProcess.InheritHandles := False;
+  AppProcess.Options := [poWaitOnExit, poUsePipes];
+  AppProcess.ShowWindow := swoShow;
+  for I := 1 to GetEnvironmentVariableCount do
+    AppProcess.Environment.Add(GetEnvironmentString(I));
+  AppProcess.Executable:= AppName;
+
+  for I:=0 to Length(AppParams)-1 do
+  begin
+    AppProcess.Parameters.Add(AppParams[I]);
+  end;
 
   try
-    AppProcess.InheritHandles := False;
-    AppProcess.Options := [poWaitOnExit];
-    AppProcess.ShowWindow := swoShow;
-    for I := 1 to GetEnvironmentVariableCount do
-      AppProcess.Environment.Add(GetEnvironmentString(I));
-    AppProcess.Executable:= AppName;
-
-    for I:=0 to Length(AppParams)-1 do
-    begin
-      AppProcess.Parameters.Add(AppParams[I]);
-    end;
-
     try
       AppProcess.Execute;
 
       ExitStatus:=AppProcess.ExitStatus;
+      AppProcessOutput.LoadFromStream(AppProcess.Stderr);
 
       if (ExitStatus = -1) then
       begin
@@ -139,17 +144,20 @@ begin
         end
         else if ExitStatus = 3 then
         begin
+          ErrorMessage:=AppProcessOutput.Text;
           ExitMessage:=AppVmName+' VM is triple fault';
           Synchronize(@Showstatus);
         end
         else if ExitStatus = 4 then
         begin
+          ErrorMessage:=AppProcessOutput.Text;
           ExitMessage:=AppVmName+' VM exited due to an error';
           Synchronize(@Showstatus);
         end
         else
         begin
           ExitStatus:=6;
+          ErrorMessage:=AppProcessOutput.Text;
           ExitMessage:=AppVmName+' VM exited';
           Synchronize(@Showstatus);
         end;
@@ -160,11 +168,13 @@ begin
       on E: Exception do
       begin
         ExitStatus:=5;
+        ErrorMessage:=AppProcessOutput.Text;
         ExitMessage:='An exception was raised: ' + E.Message;
         Synchronize(@Showstatus);
       end;
     end;
   finally
+    AppProcessOutput.Free;
     AppProcess.Free;
   end;
 end;

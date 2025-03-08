@@ -9,7 +9,7 @@ object FormNetworkDevice: TFormNetworkDevice
   ClientWidth = 337
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.8.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 192
@@ -48,7 +48,6 @@ object FormNetworkDevice: TFormNetworkDevice
       Top = 40
       Width = 112
       MaxLength = 20
-      ReadOnly = True
       TabOrder = 1
     end
     object Label13: TLabel

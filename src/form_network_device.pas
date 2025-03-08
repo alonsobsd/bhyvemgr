@@ -73,7 +73,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_global;
+  unit_global, unit_util;
 
 { TFormNetworkDevice }
 
@@ -87,7 +87,7 @@ begin
   Result:=True;
 
   if ComboBoxDevice.ItemIndex=-1 then Result:=False
-  else if Trim(EditBackend.Text) = EmptyStr then Result:=False
+  else if not CheckNetworkDeviceName(Trim(EditBackend.Text)) then Result:=False
   else if Trim(EditMac.Text) = EmptyStr then Result:=False
   else if SpinEditExMtu.Value = 0 then Result:=False
 end;
