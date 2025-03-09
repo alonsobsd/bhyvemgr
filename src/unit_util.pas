@@ -106,7 +106,7 @@ function ZfsDestroy(ZfsPath : String; Recursive : Boolean = True; Force : Boolea
 implementation
 
 uses
-  unit_configuration, unit_global, unit_thread;
+  unit_configuration, unit_global, unit_thread, LazLogger;
 
 var
   MyAppThread: AppThread;
@@ -690,7 +690,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : AttachDeviceToBridge : '+ DeviceName+' : '+output);
     end;
   end;
 end;
@@ -771,7 +771,7 @@ begin
     end
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CheckKernelModule : '+ Module+' : '+output);
     end;
   end;
 end;
@@ -809,7 +809,7 @@ begin
     if status then
       Result:=output
     else
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CheckSysCtl : '+ Name+' : '+output);
   end;
 end;
 
@@ -877,7 +877,7 @@ begin
     if status then
       Result:=status
     else
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CheckZfsDataset : '+ Dataset+' : '+output);
   end;
 end;
 
@@ -918,7 +918,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ChownDir : '+ Path+' : '+output);
     end;
   end;
 end;
@@ -949,7 +949,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ChmodDir : '+ Path+' : '+output);
     end;
   end;
 end;
@@ -979,7 +979,7 @@ begin
     if status then
       Result:=status
     else
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CreateDirectory : '+ DirectoryName+' : '+output);
   end;
 end;
 
@@ -1000,7 +1000,7 @@ begin
     if status then
       Result:=status
     else
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Createfile : '+ FileName+' : '+output);
   end;
 end;
 
@@ -1031,7 +1031,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : CreateNetworkDevice : '+ DeviceName+' : '+output);
     end;
   end;
 end;
@@ -1059,7 +1059,7 @@ begin
       Result:=status
     else
     begin
-      WriteLn(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CreateTpmSocket : '+ Path+' : '+output);
     end;
   end;
 end;
@@ -1090,7 +1090,7 @@ begin
       Result:=status
     else
     begin
-      WriteLn(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : DestroyNetworkInterface : '+ IfName+' : '+output);
     end;
   end;
 end;
@@ -1121,7 +1121,7 @@ begin
       Result:=status
     else
     begin
-      WriteLn(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : DestroyVirtualMachne : '+VmName+' : '+output);
     end;
   end;
 end;
@@ -1466,7 +1466,7 @@ begin
       TmpOutput:=output
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetPciDeviceDescripcion : '+Device+' : '+output);
     end;
   end;
 
@@ -1511,7 +1511,7 @@ begin
       TmpOutput:=Trim(output)
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetPciDeviceList : '+Device+' : '+output);
     end;
   end;
 
@@ -1558,7 +1558,7 @@ begin
       Result:=Trim(output).ToInt64
     else
     begin
-      Write(output);
+      WriteLn(output);
     end;
   end;
 end;
@@ -1618,7 +1618,7 @@ begin
       Result:=output
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetZpoolList : '+output);
     end;
   end;
 end;
@@ -1648,7 +1648,7 @@ begin
     if status then
       Result:=status
     else
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : KillPid : '+InttoStr(Pid)+' : '+output);
   end;
 end;
 
@@ -1678,7 +1678,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : LoadKernelModule : '+Module+' : '+output);
     end;
   end;
 end;
@@ -1758,7 +1758,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RemoveDirectory : '+Directory+' : '+output);
     end;
   end;
 end;
@@ -1810,12 +1810,12 @@ begin
 
     if status then
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartDnsmasqService : OK');
       Result:=status
     end
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartDnsmasqService : '+output);
     end;
   end;
 end;
@@ -1847,7 +1847,7 @@ begin
       Result:=status
     else
     begin
-      WriteLn(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : TruncateImage : '+ImagePath+' : '+output);
     end;
   end;
 end;
@@ -1904,7 +1904,7 @@ begin
     end
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateDataset : '+ ZfsPath+' : '+output);
     end;
   end;
 end;
@@ -1931,7 +1931,7 @@ begin
       Result:=Trim(output)
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsGetPropertyValue : '+ ZfsPath+' : '+output);
     end;
   end;
 end;
@@ -1970,7 +1970,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsDestroy : '+ ZfsPath+' : '+output);
     end;
   end;
 end;
@@ -2012,7 +2012,7 @@ begin
       Result:=status
     else
     begin
-      Write(output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateZvol : '+ ZfsPath+' : '+output);
     end;
   end;
 end;

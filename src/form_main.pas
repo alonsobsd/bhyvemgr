@@ -3255,6 +3255,8 @@ begin
 
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText:='A new '+FormVmCreate.EditVmName.Text+' VM was created';
+
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' VM was created');
   end
   else
   begin
@@ -3392,6 +3394,8 @@ begin
 
       StatusBarBhyveManager.Font.Color:=clTeal;
       StatusBarBhyveManager.SimpleText:=VmName+ ' VM data has been removed';
+
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM has been removed');
     end
     else
     begin
@@ -3400,8 +3404,6 @@ begin
       StatusBarBhyveManager.Font.Color:=clRed;
       StatusBarBhyveManager.SimpleText:=VmName+ ' VM data was not removed';
     end;
-
-
   end;
 end;
 
