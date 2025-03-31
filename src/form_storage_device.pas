@@ -243,9 +243,11 @@ end;
 procedure TFormStorageDevice.LoadDefaultValues();
 begin
   ComboBoxStorageDevice.Clear;
+  ComboBoxStorageDevice.Enabled:=True;
   FillComboVirtualDeviceType(ComboBoxStorageDevice);
 
   ComboBoxStorageType.Clear;
+  ComboBoxStorageType.Enabled:=True;
   FillComboVirtualStorageType(ComboBoxStorageType);
 
   FillComboAhciNmrr(ComboBoxAhciNmrr);

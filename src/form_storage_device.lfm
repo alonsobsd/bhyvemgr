@@ -9,7 +9,7 @@ object FormStorageDevice: TFormStorageDevice
   ClientWidth = 593
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.8.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 200
@@ -57,7 +57,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 11
       Height = 22
       Top = 144
-      Width = 81
+      Width = 77
       Caption = 'no cache'
       TabOrder = 5
     end
@@ -65,7 +65,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 104
       Height = 22
       Top = 144
-      Width = 84
+      Width = 80
       Caption = 'no delete'
       TabOrder = 6
     end
@@ -73,7 +73,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 200
       Height = 22
       Top = 144
-      Width = 55
+      Width = 51
       Caption = 'sync'
       TabOrder = 7
     end
@@ -81,7 +81,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 264
       Height = 22
       Top = 144
-      Width = 85
+      Width = 81
       Caption = 'read-only'
       TabOrder = 8
     end
@@ -302,7 +302,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 12
       Height = 22
       Top = 8
-      Width = 76
+      Width = 72
       Caption = 'use ram'
       TabOrder = 0
       OnChange = CheckBoxNvmUseRamChange
