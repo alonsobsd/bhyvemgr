@@ -1565,7 +1565,12 @@ end;
 procedure TFormBhyveManager.CopyVmNameClick(Sender: TObject);
 begin
   if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Level <> 0) then
-    Clipboard.AsText:=VirtualMachinesTreeView.Selected.Text;
+  begin
+    if VirtualMachinesTreeView.Selected.Text.Contains(':') then
+      Clipboard.AsText:=ExtractVarName(VirtualMachinesTreeView.Selected.Text)
+    else
+      Clipboard.AsText:=VirtualMachinesTreeView.Selected.Text;
+  end;
 end;
 
 procedure TFormBhyveManager.CopyComCommandClick(Sender: TObject);
