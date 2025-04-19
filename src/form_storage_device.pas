@@ -149,6 +149,7 @@ begin
       GroupBoxAhci.Enabled:=False;
       GroupBoxNvme.Enabled:=True;
 
+      CheckBoxNvmUseRam.Enabled:=True;
       ComboBoxStorageTypeChange(Nil);
     end;
   'virtio-blk':
@@ -252,10 +253,14 @@ begin
 
   FillComboAhciNmrr(ComboBoxAhciNmrr);
 
+  CheckBoxNvmUseRam.Enabled:=True;
+  SpinEditExDiskSize.Enabled:=True;
+
   ComboBoxStorageDevice.ItemIndex:=ComboBoxStorageDevice.Items.IndexOf('nvme');
   ComboBoxStorageType.ItemIndex:=ComboBoxStorageType.Items.IndexOf('image file');
   ComboBoxAhciNmrr.ItemIndex:=ComboBoxAhciNmrr.Items.IndexOf('0');
   ComboBoxNvmeDsm.ItemIndex:=ComboBoxNvmeDsm.Items.IndexOf('auto');
+
   EditSer.Clear;
   EditAhciRev.Text:='001';
   EditAhciSectorSize.Clear;

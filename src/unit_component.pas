@@ -569,34 +569,35 @@ begin
   case System of
   'BSD':
     begin
-      combo.AddItem('DragonFlyBSD 6.x', TObject(3));//3
-      combo.AddItem('FreeBSD 13.x', TObject(6)); //6
-      combo.AddItem('FreeBSD 14.x', TObject(6)); //6
-      combo.AddItem('FreeBSD 15.x', TObject(6)); //6
-      combo.AddItem('GhostBSD 24.x', TObject(13));
+      combo.AddItem('DragonFlyBSD 6.x', TObject(3));
+      combo.AddItem('FreeBSD 13.x', TObject(6));
+      combo.AddItem('FreeBSD 14.x', TObject(6));
+      combo.AddItem('FreeBSD 15.x', TObject(6));
+      combo.AddItem('GhostBSD 25.x', TObject(13));
       combo.AddItem('NomadBSD 14.x', TObject(14));
-      combo.AddItem('NetBSD 9.x', TObject(7));//7
-      combo.AddItem('NetBSD 10.x', TObject(7));//7
-      combo.AddItem('OpenBSD 7.x', TObject(8));//8
-      combo.AddItem('Other', TObject(9));//9
+      combo.AddItem('NetBSD 9.x', TObject(7));
+      combo.AddItem('NetBSD 10.x', TObject(7));
+      combo.AddItem('OpenBSD 7.x', TObject(8));
+      combo.AddItem('Other', TObject(9));
     end;
   'Linux':
     begin
       combo.AddItem('Almalinux 8.x', TObject(15));
       combo.AddItem('Almalinux 9.x', TObject(15));
       combo.AddItem('Alpinelinux 3.x', TObject(16));
-      combo.AddItem('Arch Linux 2024.x', TObject(1));
+      combo.AddItem('Arch Linux 2025.x', TObject(1));
       combo.AddItem('Debian 12.x', TObject(2));
-      combo.AddItem('EndeavourOS 2024.x', TObject(17));
-      combo.AddItem('Fedora 40.x', TObject(4));
-      combo.AddItem('Kali Linux 2024.x', TObject(18));
+      combo.AddItem('EndeavourOS 2025.x', TObject(17));
+      combo.AddItem('Fedora 42.x', TObject(4));
+      combo.AddItem('Kali Linux 2025.x', TObject(18));
       combo.AddItem('Linux Mint 22.x', TObject(22));
-      combo.AddItem('Manjaro 24.x', TObject(19));
+      combo.AddItem('Manjaro 25.x', TObject(19));
       combo.AddItem('Parrot 6.x', TObject(20));
       combo.AddItem('Pop! OS 22.x', TObject(21));
       combo.AddItem('Rockylinux 8.x', TObject(10));
       combo.AddItem('Rockylinux 9.x', TObject(10));
       combo.AddItem('Ubuntu 24.x', TObject(11));
+      combo.AddItem('Ubuntu 25.x', TObject(11));
       combo.AddItem('Other', TObject(5));
     end;
   'Windows':

@@ -842,7 +842,7 @@ begin
     Result:=PidNumber
   else
   begin
-    PidNumber:= GetPidValue('^bhyve: '+Name);
+    PidNumber:= GetPidValue('^bhyve: '+Name+'$');
     if PidNumber  > 0 then
       Result:=PidNumber;
   end;

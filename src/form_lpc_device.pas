@@ -139,7 +139,9 @@ end;
 
 procedure TFormLpcDevice.LoadDefaultValues();
 begin
+  ComboBoxBootrom.Clear;
   FillComboBootrom(ComboBoxBootrom);
+  ComboBoxBootvars.Clear;
   FillComboBootvars(ComboBoxBootvars);
 
   {$ifdef CPUAMD64}

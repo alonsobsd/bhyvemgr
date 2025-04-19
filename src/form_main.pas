@@ -817,6 +817,7 @@ procedure TFormBhyveManager.VirtualMachineShowStatus(Status: Integer;
   Message: String; VmName : String; ErrorMessage : String);
 var
   i : Integer;
+  PidNumber : Integer;
 begin
   { Rebooting }
   if Status = 0 then
@@ -870,8 +871,9 @@ begin
 
     if GetOsreldate.ToInt64 >= 1500026 then
     begin
-      if CheckTpmSocketRunning(VmName) > 0 then
-        KillPid(CheckTpmSocketRunning(VmName));
+      PidNumber:=CheckTpmSocketRunning(VmName);
+      if PidNumber > 0 then
+        KillPid(PidNumber);
     end;
 
     StatusBarBhyveManager.Font.Color:=clTeal;
@@ -913,8 +915,9 @@ begin
 
       if GetOsreldate.ToInt64 >= 1500026 then
       begin
-        if CheckTpmSocketRunning(VmName) > 0 then
-          KillPid(CheckTpmSocketRunning(VmName));
+        PidNumber:=CheckTpmSocketRunning(VmName);
+        if PidNumber > 0 then
+          KillPid(PidNumber);
       end;
     end;
 
