@@ -25,6 +25,7 @@ jobs:
         release: "15.0"
         usesh: true
         prepare: |
+          export IGNORE_OSVERSION=yes
           pkg update -f
           pkg install -y lazarus-qt6
 
