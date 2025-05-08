@@ -1558,7 +1558,8 @@ begin
       Result:=Trim(output).ToInt64
     else
     begin
-      WriteLn(output);
+      if not (output = EmptyStr) then
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetPidValue : '+output);
     end;
   end;
 end;

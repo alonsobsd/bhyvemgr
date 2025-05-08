@@ -1247,7 +1247,8 @@ procedure TFormBhyveManager.FormActivate(Sender: TObject);
 begin
   if NewConfig then
   begin
-    MessageDlg('A config file was generated, but the config file itself may not follow your own needs. A settings form will be open. Review it and press Save settings button if everything is ok.', mtInformation, [mbOk], 0);
+    MessageDlg('A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press "Save settings button" if everything is ok.', mtInformation, [mbOk], 0);
+    SetNewConfig(False);
     FormSettings.Show;
   end;
 end;

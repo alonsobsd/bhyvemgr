@@ -8,21 +8,21 @@ object FormBhyveManager: TFormBhyveManager
   ClientHeight = 619
   ClientWidth = 820
   Menu = MainMenu1
+  Position = poDesktopCenter
+  LCLVersion = '4.0.0.4'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
-  Position = poDesktopCenter
-  LCLVersion = '3.8.0.0'
   object VirtualMachinesGroupBox: TGroupBox
     Left = 16
     Height = 424
     Top = 64
     Width = 384
     Caption = 'Virtual machines'
-    ClientHeight = 395
-    ClientWidth = 380
+    ClientHeight = 406
+    ClientWidth = 376
     TabOrder = 0
     object VirtualMachinesTreeView: TTreeView
       Left = 16
@@ -35,11 +35,11 @@ object FormBhyveManager: TFormBhyveManager
       ScrollBars = ssAutoVertical
       SortType = stText
       TabOrder = 0
+      Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
       OnDblClick = VirtualMachinesTreeViewDblClick
       OnDeletion = VirtualMachinesTreeViewDeletion
       OnMouseDown = VirtualMachinesTreeViewMouseDown
       OnSelectionChanged = VirtualMachinesTreeViewSelectionChanged
-      Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
     end
   end
   object SettingsPageControl: TPageControl
@@ -52,8 +52,8 @@ object FormBhyveManager: TFormBhyveManager
     TabOrder = 1
     object GlobalSettingsTabSheet: TTabSheet
       Caption = 'Global settings'
-      ClientHeight = 389
-      ClientWidth = 386
+      ClientHeight = 390
+      ClientWidth = 388
       object GlobalSettingsTreeView: TTreeView
         Left = 16
         Height = 360
@@ -65,16 +65,16 @@ object FormBhyveManager: TFormBhyveManager
         ScrollBars = ssAutoBoth
         TabOrder = 0
         ToolTips = False
+        Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoThemedDraw]
         OnClick = GlobalSettingsTreeViewClick
         OnMouseDown = GlobalSettingsTreeViewMouseDown
         OnSelectionChanged = GlobalSettingsTreeViewSelectionChanged
-        Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoThemedDraw]
       end
     end
     object DeviceSettingsTabSheet: TTabSheet
       Caption = 'Device settings'
-      ClientHeight = 389
-      ClientWidth = 386
+      ClientHeight = 390
+      ClientWidth = 388
       object DeviceSettingsTreeView: TTreeView
         Left = 16
         Height = 360
@@ -86,9 +86,9 @@ object FormBhyveManager: TFormBhyveManager
         ScrollBars = ssAutoVertical
         SortType = stBoth
         TabOrder = 0
+        Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
         OnDeletion = DeviceSettingsTreeViewDeletion
         OnMouseDown = DeviceSettingsTreeViewMouseDown
-        Options = [tvoAutoExpand, tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoRightClickSelect, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
       end
     end
   end
@@ -116,7 +116,7 @@ object FormBhyveManager: TFormBhyveManager
   end
   object EditSystemType: TEdit
     Left = 136
-    Height = 32
+    Height = 30
     Top = 496
     Width = 144
     ReadOnly = True
@@ -124,7 +124,7 @@ object FormBhyveManager: TFormBhyveManager
   end
   object EditSystemVersion: TEdit
     Left = 136
-    Height = 32
+    Height = 30
     Top = 528
     Width = 248
     ReadOnly = True
@@ -139,7 +139,7 @@ object FormBhyveManager: TFormBhyveManager
   end
   object EditDescription: TEdit
     Left = 136
-    Height = 32
+    Height = 30
     Top = 560
     Width = 408
     ReadOnly = True
@@ -285,8 +285,8 @@ object FormBhyveManager: TFormBhyveManager
       0000000000000000000000000000000000000000000000000000
     }
     Layout = blGlyphTop
-    OnClick = SpeedButtonAddVmClick
     ParentShowHint = False
+    OnClick = SpeedButtonAddVmClick
   end
   object SpeedButtonRemoveVm: TSpeedButton
     Left = 88
@@ -981,8 +981,8 @@ object FormBhyveManager: TFormBhyveManager
       0000000000000000000000000000000000000000000000000000
     }
     Layout = blGlyphTop
-    OnClick = SpeedButtonReloadVmConfigClick
     ParentShowHint = False
+    OnClick = SpeedButtonReloadVmConfigClick
   end
   object MainMenu1: TMainMenu
     Left = 784

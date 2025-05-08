@@ -559,6 +559,7 @@ begin
     CheckBoxUseSystray.Checked:=False;
 
   EditBridgeInterface.Text:=BridgeInterface;
+
   EditSubnet.Text:=Subnet;
 
   LabelNetmask.Caption:=ExtractNetMask(ExtractCidr(EditSubnet.Text).ToInteger);
