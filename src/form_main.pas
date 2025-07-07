@@ -437,7 +437,11 @@ begin
   GlobalSettingDefaultValueList.Values['memory.size'] := '256M';
   GlobalSettingDefaultValueList.Values['memory.wired'] := 'false';
   { ACPI }
-  GlobalSettingDefaultValueList.Values['acpi_tables'] := 'true';
+  if GetOsreldate.ToInt64 < 1500000 then
+    GlobalSettingDefaultValueList.Values['acpi_tables'] := 'false'
+  else
+    GlobalSettingDefaultValueList.Values['acpi_tables'] := 'true';
+
   GlobalSettingDefaultValueList.Values['acpi_tables_in_memory'] := 'true';
   { Debugging }
   GlobalSettingDefaultValueList.Values['gdb.address'] := 'localhost';
@@ -455,6 +459,10 @@ begin
   GlobalSettingDefaultValueList.Values['x86.x2apic'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.strictio'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.strictmsr'] := 'true';
+  if GetOsreldate.ToInt64 >= 1500023 then
+  begin
+    GlobalSettingDefaultValueList.Values['x86.verbosemsr'] := 'false';
+  end;
   GlobalSettingDefaultValueList.Values['x86.vmexit_on_hlt'] := 'false';
   GlobalSettingDefaultValueList.Values['x86.vmexit_on_pause'] := 'false';
   {$endif}
@@ -547,6 +555,10 @@ begin
   GlobalSettingTypeList.Values['x86.x2apic'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.strictio'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.strictmsr'] := 'Boolean';
+  if GetOsreldate.ToInt64 >= 1500023 then
+  begin
+    GlobalSettingTypeList.Values['x86.verbosemsr'] := 'Boolean';
+  end;
   GlobalSettingTypeList.Values['x86.vmexit_on_hlt'] := 'Boolean';
   GlobalSettingTypeList.Values['x86.vmexit_on_pause'] := 'Boolean';
   {$endif}
@@ -618,6 +630,10 @@ begin
   GlobalSettingCategoryList.Values['x86.x2apic'] := 'x86';
   GlobalSettingCategoryList.Values['x86.strictio'] := 'x86';
   GlobalSettingCategoryList.Values['x86.strictmsr'] := 'x86';
+  if GetOsreldate.ToInt64 >= 1500023 then
+  begin
+    GlobalSettingCategoryList.Values['x86.verbosemsr'] := 'x86';
+  end;
   GlobalSettingCategoryList.Values['x86.vmexit_on_hlt'] := 'x86';
   GlobalSettingCategoryList.Values['x86.vmexit_on_pause'] := 'x86';
   {$endif}
@@ -869,7 +885,7 @@ begin
     DestroyVirtualMachine(VmName);
     RemoveDirectory(VmName+'/vtcon', True);
 
-    if GetOsreldate.ToInt64 >= 1500026 then
+    if GetOsreldate.ToInt64 >= 1403000 then
     begin
       PidNumber:=CheckTpmSocketRunning(VmName);
       if PidNumber > 0 then
@@ -913,7 +929,7 @@ begin
       DestroyVirtualMachine(VmName);
       RemoveDirectory(VmName+'/vtcon', True);
 
-      if GetOsreldate.ToInt64 >= 1500026 then
+      if GetOsreldate.ToInt64 >= 1403000 then
       begin
         PidNumber:=CheckTpmSocketRunning(VmName);
         if PidNumber > 0 then
@@ -1073,7 +1089,7 @@ begin
               end;
               'swtpm':
               begin
-                if GetOsreldate.ToInt64 >= 1500026 then
+                if GetOsreldate.ToInt64 >= 1403000 then
                 begin
                   FormChangeValue.ComboBoxValue.Clear;
                   FormChangeValue.ComboBoxValue.Items.Add(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock');
@@ -1218,7 +1234,7 @@ begin
          end;
         'swtpm':
          begin
-           if GetOsreldate.ToInt64 >= 1500026 then
+           if GetOsreldate.ToInt64 >= 1403000 then
            begin
              GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text:='tpm.path : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/tpm/swtpm.sock';
              GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[2].Text:='tpm.version : 2.0';
@@ -3438,7 +3454,7 @@ begin
   end;
 
   { Remove this condition when bhyve will be updated on FreeBSD 13.x and 14.x }
-  if GetOsreldate.ToInt64 >= 1500026 then
+  if GetOsreldate.ToInt64 >= 1403000 then
   begin
     if (CheckTpmSocketRunning(VirtualMachine.name) = -1) and (ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) = 'swtpm') then
     begin

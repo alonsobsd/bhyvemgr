@@ -21,8 +21,8 @@ object FormBhyveManager: TFormBhyveManager
     Top = 64
     Width = 384
     Caption = 'Virtual machines'
-    ClientHeight = 406
-    ClientWidth = 376
+    ClientHeight = 395
+    ClientWidth = 380
     TabOrder = 0
     object VirtualMachinesTreeView: TTreeView
       Left = 16
@@ -52,8 +52,8 @@ object FormBhyveManager: TFormBhyveManager
     TabOrder = 1
     object GlobalSettingsTabSheet: TTabSheet
       Caption = 'Global settings'
-      ClientHeight = 390
-      ClientWidth = 388
+      ClientHeight = 389
+      ClientWidth = 386
       object GlobalSettingsTreeView: TTreeView
         Left = 16
         Height = 360
@@ -73,8 +73,8 @@ object FormBhyveManager: TFormBhyveManager
     end
     object DeviceSettingsTabSheet: TTabSheet
       Caption = 'Device settings'
-      ClientHeight = 390
-      ClientWidth = 388
+      ClientHeight = 389
+      ClientWidth = 386
       object DeviceSettingsTreeView: TTreeView
         Left = 16
         Height = 360
@@ -116,7 +116,7 @@ object FormBhyveManager: TFormBhyveManager
   end
   object EditSystemType: TEdit
     Left = 136
-    Height = 30
+    Height = 32
     Top = 496
     Width = 144
     ReadOnly = True
@@ -124,7 +124,7 @@ object FormBhyveManager: TFormBhyveManager
   end
   object EditSystemVersion: TEdit
     Left = 136
-    Height = 30
+    Height = 32
     Top = 528
     Width = 248
     ReadOnly = True
@@ -139,7 +139,7 @@ object FormBhyveManager: TFormBhyveManager
   end
   object EditDescription: TEdit
     Left = 136
-    Height = 30
+    Height = 32
     Top = 560
     Width = 408
     ReadOnly = True

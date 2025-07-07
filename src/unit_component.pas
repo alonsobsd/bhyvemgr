@@ -530,7 +530,7 @@ procedure FillComboTpmType(Combo: TComboBox);
 begin
   Combo.items.Add(EmptyStr);
   Combo.Items.Add('passthru');
-  if GetOsreldate.ToInt64 > 1500026 then
+  if GetOsreldate.ToInt64 >= 1403000 then
     Combo.Items.Add('swtpm');
 end;
 
