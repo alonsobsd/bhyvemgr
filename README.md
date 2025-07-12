@@ -55,6 +55,9 @@ Bhyvemgr add each tap interface to **bhyve0** bridge when a virtual machine is s
 On another hand, if you want use bhyve with a better network features (DHCPD and DNS features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign an IPv4 address to it. This will be used like a gateway by each virtual machine. A subnet **10.0.0.0/24** will be used in this guide.
 
 ```sh
+# ee /etc/rc.conf
+```
+```sh
 gateway_enable="YES"
 cloned_interfaces="bridge0"
 ifconfig_bridge0_name="bhyve0"
@@ -68,7 +71,7 @@ If you want include IPv6 support we need to a IPv6 address (Unique Local Address
 
 You need two things to calcule bhyve0 IPv6 Address: **bhyve0 MAC Adresss** and an **IPv6 prefix**. Take on mind IPv6 prefix will be used in your Dnsmasq configuration too. 
 
-Bhyvemgr can generate a **IPv6 prefix** from **Bhyve Manager Settings** and this value must be saved to bhyvemgr configuration file. **bhyve0 MAC Address** can be obtained from **ifconfig bhyve0** output. 
+**IPv6 prefix** can be generated or calculated from **Bhyve Manager Settings** and this value must be saved to bhyvemgr configuration file. **bhyve0 MAC Address** can be obtained from **ifconfig bhyve0** output. 
 
 ```sh
 # ifconfig bhyve0 | grep ether
@@ -77,7 +80,9 @@ Bhyvemgr can generate a **IPv6 prefix** from **Bhyve Manager Settings** and this
 
 In this guide I will use **fd4d:39f0:0d6b:0001::** as IPv6 prefix and **38:7c:fc:00:c6:11** as bhyve0 MAC Address. Bhyvemgr will calculate **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** with these two values and it must be used as **bhyve0 IPv6 Address** into **/etc/rc.conf** file.
 
-
+```sh
+# ee /etc/rc.conf
+```
 ```sh
 ifconfig_bhyve0_ipv6="inet6 fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611 prefixlen 64 accept_rtadv auto_linklocal"
 ```
@@ -131,6 +136,9 @@ nameserver 10.0.0.1
 Don't forget enable **dnsmasq** on startup
 
 ```sh
+# ee /etc/rc.conf
+```
+```sh
 dnsmasq_enable="YES"
 ```
 
@@ -175,6 +183,9 @@ permit nopass :wheel as root cmd zfs
 PF is used to bring packets filter and NAT features to our local environment. Take a look at the following PF configuration sample. In this guide **em0** is used like a local interface and **10.0.0.0/24** subnet for virtual machines. **10.0.0.1** is the ip address used by **bhyve0** bridge and this is where dnsmasq is listening. Change it according your own needs.
 
 ```sh
+# ee /etc/pf.conf
+```
+```sh
 ext_if="em0"
 
 tcp_services={ ssh, http, https, ntp, domain}
@@ -204,13 +215,16 @@ pass in quick on bhyve0 proto udp from port bootpc to port bootps keep state
 pass out quick on bhyve0 proto udp from port bootps to port bootps keep state
 
 pass in quick on bhyve0 proto icmp6
-pass in quick on bhyve0 proto udp from any port 546 to any port 547
-pass out quick on bhyve0 proto udp from any port 547 to any port 546
+pass in quick on bhyve0 proto udp from any port dhcpv6-client to any port dhcpv6-server
+pass out quick on bhyve0 proto udp from any port dhcpv6-server to any port dhcpv6-client
 
 pass out quick on $ext_if inet proto { tcp udp } from any to any
 ```
 Don't forget enable **pf** on startup
 
+```sh
+# ee /etc/rc.conf
+```
 ```sh
 pf_enable="YES"
 ```
@@ -222,7 +236,7 @@ When bhyvemgr starts in the first time, this will create a initial config file. 
 
 ![image](https://github.com/user-attachments/assets/35b0ea78-8449-4c08-bc13-c09977e0c30a)
 
-![image](https://github.com/user-attachments/assets/b57fd1af-0a19-49c9-a0a5-547ff6cc7033)
+<img width="811" height="720" alt="image" src="https://github.com/user-attachments/assets/ace6d2b1-ba53-42f2-8f0a-3a5ad2364119" />
 
 # Demo
 
