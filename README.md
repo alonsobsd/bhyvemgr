@@ -15,13 +15,12 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - basic sudo/doas support
 - uefi/uboot support only
 - initial swtpm support on FreeBSD >= 1403000
-- ipv4 support
+- ipv4/ipv6 support
 - aarch64 and amd64 support
 - and more
 
 # TODO
 - Allow change VM (zfs/ufs) directory to custom ones
-- Add uart device support
 
 # Bhyvemgr dependencies
 ## From base system
@@ -33,9 +32,9 @@ bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), remote-viewer (n
 bhyvemgr can use two kind of network settings: *Quick network configuration* or *Best network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines.
 
 ## Quick network configuration
-If you want use bhyve without many network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a dhcp server in your network environment if you want that virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
+If you want use bhyve without many network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a DHCP/DHCPv6 server, SLAAC or a router with delegation prefix activated, in your network environment, if you want that virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
 
-Add the following lines to your **/etc/rc.conf** file
+Add the following lines to your **/etc/rc.conf** file:
 
 ```sh
 cloned_interfaces="bridge0"
@@ -43,10 +42,17 @@ ifconfig_bridge0_name="bhyve0"
 ifconfig_bhyve0="addm em0 up"
 ifconfig_bhyve0_descr="bhyve manager bridge"
 ```
-bhyvemgr add each tap interface to **bhyve0** bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
+
+If you want activate IPv6 support do the following
+
+```sh
+ifconfig_em0_ipv6="inet6 accept_rtadv auto_linklocal"
+```
+
+Bhyvemgr add each tap interface to **bhyve0** bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
 
 ## Best network configuration
-On another hand, if you want use bhyve with a better network features (dhcpd and dns features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign an ip address to it. This will be used like a gateway by each virtual machine. A subnet **10.0.0.0/24** will be used in this guide.
+On another hand, if you want use bhyve with a better network features (DHCPD and DNS features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign an IPv4 address to it. This will be used like a gateway by each virtual machine. A subnet **10.0.0.0/24** will be used in this guide.
 
 ```sh
 gateway_enable="YES"
@@ -54,12 +60,31 @@ cloned_interfaces="bridge0"
 ifconfig_bridge0_name="bhyve0"
 ifconfig_bhyve0="inet 10.0.0.1 netmask 255.255.255.0"
 ifconfig_bhyve0_descr="bhyve manager bridge"
-pf_enable="YES"
-dnsmasq_enable="YES"
 ```
+
+If you want include IPv6 support we need to a IPv6 address (Unique Local Address) and some other configuration to your bridge interface. The best way to calculate a bhyve0 IPv6 address is from **Bhyve Manager Settings** window.
+
+<img width="789" height="293" alt="image" src="https://github.com/user-attachments/assets/73e6b683-ad88-4753-8b24-6d713f08d73b" />
+
+You need two things to calcule bhyve0 IPv6 Address: **bhyve0 MAC Adresss** and an **IPv6 prefix**. Take on mind IPv6 prefix will be used in your Dnsmasq configuration too. 
+
+Bhyvemgr can generate a **IPv6 prefix** from **Bhyve Manager Settings** and this value must be saved to bhyvemgr configuration file. **bhyve0 MAC Address** can be obtained from **ifconfig bhyve0** output. 
+
+```sh
+# ifconfig bhyve0 | grep ether
+	ether 38:7c:fc:00:c6:11
+```
+
+In this guide I will use **fd4d:39f0:0d6b:0001::** as IPv6 prefix and **38:7c:fc:00:c6:11** as bhyve0 MAC Address. Bhyvemgr will calculate **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** with these two values and it must be used as **bhyve0 IPv6 Address** into **/etc/rc.conf** file.
+
+
+```sh
+ifconfig_bhyve0_ipv6="inet6 fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611 prefixlen 64 accept_rtadv auto_linklocal"
+```
+
 ### Dnsmasq
 
-Dnsmasq is used for bring dhcp and dns features to our virtual machine network environment. bhyvemgr will add a entry to dnsmasq config (ip address, mac and vm name) when a virtual machine is created.
+Dnsmasq is used for bring DHCP, Router Advertisements and DNS features to our virtual machine network environment. bhyvemgr will add a entry to dnsmasq config (ipv4 address, ipv6 address, mac and vm name) when a virtual machine is created.
 
 Create some dnsmasq directories for store virtual machine config files. In this sample, I am using **acm** like my bhyvemgr user
 
@@ -73,6 +98,7 @@ The following is a minimal dnsmasq configuration needed
 # ee /usr/local/etc/dnsmasq.conf
 ```
 ```sh
+# General configuration
 port=53
 domain-needed
 no-resolv
@@ -84,12 +110,17 @@ domain=bsd.lan
 server=1.1.1.1
 server=1.0.0.1
 interface=bhyve0
-dhcp-range=10.0.0.0,static,255.255.255.0,60m
+# IPv4 configuration
+dhcp-range=10.0.0.0,static,255.255.255.0,5m
 dhcp-option=option:router,10.0.0.1
 dhcp-option=option:dns-server,10.0.0.1
+# IPv6 configuration
+enable-ra
+dhcp-range=fd4d:39f0:0d6b:0001::,slaac,64,5m
+dhcp-option=option6:dns-server,[fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611]
 conf-dir=/usr/local/etc/dnsmasq.d/bhyvemgr/,*.conf
 ```
-It is necessary add **10.0.0.1** ip address into **/etc/resolv.conf** file if you want that each virtual machine name or subdomain **(fbsd15x634 or fbsd15x64.bsd.lan)** will be resolved from FreeBSD host.
+It is necessary add **10.0.0.1** ip address into **/etc/resolv.conf** file if you want that each virtual machine name or subdomain **(fbsd15x64 or fbsd15x64.bsd.lan)** will be resolved from FreeBSD host.
 
 ```sh
 # ee /etc/resolv.conf
@@ -97,6 +128,12 @@ It is necessary add **10.0.0.1** ip address into **/etc/resolv.conf** file if yo
 ```sh
 nameserver 10.0.0.1
 ```
+Don't forget enable **dnsmasq** on startup
+
+```sh
+dnsmasq_enable="YES"
+```
+
 ### sudo / doas configuration
 
 bhyve needs root privileges on FreeBSD. For these tasks, bhyvemgr uses sudo or doas to mitigate some security issues. The laziest way to configure sudo or doas (not recommended) is the following:
@@ -166,9 +203,19 @@ pass in inet proto tcp from 10.0.0.1 to any port bootpc flags S/SA keep state
 pass in quick on bhyve0 proto udp from port bootpc to port bootps keep state
 pass out quick on bhyve0 proto udp from port bootps to port bootps keep state
 
+pass in quick on bhyve0 proto icmp6
+pass in quick on bhyve0 proto udp from any port 546 to any port 547
+pass out quick on bhyve0 proto udp from any port 547 to any port 546
+
 pass out quick on $ext_if inet proto { tcp udp } from any to any
 ```
-With this best configuration, bhyvemgr will add an entry for each virtual machine to dnsmasq, dnsmasq will use this data for assign network configuration automatically, this will provide a dns service to resolv each virtual machine name or subdmomain. Virtual machines traffic will be management by packet filter rules.
+Don't forget enable **pf** on startup
+
+```sh
+pf_enable="YES"
+```
+
+With this best configuration, bhyvemgr will add an entry for each virtual machine to dnsmasq, dnsmasq will use this data for assign network configuration automatically, this will provide a DNS service to resolv each virtual machine name or subdmomain. Virtual machines traffic will be management by packet filter rules.
 
 # Run bhyvemgr for the first time
 When bhyvemgr starts in the first time, this will create a initial config file. It is mandatory to review, modify (if it is necessary) and press **Save settings** button from of **Settings form** the first time
