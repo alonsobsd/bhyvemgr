@@ -32,7 +32,7 @@ bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), remote-viewer (n
 bhyvemgr can use two kind of network settings: *Quick network configuration* or *Best network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines.
 
 ## Quick network configuration
-If you want use bhyve without many network features, you can create a bridge and add your ethernet interface to it. Take on mind you will need a DHCP/DHCPv6 server, SLAAC or a router with delegation prefix activated, in your network environment, if you want that virtual machine network configuration will be assigned automatically. Otherwise you must set network configuration manually for each virtual machine.
+If you want use bhyve without many network features, you can create a bridge and add your ethernet interface to it. Keep in mind that you will need a DHCP/DHCPv6 server, SLAAC or a router with prefix delegation activated in your network environment if you want the virtual machine's network configuration to be assigned automatically. Otherwise, you'll need to manually configure the network settings for each virtual machine.
 
 Add the following lines to your **/etc/rc.conf** file:
 
@@ -67,11 +67,15 @@ ifconfig_bhyve0_descr="bhyve manager bridge"
 
 If you want include IPv6 support we need to a IPv6 address (Unique Local Address) and some other configuration to your bridge interface. The best way to calculate a bhyve0 IPv6 address is from **Bhyve Manager Settings** window.
 
+<img width="811" height="720" alt="image" src="https://github.com/user-attachments/assets/e76817a4-1841-4c7f-942d-ecc96be2046e" />
+
 <img width="789" height="293" alt="image" src="https://github.com/user-attachments/assets/73e6b683-ad88-4753-8b24-6d713f08d73b" />
 
-You need two things to calcule bhyve0 IPv6 Address: **bhyve0 MAC Adresss** and an **IPv6 prefix**. Take on mind IPv6 prefix will be used in your Dnsmasq configuration too. 
+You need two things to calcule bhyve0 IPv6 Address: **bhyve0 MAC Adresss** and an **IPv6 prefix**. Keep in mind the IPv6 prefix will also be used in your Dnsmasq configuration later. 
 
-**IPv6 prefix** can be generated or calculated from **Bhyve Manager Settings** and this value must be saved to bhyvemgr configuration file. **bhyve0 MAC Address** can be obtained from **ifconfig bhyve0** output. 
+**IPv6 prefix** can be generated or calculated from **Bhyve Manager Settings** and this value must be saved to bhyvemgr configuration file because it is used to calculate virtual machines IPv6 address of each first network interface.
+
+**bhyve0 MAC Address** can be obtained from **ifconfig bhyve0** output.
 
 ```sh
 # ifconfig bhyve0 | grep ether
@@ -89,7 +93,7 @@ ifconfig_bhyve0_ipv6="inet6 fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611 prefixlen 64
 
 ### Dnsmasq
 
-Dnsmasq is used for bring DHCP, Router Advertisements and DNS features to our virtual machine network environment. bhyvemgr will add a entry to dnsmasq config (ipv4 address, ipv6 address, mac and vm name) when a virtual machine is created.
+Dnsmasq is used for bring DHCP, Router Advertisements and DNS features to our virtual machine network environment. bhyvemgr will add *dhcp-host* and *host-record* entries to dnsmasq configuration (IPv4 address, IPv6 address resolution, MAC and VM name) when a virtual machine is created.
 
 Create some dnsmasq directories for store virtual machine config files. In this sample, I am using **acm** like my bhyvemgr user
 
