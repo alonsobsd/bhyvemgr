@@ -43,13 +43,13 @@ ifconfig_bhyve0="addm em0 up"
 ifconfig_bhyve0_descr="bhyve manager bridge"
 ```
 
-If you want activate IPv6 support do the following:
+If you want activate IPv6 support, add the following line:
 
 ```sh
 ifconfig_em0_ipv6="inet6 accept_rtadv auto_linklocal"
 ```
 
-Bhyvemgr add each tap interface to **bhyve0** bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
+Bhyvemgr add each tap/vtnet interface to **bhyve0** bridge when a virtual machine is started. The same way it deletes and removes tap interface when a virtual machine is stopped.
 
 ## Optimal network configuration
 On another hand, if you want use bhyve with a better network features (DHCPD and DNS features) including NAT support, you need configure some additional services like dnsmasq and packet filter. Create a bridge and assign an IPv4 address to it. This will be used like a gateway by each virtual machine. A subnet **10.0.0.0/24** will be used in this guide.
@@ -82,13 +82,15 @@ You need two things to calcule bhyve0 IPv6 Address: **bhyve0 MAC Adresss** and a
 	ether 38:7c:fc:00:c6:11
 ```
 
-In this guide I will use **fd4d:39f0:0d6b:0001::** as IPv6 prefix and **38:7c:fc:00:c6:11** as bhyve0 MAC Address. Bhyvemgr will calculate **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** with these two values and it must be used as **bhyve0 IPv6 Address** into **/etc/rc.conf** file.
+In this guide, I will use **fd4d:39f0:0d6b:0001::** as IPv6 prefix and **38:7c:fc:00:c6:11** as bhyve0 MAC Address. Bhyvemgr will calculate **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** with these two values and it must be used as **bhyve0 IPv6 Address** into **/etc/rc.conf** file.
 
 Add the following lines to your **/etc/rc.conf** file:
 
 ```sh
 ifconfig_bhyve0_ipv6="inet6 fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611 prefixlen 64 accept_rtadv auto_linklocal"
 ```
+
+The bhyve0 IPv6 address **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** will also be used in your Dnsmasq configuration file.
 
 ### Dnsmasq
 
@@ -100,13 +102,15 @@ Create some dnsmasq directories for store virtual machine config files. In this 
 # install -d -m 770 -o root -g wheel /usr/local/etc/dnsmasq.d
 # install -d -m 770 -o acm /usr/local/etc/dnsmasq.d/bhyvemgr
 ```
-The following is a minimal dnsmasq configuration needed
+The following is the minimal dnsmasq configuration required.
 
 ```sh
 # ee /usr/local/etc/dnsmasq.conf
 ```
 ```sh
+
 # General configuration
+
 port=53
 domain-needed
 no-resolv
@@ -118,17 +122,24 @@ domain=bsd.lan
 server=1.1.1.1
 server=1.0.0.1
 interface=bhyve0
+
 # IPv4 configuration
+
 dhcp-range=10.0.0.0,static,255.255.255.0,5m
 dhcp-option=option:router,10.0.0.1
 dhcp-option=option:dns-server,10.0.0.1
+
 # IPv6 configuration
+
 enable-ra
 dhcp-range=fd4d:39f0:0d6b:0001::,slaac,64,5m
 dhcp-option=option6:dns-server,[fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611]
+
+# Load configuration files from bhyvemgr directory
+
 conf-dir=/usr/local/etc/dnsmasq.d/bhyvemgr/,*.conf
 ```
-It is necessary add **10.0.0.1** ip address into **/etc/resolv.conf** file if you want that each virtual machine name or subdomain **(fbsd15x64 or fbsd15x64.bsd.lan)** will be resolved from FreeBSD host.
+Add the IP address **10.0.0.1** to the **/etc/resolv.conf** file if you want each virtual machine name or subdomain (e.g., **fbsd15x64** or **fbsd15x64.bsd.lan**) to be resolved from the FreeBSD host.
 
 ```sh
 # ee /etc/resolv.conf
