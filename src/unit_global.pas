@@ -52,6 +52,8 @@ function GetVmPath:string;
 procedure SetVmPath(const Value:string);
 function GetUseSystray:string;
 procedure SetUseSystray(const Value:string);
+function GetUseIpv6:string;
+procedure SetUseIpv6(const Value:string);
 { Bhyve section }
 function GetBhyveCmd:string;
 procedure SetBhyveCmd(const Value:string);
@@ -69,6 +71,8 @@ function GetBridgeInterface:string;
 procedure SetBridgeInterface(const Value:string);
 function GetSubnet:string;
 procedure SetSubnet(const Value:string);
+function GetIpv6Prefix:string;
+procedure SetIpv6Prefix(const Value:string);
 { Remote tools section }
 function GetVncviewerCmd:string;
 procedure SetVncviewerCmd(const Value:string);
@@ -125,6 +129,7 @@ property UseSudo:string read GetUseSudo write SetUseSudo;
 property UseZfs:string read GetUseZfs write SetUseZfs;
 property VmPath:string read GetVmPath write SetVmPath;
 property UseSystray:string read GetUseSystray write SetUseSystray;
+property UseIpv6:string read GetUseIpv6 write SetUseIpv6;
 { Bhyve section }
 property BhyveCmd:string read GetBhyveCmd write SetBhyveCmd;
 property BhyvectlCmd:string read GetBhyvectlCmd write SetBhyvectlCmd;
@@ -132,6 +137,7 @@ property BhyveLoadCmd:string read GetBhyveloadCmd write SetBhyveloadCmd;
 { Network section }
 property BridgeInterface:string read GetBridgeInterface write SetBridgeInterface;
 property Subnet:string read GetSubnet write SetSubnet;
+property Ipv6Prefix:string read GetIpv6Prefix write SetIpv6Prefix;
 { User tools section }
 property DoasCmd:string read GetDoasCmd write SetDoasCmd;
 property SudoCmd:string read GetSudoCmd write SetSudoCmd;
@@ -201,6 +207,7 @@ var
   UseZfsVar: String;
   VmPathVar: String;
   UseSystrayVar: String;
+  UseIpv6Var: String;
   BhyveCmdVar: String;
   BhyvectlCmdVar: String;
   BhyveloadCmdVar: String;
@@ -211,6 +218,7 @@ var
   XfreerdpArgsVar: String;
   BridgeInterfaceVar: String;
   SubnetVar: String;
+  Ipv6PrefixVar: String;
   ChownCmdVar: String;
   ChmodCmdVar: String;
   IfconfigCmdVar: String;
@@ -304,6 +312,16 @@ begin
   UseSystrayVar := Value;
 end;
 
+function GetUseIpv6: string;
+begin
+  Result := UseIpv6Var;
+end;
+
+procedure SetUseIpv6(const Value: string);
+begin
+  UseIpv6Var := Value;
+end;
+
 function GetBhyveCmd: string;
 begin
   Result := BhyveCmdVar;
@@ -372,6 +390,16 @@ end;
 procedure SetSubnet(const Value: string);
 begin
   SubnetVar := Value;
+end;
+
+function GetIpv6Prefix: string;
+begin
+  Result := Ipv6PrefixVar;
+end;
+
+procedure SetIpv6Prefix(const Value: string);
+begin
+  Ipv6PrefixVar := Value;
 end;
 
 function GetVncviewerCmd: string;

@@ -144,6 +144,9 @@ begin
   if ConfigFile.ReadString('general','use_systray', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('general','use_systray', 'yes');
 
+  if ConfigFile.ReadString('general','use_ipv6', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('general','use_ipv6', 'no');
+
   if ConfigFile.ReadString('bhyve-tools','bhyve_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('bhyve-tools','bhyve_cmd', '/usr/sbin/bhyve');
 
@@ -209,6 +212,9 @@ begin
 
   if ConfigFile.ReadString('network','subnet', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('network','subnet', '10.0.0.0/24');
+
+  if ConfigFile.ReadString('network','ipv6_prefix', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('network','ipv6_prefix', 'fd92:5e7a:bd00:1::');
 
   if ConfigFile.ReadString('remote-tools','vncviewer_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('remote-tools','vncviewer_cmd', '/usr/local/bin/remote-viewer');

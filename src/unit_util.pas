@@ -40,10 +40,13 @@ uses
   Classes, SysUtils, Dialogs, FileUtil, Math, md5, process, RegExpr, Users, BaseUnix, StrUtils;
 
 function AttachDeviceToBridge(BridgeName: String; DeviceName: String; VmName : String):Boolean;
-function AddDnsmasqEntry(VmName: String; IpAddress: String; MacAddreess : String):Boolean;
+function AddDnsmasqDhcpHostEntry(VmName: String; IpAddress: String; MacAddreess : String):Boolean;
+function AddDnsmasqHostRecordEntry(VmName: String; Ip6Address: String; MacAddreess : String):Boolean;
 function CheckBhyveSupport():Boolean;
 function CheckCidrRange(Subnet: String):Boolean;
 function CheckKernelModule(Module: String):Boolean;
+function CheckIpv6Address(Address: String):Boolean;
+function CheckMacAddress(Mac: String):Boolean;
 function CheckNetworkDeviceName(Name: String):Boolean;
 function CheckSysctl(Name: String):String;
 function CheckVmName(Name: String):Boolean;
@@ -60,11 +63,14 @@ function CreateTpmSocket(Path: String):Boolean;
 function DestroyNetworkInterface(IfName: String):Boolean;
 function DestroyVirtualMachine(VmName: String):Boolean;
 function ExtractCidr(Network: String): String;
+function ExtractIpv6Prefix(prefix : String):String;
 function ExtractNetMask(Cidr: Integer): String;
 function ExtractNumberValue(TextLine: String; Suffix: String): String;
 function ExtractPortValue(TextLine: String): String;
 function ExtractVarName(TextLine: String): String;
 function ExtractVarValue(TextLine: String): String;
+function GenerateIpv6Preffix():String;
+function GenerateIpv6Suffix(mac : String):String;
 function GenerateMacAddress(): String;
 function GenerateUuid(): String;
 function GetCurrentUserName(): String;
@@ -72,6 +78,7 @@ function GetFileSize(FilePath : String; SizeUnit : String = 'B'): Int64;
 function GetEventDeviceList(Path : String; Pattern : String):String;
 function GetNewConsoleName(VmName : String): String;
 function GetNewIpAddress(Subnet : String): String;
+function GetNewIp6Address(prefix : String; mac : String): String;
 function GetNewPciSlotNumber(VmName : String): String;
 function GetNewPciSlotNumber(StringList : TStringList): String;
 function GetNewPciSlotNumber(StringList : TStringList; StartSlot : Integer): String;
@@ -94,7 +101,7 @@ function RdpConnect(VmName : String; Username : String; Password : String; Width
 function RemoveDirectory(Directory: String; Recursive : Boolean):Boolean;
 function RemoveFile(Path: String):Boolean;
 function RemoveDnsmasqEntry(VmName: String):Boolean;
-function RestartDnsmasqService(Service : String):Boolean;
+function RestartService(Service : String):Boolean;
 function StopVirtualMachine(Pid : Integer):Boolean;
 function TruncateImage(ImagePath : String; ImageSize : String):Boolean;
 function VncConnect(VmHost : String; VmName : String):Boolean;
@@ -111,7 +118,7 @@ uses
 var
   MyAppThread: AppThread;
 
-{ Private functions }
+{ Private IPv4 functions }
 function ExtractCidr(Network: String): String;
 var
   TmpArray : TStringArray;
@@ -402,6 +409,54 @@ begin
   end;
   IpAddressValueList.Free;
   Directories.Free;
+end;
+
+{ Private IPv6 functions }
+function ExtractIpv6Prefix(prefix: String): String;
+var
+  tmpPrefix : TStringArray;
+  finalPrefix : TStringArray;
+begin
+  tmpPrefix:=prefix.Split(':');
+
+  finalPrefix:=[tmpPrefix[0],tmpPrefix[1],tmpPrefix[2],tmpPrefix[3]];
+
+  if finalPrefix[0] = EmptyStr then finalPrefix[0] := '0';
+  if finalPrefix[1] = EmptyStr then finalPrefix[1] := '0';
+  if finalPrefix[2] = EmptyStr then finalPrefix[2] := '0';
+  if finalPrefix[3] = EmptyStr then finalPrefix[3] := '0';
+
+  Result:= String.Join(':', finalPrefix);
+end;
+
+function GenerateIpv6Preffix(): String;
+var
+  tmpPreffix : String;
+begin
+  tmpPreffix :='fd'+LeftStr(MD5Print(MD5String(RandomRange(1,255).ToString+':'+DateTimeToStr(Now))),10);
+
+  Result:=Copy(tmpPreffix, 1, 4) +':'+ Copy(tmpPreffix, 5, 4)+':'+ Copy(tmpPreffix, 9, 4)+':0001::';
+end;
+
+function GenerateIpv6Suffix(mac: String): String;
+var
+  tmpMac : TStringArray;
+  finalMac : TStringArray;
+  suffix : String;
+begin
+  tmpMac:= mac.Split(':');
+  finalMac:=[tmpMac[0],tmpMac[1],tmpMac[2],'ff','fe',tmpMac[3],tmpMac[4], tmpMac[5]];
+
+  finalMac[0]:=LowerCase(IntToHex((StrToInt('$'+finalMac[0]) xor $02), 2));
+
+  suffix:= String.Join(':', [finalMac[0]+finalMac[1], finalMac[2]+finalMac[3], finalMac[4]+finalMac[5], finalMac[6]+finalMac[7]]);
+
+  Result:= suffix;
+end;
+
+function GetNewIp6Address(prefix : String; mac : String): String;
+begin
+  Result:= ExtractIpv6Prefix(prefix)+':'+GenerateIpv6Suffix(mac);
 end;
 
 function GetPatternValueFromStringList(Pattern: String;  StartValue : Integer; StringList: TStringList
@@ -695,7 +750,7 @@ begin
   end;
 end;
 
-function AddDnsmasqEntry(VmName: String; IpAddress: String; MacAddreess: String
+function AddDnsmasqDhcpHostEntry(VmName: String; IpAddress: String; MacAddreess: String
   ): Boolean;
 var
   FilePath : TStringList;
@@ -712,12 +767,43 @@ begin
   try
     FilePath.LoadFromFile(ConfigFile);
 
-    if FilePath.IndexOf('dhcp-host='+MacAddreess+','+VmName+','+IpAddress+',5m') = -1 then
+    if FilePath.IndexOf('dhcp-host='+MacAddreess+','+VmName+','+IpAddress) = -1 then
     begin
-      FilePath.Values['dhcp-host']:=MacAddreess+','+VmName+','+IpAddress+',5m';
+      FilePath.Values['dhcp-host']:=MacAddreess+','+VmName+','+IpAddress;
       FilePath.SaveToFile(ConfigFile);
-      RestartDnsmasqService('dnsmasq');
+      RestartService('dnsmasq');
     end;
+  except
+    MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
+  end;
+
+  FilePath.Free;
+end;
+
+function AddDnsmasqHostRecordEntry(VmName: String; Ip6Address: String;
+  MacAddreess: String): Boolean;
+var
+  FilePath : TStringList;
+  ConfigFile : String;
+begin
+  Result:=False;
+
+  FilePath:=TStringList.Create;
+  ConfigFile:=DnsmasqDirectory+'/'+VmName+'.conf';
+
+  if not FileExists(ConfigFile) then
+    CreateFile(ConfigFile, GetCurrentUserName(), '660');
+
+  try
+    FilePath.LoadFromFile(ConfigFile);
+
+    if FilePath.IndexOf('host-record='+VmName+','+Ip6Address) = -1 then
+    begin
+      FilePath.Values['host-record']:=VmName+','+Ip6Address;
+      FilePath.SaveToFile(ConfigFile);
+      RestartService('dnsmasq');
+    end;
+
   except
     MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
   end;
@@ -774,6 +860,38 @@ begin
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CheckKernelModule : '+ Module+' : '+output);
     end;
   end;
+end;
+
+function CheckIpv6Address(Address: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^(([0-9a-f]{0,4}:){1,7}[0-9a-f]{0,4})$');
+
+  if RegText.Exec(Address) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
+end;
+
+function CheckMacAddress(Mac: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^([0-9a-f]{2}:){5}[0-9a-f]{2}$');
+
+  if RegText.Exec(Mac) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
 end;
 
 function CheckNetworkDeviceName(Name: String): Boolean;
@@ -1782,12 +1900,12 @@ begin
 
   if FpUnlink(Path) = 0 then
   begin
-    RestartDnsmasqService('dnsmasq');
+    RestartService('dnsmasq');
     Result:=True;
   end;
 end;
 
-function RestartDnsmasqService(Service: String): Boolean;
+function RestartService(Service: String): Boolean;
 var
   service_cmd : String;
   root_cmd : String;
@@ -1811,12 +1929,12 @@ begin
 
     if status then
     begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartDnsmasqService : OK');
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartService : '+Service+' : OK');
       Result:=status
     end
     else
     begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartDnsmasqService : '+output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartService : '+Service+' : '+output);
     end;
   end;
 end;

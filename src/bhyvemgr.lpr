@@ -64,6 +64,7 @@ begin
     SetUseZfs(Configuration.GetOption('general','use_zfs'));
     SetVmPath(Configuration.GetOption('general','vm_path'));
     SetUseSystray(Configuration.GetOption('general','use_systray'));
+    SetUseIpv6(Configuration.GetOption('general','use_ipv6'));
 
     SetBhyveCmd(Configuration.GetOption('bhyve-tools','bhyve_cmd'));
     SetBhyvectlCmd(Configuration.GetOption('bhyve-tools','bhyvectl_cmd'));
@@ -71,6 +72,7 @@ begin
 
     SetBridgeInterface(Configuration.GetOption('network','bridge_interface'));
     SetSubnet(Configuration.GetOption('network','subnet'));
+    SetIpv6Prefix(Configuration.GetOption('network','ipv6_prefix'));
 
     SetDoasCmd(Configuration.GetOption('user-tools','doas_cmd'));
     SetSudoCmd(Configuration.GetOption('user-tools','sudo_cmd'));

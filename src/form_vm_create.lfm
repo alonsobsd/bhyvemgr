@@ -7,10 +7,10 @@ object FormVmCreate: TFormVmCreate
   Caption = 'FormVmCreate'
   ClientHeight = 633
   ClientWidth = 733
-  OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.0.0.4'
+  OnShow = FormShow
   object Label10: TLabel
     Left = 53
     Height = 18
@@ -179,9 +179,9 @@ object FormVmCreate: TFormVmCreate
       OnChange = RadioButtonNewDiskChange
     end
     object CheckBoxWaitVNC: TCheckBox
-      Left = 368
+      Left = 280
       Height = 22
-      Top = 38
+      Top = 48
       Width = 222
       Caption = 'Wait for VNC connection for boot'
       Checked = True
@@ -190,9 +190,9 @@ object FormVmCreate: TFormVmCreate
       OnChange = CheckBoxWaitVNCChange
     end
     object CheckBoxFramebuffer: TCheckBox
-      Left = 368
+      Left = 280
       Height = 22
-      Top = 14
+      Top = 24
       Width = 140
       Caption = 'Enable framebuffer'
       Checked = True
@@ -207,6 +207,7 @@ object FormVmCreate: TFormVmCreate
       Width = 103
       MaxLength = 0
       NumbersOnly = True
+      SpinButtonWidth = 17
       TabOrder = 0
       Increment = 256
       MaxValue = 32000
@@ -215,9 +216,9 @@ object FormVmCreate: TFormVmCreate
       Value = 256
     end
     object CheckBoxOnlyLocalhost: TCheckBox
-      Left = 368
+      Left = 280
       Height = 22
-      Top = 64
+      Top = 74
       Width = 208
       Caption = 'Only localhost VNC connection'
       Checked = True
@@ -226,14 +227,22 @@ object FormVmCreate: TFormVmCreate
       OnChange = CheckBoxOnlyLocalhostChange
     end
     object CheckBoxUEFIBootvars: TCheckBox
-      Left = 368
+      Left = 520
       Height = 22
-      Top = 88
+      Top = 24
       Width = 152
       Caption = 'Enable UEFI bootvars'
       Checked = True
       State = cbChecked
       TabOrder = 6
+    end
+    object CheckBoxIpv6Address: TCheckBox
+      Left = 520
+      Height = 22
+      Top = 48
+      Width = 76
+      Caption = 'Use IPv6'
+      TabOrder = 7
     end
   end
   object GroupBoxNewVirtualDisk: TGroupBox
@@ -298,6 +307,7 @@ object FormVmCreate: TFormVmCreate
       Top = 24
       Width = 103
       MaxLength = 0
+      SpinButtonWidth = 17
       TabOrder = 2
       Increment = 10
       MaxValue = 1024

@@ -44,6 +44,7 @@ type
 
   TFormVmInfo = class(TForm)
     BitBtnSave: TBitBtn;
+    CheckBoxIpv6: TCheckBox;
     CheckBoxRDP: TCheckBox;
     ComboBoxVmType: TComboBox;
     ComboBoxVmVersion: TComboBox;

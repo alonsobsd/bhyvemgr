@@ -43,13 +43,18 @@ type
   { TFormSettings }
 
   TFormSettings = class(TForm)
+    BitBtnCalculateIpv6: TBitBtn;
     BitBtnSaveSettings: TBitBtn;
     BitBtnCloseSettings: TBitBtn;
+    CheckBoxUseIpv6: TCheckBox;
     CheckBoxUseSystray: TCheckBox;
     CheckBoxUseDnsmasq: TCheckBox;
     CheckBoxUseSudo: TCheckBox;
     CheckBoxUseZfs: TCheckBox;
     ComboBoxZpool: TComboBox;
+    EditBridgeMac: TEdit;
+    EditBridgeIpv6: TEdit;
+    EditIpv6Prefix: TEdit;
     EditVmPathSetting: TEdit;
     EditBridgeInterface: TEdit;
     EditSubnet: TEdit;
@@ -90,6 +95,10 @@ type
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label33: TLabel;
+    Prefix: TLabel;
     Label30: TLabel;
     Label31: TLabel;
     Label32: TLabel;
@@ -122,9 +131,11 @@ type
     StatusBarBhyveSettings: TStatusBar;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    procedure BitBtnCalculateIpv6Click(Sender: TObject);
     procedure BitBtnCloseSettingsClick(Sender: TObject);
     procedure BitBtnSaveSettingsClick(Sender: TObject);
     procedure CheckBoxUseDnsmasqChange(Sender: TObject);
+    procedure CheckBoxUseIpv6Change(Sender: TObject);
     procedure CheckBoxUseZfsChange(Sender: TObject);
     procedure ComboBoxZpoolChange(Sender: TObject);
     procedure EditSubnetExit(Sender: TObject);
@@ -154,6 +165,10 @@ begin
   Self.Caption:=FormBhyveManagerSettingsTitle;
   Self.PageControl1.ActivePageIndex:=0;
   FillComboZpool;
+
+  EditBridgeMac.Clear;
+  EditBridgeIpv6.Clear;
+
   LoadDefaultValues();
 end;
 
@@ -182,7 +197,16 @@ begin
     end
     else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
     begin
-      StatusBarBhyveSettings.SimpleText:='a valid subnet must be defined. It will be used for assign ip address to virtual machines automatically';
+      StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign ip address to virtual machines automatically.';
+      Result:=False;
+    end;
+  end;
+
+  if CheckBoxUseIpv6.Checked then
+  begin
+    if (Trim(EditIpv6Prefix.Text) = EmptyStr) or not (CheckIpv6Address(EditIpv6Prefix.Text)) then
+    begin
+      StatusBarBhyveSettings.SimpleText:='A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses.';
       Result:=False;
     end;
   end;
@@ -204,7 +228,7 @@ begin
     end;
   end;
 
-  if GetOsreldate.ToInt64 >= 1500026 then
+  if GetOsreldate.ToInt64 >= 1403000 then
   begin
     {$ifdef CPUAMD64}
     if not FileExists(FileNameEditSwtpm.Text) or not (ExtractFileName(FileNameEditSwtpm.Text) = 'swtpm') then
@@ -222,7 +246,7 @@ begin
 
   if Trim(EditBridgeInterface.Text) = EmptyStr then
   begin
-    StatusBarBhyveSettings.SimpleText:='a bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings';
+    StatusBarBhyveSettings.SimpleText:='A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings';
     Result:=False;
   end
   else if not FileExists(FileNameEditBhyve.Text) or not (ExtractFileName(FileNameEditBhyve.Text) = 'bhyve') then
@@ -358,7 +382,7 @@ begin
     begin
       EditSubnet.SetFocus;
       StatusBarBhyveSettings.Font.Color:=clRed;
-      StatusBarBhyveSettings.SimpleText:='a valid subnet must be defined. It will be used for assign ip address to virtual machines automatically';
+      StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign ip address to virtual machines automatically';
     end
     else
     begin
@@ -439,6 +463,20 @@ begin
       SetUseSystray('no');
     end;
 
+    if CheckBoxUseIpv6.Checked then
+    begin
+      ConfigFile.SetOption('general', 'use_ipv6', 'yes');
+      ConfigFile.SetOption('network', 'ipv6_prefix', EditIpv6Prefix.Text);
+      SetUseIpv6('yes');
+      SetIpv6Prefix(EditIpv6Prefix.Text);
+    end
+    else
+    begin
+      ConfigFile.SetOption('general', 'use_ipv6', 'no');
+      SetUseIpv6('no');
+      SetIpv6Prefix(EmptyStr);
+    end;
+
     ConfigFile.SetOption('general','vm_path', EditVmPathSetting.Text);
 
     ConfigFile.SetOption('bhyve-tools','bhyve_cmd', FileNameEditBhyve.Text);
@@ -504,6 +542,9 @@ begin
     else
       CreateDirectory(VmPath, GetCurrentUserName());
 
+    StatusBarBhyveSettings.Font.Color:=clTeal;
+    StatusBarBhyveSettings.SimpleText:=EmptyStr;
+
     MessageDlg('Settings information', 'Settings were saved successfully', mtInformation, [mbOK], 0);
 
     SetNewConfig(False);
@@ -516,12 +557,58 @@ begin
   Close;
 end;
 
+procedure TFormSettings.BitBtnCalculateIpv6Click(Sender: TObject);
+begin
+  if not (EditIpv6Prefix.Text = EmptyStr) and not (EditBridgeMac.Text = EmptyStr) and
+     (CheckMacAddress(EditBridgeMac.Text)) and (CheckIpv6Address(EditIpv6Prefix.Text)) then
+  begin
+    EditBridgeIpv6.Text:=GetNewIp6Address(EditIpv6Prefix.Text, EditBridgeMac.Text);
+    StatusBarBhyveSettings.Font.Color:=clTeal;
+    StatusBarBhyveSettings.SimpleText:='Now, assign this IPv6 address to '+EditBridgeInterface.Text+' interface. Do not forget add accept_rtadv and auto_linklocal options to it too.';
+  end
+  else
+  begin
+    StatusBarBhyveSettings.Font.Color:=clRed;
+    StatusBarBhyveSettings.SimpleText:=EditBridgeInterface.Text+' IPv6 address can not calculated. IPv6 prefix or Mac address are not valid.';
+  end;
+
+end;
+
 procedure TFormSettings.CheckBoxUseDnsmasqChange(Sender: TObject);
 begin
   if CheckBoxUseDnsmasq.Checked then
-    EditSubnet.Enabled:=True
+  begin
+    EditSubnet.Enabled:=True;
+    CheckBoxUseIpv6.Enabled:=True;
+  end
   else
+  begin
     EditSubnet.Enabled:=False;
+    CheckBoxUseIpv6.Enabled:=False;
+  end;
+end;
+
+procedure TFormSettings.CheckBoxUseIpv6Change(Sender: TObject);
+begin
+  if CheckBoxUseIpv6.Checked then
+  begin
+    BitBtnCalculateIpv6.Enabled:=True;
+    EditIpv6Prefix.Enabled:=True;
+    EditBridgeMac.Enabled:=True;
+    EditBridgeIpv6.Enabled:=True;
+    EditBridgeIpv6.Clear;
+
+    if EditIpv6Prefix.Text = EmptyStr then
+      EditIpv6Prefix.Text:=GenerateIpv6Preffix();
+  end
+  else
+  begin
+    BitBtnCalculateIpv6.Enabled:=False;
+    EditIpv6Prefix.Enabled:=False;
+    EditBridgeIpv6.Enabled:=False;
+    EditBridgeMac.Enabled:=False;
+    EditBridgeIpv6.Clear;
+  end;
 end;
 
 procedure TFormSettings.FillComboZpool();
@@ -541,11 +628,14 @@ begin
   begin
     CheckBoxUseDnsmasq.Checked:=True;
     EditSubnet.Enabled:=True;
+    CheckBoxUseIpv6.Enabled:=True;
   end
   else
   begin
     CheckBoxUseDnsmasq.Checked:=False;
     EditSubnet.Enabled:=False;
+    CheckBoxUseIpv6.Checked:=False;
+    CheckBoxUseIpv6.Enabled:=False;
   end;
 
   if UseSudo = 'yes' then
@@ -557,6 +647,24 @@ begin
     CheckBoxUseSystray.Checked:=True
   else
     CheckBoxUseSystray.Checked:=False;
+
+  if (UseIpv6 = 'yes') and (UseDnsmasq = 'yes') then
+  begin
+    BitBtnCalculateIpv6.Enabled:=True;
+    CheckBoxUseIpv6.Checked:=True;
+    EditBridgeMac.Enabled:=True;
+    EditBridgeIpv6.Enabled:=True;
+    EditIpv6Prefix.Enabled:=True;
+    EditIpv6Prefix.Text:=Ipv6Prefix;
+  end
+  else
+  begin
+    BitBtnCalculateIpv6.Enabled:=False;
+    CheckBoxUseIpv6.Checked:=False;
+    EditBridgeMac.Enabled:=False;
+    EditBridgeIpv6.Enabled:=False;
+    EditIpv6Prefix.Enabled:=False;
+  end;
 
   EditBridgeInterface.Text:=BridgeInterface;
 

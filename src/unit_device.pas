@@ -204,7 +204,9 @@ type
     system_version:String;
     image:Integer;
     ipaddress:String;
+    ip6address:String;
     rdp:Boolean;
+    ipv6:Boolean;
   end;
 
 implementation

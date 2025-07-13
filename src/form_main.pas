@@ -3076,6 +3076,7 @@ var
   Uuid : String;
   DiskName : String;
   IpAddress : String;
+  Ip6Address : String;
   MacAddress : String;
   Path : String = '.path';
   PciSlot : String;
@@ -3264,7 +3265,16 @@ begin
     begin
       IpAddress:=GetNewIpAddress(GetSubnet);
       NewVMConfig.SetOption('general','ipaddress', IpAddress );
-      AddDnsmasqEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
+
+      if (UseIpv6 = 'yes') and (FormVmCreate.CheckBoxIpv6Address.Checked) then
+      begin
+        Ip6Address:=GetNewIp6Address(GetIpv6Prefix, MacAddress);
+        NewVMConfig.SetOption('general','ip6address', Ip6Address );
+        NewVMConfig.SetOption('general','ipv6', 'True');
+        AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, Ip6Address, MacAddress);
+      end;
+
+      AddDnsmasqDhcpHostEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
     end;
 
     NewVMConfig. Free;
@@ -3316,6 +3326,11 @@ begin
       FormVmInfo.CheckBoxRDP.Checked:=True
     else
       FormVmInfo.CheckBoxRDP.Checked:=False;
+
+    if VirtualMachine.ipv6 = StrToBool('True') then
+      FormVmInfo.CheckBoxIpv6.Checked:=True
+    else
+      FormVmInfo.CheckBoxIpv6.Checked:=False;
   end;
 end;
 
@@ -3335,6 +3350,10 @@ begin
     Configuration.SetOption('general','image', PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]).ToString);
     Configuration.SetOption('general','description', FormVmInfo.EditVmDescription.Text);
     Configuration.SetOption('general','rdp', BoolToStr(FormVmInfo.CheckBoxRDP.Checked, 'True', 'False'));
+    Configuration.SetOption('general','ipv6', BoolToStr(FormVmInfo.CheckBoxIpv6.Checked, 'True', 'False'));
+
+    if not FormVmInfo.CheckBoxIpv6.Checked then
+      Configuration.SetOption('general','ip6address', EmptyStr);
 
     Configuration.Free;
 
@@ -3442,6 +3461,7 @@ var
   i : Integer;
   Node : TTreeNode;
   IpAddress : String;
+  Ip6Address : String;
   VmConfig : ConfigurationClass;
 begin
   GlobalNode:=VirtualMachinesTreeView.Selected;
@@ -3497,14 +3517,22 @@ begin
             VmConfig:=ConfigurationClass.Create(VmPath+'/'+VirtualMachine.name+'/'+VirtualMachine.name+'.conf');
 
             IpAddress:=VmConfig.GetOption('general', 'ipaddress', '');
+            Ip6Address:=VmConfig.GetOption('general', 'ip6address', '');
 
             if IpAddress = EmptyStr then
             begin
               IpAddress:=GetNewIpAddress(GetSubnet);
               VmConfig.SetOption('general','ipaddress', IpAddress );
+              AddDnsmasqDhcpHostEntry(VirtualMachine.name, IpAddress, NetworkDevice.mac);
             end;
 
-            AddDnsmasqEntry(VirtualMachine.name, IpAddress, NetworkDevice.mac);
+            if (UseIpv6 = 'yes') and (Virtualmachine.ipv6 = True) and
+               ((Ip6Address = EmptyStr) or not (Ip6Address = GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac))) then
+            begin
+              Ip6Address:=GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac );
+              VmConfig.SetOption('general','ip6address', Ip6Address );
+              AddDnsmasqHostRecordEntry(VirtualMachine.name, Ip6Address, NetworkDevice.mac);
+            end;
 
             VmConfig.Free;
           end;
@@ -4576,7 +4604,20 @@ begin
     VirtualMachine.rdp:=False;
 
   if UseDnsmasq = 'yes' then
+  begin
     VirtualMachine.ipaddress:=Configuration.GetOption('general','ipaddress');
+
+    if (UseIpv6 = 'yes') and (Configuration.GetOption('general','ipv6') = 'True') then
+    begin
+      VirtualMachine.ip6address:=Configuration.GetOption('general','ip6address');
+      VirtualMachine.ipv6:=True;
+    end
+    else
+    begin
+      VirtualMachine.ipv6:=False;
+      VirtualMachine.ip6address:=EmptyStr;
+    end;
+  end;
 
   Configuration.Free;
 

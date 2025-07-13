@@ -7,10 +7,10 @@ object FormVmInfo: TFormVmInfo
   Caption = 'FormVmInfo'
   ClientHeight = 247
   ClientWidth = 584
-  OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.0.0.4'
+  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 168
@@ -64,7 +64,7 @@ object FormVmInfo: TFormVmInfo
       Height = 32
       Top = 96
       Width = 437
-      TabOrder = 4
+      TabOrder = 5
     end
     object Label4: TLabel
       Left = 24
@@ -85,9 +85,17 @@ object FormVmInfo: TFormVmInfo
     object CheckBoxRDP: TCheckBox
       Left = 344
       Height = 22
-      Top = 40
-      Width = 193
+      Top = 64
+      Width = 189
       Caption = 'Works with RDP connection'
+      TabOrder = 4
+    end
+    object CheckBoxIpv6: TCheckBox
+      Left = 344
+      Height = 22
+      Top = 40
+      Width = 76
+      Caption = 'Use IPv6'
       TabOrder = 2
     end
   end

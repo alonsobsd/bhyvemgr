@@ -44,6 +44,7 @@ type
 
   TFormVmCreate = class(TForm)
     BitBtnCreateVm: TBitBtn;
+    CheckBoxIpv6Address: TCheckBox;
     CheckBoxUEFIBootvars: TCheckBox;
     CheckBoxOnlyLocalhost: TCheckBox;
     CheckBoxUseMedia: TCheckBox;
@@ -127,6 +128,12 @@ begin
   CheckBoxWaitVNC.Checked:=True;
   CheckBoxOnlyLocalhost.Checked:=True;
   CheckBoxUEFIBootvars.Checked:=True;
+  CheckBoxIpv6Address.Checked:=False;
+
+  if UseIpv6 = 'yes' then
+    CheckBoxIpv6Address.Enabled:=True
+  else
+    CheckBoxIpv6Address.Enabled:=False;
 
   {$ifdef CPUAARCH64}
   CheckBoxFramebuffer.Enabled:=False;
