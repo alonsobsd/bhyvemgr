@@ -87,7 +87,7 @@ In this guide, I will use **fd4d:39f0:0d6b:0001::** as IPv6 prefix and **38:7c:f
 Add the following lines to your **/etc/rc.conf** file:
 
 ```sh
-ifconfig_bhyve0_ipv6="inet6 fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611 prefixlen 64 accept_rtadv auto_linklocal"
+ifconfig_bhyve0_ipv6="inet6 fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611 prefixlen 64 autoconf accept_rtadv auto_linklocal"
 ```
 
 The bhyve0 IPv6 address **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** will also be used in your Dnsmasq configuration file.
