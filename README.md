@@ -82,7 +82,7 @@ You need two things to calcule bhyve0 IPv6 Address: **bhyve0 MAC Adresss** and a
 	ether 38:7c:fc:00:c6:11
 ```
 
-In this guide, I will use **fd4d:39f0:0d6b:0001::** as IPv6 prefix and **38:7c:fc:00:c6:11** as bhyve0 MAC Address. Bhyvemgr will calculate **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** with these two values and it must be used as **bhyve0 IPv6 Address** into **/etc/rc.conf** file.
+In this guide, I will use **fd4d:39f0:0d6b:0001::** as IPv6 prefix and **38:7c:fc:00:c6:11** as bhyve0 MAC Address. Bhyvemgr will calculate **fd4d:39f0:0d6b:0001:3a7c:fcff:fe00:c611** (EUI-64 format) with these two values and it must be used as **bhyve0 IPv6 Address** into **/etc/rc.conf** file.
 
 Add the following lines to your **/etc/rc.conf** file:
 
