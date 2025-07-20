@@ -7,9 +7,9 @@ object FormPassthruDevice: TFormPassthruDevice
   Caption = 'FormPassthruDevice'
   ClientHeight = 218
   ClientWidth = 521
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.0.0.4'
+  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 144

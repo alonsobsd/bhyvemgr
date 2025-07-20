@@ -7,9 +7,9 @@ object FormNetworkDevice: TFormNetworkDevice
   Caption = 'FormNetworkDevice'
   ClientHeight = 272
   ClientWidth = 337
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.0.0.4'
+  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 192
@@ -79,6 +79,7 @@ object FormNetworkDevice: TFormNetworkDevice
       Top = 104
       Width = 103
       MaxLength = 0
+      SpinButtonWidth = 17
       TabOrder = 3
       NullValue = 0
       Value = 1500

@@ -11,7 +11,7 @@ object FormChangeValue: TFormChangeValue
   FormStyle = fsStayOnTop
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.0.0.4'
   object Label1: TLabel
     Left = 96
     Height = 18

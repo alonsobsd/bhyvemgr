@@ -7,9 +7,9 @@ object FormStorageDevice: TFormStorageDevice
   Caption = 'FormStorageDevice'
   ClientHeight = 576
   ClientWidth = 593
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.0.0.4'
+  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 200
@@ -136,6 +136,7 @@ object FormStorageDevice: TFormStorageDevice
       Top = 40
       Width = 103
       MaxLength = 0
+      SpinButtonWidth = 17
       TabOrder = 2
       Increment = 10
       MaxValue = 1024
@@ -243,6 +244,7 @@ object FormStorageDevice: TFormStorageDevice
       DirectInput = False
       Enabled = False
       MaxLength = 0
+      SpinButtonWidth = 17
       TabOrder = 7
       Increment = 256
       MaxValue = 8092

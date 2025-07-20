@@ -7,11 +7,11 @@ object FormRdpConnection: TFormRdpConnection
   Caption = 'FormRdpConnection'
   ClientHeight = 224
   ClientWidth = 343
+  Position = poMainFormCenter
+  LCLVersion = '4.0.0.4'
   OnDeactivate = FormDeactivate
   OnHide = FormHide
   OnShow = FormShow
-  Position = poMainFormCenter
-  LCLVersion = '3.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 144

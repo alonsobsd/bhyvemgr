@@ -7,9 +7,9 @@ object FormLpcDevice: TFormLpcDevice
   Caption = 'FormLpcDevice'
   ClientHeight = 346
   ClientWidth = 345
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.0.0.4'
+  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 272

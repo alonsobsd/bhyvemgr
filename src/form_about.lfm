@@ -7,10 +7,10 @@ object FormAbout: TFormAbout
   Caption = 'About'
   ClientHeight = 170
   ClientWidth = 415
-  OnShow = FormShow
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.0.0.4'
+  OnShow = FormShow
   object Image1: TImage
     Left = 24
     Height = 72
@@ -274,7 +274,7 @@ object FormAbout: TFormAbout
     Lines.Strings = (
       'This program is under BSD 3-Clause License'
       ''
-      'Copyright (c) 2024, Alonso Cárdenas <acardenas@bsd-peru.org>'
+      'Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>'
       ''
       'Uniqueinstance component is under modified LGPL License'
       ''

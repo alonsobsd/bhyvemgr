@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
