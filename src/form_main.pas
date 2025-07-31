@@ -1060,6 +1060,11 @@ begin
           FormChangeValue.ComboBoxValue.Items.Add('/dev/nmdm-'+VirtualMachine.name+'.1A');
           FormChangeValue.ComboBoxValue.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
           FormChangeValue.ComboBoxValue.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
+          if UseIpv6 = 'yes' then
+          begin
+            FormChangeValue.ComboBoxValue.Items.Add('tcp=[::]:'+GetNewComPortNumber());
+            FormChangeValue.ComboBoxValue.Items.Add('tcp=[::1]:'+GetNewComPortNumber());
+          end;
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
           FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
@@ -1613,8 +1618,10 @@ begin
     if ComDevice.Contains('/dev/nmdm') then
       Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachine.name+'.1B';
 
-    if ComDevice.Contains('tcp=') then
-      Clipboard.AsText:='netcat 127.0.0.1 '+ComDevice.Split('=')[1].Split(':')[1];
+    if ComDevice.Contains('tcp=') and not ComDevice.Contains('[') then
+      Clipboard.AsText:='netcat 127.0.0.1 '+ExtractPortValue(ComDevice)
+    else if ComDevice.Contains('tcp=') and ComDevice.Contains('[') then
+      Clipboard.AsText:='netcat -6 ::1 '+ExtractPortValue(ComDevice);
     {$endif}
     {$ifdef CPUAMD64}
     LPCDevice:=TLPCDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('LPC').Items[0].Data);
@@ -1623,8 +1630,10 @@ begin
     if ComDevice.Contains('/dev/nmdm') then
       Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachine.name+'.1B';
 
-    if ComDevice.Contains('tcp=') then
-      Clipboard.AsText:='netcat 127.0.0.1 '+ComDevice.Split('=')[1].Split(':')[1];
+    if ComDevice.Contains('tcp=') and not ComDevice.Contains('[') then
+      Clipboard.AsText:='netcat 127.0.0.1 '+ExtractPortValue(ComDevice)
+    else if ComDevice.Contains('tcp=') and ComDevice.Contains('[') then
+      Clipboard.AsText:='netcat -6 ::1 '+ExtractPortValue(ComDevice);
     {$endif}
   end;
 end;
@@ -1684,17 +1693,17 @@ begin
 
             FormDisplayDevice.BitBtnSave.OnClick:=@SaveDisplayDevice;
             FormDisplayDevice.FormStyle:=fsSystemStayOnTop;
-            FormDisplayDevice.LoadDefaultValues();
-            FormDisplayDevice.FormAction:='Update';
             FormDisplayDevice.HostPort:=ExtractPortValue(DisplayDevice.tcp);
-            FormDisplayDevice.EditHost.Text:=DisplayDevice.tcp;
+            FormDisplayDevice.FormAction:='Update';
+            FormDisplayDevice.LoadDefaultValues();
+            FormDisplayDevice.ComboBoxHost.ItemIndex:=FormDisplayDevice.ComboBoxHost.Items.IndexOf(DisplayDevice.tcp);
 
             if DisplayDevice.wait <> EmptyStr then
               FormDisplayDevice.CheckBoxWaitVnc.Checked:=StrToBool(DisplayDevice.wait)
             else
               FormDisplayDevice.CheckBoxWaitVnc.Checked:=False;
 
-            if DisplayDevice.tcp.Contains('0.0.0.0') then
+            if DisplayDevice.tcp.Contains('0.0.0.0') or DisplayDevice.tcp.Contains('[::]')  then
               FormDisplayDevice.CheckBoxOnlyLocalhost.Checked:=False;
 
             if DisplayDevice.vga <> EmptyStr then FormDisplayDevice.ComboBoxVga.ItemIndex:=FormDisplayDevice.ComboBoxVga.Items.IndexOf(DisplayDevice.vga);
@@ -1772,11 +1781,23 @@ begin
                 begin
                    FormLpcDevice.ComboBoxCom1.Items.Add('tcp=127.0.0.1:'+ExtractPortValue(LPCDevice.com1));
                    FormLpcDevice.ComboBoxCom1.Items.Add('tcp=0.0.0.0:'+ExtractPortValue(LPCDevice.com1));
+
+                   if UseIpv6 = 'yes' then
+                   begin
+                     FormLpcDevice.ComboBoxCom1.Items.Add('tcp=[::1]:'+ExtractPortValue(LPCDevice.com1));
+                     FormLpcDevice.ComboBoxCom1.Items.Add('tcp=[::]:'+ExtractPortValue(LPCDevice.com1));
+                   end;
                 end
                 else
                 begin
                   FormLpcDevice.ComboBoxCom1.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
                   FormLpcDevice.ComboBoxCom1.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
+
+                  if UseIpv6 = 'yes' then
+                  begin
+                    FormLpcDevice.ComboBoxCom1.Items.Add('tcp=[::1]:'+GetNewComPortNumber());
+                    FormLpcDevice.ComboBoxCom1.Items.Add('tcp=[::]:'+GetNewComPortNumber());
+                  end;
                 end;
               end;
 
@@ -2248,7 +2269,7 @@ begin
    PciSlot:='0.30.0';
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:='fbuf';
-   TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.EditHost.Text;
+   TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.ComboBoxHost.Text;
    if FormDisplayDevice.CheckBoxWaitVnc.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.wait']:='true';
    TmpDevicesStringList.Values['pci.'+PciSlot+'.w']:=ExtractDelimited(1,FormDisplayDevice.ComboBoxResolution.Text,['x']);
    TmpDevicesStringList.Values['pci.'+PciSlot+'.h']:=ExtractDelimited(2,FormDisplayDevice.ComboBoxResolution.Text,['x']);
@@ -2272,7 +2293,7 @@ begin
  begin
    PciSlot:=DisplayDevice.pci;
 
-   TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.EditHost.Text;
+   TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.ComboBoxHost.Text;
    TmpDevicesStringList.Values['pci.'+PciSlot+'.wait']:=BoolToStr(FormDisplayDevice.CheckBoxWaitVnc.Checked, 'true', 'false');
    TmpDevicesStringList.Values['pci.'+PciSlot+'.w']:=ExtractDelimited(1,FormDisplayDevice.ComboBoxResolution.Text,['x']);
    TmpDevicesStringList.Values['pci.'+PciSlot+'.h']:=ExtractDelimited(2,FormDisplayDevice.ComboBoxResolution.Text,['x']);
@@ -2288,8 +2309,8 @@ begin
      TmpDevicesStringList.Values['pci.'+PciSlot+'.password']:=FormDisplayDevice.EditPassword.Text;
    end;
 
-   DisplayDevice.tcp:=FormDisplayDevice.EditHost.Text;
-   DisplayDevice.port:=StrToInt(ExtractDelimited(2,FormDisplayDevice.EditHost.Text,[':']));
+   DisplayDevice.tcp:=FormDisplayDevice.ComboBoxHost.Text;
+   DisplayDevice.port:=StrToInt(ExtractPortValue(FormDisplayDevice.ComboBoxHost.Text));
    DisplayDevice.wait:=BoolToStr(FormDisplayDevice.CheckBoxWaitVnc.Checked, 'true', 'false');
    DisplayDevice.w:=ExtractDelimited(1,FormDisplayDevice.ComboBoxResolution.Text,['x']).ToInteger;
    DisplayDevice.h:=ExtractDelimited(2,FormDisplayDevice.ComboBoxResolution.Text,['x']).ToInteger;
@@ -3862,7 +3883,7 @@ begin
           'tcp':
             begin
               DisplayDevice.tcp := RegexObj.Match[2];
-              DisplayDevice.port := StrToInt(ExtractDelimited(2,RegexObj.Match[2],[':']));
+              DisplayDevice.port := StrToInt(ExtractPortValue(RegexObj.Match[2]));
             end;
           'w': DisplayDevice.w := StrToInt(RegexObj.Match[2]);
           'h': DisplayDevice.h := StrToInt(RegexObj.Match[2]);

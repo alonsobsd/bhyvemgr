@@ -1265,7 +1265,11 @@ var
 begin
   TmpArray:= TextLine.Split(':');
 
-  Result:=TmpArray[1];
+  if (TextLine.Contains('[')) and (TextLine.Contains(']:')) then
+    Result:=TmpArray[3]
+  else
+    Result:=TmpArray[1];
+
 end;
 
 function ExtractVarName(TextLine: String): String;

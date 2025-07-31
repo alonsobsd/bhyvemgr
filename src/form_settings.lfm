@@ -9,7 +9,7 @@ object FormSettings: TFormSettings
   ClientWidth = 799
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   OnShow = FormShow
   object PageControl1: TPageControl
     Left = 16

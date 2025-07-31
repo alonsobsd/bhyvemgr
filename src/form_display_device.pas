@@ -47,9 +47,9 @@ type
     CheckBoxOnlyLocalhost: TCheckBox;
     CheckBoxWaitVnc: TCheckBox;
     CheckBoxUsePassword: TCheckBox;
+    ComboBoxHost: TComboBox;
     ComboBoxResolution: TComboBox;
     ComboBoxVga: TComboBox;
-    EditHost: TEdit;
     EditPassword: TEdit;
     GroupBox1: TGroupBox;
     Label1: TLabel;
@@ -89,9 +89,9 @@ end;
 procedure TFormDisplayDevice.CheckBoxOnlyLocalhostChange(Sender: TObject);
 begin
   if CheckBoxOnlyLocalhost.Checked then
-    EditHost.Text:='127.0.0.1:'+HostPort
+    ComboBoxHost.ItemIndex:=ComboBoxHost.Items.IndexOf('127.0.0.1:'+HostPort)
   else
-    EditHost.Text:='0.0.0.0:'+HostPort;
+    ComboBoxHost.ItemIndex:=ComboBoxHost.Items.IndexOf('0.0.0.0:'+HostPort);
 end;
 
 procedure TFormDisplayDevice.CheckBoxUsePasswordChange(Sender: TObject);
@@ -123,7 +123,8 @@ end;
 
 procedure TFormDisplayDevice.LoadDefaultValues();
 begin
-  HostPort:=GetNewVncPortNumber();
+  if FormAction = 'Add' then
+    HostPort:=GetNewVncPortNumber();
 
   FillComboVga(ComboBoxVga);
   FillComboResolution(ComboBoxResolution);
@@ -135,7 +136,18 @@ begin
   CheckBoxUsePassword.Checked:=False;
   EditPassword.Enabled:=False;
   EditPassword.Clear;
-  EditHost.Text:='127.0.0.1:'+HostPort;
+
+  ComboBoxHost.Clear;
+  ComboBoxHost.Enabled:=True;
+
+  ComboBoxHost.Items.Add('0.0.0.0:'+HostPort);
+  ComboBoxHost.Items.Add('127.0.0.1:'+HostPort);
+
+  if UseIpv6 = 'yes' then
+  begin
+    ComboBoxHost.Items.Add('[::]:'+HostPort);
+    ComboBoxHost.Items.Add('[::1]:'+HostPort);
+  end;
 end;
 
 end.

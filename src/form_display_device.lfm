@@ -1,14 +1,14 @@
 object FormDisplayDevice: TFormDisplayDevice
-  Left = 926
+  Left = 757
   Height = 329
-  Top = 356
+  Top = 340
   Width = 343
   BorderStyle = bsSingle
   Caption = 'FormDisplayDevice'
   ClientHeight = 329
   ClientWidth = 343
   Position = poMainFormCenter
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
@@ -26,7 +26,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Width = 152
       ItemHeight = 30
       ReadOnly = True
-      TabOrder = 5
+      TabOrder = 4
     end
     object Label1: TLabel
       Left = 11
@@ -57,7 +57,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Width = 216
       EchoMode = emPassword
       PasswordChar = '*'
-      TabOrder = 6
+      TabOrder = 5
     end
     object Label5: TLabel
       Left = 11
@@ -73,7 +73,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Width = 72
       ItemHeight = 30
       ReadOnly = True
-      TabOrder = 4
+      TabOrder = 3
     end
     object CheckBoxUsePassword: TCheckBox
       Left = 11
@@ -100,13 +100,13 @@ object FormDisplayDevice: TFormDisplayDevice
       Width = 29
       Caption = 'Host'
     end
-    object EditHost: TEdit
-      Left = 80
+    object ComboBoxHost: TComboBox
+      Left = 81
       Height = 32
       Top = 88
       Width = 152
-      ReadOnly = True
-      TabOrder = 3
+      ItemHeight = 30
+      TabOrder = 6
     end
   end
   object BitBtnSave: TBitBtn

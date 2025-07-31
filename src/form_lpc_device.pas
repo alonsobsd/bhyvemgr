@@ -168,6 +168,12 @@ begin
     begin
       ComboBoxCom1.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
       ComboBoxCom1.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
+
+      if UseIpv6 = 'yes' then
+      begin
+        ComboBoxCom1.Items.Add('tcp=[::]:'+GetNewComPortNumber());
+        ComboBoxCom1.Items.Add('tcp=[::1]:'+GetNewComPortNumber());
+      end;
     end;
   end;
 

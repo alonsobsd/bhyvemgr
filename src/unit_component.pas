@@ -584,6 +584,7 @@ begin
     begin
       combo.AddItem('Almalinux 8.x', TObject(15));
       combo.AddItem('Almalinux 9.x', TObject(15));
+      combo.AddItem('Almalinux 10.x', TObject(15));
       combo.AddItem('Alpinelinux 3.x', TObject(16));
       combo.AddItem('Arch Linux 2025.x', TObject(1));
       combo.AddItem('Debian 12.x', TObject(2));
@@ -596,6 +597,7 @@ begin
       combo.AddItem('Pop! OS 22.x', TObject(21));
       combo.AddItem('Rockylinux 8.x', TObject(10));
       combo.AddItem('Rockylinux 9.x', TObject(10));
+      combo.AddItem('Rockylinux 10.x', TObject(10));
       combo.AddItem('Ubuntu 24.x', TObject(11));
       combo.AddItem('Ubuntu 25.x', TObject(11));
       combo.AddItem('Other', TObject(5));

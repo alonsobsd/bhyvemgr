@@ -585,6 +585,7 @@ begin
   begin
     EditSubnet.Enabled:=False;
     CheckBoxUseIpv6.Enabled:=False;
+    CheckBoxUseIpv6.Checked:=False;
   end;
 end;
 
