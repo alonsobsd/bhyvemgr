@@ -158,6 +158,7 @@ begin
     ComboBoxBootvars.Enabled:=False;
   end;
 
+  CheckBoxCom1.Checked:=False;
   ComboBoxCom1.Clear;
   ComboBoxCom1.Enabled:=False;
   ComboBoxCom1.Items.Add('/dev/nmdm-'+FormVmName+'.1A');

@@ -1,0 +1,2 @@
+instance-id: %%UUID%%
+local-hostname: %%HOSTNAME%%

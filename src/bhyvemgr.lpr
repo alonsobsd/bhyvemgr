@@ -63,6 +63,7 @@ begin
     SetUseSudo(Configuration.GetOption('general','use_sudo'));
     SetUseZfs(Configuration.GetOption('general','use_zfs'));
     SetVmPath(Configuration.GetOption('general','vm_path'));
+    SetCloudVmImagesPath(Configuration.GetOption('general','cloudvm_images_path'));
     SetUseSystray(Configuration.GetOption('general','use_systray'));
     SetUseIpv6(Configuration.GetOption('general','use_ipv6'));
 
@@ -83,19 +84,24 @@ begin
 
     SetChownCmd(Configuration.GetOption('extra-tools','chown_cmd'));
     SetChmodCmd(Configuration.GetOption('extra-tools','chmod_cmd'));
+    SetFetchCmd(Configuration.GetOption('extra-tools','fetch_cmd'));
+    SetFileCmd(Configuration.GetOption('extra-tools','file_cmd'));
     SetIfconfigCmd(Configuration.GetOption('extra-tools','ifconfig_cmd'));
     SetInstallCmd(Configuration.GetOption('extra-tools','install_cmd'));
     SetKillCmd(Configuration.GetOption('extra-tools','kill_cmd'));
     SetKldloadCmd(Configuration.GetOption('extra-tools','kldload_cmd'));
     SetKldstatCmd(Configuration.GetOption('extra-tools','kldstat_cmd'));
+    SetMakefsCmd(Configuration.GetOption('extra-tools','makefs_cmd'));
     SetPciconfCmd(Configuration.GetOption('extra-tools','pciconf_cmd'));
     SetPgrepCmd(Configuration.GetOption('extra-tools','pgrep_cmd'));
+    SetQemuImgCmd(Configuration.GetOption('extra-tools','qemu-img_cmd'));
     SetRmCmd(Configuration.GetOption('extra-tools','rm_cmd'));
     SetServiceCmd(Configuration.GetOption('extra-tools','service_cmd'));
     SetSwtpmCmd(Configuration.GetOption('extra-tools','swtpm_cmd'));
     SetSwtpmIoctlCmd(Configuration.GetOption('extra-tools','swtpm_ioctl_cmd'));
     SetSysctlCmd(Configuration.GetOption('extra-tools','sysctl_cmd'));
     SetTruncateCmd(Configuration.GetOption('extra-tools','truncate_cmd'));
+    SetXzCmd(Configuration.GetOption('extra-tools','xz_cmd'));
     SetZfsCmd(Configuration.GetOption('extra-tools','zfs_cmd'));
     SetZpoolCmd(Configuration.GetOption('extra-tools','zpool_cmd'));
 

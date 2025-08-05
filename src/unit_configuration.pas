@@ -162,6 +162,12 @@ begin
   if ConfigFile.ReadString('extra-tools','chmod_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','chmod_cmd', '/bin/chmod');
 
+  if ConfigFile.ReadString('extra-tools','fetch_cmd', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('extra-tools','fetch_cmd', '/usr/bin/fetch');
+
+  if ConfigFile.ReadString('extra-tools','file_cmd', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('extra-tools','file_cmd', '/usr/bin/file');
+
   if ConfigFile.ReadString('extra-tools','ifconfig_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','ifconfig_cmd', '/sbin/ifconfig');
 
@@ -177,11 +183,17 @@ begin
   if ConfigFile.ReadString('extra-tools','kldstat_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','kldstat_cmd', '/sbin/kldstat');
 
+  if ConfigFile.ReadString('extra-tools','makefs_cmd', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('extra-tools','makefs_cmd', '/usr/sbin/makefs');
+
   if ConfigFile.ReadString('extra-tools','pciconf_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','pciconf_cmd', '/usr/sbin/pciconf');
 
   if ConfigFile.ReadString('extra-tools','pgrep_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','pgrep_cmd', '/usr/bin/pgrep');
+
+  if ConfigFile.ReadString('extra-tools','qemu-img_cmd', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('extra-tools','qemu-img_cmd', '/usr/local/bin/qemu-img');
 
   if ConfigFile.ReadString('extra-tools','rm_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','rm_cmd', '/bin/rm');
@@ -200,6 +212,9 @@ begin
 
   if ConfigFile.ReadString('extra-tools','truncate_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','truncate_cmd', '/usr/bin/truncate');
+
+  if ConfigFile.ReadString('extra-tools','xz_cmd', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('extra-tools','xz_cmd', '/usr/bin/xz');
 
   if ConfigFile.ReadString('extra-tools','zfs_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','zfs_cmd', '/sbin/zfs');
@@ -263,6 +278,9 @@ begin
      if ConfigFile.ReadString('general','vm_path', EmptyStr) = EmptyStr then
        ConfigFile.WriteString('general','vm_path', '/usr/local/bhyvemgr');
    end;
+
+  if ConfigFile.ReadString('general','cloudvm_images_path', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('general','cloudvm_images_path', GetUserDir+'.bhyvemgr');
 
    ZfsPoolList.Free;
 

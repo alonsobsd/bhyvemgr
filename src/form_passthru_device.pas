@@ -111,7 +111,7 @@ begin
 
   if ComboBoxDevice.ItemIndex=-1 then Result:=False
   else if (Trim(EditDescripcion.Text) = EmptyStr) then Result:=False
-  else if (FileNameEditRom.Text <> EmptyStr) and not (FileExists(FileNameEditRom.Text)) then Result:=False;
+  else if (FileNameEditRom.Text <> EmptyStr) and not (FileExists(FileNameEditRom.FileName)) then Result:=False;
 end;
 
 procedure TFormPassthruDevice.LoadDefaultValues();

@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
-  EditBtn, Buttons;
+  EditBtn, Buttons, Clipbrd;
 
 type
 
@@ -44,6 +44,7 @@ type
 
   TFormSettings = class(TForm)
     BitBtnCalculateIpv6: TBitBtn;
+    BitBtnMacAddress: TBitBtn;
     BitBtnSaveSettings: TBitBtn;
     BitBtnCloseSettings: TBitBtn;
     CheckBoxUseIpv6: TCheckBox;
@@ -52,6 +53,7 @@ type
     CheckBoxUseSudo: TCheckBox;
     CheckBoxUseZfs: TCheckBox;
     ComboBoxZpool: TComboBox;
+    DirectoryEditImagesPath: TDirectoryEdit;
     EditBridgeMac: TEdit;
     EditBridgeIpv6: TEdit;
     EditIpv6Prefix: TEdit;
@@ -61,29 +63,15 @@ type
     EditZfsCreateOptions: TEdit;
     EditRdpArgs: TEdit;
     FileNameEditBhyve: TFileNameEdit;
+    FileNameEditQemuImg: TFileNameEdit;
     FileNameEditDoas: TFileNameEdit;
-    FileNameEditKldstat: TFileNameEdit;
-    FileNameEditPgrep: TFileNameEdit;
-    FileNameEditPciconf: TFileNameEdit;
-    FileNameEditRm: TFileNameEdit;
-    FileNameEditService: TFileNameEdit;
     FileNameEditSudo: TFileNameEdit;
-    FileNameEditSysctl: TFileNameEdit;
-    FileNameEditTruncate: TFileNameEdit;
-    FileNameEditZfs: TFileNameEdit;
-    FileNameEditZpool: TFileNameEdit;
     FileNameEditVncviewer: TFileNameEdit;
     FileNameEditBhyvectl: TFileNameEdit;
     FileNameEditXfreerdp: TFileNameEdit;
     FileNameEditSwtpm: TFileNameEdit;
     FileNameEditSwtpmIoctl: TFileNameEdit;
     FileNameEditBhyveload: TFileNameEdit;
-    FileNameEditChown: TFileNameEdit;
-    FileNameEditChmod: TFileNameEdit;
-    FileNameEditIfconfig: TFileNameEdit;
-    FileNameEditInstall: TFileNameEdit;
-    FileNameEditKill: TFileNameEdit;
-    FileNameEditKldload: TFileNameEdit;
     GroupBoxBhyvePaths: TGroupBox;
     GroupBoxRemoteToolPaths: TGroupBox;
     GroupBoxSwtpmToolPaths: TGroupBox;
@@ -93,22 +81,15 @@ type
     GroupBoxNetworkSettings: TGroupBox;
     GroupBoxRemoteToolSettings: TGroupBox;
     Label1: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
     Label33: TLabel;
+    Label34: TLabel;
+    Label5: TLabel;
     Prefix: TLabel;
-    Label30: TLabel;
     Label31: TLabel;
     Label32: TLabel;
     LabelNetmask: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
-    Label17: TLabel;
-    Label18: TLabel;
-    Label19: TLabel;
     Label2: TLabel;
     Label20: TLabel;
     Label21: TLabel;
@@ -116,29 +97,25 @@ type
     Label23: TLabel;
     Label24: TLabel;
     Label25: TLabel;
-    Label26: TLabel;
     Label27: TLabel;
     Label28: TLabel;
     Label29: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
     PageControl1: TPageControl;
     StatusBarBhyveSettings: TStatusBar;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     procedure BitBtnCalculateIpv6Click(Sender: TObject);
     procedure BitBtnCloseSettingsClick(Sender: TObject);
+    procedure BitBtnMacAddressClick(Sender: TObject);
     procedure BitBtnSaveSettingsClick(Sender: TObject);
     procedure CheckBoxUseDnsmasqChange(Sender: TObject);
     procedure CheckBoxUseIpv6Change(Sender: TObject);
     procedure CheckBoxUseZfsChange(Sender: TObject);
     procedure ComboBoxZpoolChange(Sender: TObject);
     procedure EditSubnetExit(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
   private
     function FormValidate():Boolean;
@@ -156,7 +133,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_configuration, unit_component, unit_global, unit_util;
+  unit_configuration, unit_component, unit_global, unit_util, LazLogger;
 
 { TFormSettings }
 
@@ -170,6 +147,12 @@ begin
   EditBridgeIpv6.Clear;
 
   LoadDefaultValues();
+
+  DebugLogger.UseStdOut:= False;
+  DebugLogger.CloseLogFileBetweenWrites:= true;
+  DebugLogger.LogName:= GetUserDir + '.config/bhyvemgr/bhyvemgr.log';
+
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : settings form was opened.');
 end;
 
 function TFormSettings.FormValidate(): Boolean;
@@ -180,25 +163,28 @@ begin
 
   if CheckBoxUseZfs.Checked then
   begin
-    if not CheckZfsSupport() or not FileExists(FileNameEditZfs.Text) or not FileExists(FileNameEditZpool.Text)
+    if not CheckZfsSupport() or not FileExists(ZfsCmd) or not FileExists(ZpoolCmd)
        or (ComboBoxZpool.ItemIndex = -1) then
     begin
       StatusBarBhyveSettings.SimpleText:='Support for zfs/zpool is not available';
       Result:=False;
+      Exit;
     end
   end;
 
   if CheckBoxUseDnsmasq.Checked then
   begin
-    if not FileExists('/usr/local/sbin/dnsmasq') then
+    if not FileExists(DnsmasqBinPath) then
     begin
       StatusBarBhyveSettings.SimpleText:='dnsmasq was not found. Please install dns/dnsmasq for fix it';
       Result:=False;
+      Exit;
     end
     else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
     begin
       StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign ip address to virtual machines automatically.';
       Result:=False;
+      Exit;
     end;
   end;
 
@@ -208,38 +194,43 @@ begin
     begin
       StatusBarBhyveSettings.SimpleText:='A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses.';
       Result:=False;
+      Exit;
     end;
   end;
 
   if CheckBoxUseSudo.Checked then
   begin
-    if not FileExists(FileNameEditSudo.Text) or not (ExtractFileName(FileNameEditSudo.Text) = 'sudo') then
+    if not FileExists(FileNameEditSudo.FileName) or not (ExtractFileName(FileNameEditSudo.FileName) = 'sudo') then
     begin
       StatusBarBhyveSettings.SimpleText:='sudo was not found. Please install security/sudo for fix it';
       Result:=False;
+      Exit;
     end;
   end
   else
   begin
-    if not FileExists(FileNameEditDoas.Text) or not (ExtractFileName(FileNameEditDoas.Text) = 'doas') then
+    if not FileExists(FileNameEditDoas.FileName) or not (ExtractFileName(FileNameEditDoas.FileName) = 'doas') then
     begin
       StatusBarBhyveSettings.SimpleText:='doas was not found. Please install security/doas for fix it';
       Result:=False;
+      Exit;
     end;
   end;
 
   if GetOsreldate.ToInt64 >= 1403000 then
   begin
     {$ifdef CPUAMD64}
-    if not FileExists(FileNameEditSwtpm.Text) or not (ExtractFileName(FileNameEditSwtpm.Text) = 'swtpm') then
+    if not FileExists(FileNameEditSwtpm.FileName) or not (ExtractFileName(FileNameEditSwtpm.FileName) = 'swtpm') then
     begin
       StatusBarBhyveSettings.SimpleText:='swtpm binary was not found';
       Result:=False;
+      Exit;
     end
-    else if not FileExists(FileNameEditSwtpmIoctl.Text) or not (ExtractFileName(FileNameEditSwtpmIoctl.Text) = 'swtpm_ioctl') then
+    else if not FileExists(FileNameEditSwtpmIoctl.FileName) or not (ExtractFileName(FileNameEditSwtpmIoctl.FileName) = 'swtpm_ioctl') then
     begin
       StatusBarBhyveSettings.SimpleText:='swtpm_iocl binary was not found';
       Result:=False;
+      Exit;
     end;
     {$endif}
   end;
@@ -248,97 +239,143 @@ begin
   begin
     StatusBarBhyveSettings.SimpleText:='A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditBhyve.Text) or not (ExtractFileName(FileNameEditBhyve.Text) = 'bhyve') then
+  else if not FileExists(FileNameEditBhyve.FileName) or not (ExtractFileName(FileNameEditBhyve.FileName) = 'bhyve') then
   begin
     StatusBarBhyveSettings.SimpleText:='bhyve binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditBhyvectl.Text) or not (ExtractFileName(FileNameEditBhyvectl.Text) = 'bhyvectl') then
+  else if not FileExists(FileNameEditBhyvectl.FileName) or not (ExtractFileName(FileNameEditBhyvectl.FileName) = 'bhyvectl') then
   begin
     StatusBarBhyveSettings.SimpleText:='bhyvectl binary was not found';
     Result:=False;
+    Exit;
   end
   {$ifdef CPUAMD64}
-  else if not FileExists(FileNameEditBhyveload.Text) or not (ExtractFileName(FileNameEditBhyveload.Text) = 'bhyveload') then
+  else if not FileExists(FileNameEditBhyveload.FileName) or not (ExtractFileName(FileNameEditBhyveload.FileName) = 'bhyveload') then
   begin
     StatusBarBhyveSettings.SimpleText:='bhyveload binary was not found';
     Result:=False;
+    Exit;
   end
   {$endif}
-  else if not FileExists(FileNameEditVncviewer.Text) or not (ExtractFileName(FileNameEditVncviewer.Text) = 'remote-viewer') then
+  else if not FileExists(FileNameEditVncviewer.FileName) or not (ExtractFileName(FileNameEditVncviewer.FileName) = 'remote-viewer') then
   begin
     StatusBarBhyveSettings.SimpleText:='vnc support will not available. net-mgmt/virt-viewer is not installed.';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditXfreerdp.Text) or not (ExtractFileName(FileNameEditXfreerdp.Text) = 'xfreerdp3') then
+  else if not FileExists(FileNameEditXfreerdp.FileName) or not (ExtractFileName(FileNameEditXfreerdp.FileName) = 'xfreerdp3') then
   begin
-    StatusBarBhyveSettings.SimpleText:='freerdp support will not be available. net/freerdp3 is not installed.';
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : freerdp support will not be available. net/freerdp3 is not installed.');
   end
-  else if not FileExists(FileNameEditChown.Text) or not (ExtractFileName(FileNameEditChown.Text) = 'chown') then
+  else if not FileExists(ChownCmd) or not (ExtractFileName(ChownCmd) = 'chown') then
   begin
     StatusBarBhyveSettings.SimpleText:='chown binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditChmod.Text) or not (ExtractFileName(FileNameEditChmod.Text) = 'chmod') then
+  else if not FileExists(ChmodCmd) or not (ExtractFileName(ChmodCmd) = 'chmod') then
   begin
     StatusBarBhyveSettings.SimpleText:='chmod binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditIfconfig.Text) or not (ExtractFileName(FileNameEditIfconfig.Text) = 'ifconfig') then
+  else if not FileExists(IfconfigCmd) or not (ExtractFileName(IfconfigCmd) = 'ifconfig') then
   begin
     StatusBarBhyveSettings.SimpleText:='ifconfig binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditInstall.Text) or not (ExtractFileName(FileNameEditInstall.Text) = 'install') then
+  else if not FileExists(InstallCmd) or not (ExtractFileName(InstallCmd) = 'install') then
   begin
     StatusBarBhyveSettings.SimpleText:='install binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditKill.Text) or not (ExtractFileName(FileNameEditKill.Text) = 'kill') then
+  else if not FileExists(FetchCmd) or not (ExtractFileName(FetchCmd) = 'fetch') then
+  begin
+    StatusBarBhyveSettings.SimpleText:='fetch binary was not found';
+    Result:=False;
+    Exit;
+  end
+  else if not FileExists(FileCmd) or not (ExtractFileName(FileCmd) = 'file') then
+  begin
+    StatusBarBhyveSettings.SimpleText:='file binary was not found';
+    Result:=False;
+    Exit;
+  end
+  else if not FileExists(KillCmd) or not (ExtractFileName(KillCmd) = 'kill') then
   begin
     StatusBarBhyveSettings.SimpleText:='kill binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditKldload.Text) or not (ExtractFileName(FileNameEditKldload.Text) = 'kldload') then
+  else if not FileExists(KldloadCmd) or not (ExtractFileName(KldloadCmd) = 'kldload') then
   begin
     StatusBarBhyveSettings.SimpleText:='kldload binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditKldstat.Text) or not (ExtractFileName(FileNameEditKldstat.Text) = 'kldstat') then
+  else if not FileExists(KldstatCmd) or not (ExtractFileName(KldstatCmd) = 'kldstat') then
   begin
     StatusBarBhyveSettings.SimpleText:='kldstat binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditPciconf.Text) or not (ExtractFileName(FileNameEditPciconf.Text) = 'pciconf') then
+  else if not FileExists(MakefsCmd) or not (ExtractFileName(MakefsCmd) = 'makefs') then
+  begin
+    StatusBarBhyveSettings.SimpleText:='makefs binary was not found';
+    Result:=False;
+    Exit;
+  end
+  else if not FileExists(PciconfCmd) or not (ExtractFileName(PciconfCmd) = 'pciconf') then
   begin
     StatusBarBhyveSettings.SimpleText:='pciconf binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditPgrep.Text) or not (ExtractFileName(FileNameEditPgrep.Text) = 'pgrep') then
+  else if not FileExists(PgrepCmd) or not (ExtractFileName(PgrepCmd) = 'pgrep') then
   begin
     StatusBarBhyveSettings.SimpleText:='pgrep binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditRm.Text) or not (ExtractFileName(FileNameEditRm.Text) = 'rm') then
+  else if not FileExists(FileNameEditQemuImg.FileName) or not (ExtractFileName(FileNameEditQemuImg.FileName) = 'qemu-img') then
+  begin
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : qcow2 convert support will not be available. qemu-tools is not installed.');
+  end
+  else if not FileExists(RmCmd) or not (ExtractFileName(RmCmd) = 'rm') then
   begin
     StatusBarBhyveSettings.SimpleText:='rm binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditService.Text) or not (ExtractFileName(FileNameEditService.Text) = 'service') then
+  else if not FileExists(ServiceCmd) or not (ExtractFileName(ServiceCmd) = 'service') then
   begin
     StatusBarBhyveSettings.SimpleText:='service binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditSysctl.Text) or not (ExtractFileName(FileNameEditSysctl.Text) = 'sysctl') then
+  else if not FileExists(SysctlCmd) or not (ExtractFileName(SysctlCmd) = 'sysctl') then
   begin
     StatusBarBhyveSettings.SimpleText:='sysctl binary was not found';
     Result:=False;
+    Exit;
   end
-  else if not FileExists(FileNameEditTruncate.Text) or not (ExtractFileName(FileNameEditTruncate.Text) = 'truncate') then
+  else if not FileExists(TruncateCmd) or not (ExtractFileName(TruncateCmd) = 'truncate') then
   begin
     StatusBarBhyveSettings.SimpleText:='truncate binary was not found';
     Result:=False;
+    Exit;
+  end
+  else if not FileExists(XzCmd) or not (ExtractFileName(XzCmd) = 'xz') then
+  begin
+    StatusBarBhyveSettings.SimpleText:='xz binary was not found';
+    Result:=False;
+    Exit;
   end
 end;
 
@@ -396,6 +433,12 @@ begin
   begin
     StatusBarBhyveSettings.SimpleText:=EmptyStr;
   end;
+end;
+
+procedure TFormSettings.FormClose(Sender: TObject; var CloseAction: TCloseAction
+  );
+begin
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : settings form was closed.');
 end;
 
 procedure TFormSettings.BitBtnSaveSettingsClick(Sender: TObject);
@@ -478,64 +521,38 @@ begin
     end;
 
     ConfigFile.SetOption('general','vm_path', EditVmPathSetting.Text);
+    ConfigFile.SetOption('general','cloudvm_images_path', DirectoryEditImagesPath.Directory);
 
-    ConfigFile.SetOption('bhyve-tools','bhyve_cmd', FileNameEditBhyve.Text);
-    ConfigFile.SetOption('bhyve-tools','bhyvectl_cmd', FileNameEditBhyvectl.Text);
-    ConfigFile.SetOption('bhyve-tools','bhyveload_cmd', FileNameEditBhyveload.Text);
+    ConfigFile.SetOption('bhyve-tools','bhyve_cmd', FileNameEditBhyve.FileName);
+    ConfigFile.SetOption('bhyve-tools','bhyvectl_cmd', FileNameEditBhyvectl.FileName);
+    ConfigFile.SetOption('bhyve-tools','bhyveload_cmd', FileNameEditBhyveload.FileName);
 
-    ConfigFile.SetOption('extra-tools','chown_cmd', FileNameEditChown.Text);
-    ConfigFile.SetOption('extra-tools','chmod_cmd', FileNameEditChmod.Text);
-    ConfigFile.SetOption('extra-tools','ifconfig_cmd', FileNameEditIfconfig.Text);
-    ConfigFile.SetOption('extra-tools','install_cmd', FileNameEditInstall.Text);
-    ConfigFile.SetOption('extra-tools','kill_cmd', FileNameEditKill.Text);
-    ConfigFile.SetOption('extra-tools','kldload_cmd', FileNameEditKldload.Text);
-    ConfigFile.SetOption('extra-tools','kldstat_cmd', FileNameEditKldstat.Text);
-    ConfigFile.SetOption('extra-tools','pciconf_cmd', FileNameEditPciconf.Text);
-    ConfigFile.SetOption('extra-tools','pgrep_cmd', FileNameEditPgrep.Text);
-    ConfigFile.SetOption('extra-tools','rm_cmd', FileNameEditRm.Text);
-    ConfigFile.SetOption('extra-tools','service_cmd', FileNameEditService.Text);
-    ConfigFile.SetOption('extra-tools','swtpm_cmd', FileNameEditSwtpm.Text);
-    ConfigFile.SetOption('extra-tools','swtpm_ioctl_cmd', FileNameEditSwtpmIoctl.Text);
-    ConfigFile.SetOption('extra-tools','sysctl_cmd', FileNameEditSysctl.Text);
-    ConfigFile.SetOption('extra-tools','truncate_cmd', FileNameEditTruncate.Text);
-    ConfigFile.SetOption('extra-tools','zfs_cmd', FileNameEditZfs.Text);
-    ConfigFile.SetOption('extra-tools','zpool_cmd', FileNameEditZpool.Text);
+    ConfigFile.SetOption('extra-tools','swtpm_cmd', FileNameEditSwtpm.FileName);
+    ConfigFile.SetOption('extra-tools','swtpm_ioctl_cmd', FileNameEditSwtpmIoctl.FileName);
+    ConfigFile.SetOption('extra-tools','qemu-img_cmd', FileNameEditQemuImg.FileName);
 
-    ConfigFile.SetOption('remote-tools','vncviewer_cmd', FileNameEditVncviewer.Text);
-    ConfigFile.SetOption('remote-tools','xfreerdp_cmd', FileNameEditXfreerdp.Text);
+    ConfigFile.SetOption('remote-tools','vncviewer_cmd', FileNameEditVncviewer.FileName);
+    ConfigFile.SetOption('remote-tools','xfreerdp_cmd', FileNameEditXfreerdp.FileName);
     ConfigFile.SetOption('remote-tools','xfreerdp_args', EditRdpArgs.Text);
 
-    ConfigFile.SetOption('user-tools','doas_cmd', FileNameEditDoas.Text);
-    ConfigFile.SetOption('user-tools','sudo_cmd', FileNameEditSudo.Text);
+    ConfigFile.SetOption('user-tools','doas_cmd', FileNameEditDoas.FileName);
+    ConfigFile.SetOption('user-tools','sudo_cmd', FileNameEditSudo.FileName);
 
     SetVmPath(EditVmPathSetting.Text);
-    SetVncviewerCmd(FileNameEditVncviewer.Text);
-    SetXfreerdpCmd(FileNameEditXfreerdp.Text);
+    SetCloudVmImagesPath(DirectoryEditImagesPath.Directory);
+    SetVncviewerCmd(FileNameEditVncviewer.FileName);
+    SetXfreerdpCmd(FileNameEditXfreerdp.FileName);
     SetXfreerdpArgs(EditRdpArgs.Text);
 
-    SetBhyveCmd(FileNameEditBhyve.Text);
-    SetBhyvectlCmd(FileNameEditBhyvectl.Text);
-    SetBhyveloadCmd(FileNameEditBhyveload.Text);
+    SetBhyveCmd(FileNameEditBhyve.FileName);
+    SetBhyvectlCmd(FileNameEditBhyvectl.FileName);
+    SetBhyveloadCmd(FileNameEditBhyveload.FileName);
 
-    SetSudoCmd(FileNameEditSudo.Text);
-    SetDoasCmd(FileNameEditDoas.Text);
-    SetChownCmd(FileNameEditChown.Text);
-    SetChmodCmd(FileNameEditChmod.Text);
-    SetIfconfigCmd(FileNameEditIfconfig.Text);
-    SetInstallCmd(FileNameEditInstall.Text);
-    SetKillCmd(FileNameEditKill.Text);
-    SetKldloadCmd(FileNameEditKldload.Text);
-    SetKldstatCmd(FileNameEditKldstat.Text);
-    SetPciconfCmd(FileNameEditPciconf.Text);
-    SetPgrepCmd(FileNameEditPgrep.Text);
-    SetRmCmd(FileNameEditRm.Text);
-    SetServiceCmd(FileNameEditService.Text);
-    SetSwtpmCmd(FileNameEditSwtpm.Text);
-    SetSwtpmIoctlCmd(FileNameEditSwtpmIoctl.Text);
-    SetSysctlCmd(FileNameEditSysctl.Text);
-    SetTruncateCmd(FileNameEditTruncate.Text);
-    SetZfsCmd(FileNameEditZfs.Text);
-    SetZpoolCmd(FileNameEditZpool.Text);
+    SetSudoCmd(FileNameEditSudo.FileName);
+    SetDoasCmd(FileNameEditDoas.FileName);
+
+    SetSwtpmCmd(FileNameEditSwtpm.FileName);
+    SetSwtpmIoctlCmd(FileNameEditSwtpmIoctl.FileName);
 
     if UseZfs = 'yes' then
       ZfsCreateDataset(VmPath.Remove(0,1))
@@ -545,6 +562,7 @@ begin
     StatusBarBhyveSettings.Font.Color:=clTeal;
     StatusBarBhyveSettings.SimpleText:=EmptyStr;
 
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : Settings were saved successfully.');
     MessageDlg('Settings information', 'Settings were saved successfully', mtInformation, [mbOK], 0);
 
     SetNewConfig(False);
@@ -555,6 +573,11 @@ end;
 procedure TFormSettings.BitBtnCloseSettingsClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFormSettings.BitBtnMacAddressClick(Sender: TObject);
+begin
+  EditBridgeMac.Text:= Clipboard.AsText;
 end;
 
 procedure TFormSettings.BitBtnCalculateIpv6Click(Sender: TObject);
@@ -687,25 +710,15 @@ begin
   FileNameEditSwtpmIoctl.Text:=DoasCmd;
   FileNameEditSwtpm.Text:=SudoCmd;
 
-  FileNameEditChown.Text:=ChownCmd;
-  FileNameEditChmod.Text:=ChmodCmd;
-  FileNameEditIfconfig.Text:=IfconfigCmd;
-  FileNameEditInstall.Text:=InstallCmd;
-  FileNameEditKill.Text:=KillCmd;
-  FileNameEditKldload.Text:=KldloadCmd;
-  FileNameEditKldstat.Text:=KldstatCmd;
-  FileNameEditPciconf.Text:=PciconfCmd;
-  FileNameEditPgrep.Text:=PgrepCmd;
-  FileNameEditRm.Text:=RmCmd;
-  FileNameEditService.Text:=ServiceCmd;
   FileNameEditSwtpm.Text:=SwtpmCmd;
   FileNameEditSwtpmIoctl.Text:=SwtpmIoctlCmd;
-  FileNameEditSysctl.Text:=SysctlCmd;
-  FileNameEditTruncate.Text:=TruncateCmd;
-  FileNameEditZfs.Text:=ZfsCmd;
-  FileNameEditZpool.Text:=ZpoolCmd;
+
+  FileNameEditQemuImg.Text:=QemuImgCmd;
 
   EditVmPathSetting.Text:=VmPath;
+
+  DirectoryEditImagesPath.RootDir:=GetUserDir;
+  DirectoryEditImagesPath.Text:=CloudVmImagesPath;
 
   StatusBarBhyveSettings.SimpleText:= EmptyStr;
 end;

@@ -44,11 +44,14 @@ function AddDnsmasqDhcpHostEntry(VmName: String; IpAddress: String; MacAddreess 
 function AddDnsmasqHostRecordEntry(VmName: String; Ip6Address: String; MacAddreess : String):Boolean;
 function CheckBhyveSupport():Boolean;
 function CheckCidrRange(Subnet: String):Boolean;
+function CheckFileExtension(ImageName: String): String;
+function CheckFileType(ImageName: String): String;
 function CheckKernelModule(Module: String):Boolean;
 function CheckIpv6Address(Address: String):Boolean;
 function CheckMacAddress(Mac: String):Boolean;
 function CheckNetworkDeviceName(Name: String):Boolean;
 function CheckSysctl(Name: String):String;
+function CheckUserName(Name: String):Boolean;
 function CheckVmName(Name: String):Boolean;
 function CheckVmRunning(Name: String):Integer;
 function CheckTpmSocketRunning(Name: String):Integer;
@@ -56,9 +59,11 @@ function CheckZfsDataset(Dataset: String): Boolean;
 function CheckZfsSupport():Boolean;
 function ChmodDir(Path: String):Boolean;
 function ChownDir(Path: String):Boolean;
+function ConvertFileSize(Size: Int64; SizeUnit: String): Int64;
 function CreateDirectory(DirectoryName: String; UserName : String; DirMode : String = '700'):Boolean;
 function CreateFile(FileName: String; UserName : String; FileMode : String = '600'):Boolean;
 function CreateNetworkDevice(DeviceName: String; VmName : String; Mtu : String = '1500'):Boolean;
+function CreateSeedIso(SourceDirectory: String; DestinationSeedFile : String):Boolean;
 function CreateTpmSocket(Path: String):Boolean;
 function DestroyNetworkInterface(IfName: String):Boolean;
 function DestroyVirtualMachine(VmName: String):Boolean;
@@ -76,6 +81,7 @@ function GenerateUuid(): String;
 function GetCurrentUserName(): String;
 function GetFileSize(FilePath : String; SizeUnit : String = 'B'): Int64;
 function GetEventDeviceList(Path : String; Pattern : String):String;
+function GetExtractSize(FilePath: String; FileType: String): Int64;
 function GetNewConsoleName(VmName : String): String;
 function GetNewIpAddress(Subnet : String): String;
 function GetNewIp6Address(prefix : String; mac : String): String;
@@ -92,9 +98,11 @@ function GetNewVncPortNumber(): String;
 function GetPciDeviceDescripcion(Device : String):String;
 function GetPciDeviceList(Device : String):String;
 function GetPidValue(Pattern : String): Integer;
+function GetRemoteSize(Url : String): Int64;
 function GetStorageSize(StoragePath : String): String;
 function GetStorageType(StoragePath : String): String;
 function GetZpoolList():String;
+function InstallFile(SourceFileName: String; DestinationFileName : String; UserName : String; FileMode : String = '600'):Boolean;
 function KillPid(Pid : Integer; Signal : String = '-TERM'): Boolean;
 function LoadKernelModule(Module : String):Boolean;
 function RdpConnect(VmName : String; Username : String; Password : String; Width : String; Height : String):Boolean;
@@ -837,6 +845,44 @@ begin
   RegText.Free
 end;
 
+function CheckFileExtension(ImageName: String): String;
+var
+  extension : String;
+begin
+  Result:=EmptyStr;
+
+  extension:=ExtractFileExt(ImageName);
+
+  if extension = '.xz' then
+    Result:=ExtractFileExt(LeftStr(ImageName, Length(ImageName)-Length(ExtractFileExt(ImageName))))+extension
+  else
+    Result:=ExtractFileExt(ImageName);
+end;
+
+function CheckFileType(ImageName: String): String;
+var
+  file_cmd : String;
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:='unknown';
+
+  file_cmd:=FileCmd;
+
+  parameters:=['-b', ImageName];
+
+  if FileExists(file_cmd) then
+  begin
+    status:=RunCommand(file_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=LowerCase(trim(output.Split(' ')[0]))
+    else
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CheckFileType : '+output);
+  end;
+end;
+
 function CheckKernelModule(Module: String): Boolean;
 var
   kldstat_cmd : String;
@@ -929,6 +975,22 @@ begin
     else
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CheckSysCtl : '+ Name+' : '+output);
   end;
+end;
+
+function CheckUserName(Name: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^[a-z_][a-z0-9_-]{0,30}[a-z0-9_]$');
+
+  if RegText.Exec(Name) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
 end;
 
 function CheckVmName(Name: String): Boolean;
@@ -1072,6 +1134,17 @@ begin
   end;
 end;
 
+function ConvertFileSize(Size: Int64; SizeUnit: String): Int64;
+begin
+  case SizeUnit of
+    'B': Result:=Size;
+    'K': Result:=Size div 1024;
+    'M': Result:=Size div (1024**2);
+    'G': Result:=Size div (1024**3);
+  else Result:=0;
+  end;
+end;
+
 function CreateDirectory(DirectoryName: String; UserName: String; DirMode : String = '700'): Boolean;
 var
   root_cmd : String;
@@ -1151,6 +1224,31 @@ begin
     begin
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : CreateNetworkDevice : '+ DeviceName+' : '+output);
     end;
+  end;
+end;
+
+function CreateSeedIso(SourceDirectory: String; DestinationSeedFile: String
+  ): Boolean;
+var
+  makefs_cmd : String;
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:=False;
+
+  makefs_cmd:=MakefsCmd;
+
+  parameters:=['-t', 'cd9660', '-o', 'R,L=cidata', DestinationSeedFile, SourceDirectory];
+
+  if FileExists(makefs_cmd) then
+  begin
+    status:=RunCommand(makefs_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=status
+    else
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CreateSeedIso : '+ DestinationSeedFile+' : '+output);
   end;
 end;
 
@@ -1347,6 +1445,53 @@ begin
   TmpDeviceList.Free;
 end;
 
+function GetExtractSize(FilePath: String; FileType: String): Int64;
+var
+  app_cmd : String;
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+  RegText: TRegExpr;
+begin
+  app_cmd:=EmptyStr;
+  parameters:=[];
+  Result:=0;
+
+  RegText:= TRegExpr.Create;
+
+  case FileType of
+    'qcow2':
+      begin
+        app_cmd:=QemuImgCmd;
+        parameters:=['info', FilePath];
+        RegText.Expression:='virtual\ssize:\s\S+\s\S+\s\((\d+)\sbytes';
+      end;
+    'xz':
+      begin
+        app_cmd:=XzCmd;
+        parameters:=['--robot', '-l', FilePath];
+        RegText.Expression:='totals\s\d+\s\d+\s\d+\s+(\d+)\s';
+      end;
+  end;
+
+  if FileExists(app_cmd) then
+  begin
+    status:=RunCommand(app_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+    begin
+      if RegText.Exec(output) then
+      begin
+        Result:=StrToInt64(RegText.Match[1]);
+      end
+    end
+    else
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetExtractSize : '+FilePath+' : '+output);
+  end;
+
+  RegText.Free;
+end;
+
 function GetNewConsoleName(VmName : String): String;
 var
   VtconName : String;
@@ -1432,13 +1577,7 @@ begin
   if FpStat(FilePath, FileInfo) = 0 then
     FileSize:=FileInfo.st_size;
 
-  case SizeUnit of
-    'B': Result:=FileSize;
-    'K': Result:=FileSize div 1024;
-    'M': Result:=FileSize div (1024**2);
-    'G': Result:=FileSize div (1024**3);
-  else Result:=0;
-  end;
+  Result:=ConvertFileSize(FileSize, SizeUnit);
 end;
 
 function GetNewPciSlotNumber(VmName: String): String;
@@ -1686,6 +1825,33 @@ begin
   end;
 end;
 
+function GetRemoteSize(Url: String): Int64;
+var
+  fetch_cmd : String;
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:=0;
+
+  fetch_cmd:=FetchCmd;
+
+  parameters:=['-s', Url];
+
+  if FileExists(fetch_cmd) then
+  begin
+    status:=RunCommand(fetch_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=StrToInt64(trim(output))
+    else
+    begin
+      if not (output = EmptyStr) then
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetRemoteSize : '+Url+' : '+output);
+    end;
+  end;
+end;
+
 function GetStorageSize(StoragePath: String): String;
 begin
   Result:='0G';
@@ -1743,6 +1909,28 @@ begin
     begin
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetZpoolList : '+output);
     end;
+  end;
+end;
+
+function InstallFile(SourceFileName: String; DestinationFileName: String;
+  UserName: String; FileMode: String = '600'): Boolean;
+var
+  install_cmd : String;
+  output : String;
+  status : Boolean;
+begin
+  Result:=False;
+
+  install_cmd:=InstallCmd;
+
+  if FileExists(install_cmd) then
+  begin
+    status:=RunCommand(install_cmd, ['-m', FileMode, '-o', UserName, SourceFileName, DestinationFileName], output, [poStderrToOutPut]);
+
+    if status then
+      Result:=status
+    else
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Installfile : '+ SourceFileName+' : '+output);
   end;
 end;
 
@@ -2014,7 +2202,7 @@ begin
   parameters:=[zfs_cmd, 'create']+ options;
   parameters:=parameters+[zfspath];
 
-  if FileExists(root_cmd) and FileExists(zfs_cmd) then
+  if FileExists(root_cmd) and FileExists(zfs_cmd) and not DirectoryExists('/'+ZfsPath) then
   begin
     status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
 

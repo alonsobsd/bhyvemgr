@@ -1,0 +1,15 @@
+#cloud-config
+hostname: %%HOSTNAME%%
+users:
+  - name: %%USERNAME%%
+    groups: wheel%%SUDO%%
+    ssh_authorized_keys:
+      - %%SSH-KEY%%
+%%SUDOPACKAGE%%
+growpart:
+  mode: auto
+  devices: ['/']
+
+resizefs: true
+
+%%RUNCMD%%
