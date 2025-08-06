@@ -25,6 +25,9 @@ jobs:
         release: "14.3"
         usesh: true
         prepare: |
+          mkdir -p /usr/local/etc/pkg/repos
+          echo "FreeBSD: { url: "pkg+http://pkg.freebsd.org/\${ABI}/latest" }" \
+              > /usr/local/etc/pkg/repos/FreeBSD.conf        
           export IGNORE_OSVERSION=yes
           pkg update -f
           pkg install -y lazarus-qt6
