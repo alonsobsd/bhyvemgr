@@ -3232,11 +3232,15 @@ begin
       SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
       SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%USERNAME%%', FormVmCreate.EditUsername.Text, [rfReplaceAll]);
       SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SSH-KEY%%', FormVmCreate.EditSshPubKey.Text, [rfReplaceAll]);
+
+      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
       SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data');
 
       SeedImageConfig.LoadFromFile(DatadirPath+'templates/meta-data');
       SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%UUID%%', Uuid, [rfReplaceAll]);
       SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+
+      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
       SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data');
 
       CreateFile(FormVmCreate.EditVmFolderPath.Text+'/seed.iso', GetCurrentUserName());
@@ -3253,18 +3257,20 @@ begin
 
       if FileExists(FormVmCreate.FileNameEditMetaData.FileName) then
       begin
-        CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
         SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditMetaData.FileName);
         SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%UUID%%', Uuid, [rfReplaceAll]);
         SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+
+        CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
         SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data');
       end;
 
       if FileExists(FormVmCreate.FileNameEditUserData.FileName) then
       begin
-        CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
         SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditUserData.FileName);
         SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+
+        CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
         SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data');
       end;
 
