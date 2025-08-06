@@ -22,7 +22,7 @@ jobs:
       id: test
       uses: vmactions/freebsd-vm@v1.2.1
       with:
-        release: "15.0"
+        release: "14.3"
         usesh: true
         prepare: |
           export IGNORE_OSVERSION=yes
