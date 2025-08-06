@@ -1,7 +1,7 @@
 # Bhyvemgr
 Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It needs a bunch of tools mostly installed on base system and some installed from ports/packages. Currently it supports amd64 and aarch64. The main goal is to be a desktop user application to easily and quickly setup and run virtual machines on the FreeBSD host.
 
-![image](https://github.com/user-attachments/assets/82563dca-0bee-4fcb-9cdb-d1cb797b1997)
+<img width="832" height="698" alt="image" src="https://github.com/user-attachments/assets/f5b2bf8e-4b16-401b-a914-94cea2a4bd72" />
 
 # Features
 - virtual machines management
@@ -68,8 +68,6 @@ ifconfig_bhyve0_descr="bhyve manager bridge"
 ```
 
 If you want include IPv6 support we need to a IPv6 address (Unique Local Address) and some other configuration to your bridge interface. The best way to calculate a bhyve0 IPv6 address is from **Bhyve Manager Settings** window.
-
-<img width="811" height="720" alt="image" src="https://github.com/user-attachments/assets/e76817a4-1841-4c7f-942d-ecc96be2046e" />
 
 <img width="789" height="293" alt="image" src="https://github.com/user-attachments/assets/73e6b683-ad88-4753-8b24-6d713f08d73b" />
 
