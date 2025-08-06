@@ -5,6 +5,8 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 
 # Features
 - virtual machines management
+- create virtual machines from cloud/vm images
+- use cloud init and naugeinit initialization support
 - devices management (support almost all bhyve pci devices with some exceptions)
 - dnsmasq support
 - vnc and xfreerdp client support
@@ -24,9 +26,9 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 
 # Bhyvemgr dependencies
 ## From base system
-bhyve, bhyvectl, bhyveload, chown, chmod, ifconfig, install, kill, kldload, kldstat, pciconf, pgrep, rm, service, sysctl, truncate, zfs and zpool
+bhyve, bhyvectl, bhyveload, chown, chmod, fetch, file, ifconfig, install, kill, kldload, kldstat, makefs, pciconf, pgrep, rm, service, sysctl, truncate, xz, zfs and zpool
 ## From ports/packages
-bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), remote-viewer (net-mgmt/virt-viewer), swtpm (sysutils/swtpm), sudo (security/sudo) and xfreerdp3 (net/freerdp3)
+bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), qemu-tools (emulatorsd/qemu@tools), remote-viewer (net-mgmt/virt-viewer), swtpm (sysutils/swtpm), sudo (security/sudo), and xfreerdp3 (net/freerdp3)
 
 # Network configuration
 bhyvemgr can use two kind of network settings: *Quick network configuration* or *Optimal network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines.
@@ -245,7 +247,7 @@ When bhyvemgr starts in the first time, this will create a initial config file. 
 
 ![image](https://github.com/user-attachments/assets/35b0ea78-8449-4c08-bc13-c09977e0c30a)
 
-<img width="811" height="720" alt="image" src="https://github.com/user-attachments/assets/ace6d2b1-ba53-42f2-8f0a-3a5ad2364119" />
+<img width="811" height="720" alt="image" src="https://github.com/user-attachments/assets/d7e70bec-df74-413a-928d-6b9a0215f897" />
 
 # Demo
 
