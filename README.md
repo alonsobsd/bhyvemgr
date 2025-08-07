@@ -6,7 +6,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 # Features
 - virtual machines management
 - create virtual machines from cloud/vm images
-- use cloud init and naugeinit initialization support
+- cloud init and naugeinit initialization support
 - devices management (support almost all bhyve pci devices with some exceptions)
 - dnsmasq support
 - vnc and xfreerdp client support
