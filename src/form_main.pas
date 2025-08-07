@@ -3114,6 +3114,7 @@ begin
   begin
     FormVmCreate.StatusBarVmCreate.Font.Color:=clTeal;
     FormVmCreate.StatusBarVmCreate.SimpleText:='Trying create '+FormVmCreate.EditVmName.Text+' virtual machine...';
+    FormVmCreate.BitBtnCreateVm.Enabled:=False;
 
     Application.ProcessMessages;
 

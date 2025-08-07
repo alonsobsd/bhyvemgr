@@ -1717,7 +1717,7 @@ object FormVmCreate: TFormVmCreate
         object BitBtnSshPaste: TBitBtn
           Left = 619
           Height = 30
-          Top = 48
+          Top = 50
           Width = 30
           Glyph.Data = {
             36900000424D3690000000000000360000002800000060000000600000000100

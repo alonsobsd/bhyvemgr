@@ -1836,7 +1836,7 @@ begin
 
   fetch_cmd:=FetchCmd;
 
-  parameters:=['-s', Url];
+  parameters:=['-T','3','-s', Url];
 
   if FileExists(fetch_cmd) then
   begin

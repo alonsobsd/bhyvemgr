@@ -135,7 +135,7 @@ type
     MyAppThread: AppProgressBarThread;
     function ConvertFileToRaw(ImageFile : String):Boolean;
     procedure ShowStatus(Status: Integer);
-    procedure EndStatus(Status: Integer);
+    procedure EndStatus(Status: Integer; AppName : String);
   public
     function FormValidate():Boolean;
   end;
@@ -226,6 +226,8 @@ begin
   FileNameEditUserData.Clear;
   FileNameEditMetaData.Clear;
   FileNameEditNetworkConfig.Clear;
+
+  FormVmCreate.BitBtnCreateVm.Enabled:=True;
 end;
 
 procedure TFormVmCreate.RadioButtonDiskFromImageClick(Sender: TObject);
@@ -375,7 +377,7 @@ begin
   ProgressBarImage.Position:=total;
 end;
 
-procedure TFormVmCreate.EndStatus(Status: Integer);
+procedure TFormVmCreate.EndStatus(Status: Integer; AppName : String);
 var
   total : Int64;
 begin
@@ -391,7 +393,10 @@ begin
     ConvertFileToRaw(RemoteFile);
   end
   else if (Status > 0) then
-    ShowMessage(Status.ToString);
+  begin
+    StatusBarVmCreate.Font.Color:=clRed;
+    StatusBarVmCreate.SimpleText:=AppName+' process generated an error: '+Status.ToString;
+  end;
 end;
 
 function TFormVmCreate.FormValidate(): Boolean;
@@ -556,7 +561,11 @@ procedure TFormVmCreate.BitBtnDownloadClick(Sender: TObject);
 var
   RawFileName : String;
 begin
+  RemoteFile:=EmptyStr;
+  OldRemoteFile:=EmptyStr;
+
   FileNameEditImageFile.Clear;
+  StatusBarVmCreate.SimpleText:=EmptyStr;
 
   if not FileExists(CloudVmImagesPath) then
     CreateDirectory(CloudVmImagesPath, GetCurrentUserName());
@@ -572,6 +581,7 @@ begin
         ProgressBarImage.Position:=0;
 
         RemoteFile:=ExtractFileName(EditUrlImage.Text);
+
         RawFileName:=StringReplace(RemoteFile, CheckFileExtension(RemoteFile), EmptyStr, [rfIgnoreCase, rfReplaceAll])+'.raw';
 
         ChDir(CloudVmImagesPath);
@@ -582,7 +592,7 @@ begin
 
           if ProgressBarImage.Max > 0 then
           begin
-            MyAppThread := AppProgressBarThread.Create(FetchCmd, [EditUrlImage.Text]);
+            MyAppThread := AppProgressBarThread.Create(FetchCmd, ['-T', '3', EditUrlImage.Text]);
             MyAppThread.OnShowStatus := @ShowStatus;
             MyAppThread.OnEndStatus:= @EndStatus;
             MyAppThread.Start;
@@ -605,7 +615,6 @@ begin
             LabelDownloadStatus.Visible:=True;
             LabelDownloadStatus.Caption:='Done';
           end;
-
           ConvertFileToRaw(RemoteFile);
         end;
       end;

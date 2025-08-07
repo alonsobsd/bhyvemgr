@@ -40,7 +40,7 @@ uses
 type
   TExitStatusEvent = procedure(Status: Integer; Message : String; VmName : String; ErrorMessage : String) of Object;
   TShowStatusEvent = procedure(Status: Integer) of Object;
-  TEndStatusEvent = procedure(Status: Integer) of Object;
+  TEndStatusEvent = procedure(Status: Integer; AppName : String) of Object;
 
   { VmThread }
 
@@ -299,7 +299,7 @@ procedure AppProgressBarThread.EndAppStatus;
 begin
   if Assigned(FOnEndStatus) then
   begin
-    FOnEndStatus(ExitStatus);
+    FOnEndStatus(ExitStatus, AppName);
   end;
 end;
 
