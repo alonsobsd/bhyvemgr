@@ -87,6 +87,8 @@ function GetChownCmd:string;
 procedure SetChownCmd(const Value:string);
 function GetChmodCmd:string;
 procedure SetChmodCmd(const Value:string);
+function GetCpCmd:string;
+procedure SetCpCmd(const Value:string);
 function GetFetchCmd:string;
 procedure SetFetchCmd(const Value:string);
 function GetFileCmd:string;
@@ -161,6 +163,7 @@ property XfreerdpArgs:string read GetXfreerdpArgs write SetXfreerdpArgs;
 { Other tools section }
 property ChownCmd:string read GetChownCmd write SetChownCmd;
 property ChmodCmd:string read GetChmodCmd write SetChmodCmd;
+property CpCmd:string read GetCpCmd write SetCpCmd;
 property FetchCmd:string read GetFetchCmd write SetFetchCmd;
 property FileCmd:string read GetFileCmd write SetFileCmd;
 property IfconfigCmd:string read GetIfconfigCmd write SetIfconfigCmd;
@@ -241,6 +244,7 @@ var
   Ipv6PrefixVar: String;
   ChownCmdVar: String;
   ChmodCmdVar: String;
+  CpCmdVar: String;
   FetchCmdVar: String;
   FileCmdVar: String;
   IfconfigCmdVar: String;
@@ -475,6 +479,16 @@ end;
 procedure SetChownCmd(const Value: string);
 begin
   ChownCmdVar := Value;
+end;
+
+function GetCpCmd: string;
+begin
+  Result := CpCmdVar;
+end;
+
+procedure SetCpCmd(const Value: string);
+begin
+  CpCmdVar := Value;
 end;
 
 function GetChmodCmd: string;

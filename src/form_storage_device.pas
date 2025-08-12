@@ -96,6 +96,7 @@ type
     procedure FillComboAhciNmrr(Combo: TComboBox);
     procedure FillComboNvmeDsm(Combo: TComboBox);
   public
+    DiskSize : Int64;
     FormAction : String;
     VmName : String;
     function FormValidate():Boolean;
@@ -218,6 +219,7 @@ begin
   else if ComboBoxStorageType.ItemIndex = -1 then Result:=False
   else if FileNameEditStoragePath.Text = EmptyStr then Result:=False
   else if SpinEditExDiskSize.Value = 0 then Result:=False
+  else if SpinEditExDiskSize.Value < DiskSize then Result:=False
   else if CheckBoxNvmUseRam.Checked and (SpinEditExNvmeRam.Value = 0) then Result:=False;
 end;
 
@@ -243,6 +245,8 @@ end;
 
 procedure TFormStorageDevice.LoadDefaultValues();
 begin
+  DiskSize:=0;
+
   ComboBoxStorageDevice.Clear;
   ComboBoxStorageDevice.Enabled:=True;
   FillComboVirtualDeviceType(ComboBoxStorageDevice);
@@ -255,6 +259,7 @@ begin
 
   CheckBoxNvmUseRam.Enabled:=True;
   SpinEditExDiskSize.Enabled:=True;
+  StatusBarStorageDevice.SimpleText:=EmptyStr;
 
   ComboBoxStorageDevice.ItemIndex:=ComboBoxStorageDevice.Items.IndexOf('nvme');
   ComboBoxStorageType.ItemIndex:=ComboBoxStorageType.Items.IndexOf('image file');

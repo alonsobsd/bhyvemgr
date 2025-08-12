@@ -83,7 +83,6 @@ type
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
-    LabelDownloadStatus: TLabel;
     Label16: TLabel;
     Label17: TLabel;
     Label2: TLabel;
@@ -98,6 +97,7 @@ type
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    LabelDownloadStatus: TLabel;
     PageControlVmCreate: TPageControl;
     ProgressBarImage: TProgressBar;
     RadioButtonDiskFromImage: TRadioButton;
@@ -201,6 +201,7 @@ begin
   ComboBoxVirtualStorageType.ItemIndex:=-1;
   ComboBoxVirtualStorageType.Enabled:=True;
 
+  SpinEditExDiskSize.Enabled:=True;
   SpinEditExDiskSize.Text:='20';
 
   CheckBoxUseMedia.Checked:=False;
@@ -291,20 +292,22 @@ begin
         if FileExists(OldRemoteFile) then
           RemoveFile(OldRemoteFile);
 
-        OldRemoteFile:=ImageFile;
-        NewRemoteFile:=StringReplace(ImageFile, '.qcow2', EmptyStr, [rfIgnoreCase, rfReplaceAll])+'.raw';
+        OldRemoteFile:=CloudVmImagesPath+'/'+ExtractFileName(ImageFile);
+        NewRemoteFile:=StringReplace(ExtractFileName(ImageFile), '.qcow2', EmptyStr, [rfIgnoreCase, rfReplaceAll])+'.raw';
 
         extractType:='qcow2';
 
         ProgressBarImage.Position:=0;
-        ProgressBarImage.Max:=ConvertFileSize(GetExtractSize(ImageFile, extractType), 'M');
+        ProgressBarImage.Max:=Round(ConvertFileSize(GetExtractSize(ImageFile, extractType), 'M')*0.09);
 
         if ProgressBarImage.Max > 0 then
         begin
-          MyAppThread := AppProgressBarThread.Create(QemuImgCmd, ['convert', '-O', 'raw', '-S', '0', ImageFile, NewRemoteFile]);
+          MyAppThread := AppProgressBarThread.Create(QemuImgCmd, ['convert', '-O', 'raw', '-S', '0', ImageFile, CloudVmImagesPath+'/'+NewRemoteFile]);
 
           LabelDownloadStatus.Visible:=True;
-          LabelDownloadStatus.Caption:='Extracting...';
+          LabelDownloadStatus.Caption:='Converting...';
+
+          ProgressBarImage.Style:=pbstMarquee;
 
           RemoteFile:=NewRemoteFile;
 
@@ -337,8 +340,8 @@ begin
     '.raw.xz',
     '.img.xz':
       begin
-        OldRemoteFile:=ImageFile;
-        NewRemoteFile:=StringReplace(ImageFile, '.xz', EmptyStr, [rfIgnoreCase, rfReplaceAll]);
+        OldRemoteFile:=CloudVmImagesPath+'/'+ExtractFileName(ImageFile);
+        NewRemoteFile:=StringReplace(ExtractFileName(ImageFile), '.xz', EmptyStr, [rfIgnoreCase, rfReplaceAll]);
 
         extractType:='xz';
 
@@ -373,18 +376,31 @@ procedure TFormVmCreate.ShowStatus(Status: Integer);
 var
   total : Int64;
 begin
-  total:=ConvertFileSize(GetFileSize(RemoteFile), 'M');
-  ProgressBarImage.Position:=total;
+  if not (ExtractFileExt(OldRemoteFile) = '.qcow2') then
+  begin
+    total:=ConvertFileSize(GetFileSize(CloudVmImagesPath+'/'+RemoteFile), 'M');
+    ProgressBarImage.Position:=total;
+  end;
 end;
 
 procedure TFormVmCreate.EndStatus(Status: Integer; AppName : String);
 var
   total : Int64;
 begin
+  total:=0;
+
   if (Status = 0) then
   begin
-    total:=ConvertFileSize(GetFileSize(RemoteFile), 'M');
-    ProgressBarImage.Position:=total;
+    if ExtractFileExt(RemoteFile) = '.raw' then
+    begin
+      ProgressBarImage.Style:=pbstNormal;
+      ProgressBarImage.Position:=ProgressBarImage.Max;
+    end
+    else
+    begin
+      total:=ConvertFileSize(GetFileSize(CloudVmImagesPath+'/'+RemoteFile), 'M');
+      ProgressBarImage.Position:=ProgressBarImage.Max;
+    end;
 
     LabelDownloadStatus.Caption:='Done';
 
@@ -592,7 +608,7 @@ begin
 
           if ProgressBarImage.Max > 0 then
           begin
-            MyAppThread := AppProgressBarThread.Create(FetchCmd, ['-T', '3', EditUrlImage.Text]);
+            MyAppThread := AppProgressBarThread.Create(FetchCmd, ['-n', '-T', '3', EditUrlImage.Text]);
             MyAppThread.OnShowStatus := @ShowStatus;
             MyAppThread.OnEndStatus:= @EndStatus;
             MyAppThread.Start;
@@ -629,12 +645,12 @@ end;
 
 procedure TFormVmCreate.BitBtnDownloadPasteClick(Sender: TObject);
 begin
-  EditUrlImage.Text:=Clipboard.AsText;
+  EditUrlImage.Text:=TrimRight(TrimLeft(Clipboard.AsText));
 end;
 
 procedure TFormVmCreate.BitBtnSshPasteClick(Sender: TObject);
 begin
-  EditSshPubKey.Text:=Clipboard.AsText;
+  EditSshPubKey.Text:=TrimRight(TrimLeft(Clipboard.AsText));
 end;
 
 procedure TFormVmCreate.CheckBoxImageFilesChange(Sender: TObject);
@@ -708,8 +724,25 @@ begin
 end;
 
 procedure TFormVmCreate.FileNameEditImageFileChange(Sender: TObject);
+var
+  RawFileName : String;
 begin
-  if FileExists(FileNameEditImageFile.FileName) then
+  if ExtractFileExt(FileNameEditImageFile.FileName) = '.qcow2' then
+  begin
+    OldRemoteFile:=EmptyStr;
+    RemoteFile:=EmptyStr;
+    RawFileName:=StringReplace(ExtractFileName(FileNameEditImageFile.FileName), '.qcow2', EmptyStr, [rfIgnoreCase, rfReplaceAll])+'.raw';
+
+    RemoteFile:=RawFileName;
+
+    if FileExists(CloudVmImagesPath+'/'+RawFileName) then
+    begin
+      ConvertFileToRaw(CloudVmImagesPath+'/'+RawFileName);
+    end
+    else
+      ConvertFileToRaw(FileNameEditImageFile.FileName);
+  end
+  else if FileExists(FileNameEditImageFile.FileName) then
   begin
     if not (CheckFileType(FileNameEditImageFile.FileName) = 'dos/mbr') then
     begin
@@ -717,9 +750,11 @@ begin
       StatusBarVmCreate.SimpleText:=ExtractFileName(FileNameEditImageFile.FileName) + ' image could not be compatible with bhyve.';
     end
     else
+    begin
       SpinEditExDiskSize.Value:=GetFileSize(FileNameEditImageFile.FileName,'G');
+      SpinEditExDiskSize.Enabled:=False;
+    end;
   end;
-
 end;
 
 procedure TFormVmCreate.FileNameEditMetaDataButtonClick(Sender: TObject);

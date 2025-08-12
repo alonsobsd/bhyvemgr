@@ -116,6 +116,7 @@ function VncConnect(VmHost : String; VmName : String):Boolean;
 function ZfsCreateDataset(ZfsPath : String):Boolean;
 function ZfsCreateZvol(ZfsPath : String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
 function ZfsGetPropertyValue(ZfsPath : String; ZfsProperty : String; ZfsField : String):String;
+function ZfsSetPropertyValue(ZfsPath : String; ZfsProperty : String; ZfsValue : String):String;
 function ZfsDestroy(ZfsPath : String; Recursive : Boolean = True; Force : Boolean = False):Boolean;
 
 implementation
@@ -779,7 +780,6 @@ begin
     begin
       FilePath.Values['dhcp-host']:=MacAddreess+','+VmName+','+IpAddress;
       FilePath.SaveToFile(ConfigFile);
-      RestartService('dnsmasq');
     end;
   except
     MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
@@ -809,7 +809,6 @@ begin
     begin
       FilePath.Values['host-record']:=VmName+','+Ip6Address;
       FilePath.SaveToFile(ConfigFile);
-      RestartService('dnsmasq');
     end;
 
   except
@@ -1466,6 +1465,12 @@ begin
         parameters:=['info', FilePath];
         RegText.Expression:='virtual\ssize:\s\S+\s\S+\s\((\d+)\sbytes';
       end;
+    'raw':
+      begin
+        app_cmd:=QemuImgCmd;
+        parameters:=['info', '--output=json', FilePath];
+        RegText.Expression:='raw\S,\s+\Sactual-size\S:\s(\d+),';
+      end;
     'xz':
       begin
         app_cmd:=XzCmd;
@@ -1858,10 +1863,7 @@ begin
 
   if (UseZfs = 'yes') and (StoragePath.Contains('/dev/zvol/'+ZfsZpool)) then
   begin
-    if ZfsGetPropertyValue(StoragePath.Remove(0,10), 'refreservation', 'value') = 'none' then
-      Result:=ZfsGetPropertyValue(StoragePath.Remove(0,10), 'volsize', 'value')
-    else
-      Result:=ZfsGetPropertyValue(StoragePath.Remove(0,10), 'refreservation', 'value');
+    Result:=ZfsGetPropertyValue(StoragePath.Remove(0,10), 'volsize', 'value')
   end
   else if StoragePath.Contains(VmPath) then
   begin
@@ -2215,7 +2217,7 @@ begin
     end
     else
     begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateDataset : '+ ZfsPath+' : '+output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateDataset : '+  ZfsPath+' : '+output);
     end;
   end;
 end;
@@ -2242,7 +2244,39 @@ begin
       Result:=Trim(output)
     else
     begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsGetPropertyValue : '+ ZfsPath+' : '+output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsGetPropertyValue : '+ ZfsField+' : '+ ZfsProperty+' : '+ ZfsPath+' : '+output);
+    end;
+  end;
+end;
+
+function ZfsSetPropertyValue(ZfsPath: String; ZfsProperty: String;
+  ZfsValue: String): String;
+var
+  zfs_cmd : String;
+  root_cmd : String;
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:=EmptyStr;
+
+  root_cmd:=SudoCmd;
+  zfs_cmd:=ZfsCmd;
+
+  if UseSudo = 'no' then
+    root_cmd:=DoasCmd;
+
+  parameters:=[zfs_cmd, 'set', ZfsProperty+'='+ZfsValue, ZfsPath];
+
+  if FileExists(zfs_cmd) then
+  begin
+    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=Trim(output)
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsSetPropertyValue : '+ ZfsProperty+'='+ZfsValue+' : '+ZfsPath+' : '+output);
     end;
   end;
 end;

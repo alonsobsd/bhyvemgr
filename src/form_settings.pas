@@ -283,6 +283,12 @@ begin
     Result:=False;
     Exit;
   end
+  else if not FileExists(CpCmd) or not (ExtractFileName(CpCmd) = 'cp') then
+  begin
+    StatusBarBhyveSettings.SimpleText:='cp binary was not found';
+    Result:=False;
+    Exit;
+  end
   else if not FileExists(IfconfigCmd) or not (ExtractFileName(IfconfigCmd) = 'ifconfig') then
   begin
     StatusBarBhyveSettings.SimpleText:='ifconfig binary was not found';

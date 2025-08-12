@@ -154,6 +154,8 @@ type
     procedure ResetTreeView(TreeView : TTreeView);
     function SaveVirtualMachineConfig():Boolean;
     procedure VirtualMachineShowStatus(Status: Integer; Message : String; VmName : String; ErrorMessage : String);
+    procedure AppShowStatus(Status: Integer);
+    procedure AppEndStatus(Status: Integer; AppName : String);
   public
 
   end;
@@ -184,6 +186,8 @@ var
   TmpDevicesStringList : TStringList;
   NodeIndex : Integer;
   GlobalNode : TTreeNode;
+  DiskFile : String;
+  TotalSize : Int64;
 
 implementation
 
@@ -952,6 +956,43 @@ begin
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : '+ErrorMessage);
 
     MyVmThread.Terminate;
+  end;
+end;
+
+procedure TFormBhyveManager.AppShowStatus(Status: Integer);
+var
+  total : Int64;
+begin
+  total:=ConvertFileSize(GetFileSize(DiskFile), 'M');
+
+  StatusBarBhyveManager.Font.Color:=clTeal;
+  StatusBarBhyveManager.SimpleText:='Copying '+total.ToString+' MB from image...';
+end;
+
+procedure TFormBhyveManager.AppEndStatus(Status: Integer; AppName: String);
+var
+  total : Int64;
+begin
+  if (Status = 0) then
+  begin
+    total:=ConvertFileSize(GetFileSize(RemoteFile), 'M');
+
+    StatusBarBhyveManager.Font.Color:=clTeal;
+    StatusBarBhyveManager.SimpleText:='Copying '+total.ToString+' MB from image...';
+
+    ResetTreeView(VirtualMachinesTreeView);
+    VirtualMachinesTreeView.Items.Clear;
+    FillVirtualMachineList();
+
+    StatusBarBhyveManager.Font.Color:=clTeal;
+    StatusBarBhyveManager.SimpleText:='A new '+FormVmCreate.EditVmName.Text+' virtual machine was created';
+
+    Sleep(100);
+  end
+  else if (Status > 0) then
+  begin
+    FormVmCreate.StatusBarVmCreate.Font.Color:=clRed;
+    FormVmCreate.StatusBarVmCreate.SimpleText:=FormVmCreate.EditVmName.Text+' VM : '+AppName+' process generated an error: '+Status.ToString;
   end;
 end;
 
@@ -1907,12 +1948,17 @@ begin
                     FormStorageDevice.ComboBoxStorageType.Enabled:=False;
                     FormStorageDevice.FileNameEditStoragePath.Text:=StorageAhciDevice.path;
                     FormStorageDevice.SpinEditExDiskSize.Value:=StorageAhciDevice.storage_size.Replace('G','').ToInt64;
-                    FormStorageDevice.SpinEditExDiskSize.Enabled:=False;
+                    FormStorageDevice.SpinEditExDiskSize.Enabled:=True;
                     FormStorageDevice.EditSer.Text:=StorageAhciDevice.ser;
                     FormStorageDevice.CheckBoxNoCache.Checked:=StorageAhciDevice.nocache;
                     FormStorageDevice.CheckBoxNoDelete.Checked:=StorageAhciDevice.nodelete;
                     FormStorageDevice.CheckBoxSync.Checked:=StorageAhciDevice.sync;
                     FormStorageDevice.CheckBoxReadOnly.Checked:=StorageAhciDevice.ro;
+
+                    if StorageAhciDevice.storage_type = 'image file' then
+                      FormStorageDevice.DiskSize:=GetFileSize(StorageAhciDevice.path, 'G')
+                    else
+                      FormStorageDevice.DiskSize:=ZfsGetPropertyValue(StorageAhciDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', 'value').Replace('G', EmptyStr).ToInt64;
                   end;
                 'nvme':
                   begin
@@ -1925,13 +1971,18 @@ begin
                     FormStorageDevice.ComboBoxStorageDevice.Enabled:=False;
                     FormStorageDevice.ComboBoxStorageType.Enabled:=False;
                     FormStorageDevice.FileNameEditStoragePath.Text:=StorageNvmeDevice.devpath;
-                    FormStorageDevice.SpinEditExDiskSize.Value:=StorageNvmeDevice.storage_size.Replace('G','').ToInt64;
-                    FormStorageDevice.SpinEditExDiskSize.Enabled:=False;
+                    FormStorageDevice.SpinEditExDiskSize.Value:=Round(StorageNvmeDevice.storage_size.Replace('G',EmptyStr).ToInt64);
+                    FormStorageDevice.SpinEditExDiskSize.Enabled:=True;
                     FormStorageDevice.EditSer.Text:=StorageNvmeDevice.ser;
                     FormStorageDevice.CheckBoxNoCache.Checked:=StorageNvmeDevice.nocache;
                     FormStorageDevice.CheckBoxNoDelete.Checked:=StorageNvmeDevice.nodelete;
                     FormStorageDevice.CheckBoxSync.Checked:=StorageNvmeDevice.sync;
                     FormStorageDevice.CheckBoxReadOnly.Checked:=StorageNvmeDevice.ro;
+
+                    if StorageNvmeDevice.storage_type = 'image file' then
+                      FormStorageDevice.DiskSize:=GetFileSize(StorageNvmeDevice.devpath, 'G')
+                    else
+                      FormStorageDevice.DiskSize:=ZfsGetPropertyValue(StorageNvmeDevice.devpath.Replace('/dev/zvol/', EmptyStr), 'volsize', 'value').Replace('G', EmptyStr).ToInt64;
 
                     if (StorageNvmeDevice.maxq <> 16) and (StorageNvmeDevice.maxq <> 0) then FormStorageDevice.EditNvmeMaxq.Text:=StorageNvmeDevice.maxq.ToString;
                     if (StorageNvmeDevice.qsz <> 2058) and (StorageNvmeDevice.qsz <> 0) then FormStorageDevice.EditNvmeQsz.Text:=StorageNvmeDevice.qsz.ToString;
@@ -1962,13 +2013,18 @@ begin
                     FormStorageDevice.ComboBoxStorageDevice.Enabled:=False;
                     FormStorageDevice.ComboBoxStorageType.Enabled:=False;
                     FormStorageDevice.SpinEditExDiskSize.Value:=StorageVirtioBlkDevice.storage_size.Replace('G','').ToInt64;
-                    FormStorageDevice.SpinEditExDiskSize.Enabled:=False;
+                    FormStorageDevice.SpinEditExDiskSize.Enabled:=True;
                     FormStorageDevice.FileNameEditStoragePath.Text:=StorageVirtioBlkDevice.path;
                     FormStorageDevice.EditSer.Text:=StorageVirtioBlkDevice.ser;
                     FormStorageDevice.CheckBoxNoCache.Checked:=StorageVirtioBlkDevice.nocache;
                     FormStorageDevice.CheckBoxNoDelete.Checked:=StorageVirtioBlkDevice.nodelete;
                     FormStorageDevice.CheckBoxSync.Checked:=StorageVirtioBlkDevice.sync;
                     FormStorageDevice.CheckBoxReadOnly.Checked:=StorageVirtioBlkDevice.ro;
+
+                    if StorageVirtioBlkDevice.storage_type = 'image file' then
+                      FormStorageDevice.DiskSize:=GetFileSize(StorageVirtioBlkDevice.path, 'G')
+                    else
+                      FormStorageDevice.DiskSize:=ZfsGetPropertyValue(StorageVirtioBlkDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', 'value').Replace('G', EmptyStr).ToInt64;
                   end;
             end;
 
@@ -2985,6 +3041,16 @@ begin
                 TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.path']:=StorageAhciDevice.path;
                 TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.type']:=StorageAhciDevice.device_type;
 
+                if FormStorageDevice.SpinEditExDiskSize.Value > StorageAhciDevice.storage_size.Replace('G', EmptyStr).ToInt64 then
+                begin
+                  if StorageAhciDevice.storage_type = 'image file' then
+                    TruncateImage(StorageAhciDevice.path, FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G')
+                  else
+                    ZfsSetPropertyValue(StorageAhciDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
+
+                  StorageAhciDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
+                end;
+
                 if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
                 if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nocache']:='true';
                 if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nodelete']:='true';
@@ -3023,6 +3089,16 @@ begin
 
                 TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=StorageNvmeDevice.device;
                 TmpDevicesStringList.Values['pci.'+PciSlot+'.path']:=StorageNvmeDevice.devpath;
+
+                if FormStorageDevice.SpinEditExDiskSize.Value > StorageNvmeDevice.storage_size.Replace('G', EmptyStr).ToInt64 then
+                begin
+                  if StorageNvmeDevice.storage_type = 'image file' then
+                    TruncateImage(StorageNvmeDevice.devpath, FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G')
+                  else
+                    ZfsSetPropertyValue(StorageNvmeDevice.devpath.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
+
+                  StorageNvmeDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
+                end;
 
                 if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
                 if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nocache']:='true';
@@ -3067,6 +3143,16 @@ begin
                 TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=StorageVirtioBlkDevice.device;
                 TmpDevicesStringList.Values['pci.'+PciSlot+'.path']:=StorageVirtioBlkDevice.path;
 
+                if FormStorageDevice.SpinEditExDiskSize.Value > StorageVirtioBlkDevice.storage_size.Replace('G', EmptyStr).ToInt64 then
+                begin
+                  if StorageVirtioBlkDevice.storage_type = 'image file' then
+                    TruncateImage(StorageVirtioBlkDevice.path, FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G')
+                  else
+                    ZfsSetPropertyValue(StorageVirtioBlkDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
+
+                  StorageVirtioBlkDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
+                end;
+
                 if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
                 if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nocache']:='true';
                 if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nodelete']:='true';
@@ -3109,324 +3195,354 @@ var
   Path : String = '.path';
   PciSlot : String;
   SeedRunCmd : String;
+  MyAppThread : AppProgressBarThread;
 begin
   if FormVmCreate.FormValidate() then
   begin
-    FormVmCreate.StatusBarVmCreate.Font.Color:=clTeal;
-    FormVmCreate.StatusBarVmCreate.SimpleText:='Trying create '+FormVmCreate.EditVmName.Text+' virtual machine...';
-    FormVmCreate.BitBtnCreateVm.Enabled:=False;
+    try
+      FormVmCreate.StatusBarVmCreate.Font.Color:=clTeal;
+      FormVmCreate.StatusBarVmCreate.SimpleText:='Trying create '+FormVmCreate.EditVmName.Text+' virtual machine...';
+      FormVmCreate.BitBtnCreateVm.Enabled:=False;
 
-    Application.ProcessMessages;
+      Application.ProcessMessages;
 
-    NewBhyveConfig:=TStringList.Create;
-    SeedImageConfig:=TStringList.Create;
+      NewBhyveConfig:=TStringList.Create;
+      SeedImageConfig:=TStringList.Create;
 
-    SeedRunCmd:=EmptyStr;
+      SeedRunCmd:=EmptyStr;
 
-    if UseZfs = 'yes' then
-    begin
-      if not DirectoryExists(VmPath) then
+      if UseZfs = 'yes' then
       begin
-        CreateDirectory(VmPath, GetCurrentUserName());
-        ZfsCreateDataset(VmPath.Remove(0,1));
+        if not DirectoryExists(VmPath) then
+        begin
+          if not (CreateDirectory(VmPath, GetCurrentUserName())) or not (ZfsCreateDataset(VmPath.Remove(0,1))) then
+          begin
+            DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' : Can not create ' + VmPath + 'dataset');
+            Exit;
+          end;
+        end;
+        if not ZfsCreateDataset(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text) then
+        begin
+          DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' : Can not create '+ VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+' dataset');
+          Exit;
+        end;
+      end
+      else
+      begin
+        if not CreateDirectory(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName()) then
+        begin
+          DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' : Can not create '+ VmPath+'/'+FormVmCreate.EditVmName.Text+' directory.');
+          Exit;
+        end;
       end;
-      ZfsCreateDataset(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text);
-    end
-    else
-      CreateDirectory(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName());
 
+      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf', GetCurrentUserName());
+      NewVMConfig:=ConfigurationClass.Create(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf');
 
-    CreateFile(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf', GetCurrentUserName());
-    NewVMConfig:=ConfigurationClass.Create(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf');
+      Uuid:=GenerateUuid();
+      MacAddress:=GenerateMacAddress();
 
-    Uuid:=GenerateUuid();
+      NewBhyveConfig.Values['uuid']:=Uuid;
+      NewBhyveConfig.Values['name']:=FormVmCreate.EditVmName.Text;
+      NewBhyveConfig.Values['memory.size']:=FormVmCreate.SpinEditExMemory.Text+'M';
+      NewBhyveConfig.Values['cpus']:='1';
+      NewBhyveConfig.Values['sockets']:='1';
+      NewBhyveConfig.Values['cores']:='1';
+      NewBhyveConfig.Values['rtc.use_localtime']:='true';
 
-    NewBhyveConfig.Values['uuid']:=Uuid;
-    NewBhyveConfig.Values['name']:=FormVmCreate.EditVmName.Text;
-    NewBhyveConfig.Values['memory.size']:=FormVmCreate.SpinEditExMemory.Text+'M';
-    NewBhyveConfig.Values['cpus']:='1';
-    NewBhyveConfig.Values['sockets']:='1';
-    NewBhyveConfig.Values['cores']:='1';
-    NewBhyveConfig.Values['rtc.use_localtime']:='true';
-
-    {$ifdef CPUAMD64}
-    NewBhyveConfig.Values['x86.vmexit_on_hlt']:='true';
-    NewBhyveConfig.Values['x86.strictmsr']:='false';
-    {$endif CPUAMD64}
-
-    { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
-    if GetOsreldate.ToInt64 >= 1500023 then
-    begin
       {$ifdef CPUAMD64}
-      NewBhyveConfig.Values['bootrom'] := BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
-      if FormVmCreate.CheckBoxUEFIBootvars.Checked then
-      begin
-        NewBhyveConfig.Values['bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
+      NewBhyveConfig.Values['x86.vmexit_on_hlt']:='true';
+      NewBhyveConfig.Values['x86.strictmsr']:='false';
+      {$endif CPUAMD64}
 
-        CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
-        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
+      { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+      if GetOsreldate.ToInt64 >= 1500023 then
+      begin
+        {$ifdef CPUAMD64}
+        NewBhyveConfig.Values['bootrom'] := BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
+        if FormVmCreate.CheckBoxUEFIBootvars.Checked then
+        begin
+          NewBhyveConfig.Values['bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
+
+          CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
+          CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
+        end;
+        {$endif CPUAMD64}
+        {$ifdef CPUAARCH64}
+        NewBhyveConfig.Values['bootrom'] := BootRomUbootPath+ '/' +'u-boot.bin';
+        {$endif CPUAARCH64}
+      end
+      else
+      begin
+        {$ifdef CPUAMD64}
+        NewBhyveConfig.Values['lpc.bootrom']:=BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
+        if FormVmCreate.CheckBoxUEFIBootvars.Checked then
+        begin
+          NewBhyveConfig.Values['lpc.bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
+
+          CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
+          CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
+        end;
+        {$endif CPUAMD64}
       end;
+
+      {$ifdef CPUAMD64}
+      NewBhyveConfig.Values['lpc.fwcfg']:='bhyve';
+      NewBhyveConfig.Values['lpc.com1.path']:='/dev/nmdm-'+FormVmCreate.EditVmName.Text+'.1A';
       {$endif CPUAMD64}
       {$ifdef CPUAARCH64}
-      NewBhyveConfig.Values['bootrom'] := BootRomUbootPath+ '/' +'u-boot.bin';
+      NewBhyveConfig.Values['console']:='/dev/nmdm-'+FormVmCreate.EditVmName.Text+'.1A';
       {$endif CPUAARCH64}
-    end
-    else
-    begin
+
+      NewBhyveConfig.Values['pci.0.0.0.device']:='hostbridge';
+
       {$ifdef CPUAMD64}
-      NewBhyveConfig.Values['lpc.bootrom']:=BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
-      if FormVmCreate.CheckBoxUEFIBootvars.Checked then
+      NewBhyveConfig.Values['pci.0.31.0.device']:='lpc';
+      {$endif}
+
+      if not FormVmCreate.RadioButtonNotDisk.Checked then
       begin
-        NewBhyveConfig.Values['lpc.bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
-
-        CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
-        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
-      end;
-      {$endif CPUAMD64}
-    end;
-
-    {$ifdef CPUAMD64}
-    NewBhyveConfig.Values['lpc.fwcfg']:='bhyve';
-    NewBhyveConfig.Values['lpc.com1.path']:='/dev/nmdm-'+FormVmCreate.EditVmName.Text+'.1A';
-    {$endif CPUAMD64}
-    {$ifdef CPUAARCH64}
-    NewBhyveConfig.Values['console']:='/dev/nmdm-'+FormVmCreate.EditVmName.Text+'.1A';
-    {$endif CPUAARCH64}
-
-    NewBhyveConfig.Values['pci.0.0.0.device']:='hostbridge';
-
-    {$ifdef CPUAMD64}
-    NewBhyveConfig.Values['pci.0.31.0.device']:='lpc';
-    {$endif}
-
-    if FormVmCreate.CheckBoxImageMinimal.Checked then
-    begin
-      CreateDirectory(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
-      SeedImageConfig.LoadFromFile(DatadirPath+'templates/user-data');
-
-      if FormVmCreate.CheckBoxImageUseSudo.Checked then
-      begin
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDO%%', ',sudo'+sLineBreak+'    sudo: ALL=(ALL) NOPASSWD:ALL', [rfReplaceAll]);
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOPACKAGE%%', 'package:'+sLineBreak+'  - sudo', [rfReplaceAll]);
-      end
-      else
-      begin
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDO%%', EmptyStr, [rfReplaceAll]);
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOPACKAGE%%', EmptyStr, [rfReplaceAll]);
-      end;
-
-      if FormVmCreate.CheckBoxIpv6Address.Checked then
-      begin
-        SeedRunCmd := 'runcmd:'+sLineBreak;
-        SeedRunCmd := SeedRunCmd + '  - |'+sLineBreak;
-        SeedRunCmd := SeedRunCmd + '    if [ "$(uname -s)" = "Linux" ]; then'+sLineBreak;
-        SeedRunCmd := SeedRunCmd + '      IFACE=$(nmcli -t -f DEVICE,TYPE device | grep '':ethernet'' | cut -d: -f1 | head -n1)'+sLineBreak;
-        SeedRunCmd := SeedRunCmd + '      nmcli connection modify "$IFACE" ipv6.addr-gen-mode eui64'+sLineBreak;
-        SeedRunCmd := SeedRunCmd + '      nmcli connection up "$IFACE"'+sLineBreak;
-        SeedRunCmd := SeedRunCmd + '    fi';
-
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%RUNCMD%%', SeedRunCmd, [rfReplaceAll]);
-      end
-      else
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%RUNCMD%%', SeedRunCmd, [rfReplaceAll]);
-
-      SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
-      SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%USERNAME%%', FormVmCreate.EditUsername.Text, [rfReplaceAll]);
-      SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SSH-KEY%%', FormVmCreate.EditSshPubKey.Text, [rfReplaceAll]);
-
-      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
-      SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data');
-
-      SeedImageConfig.LoadFromFile(DatadirPath+'templates/meta-data');
-      SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%UUID%%', Uuid, [rfReplaceAll]);
-      SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
-
-      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
-      SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data');
-
-      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/seed.iso', GetCurrentUserName());
-      CreateSeedIso(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/', FormVmCreate.EditVmFolderPath.Text+'/seed.iso');
-
-      NewBhyveConfig.Values['pci.0.1.0.device']:='ahci';
-      NewBhyveConfig.Values['pci.0.1.0.port.0.type']:='cd';
-      NewBhyveConfig.Values['pci.0.1.0.port.0.path']:=FormVmCreate.EditVmFolderPath.Text+'/seed.iso';
-    end;
-
-    if FormVmCreate.CheckBoxImageFiles.Checked then
-    begin
-      CreateDirectory(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
-
-      if FileExists(FormVmCreate.FileNameEditMetaData.FileName) then
-      begin
-        SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditMetaData.FileName);
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%UUID%%', Uuid, [rfReplaceAll]);
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
-
-        CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
-        SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data');
-      end;
-
-      if FileExists(FormVmCreate.FileNameEditUserData.FileName) then
-      begin
-        SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditUserData.FileName);
-        SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
-
-        CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
-        SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data');
-      end;
-
-      if FileExists(FormVmCreate.FileNameEditNetworkConfig.Text) then
-        InstallFile(FormVmCreate.FileNameEditNetworkConfig.Text, FormVmCreate.EditVmFolderPath.Text+'/cloud-data/', GetCurrentUserName());
-
-      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/seed.iso', GetCurrentUserName());
-      CreateSeedIso(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/', FormVmCreate.EditVmFolderPath.Text+'/seed.iso');
-
-      NewBhyveConfig.Values['pci.0.1.0.device']:='ahci';
-      NewBhyveConfig.Values['pci.0.1.0.port.0.type']:='cd';
-      NewBhyveConfig.Values['pci.0.1.0.port.0.path']:=FormVmCreate.EditVmFolderPath.Text+'/seed.iso';
-    end;
-
-    if FormVmCreate.CheckBoxUseMedia.Checked and
-       not FormVmCreate.CheckBoxImageMinimal.Checked and
-       not FormVmCreate.CheckBoxImageFiles.Checked then
-    begin
-      NewBhyveConfig.Values['pci.0.1.0.device']:='ahci';
-      NewBhyveConfig.Values['pci.0.1.0.port.0.type']:='cd';
-      NewBhyveConfig.Values['pci.0.1.0.port.0.path']:=FormVmCreate.FileNameEditBootMedia.FileName;
-    end;
-
-    if not FormVmCreate.RadioButtonNotDisk.Checked then
-    begin
-      case FormVmCreate.ComboBoxVirtualDeviceType.Text of
-        'ahci-hd':
-          begin
-            PciSlot:='2';
-            NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:='ahci';
-            NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.port.0.type']:='hd';
-            Path := '.port.0.path';
-          end;
-        'nvme':
-          begin
-            PciSlot:='3';
-            NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:=FormVmCreate.ComboBoxVirtualDeviceType.Text;
-          end;
-        'virtio-blk':
-          begin
-            PciSlot:='5';
-            NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:=FormVmCreate.ComboBoxVirtualDeviceType.Text;
-          end;
-        'virtio-scsi':
-          begin
-            PciSlot:='7';
-            NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:=FormVmCreate.ComboBoxVirtualDeviceType.Text;
-          end;
-      end;
-
-      case FormVmCreate.ComboBoxVirtualStorageType.Text of
-        'image file':
-          begin
-            DiskName:=GetNewStorageName(FormVmCreate.EditVmFolderPath.Text+'/', False);
-            CreateFile(FormVmCreate.EditVmFolderPath.Text+'/'+DiskName, GetCurrentUserName());
-
-            if FormVmCreate.RadioButtonDiskFromImage.Checked then
+        case FormVmCreate.ComboBoxVirtualDeviceType.Text of
+          'ahci-hd':
             begin
-              InstallFile(FormVmCreate.FileNameEditImageFile.FileName, FormVmCreate.EditVmFolderPath.Text+'/'+DiskName, GetCurrentUserName());
-              if (FormVmCreate.SpinEditExDiskSize.Value) > GetFileSize(FormVmCreate.FileNameEditImageFile.FileName ,'G') then
+              PciSlot:='2';
+              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:='ahci';
+              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.port.0.type']:='hd';
+              Path := '.port.0.path';
+            end;
+          'nvme':
+            begin
+              PciSlot:='3';
+              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:=FormVmCreate.ComboBoxVirtualDeviceType.Text;
+            end;
+          'virtio-blk':
+            begin
+              PciSlot:='5';
+              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:=FormVmCreate.ComboBoxVirtualDeviceType.Text;
+            end;
+          'virtio-scsi':
+            begin
+              PciSlot:='7';
+              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0.device']:=FormVmCreate.ComboBoxVirtualDeviceType.Text;
+            end;
+        end;
+
+        case FormVmCreate.ComboBoxVirtualStorageType.Text of
+          'image file':
+            begin
+              DiskName:=GetNewStorageName(FormVmCreate.EditVmFolderPath.Text+'/', False);
+              CreateFile(FormVmCreate.EditVmFolderPath.Text+'/'+DiskName, GetCurrentUserName());
+
+              if FormVmCreate.RadioButtonDiskFromImage.Checked then
+              begin
+                DiskFile:=FormVmCreate.EditVmFolderPath.Text+'/'+DiskName;
+
+                TotalSize:=ConvertFileSize(GetRemoteSize(FormVmCreate.FileNameEditImageFile.FileName), 'M');
+
+                MyAppThread := AppProgressBarThread.Create(CpCmd, [FormVmCreate.FileNameEditImageFile.FileName, FormVmCreate.EditVmFolderPath.Text+'/'+DiskName]);
+                MyAppThread.OnShowStatus := @AppShowStatus;
+                MyAppThread.OnEndStatus:= @AppEndStatus;
+                MyAppThread.Start;
+              end
+              else
                 TruncateImage(FormVmCreate.EditVmFolderPath.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G');
-            end
-            else
-              TruncateImage(FormVmCreate.EditVmFolderPath.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G');
 
-            NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:=FormVmCreate.EditVmFolderPath.Text+'/'+DiskName;
-          end;
-        'zfs sparse volume':
-          begin
-            if UseZfs = 'yes' then
-            begin
-              DiskName:=GetNewStorageName('/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text, True);
-              ZfsCreateZvol(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , True);
-              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:='/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName;
+              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:=FormVmCreate.EditVmFolderPath.Text+'/'+DiskName;
             end;
-          end;
-        'zfs volume':
-          begin
-            if UseZfs = 'yes' then
+          'zfs sparse volume':
             begin
-              DiskName:=GetNewStorageName('/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text, True);
-              ZfsCreateZvol(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , False);
-              NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:='/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName;
+              if UseZfs = 'yes' then
+              begin
+                DiskName:=GetNewStorageName('/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text, True);
+                ZfsCreateZvol(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , True);
+                NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:='/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName;
+              end;
             end;
+          'zfs volume':
+            begin
+              if UseZfs = 'yes' then
+              begin
+                DiskName:=GetNewStorageName('/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text, True);
+                ZfsCreateZvol(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , False);
+                NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:='/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName;
+              end;
+            end;
+        end;
+
+        if FormVmCreate.CheckBoxImageMinimal.Checked then
+        begin
+          CreateDirectory(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
+          SeedImageConfig.LoadFromFile(DatadirPath+'templates/user-data');
+
+          if FormVmCreate.CheckBoxImageUseSudo.Checked then
+          begin
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDO%%', ',sudo'+sLineBreak+'    sudo: ALL=(ALL) NOPASSWD:ALL', [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOPACKAGE%%', 'package:'+sLineBreak+'  - sudo', [rfReplaceAll]);
+          end
+          else
+          begin
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDO%%', EmptyStr, [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOPACKAGE%%', EmptyStr, [rfReplaceAll]);
           end;
+
+          if FormVmCreate.CheckBoxIpv6Address.Checked then
+          begin
+            SeedRunCmd := 'runcmd:'+sLineBreak;
+            SeedRunCmd := SeedRunCmd + '  - |'+sLineBreak;
+            SeedRunCmd := SeedRunCmd + '    if [ "$(uname -s)" = "Linux" ]; then'+sLineBreak;
+            SeedRunCmd := SeedRunCmd + '      IFACE=$(nmcli -t -f DEVICE,TYPE device | grep '':ethernet'' | cut -d: -f1 | head -n1)'+sLineBreak;
+            SeedRunCmd := SeedRunCmd + '      nmcli connection modify "$IFACE" ipv6.addr-gen-mode eui64'+sLineBreak;
+            SeedRunCmd := SeedRunCmd + '      nmcli connection up "$IFACE"'+sLineBreak;
+            SeedRunCmd := SeedRunCmd + '    fi';
+
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%RUNCMD%%', SeedRunCmd, [rfReplaceAll]);
+          end
+          else
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%RUNCMD%%', SeedRunCmd, [rfReplaceAll]);
+
+          SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+          SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%USERNAME%%', FormVmCreate.EditUsername.Text, [rfReplaceAll]);
+          SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SSH-KEY%%', FormVmCreate.EditSshPubKey.Text, [rfReplaceAll]);
+
+          CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
+          SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data');
+
+          SeedImageConfig.LoadFromFile(DatadirPath+'templates/meta-data');
+          SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%UUID%%', Uuid, [rfReplaceAll]);
+          SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+
+          CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
+          SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data');
+
+          CreateFile(FormVmCreate.EditVmFolderPath.Text+'/seed.iso', GetCurrentUserName());
+          CreateSeedIso(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/', FormVmCreate.EditVmFolderPath.Text+'/seed.iso');
+
+          NewBhyveConfig.Values['pci.0.1.0.device']:='ahci';
+          NewBhyveConfig.Values['pci.0.1.0.port.0.type']:='cd';
+          NewBhyveConfig.Values['pci.0.1.0.port.0.path']:=FormVmCreate.EditVmFolderPath.Text+'/seed.iso';
+        end;
+
+        if FormVmCreate.CheckBoxImageFiles.Checked then
+        begin
+          CreateDirectory(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
+
+          if FileExists(FormVmCreate.FileNameEditMetaData.FileName) then
+          begin
+            SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditMetaData.FileName);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%UUID%%', Uuid, [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+
+            CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
+            SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data');
+          end;
+
+          if FileExists(FormVmCreate.FileNameEditUserData.FileName) then
+          begin
+            SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditUserData.FileName);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+
+            CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
+            SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data');
+          end;
+
+          if FileExists(FormVmCreate.FileNameEditNetworkConfig.FileName) then
+          begin
+            SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditNetworkConfig.FileName);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%MACADDRESS%%', MacAddress, [rfReplaceAll]);
+
+            CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config', GetCurrentUserName());
+            SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config');
+          end;
+
+          CreateFile(FormVmCreate.EditVmFolderPath.Text+'/seed.iso', GetCurrentUserName());
+          CreateSeedIso(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/', FormVmCreate.EditVmFolderPath.Text+'/seed.iso');
+
+          NewBhyveConfig.Values['pci.0.1.0.device']:='ahci';
+          NewBhyveConfig.Values['pci.0.1.0.port.0.type']:='cd';
+          NewBhyveConfig.Values['pci.0.1.0.port.0.path']:=FormVmCreate.EditVmFolderPath.Text+'/seed.iso';
+        end;
       end;
-    end;
 
-    MacAddress:=GenerateMacAddress();
-
-    NewBhyveConfig.Values['pci.0.10.0.device']:='virtio-net';
-    NewBhyveConfig.Values['pci.0.10.0.backend']:=GetNewNetworkName('tap');
-    NewBhyveConfig.Values['pci.0.10.0.mac']:=MacAddress;
-
-    {$ifdef CPUAMD64}
-    if FormVmCreate.CheckBoxFramebuffer.Checked then
-    begin
-      NewBhyveConfig.Values['pci.0.29.0.device']:='fbuf';
-      if FormVmCreate.CheckBoxOnlyLocalhost.Checked then
-        NewBhyveConfig.Values['pci.0.29.0.tcp']:='127.0.0.1:'+GetNewVncPortNumber()
-      else
-        NewBhyveConfig.Values['pci.0.29.0.tcp']:='0.0.0.0:'+GetNewVncPortNumber();
-
-      if FormVmCreate.CheckBoxWaitVNC.Checked then
-        NewBhyveConfig.Values['pci.0.29.0.wait']:='true';
-    end;
-
-    NewBhyveConfig.Values['pci.0.30.0.device']:='xhci';
-    NewBhyveConfig.Values['pci.0.30.0.slot.1.device']:='tablet';
-    {$endif CPUAMD64}
-
-    NewBhyveConfig.Sorted:=True;
-
-    CreateFile(FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf', GetCurrentUserName());
-    NewBhyveConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf');
-
-    NewVMConfig.SetOption('general','name', FormVmCreate.EditVmName.Text);
-    NewVMConfig.SetOption('general','description', FormVmCreate.EditVmDescription.Text);
-    NewVMConfig.SetOption('general','uuid', Uuid);
-    NewVMConfig.SetOption('general','config_path', FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf');
-    NewVMConfig.SetOption('general','type' , FormVmCreate.ComboBoxSystemType.Text);
-    NewVMConfig.SetOption('general','version', FormVmCreate.ComboBoxSystemVersion.Text);
-    NewVMConfig.SetOption('general','image', PtrInt(FormVmCreate.ComboBoxSystemVersion.Items.Objects[FormVmCreate.ComboBoxSystemVersion.ItemIndex]).ToString);
-    NewVMConfig.SetOption('general','rdp', 'False');
-
-    if UseDnsmasq = 'yes' then
-    begin
-      IpAddress:=GetNewIpAddress(GetSubnet);
-      NewVMConfig.SetOption('general','ipaddress', IpAddress );
-
-      if (UseIpv6 = 'yes') and (FormVmCreate.CheckBoxIpv6Address.Checked) then
+      if FormVmCreate.CheckBoxUseMedia.Checked and
+         not FormVmCreate.CheckBoxImageMinimal.Checked and
+         not FormVmCreate.CheckBoxImageFiles.Checked then
       begin
-        Ip6Address:=GetNewIp6Address(GetIpv6Prefix, MacAddress);
-        NewVMConfig.SetOption('general','ip6address', Ip6Address );
-        NewVMConfig.SetOption('general','ipv6', 'True');
-        AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, Ip6Address, MacAddress);
+        NewBhyveConfig.Values['pci.0.1.0.device']:='ahci';
+        NewBhyveConfig.Values['pci.0.1.0.port.0.type']:='cd';
+        NewBhyveConfig.Values['pci.0.1.0.port.0.path']:=FormVmCreate.FileNameEditBootMedia.FileName;
       end;
 
-      AddDnsmasqDhcpHostEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
+      NewBhyveConfig.Values['pci.0.10.0.device']:='virtio-net';
+      NewBhyveConfig.Values['pci.0.10.0.backend']:=GetNewNetworkName('tap');
+      NewBhyveConfig.Values['pci.0.10.0.mac']:=MacAddress;
+
+      {$ifdef CPUAMD64}
+      if FormVmCreate.CheckBoxFramebuffer.Checked then
+      begin
+        NewBhyveConfig.Values['pci.0.29.0.device']:='fbuf';
+        if FormVmCreate.CheckBoxOnlyLocalhost.Checked then
+          NewBhyveConfig.Values['pci.0.29.0.tcp']:='127.0.0.1:'+GetNewVncPortNumber()
+        else
+          NewBhyveConfig.Values['pci.0.29.0.tcp']:='0.0.0.0:'+GetNewVncPortNumber();
+
+        if FormVmCreate.CheckBoxWaitVNC.Checked then
+          NewBhyveConfig.Values['pci.0.29.0.wait']:='true';
+      end;
+
+      NewBhyveConfig.Values['pci.0.30.0.device']:='xhci';
+      NewBhyveConfig.Values['pci.0.30.0.slot.1.device']:='tablet';
+      {$endif CPUAMD64}
+
+      NewBhyveConfig.Sorted:=True;
+
+      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf', GetCurrentUserName());
+      NewBhyveConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf');
+
+      NewVMConfig.SetOption('general','name', FormVmCreate.EditVmName.Text);
+      NewVMConfig.SetOption('general','description', FormVmCreate.EditVmDescription.Text);
+      NewVMConfig.SetOption('general','uuid', Uuid);
+      NewVMConfig.SetOption('general','config_path', FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf');
+      NewVMConfig.SetOption('general','type' , FormVmCreate.ComboBoxSystemType.Text);
+      NewVMConfig.SetOption('general','version', FormVmCreate.ComboBoxSystemVersion.Text);
+      NewVMConfig.SetOption('general','image', PtrInt(FormVmCreate.ComboBoxSystemVersion.Items.Objects[FormVmCreate.ComboBoxSystemVersion.ItemIndex]).ToString);
+      NewVMConfig.SetOption('general','rdp', 'False');
+
+      if UseDnsmasq = 'yes' then
+      begin
+        IpAddress:=GetNewIpAddress(GetSubnet);
+        NewVMConfig.SetOption('general','ipaddress', IpAddress );
+
+        if (UseIpv6 = 'yes') and (FormVmCreate.CheckBoxIpv6Address.Checked) then
+        begin
+          Ip6Address:=GetNewIp6Address(GetIpv6Prefix, MacAddress);
+          NewVMConfig.SetOption('general','ip6address', Ip6Address );
+          NewVMConfig.SetOption('general','ipv6', 'True');
+          AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, Ip6Address, MacAddress);
+        end;
+
+        AddDnsmasqDhcpHostEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
+        RestartService('dnsmasq');
+      end;
+
+      FormVmCreate.Hide;
+
+      if not FormVmCreate.RadioButtonDiskFromImage.Checked then
+      begin
+        ResetTreeView(VirtualMachinesTreeView);
+        VirtualMachinesTreeView.Items.Clear;
+        FillVirtualMachineList();
+
+        StatusBarBhyveManager.Font.Color:=clTeal;
+        StatusBarBhyveManager.SimpleText:='A new '+FormVmCreate.EditVmName.Text+' virtual machine was created';
+
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' VM was created');
+      end;
+    finally
+      if Assigned(NewVMConfig) then
+        NewVMConfig. Free;
+      NewBhyveConfig.Free;
+      SeedImageConfig.Free;
     end;
-
-    NewVMConfig. Free;
-    NewBhyveConfig.Free;
-    SeedImageConfig.Free;
-
-    ResetTreeView(VirtualMachinesTreeView);
-    VirtualMachinesTreeView.Items.Clear;
-    FillVirtualMachineList();
-
-    FormVmCreate.Hide;
-
-    StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText:='A new '+FormVmCreate.EditVmName.Text+' virtual machine was created';
-
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' VM was created');
   end
 end;
 
@@ -3654,6 +3770,7 @@ begin
               IpAddress:=GetNewIpAddress(GetSubnet);
               VmConfig.SetOption('general','ipaddress', IpAddress );
               AddDnsmasqDhcpHostEntry(VirtualMachine.name, IpAddress, NetworkDevice.mac);
+              RestartService('dnsmasq');
             end;
 
             if (UseIpv6 = 'yes') and (Virtualmachine.ipv6 = True) and
@@ -3662,6 +3779,7 @@ begin
               Ip6Address:=GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac );
               VmConfig.SetOption('general','ip6address', Ip6Address );
               AddDnsmasqHostRecordEntry(VirtualMachine.name, Ip6Address, NetworkDevice.mac);
+              RestartService('dnsmasq');
             end;
 
             VmConfig.Free;

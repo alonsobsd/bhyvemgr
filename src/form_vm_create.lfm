@@ -401,11 +401,11 @@ object FormVmCreate: TFormVmCreate
       TabVisible = False
       object GroupBoxDownloadImage: TGroupBox
         Left = 15
-        Height = 168
+        Height = 120
         Top = 8
         Width = 672
         Caption = 'Download image'
-        ClientHeight = 139
+        ClientHeight = 91
         ClientWidth = 668
         TabOrder = 0
         object EditUrlImage: TEdit
@@ -432,24 +432,6 @@ object FormVmCreate: TFormVmCreate
           ModalResult = 4
           TabOrder = 2
           OnClick = BitBtnDownloadClick
-        end
-        object ProgressBarImage: TProgressBar
-          Left = 32
-          Height = 20
-          Top = 88
-          Width = 615
-          TabOrder = 3
-          BarShowText = True
-        end
-        object LabelDownloadStatus: TLabel
-          Left = 32
-          Height = 18
-          Top = 104
-          Width = 38
-          Caption = 'Status'
-          Font.Color = clTeal
-          ParentFont = False
-          Visible = False
         end
         object BitBtnDownloadPaste: TBitBtn
           Left = 617
@@ -1618,26 +1600,26 @@ object FormVmCreate: TFormVmCreate
       end
       object GroupBoxSelectImage: TGroupBox
         Left = 16
-        Height = 120
-        Top = 184
+        Height = 112
+        Top = 192
         Width = 671
         Caption = 'Select image'
-        ClientHeight = 91
+        ClientHeight = 83
         ClientWidth = 667
         TabOrder = 1
         object Label17: TLabel
-          Left = 33
+          Left = 32
           Height = 18
-          Top = 26
+          Top = 16
           Width = 38
           Caption = 'Image'
         end
         object FileNameEditImageFile: TFileNameEdit
           Left = 96
           Height = 32
-          Top = 16
+          Top = 12
           Width = 552
-          Filter = 'Raw or Image file|*.raw; *.img'
+          Filter = 'Qcow2, Raw or Image file|*.qcow2;*.raw;*.img'
           FilterIndex = 0
           HideDirectories = False
           ButtonWidth = 23
@@ -1649,9 +1631,9 @@ object FormVmCreate: TFormVmCreate
           OnChange = FileNameEditImageFileChange
         end
         object CheckBoxImageMinimal: TCheckBox
-          Left = 31
+          Left = 32
           Height = 22
-          Top = 56
+          Top = 48
           Width = 183
           Caption = 'Use minimal configuration'
           TabOrder = 1
@@ -1660,7 +1642,7 @@ object FormVmCreate: TFormVmCreate
         object CheckBoxImageFiles: TCheckBox
           Left = 224
           Height = 22
-          Top = 56
+          Top = 48
           Width = 159
           Caption = 'Use files configuration'
           TabOrder = 2
@@ -2955,6 +2937,24 @@ object FormVmCreate: TFormVmCreate
           TabOrder = 2
           OnButtonClick = FileNameEditNetworkConfigButtonClick
         end
+      end
+      object ProgressBarImage: TProgressBar
+        Left = 48
+        Height = 20
+        Top = 144
+        Width = 615
+        TabOrder = 4
+        BarShowText = True
+      end
+      object LabelDownloadStatus: TLabel
+        Left = 48
+        Height = 18
+        Top = 160
+        Width = 38
+        Caption = 'Status'
+        Font.Color = clTeal
+        ParentFont = False
+        Visible = False
       end
     end
   end

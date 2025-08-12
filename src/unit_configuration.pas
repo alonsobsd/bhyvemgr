@@ -162,6 +162,9 @@ begin
   if ConfigFile.ReadString('extra-tools','chmod_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','chmod_cmd', '/bin/chmod');
 
+  if ConfigFile.ReadString('extra-tools','cp_cmd', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('extra-tools','cp_cmd', '/bin/cp');
+
   if ConfigFile.ReadString('extra-tools','fetch_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','fetch_cmd', '/usr/bin/fetch');
 

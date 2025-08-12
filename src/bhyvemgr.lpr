@@ -84,6 +84,7 @@ begin
 
     SetChownCmd(Configuration.GetOption('extra-tools','chown_cmd'));
     SetChmodCmd(Configuration.GetOption('extra-tools','chmod_cmd'));
+    SetCpCmd(Configuration.GetOption('extra-tools','cp_cmd'));
     SetFetchCmd(Configuration.GetOption('extra-tools','fetch_cmd'));
     SetFileCmd(Configuration.GetOption('extra-tools','file_cmd'));
     SetIfconfigCmd(Configuration.GetOption('extra-tools','ifconfig_cmd'));
