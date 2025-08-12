@@ -3440,6 +3440,7 @@ begin
           begin
             SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditUserData.FileName);
             SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%HOSTNAME%%', FormVmCreate.EditVmName.Text, [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%MACADDRESS%%', MacAddress, [rfReplaceAll]);
 
             CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data', GetCurrentUserName());
             SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/user-data');

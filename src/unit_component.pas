@@ -587,7 +587,7 @@ begin
       combo.AddItem('Almalinux 10.x', TObject(15));
       combo.AddItem('Alpinelinux 3.x', TObject(16));
       combo.AddItem('Arch Linux 2025.x', TObject(1));
-      combo.AddItem('Debian 12.x', TObject(2));
+      combo.AddItem('Debian 13.x', TObject(2));
       combo.AddItem('EndeavourOS 2025.x', TObject(17));
       combo.AddItem('Fedora 42.x', TObject(4));
       combo.AddItem('Kali Linux 2025.x', TObject(18));
