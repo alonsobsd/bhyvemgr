@@ -546,19 +546,21 @@ begin
 
     SetVmPath(EditVmPathSetting.Text);
     SetCloudVmImagesPath(DirectoryEditImagesPath.Directory);
-    SetVncviewerCmd(FileNameEditVncviewer.FileName);
-    SetXfreerdpCmd(FileNameEditXfreerdp.FileName);
-    SetXfreerdpArgs(EditRdpArgs.Text);
 
     SetBhyveCmd(FileNameEditBhyve.FileName);
     SetBhyvectlCmd(FileNameEditBhyvectl.FileName);
     SetBhyveloadCmd(FileNameEditBhyveload.FileName);
 
-    SetSudoCmd(FileNameEditSudo.FileName);
-    SetDoasCmd(FileNameEditDoas.FileName);
-
     SetSwtpmCmd(FileNameEditSwtpm.FileName);
     SetSwtpmIoctlCmd(FileNameEditSwtpmIoctl.FileName);
+    SetQemuImgCmd(FileNameEditBhyve.FileName);
+
+    SetVncviewerCmd(FileNameEditVncviewer.FileName);
+    SetXfreerdpCmd(FileNameEditXfreerdp.FileName);
+    SetXfreerdpArgs(EditRdpArgs.Text);
+
+    SetSudoCmd(FileNameEditSudo.FileName);
+    SetDoasCmd(FileNameEditDoas.FileName);
 
     if UseZfs = 'yes' then
       ZfsCreateDataset(VmPath.Remove(0,1))
@@ -713,8 +715,8 @@ begin
   FileNameEditXfreerdp.Text:=XfreerdpCmd;
   EditRdpArgs.Text:=XfreerdpArgs;
 
-  FileNameEditSwtpmIoctl.Text:=DoasCmd;
-  FileNameEditSwtpm.Text:=SudoCmd;
+  FileNameEditDoas.Text:=DoasCmd;
+  FileNameEditSudo.Text:=SudoCmd;
 
   FileNameEditSwtpm.Text:=SwtpmCmd;
   FileNameEditSwtpmIoctl.Text:=SwtpmIoctlCmd;
