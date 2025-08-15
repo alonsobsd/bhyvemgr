@@ -47,6 +47,7 @@ type
     BitBtnDownload: TBitBtn;
     BitBtnCreateVm: TBitBtn;
     BitBtnSshPaste: TBitBtn;
+    CheckBoxUseStaticIpv4: TCheckBox;
     CheckBoxImageUseSudo: TCheckBox;
     CheckBoxImageMinimal: TCheckBox;
     CheckBoxImageFiles: TCheckBox;
@@ -60,6 +61,9 @@ type
     ComboBoxSystemVersion: TComboBox;
     ComboBoxVirtualDeviceType: TComboBox;
     ComboBoxVirtualStorageType: TComboBox;
+    EditIpv4Address: TEdit;
+    EditGateway: TEdit;
+    EditDNS: TEdit;
     EditUrlImage: TEdit;
     EditUsername: TEdit;
     EditSshPubKey: TEdit;
@@ -83,8 +87,11 @@ type
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
+    Label18: TLabel;
     Label2: TLabel;
     Label22: TLabel;
     Label27: TLabel;
@@ -116,6 +123,7 @@ type
     procedure CheckBoxImageMinimalChange(Sender: TObject);
     procedure CheckBoxOnlyLocalhostChange(Sender: TObject);
     procedure CheckBoxUseMediaChange(Sender: TObject);
+    procedure CheckBoxUseStaticIpv4Change(Sender: TObject);
     procedure CheckBoxWaitVNCChange(Sender: TObject);
     procedure ComboBoxSystemTypeChange(Sender: TObject);
     procedure EditVmNameEditingDone(Sender: TObject);
@@ -223,6 +231,14 @@ begin
   EditUsername.Clear;
   EditSshPubKey.Clear;
   CheckBoxImageUseSudo.Checked:=False;
+
+  CheckBoxUseStaticIpv4.Checked:=False;
+  EditIpv4Address.Enabled:=False;
+  EditIpv4Address.Clear;
+  EditGateway.Enabled:=False;
+  EditGateway.Clear;
+  EditDNS.Enabled:=False;
+  EditDNS.Clear;
 
   FileNameEditUserData.Clear;
   FileNameEditMetaData.Clear;
@@ -494,10 +510,39 @@ begin
         Result:=False;
         Exit;
       end;
-      if not FileExists(DatadirPath+'templates/user-data') or not FileExists(DatadirPath+'templates/meta-data') then
+      if CheckBoxUseStaticIpv4.Checked then
+      begin
+        if (Trim(EditIpv4Address.Text) = EmptyStr) or not CheckCidrRange(EditIpv4Address.Text+'/32') then
+        begin
+          StatusBarVmCreate.Font.Color:=clRed;
+          StatusBarVmCreate.SimpleText:='IPv4 address is not valid.';
+
+          Result:=False;
+          Exit;
+        end;
+        if (Trim(EditGateway.Text) = EmptyStr) or not CheckCidrRange(EditGateway.Text+'/32') then
+        begin
+          StatusBarVmCreate.Font.Color:=clRed;
+          StatusBarVmCreate.SimpleText:='Gateway is not valid.';
+
+          Result:=False;
+          Exit;
+        end;
+        if Trim(EditDNS.Text) = EmptyStr then
+        begin
+          StatusBarVmCreate.Font.Color:=clRed;
+          StatusBarVmCreate.SimpleText:='DNS Servers is not valid.';
+
+          Result:=False;
+          Exit;
+        end;
+      end;
+      if not FileExists(DatadirPath+'templates/user-data') or
+         not FileExists(DatadirPath+'templates/meta-data') or
+         not FileExists(DatadirPath+'templates/network-config') then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
-        StatusBarVmCreate.SimpleText:='user-data or meta-data are not available at templates directory.';
+        StatusBarVmCreate.SimpleText:='user-data, meta-data, or network-config are not available at templates directory.';
 
         Result:=False;
         Exit;
@@ -558,6 +603,27 @@ begin
     FileNameEditBootMedia.Enabled:=True
   else
     FileNameEditBootMedia.Enabled:=False;
+end;
+
+procedure TFormVmCreate.CheckBoxUseStaticIpv4Change(Sender: TObject);
+begin
+  if CheckBoxUseStaticIpv4.Checked then
+  begin
+    CheckBoxImageFiles.Checked:=False;
+    EditIpv4Address.Enabled:=True;
+    EditGateway.Enabled:=True;
+    EditDNS.Enabled:=True;
+
+    EditIpv4Address.Text:=GetNewIpAddress(Subnet);
+    EditGateway.Text:=FirstIpAddress(NetworkAddress(Subnet));
+    EditDNS.Text:=EditGateway.Text;
+  end
+  else
+  begin
+    EditIpv4Address.Enabled:=False;
+    EditGateway.Enabled:=False;
+    EditDNS.Enabled:=False;
+  end;
 end;
 
 procedure TFormVmCreate.CheckBoxFramebufferChange(Sender: TObject);

@@ -232,6 +232,14 @@ begin
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
   PopupMenuItem.Caption:='Copy COM1 command';
   PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:='Copy IPv4 address';
+  PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:='Copy IPv6 address';
+  PopupMenu.Items.Add(PopupMenuItem);
 end;
 
 constructor TDeviceImageList.Create(component: TComponent);
@@ -331,6 +339,9 @@ begin
   ActionList.Add(Image.Picture.Bitmap, nil);
   { Index 8 }
   Image.Picture.LoadFromFile(DatadirPath+'images/menu/vm.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 9 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/ip.png');
   ActionList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;

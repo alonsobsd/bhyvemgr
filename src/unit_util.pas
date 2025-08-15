@@ -74,6 +74,7 @@ function ExtractNumberValue(TextLine: String; Suffix: String): String;
 function ExtractPortValue(TextLine: String): String;
 function ExtractVarName(TextLine: String): String;
 function ExtractVarValue(TextLine: String): String;
+function FirstIpAddress(Network: String): String;
 function GenerateIpv6Preffix():String;
 function GenerateIpv6Suffix(mac : String):String;
 function GenerateMacAddress(): String;
@@ -105,6 +106,7 @@ function GetZpoolList():String;
 function InstallFile(SourceFileName: String; DestinationFileName : String; UserName : String; FileMode : String = '600'):Boolean;
 function KillPid(Pid : Integer; Signal : String = '-TERM'): Boolean;
 function LoadKernelModule(Module : String):Boolean;
+function NetworkAddress(Subnet : String):String;
 function RdpConnect(VmName : String; Username : String; Password : String; Width : String; Height : String):Boolean;
 function RemoveDirectory(Directory: String; Recursive : Boolean):Boolean;
 function RemoveFile(Path: String):Boolean;
@@ -285,6 +287,11 @@ begin
   Result:=DecimalToIP(Netmask);
 end;
 
+function NetworkAddress(Subnet : String):String;
+begin
+  Result:=DecimalToIP(IpToDecimal(ExtractIP(Subnet), ExtractCidr(Subnet).ToInteger));
+end;
+
 function FirstIpAddress(Network: String): String;
 var
   NetworkArray : TStringArray;
@@ -325,7 +332,7 @@ begin
 
   TmpArray:=IpAddress.Split('.');
 
-  FirstIp:=FirstIpAddress(DecimalToIP(IpToDecimal(ExtractIP(Subnet), ExtractCidr(Subnet).ToInteger))).Split('.');
+  FirstIp:=FirstIpAddress(NetworkAddress(Subnet)).Split('.');
   LasttIp:=LastIpAddress(DecimalToIP(BroadcastToDecimal(Subnet))).Split('.');
 
   if((TmpArray[0].ToInteger >= FirstIp[0].ToInteger) AND (TmpArray[0].ToInteger <= LasttIp[0].ToInteger)) then
@@ -377,7 +384,7 @@ begin
       end;
   end;
 
-  IpArray:=FirstIpAddress(DecimalToIP(IpToDecimal(ExtractIP(Subnet), ExtractCidr(Subnet).ToInteger))).Split('.');
+  IpArray:=FirstIpAddress(NetworkAddress(Subnet)).Split('.');
 
   Oct1:=IpArray[0].ToInteger;
   Oct2:=IpArray[1].ToInteger;
@@ -778,7 +785,7 @@ begin
 
     if FilePath.IndexOf('dhcp-host='+MacAddreess+','+VmName+','+IpAddress) = -1 then
     begin
-      FilePath.Values['dhcp-host']:=MacAddreess+','+VmName+','+IpAddress;
+      FilePath.Add('dhcp-host='+MacAddreess+','+VmName+','+IpAddress);
       FilePath.SaveToFile(ConfigFile);
     end;
   except
@@ -807,7 +814,7 @@ begin
 
     if FilePath.IndexOf('host-record='+VmName+','+Ip6Address) = -1 then
     begin
-      FilePath.Values['host-record']:=VmName+','+Ip6Address;
+      FilePath.Add('host-record='+VmName+','+Ip6Address);
       FilePath.SaveToFile(ConfigFile);
     end;
 

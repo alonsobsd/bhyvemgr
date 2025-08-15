@@ -179,12 +179,6 @@ begin
       StatusBarBhyveSettings.SimpleText:='dnsmasq was not found. Please install dns/dnsmasq for fix it';
       Result:=False;
       Exit;
-    end
-    else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
-    begin
-      StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign ip address to virtual machines automatically.';
-      Result:=False;
-      Exit;
     end;
   end;
 
@@ -237,7 +231,13 @@ begin
 
   if Trim(EditBridgeInterface.Text) = EmptyStr then
   begin
-    StatusBarBhyveSettings.SimpleText:='A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings';
+    StatusBarBhyveSettings.SimpleText:='A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings.';
+    Result:=False;
+    Exit;
+  end
+  else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
+  begin
+    StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign/generate ip address.';
     Result:=False;
     Exit;
   end
@@ -419,24 +419,17 @@ end;
 
 procedure TFormSettings.EditSubnetExit(Sender: TObject);
 begin
-  if CheckBoxUseDnsmasq.Checked then
+  if not CheckCidrRange(EditSubnet.Text) then
   begin
-    if not CheckCidrRange(EditSubnet.Text) then
-    begin
-      EditSubnet.SetFocus;
-      StatusBarBhyveSettings.Font.Color:=clRed;
-      StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign ip address to virtual machines automatically';
-    end
-    else
-    begin
-      LabelNetmask.Caption:=ExtractNetMask(ExtractCidr(EditSubnet.Text).ToInteger);
-
-      StatusBarBhyveSettings.Font.Color:=clTeal;
-      StatusBarBhyveSettings.SimpleText:=EmptyStr;
-    end;
+    EditSubnet.SetFocus;
+    StatusBarBhyveSettings.Font.Color:=clRed;
+    StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign/generate ip address';
   end
   else
   begin
+    LabelNetmask.Caption:=ExtractNetMask(ExtractCidr(EditSubnet.Text).ToInteger);
+
+    StatusBarBhyveSettings.Font.Color:=clTeal;
     StatusBarBhyveSettings.SimpleText:=EmptyStr;
   end;
 end;
@@ -496,9 +489,11 @@ begin
     begin
       ConfigFile.SetOption('general', 'use_dnsmasq', 'no');
       ConfigFile.SetOption('network', 'bridge_interface', EditBridgeInterface.Text);
+      ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
 
       SetUseDnsmasq('no');
       SetBridgeInterface(EditBridgeInterface.Text);
+      SetSubnet(EditSubnet.Text);
     end;
 
     if CheckBoxUseSystray.Checked then
@@ -614,7 +609,7 @@ begin
   end
   else
   begin
-    EditSubnet.Enabled:=False;
+    EditSubnet.Enabled:=True;
     CheckBoxUseIpv6.Enabled:=False;
     CheckBoxUseIpv6.Checked:=False;
   end;
@@ -627,6 +622,7 @@ begin
     BitBtnCalculateIpv6.Enabled:=True;
     EditIpv6Prefix.Enabled:=True;
     EditBridgeMac.Enabled:=True;
+    BitBtnMacAddress.Enabled:=True;
     EditBridgeIpv6.Enabled:=True;
     EditBridgeIpv6.Clear;
 
@@ -639,6 +635,7 @@ begin
     EditIpv6Prefix.Enabled:=False;
     EditBridgeIpv6.Enabled:=False;
     EditBridgeMac.Enabled:=False;
+    BitBtnMacAddress.Enabled:=False;
     EditBridgeIpv6.Clear;
   end;
 end;
@@ -665,7 +662,7 @@ begin
   else
   begin
     CheckBoxUseDnsmasq.Checked:=False;
-    EditSubnet.Enabled:=False;
+    EditSubnet.Enabled:=True;
     CheckBoxUseIpv6.Checked:=False;
     CheckBoxUseIpv6.Enabled:=False;
   end;
@@ -685,6 +682,7 @@ begin
     BitBtnCalculateIpv6.Enabled:=True;
     CheckBoxUseIpv6.Checked:=True;
     EditBridgeMac.Enabled:=True;
+    BitBtnMacAddress.Enabled:=True;
     EditBridgeIpv6.Enabled:=True;
     EditIpv6Prefix.Enabled:=True;
     EditIpv6Prefix.Text:=Ipv6Prefix;
@@ -694,6 +692,7 @@ begin
     BitBtnCalculateIpv6.Enabled:=False;
     CheckBoxUseIpv6.Checked:=False;
     EditBridgeMac.Enabled:=False;
+    BitBtnMacAddress.Enabled:=False;
     EditBridgeIpv6.Enabled:=False;
     EditIpv6Prefix.Enabled:=False;
   end;

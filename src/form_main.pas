@@ -92,6 +92,8 @@ type
     procedure AddDevice(Sender: TObject);
     procedure CopyVmNameClick(Sender: TObject);
     procedure CopyComCommandClick(Sender: TObject);
+    procedure CopyIpv4AddressClick(Sender: TObject);
+    procedure CopyIpv6AddressClick(Sender: TObject);
     procedure CreateVmClick(Sender: TObject);
     procedure EditDevice(Sender: TObject);
     procedure EditVirtualMachineInfo(Sender: TObject);
@@ -258,6 +260,8 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[3].ImageIndex:=3;
   VirtualMachinesPopup.PopupMenu.Items[5].ImageIndex:=8;
   VirtualMachinesPopup.PopupMenu.Items[6].ImageIndex:=7;
+  VirtualMachinesPopup.PopupMenu.Items[7].ImageIndex:=9;
+  VirtualMachinesPopup.PopupMenu.Items[8].ImageIndex:=9;
 
   VirtualMachinesPopup.PopupMenu.Items[0].OnClick:=@SpeedButtonAddVmClick;
   VirtualMachinesPopup.PopupMenu.Items[1].OnClick:=@EditVirtualMachineInfo;
@@ -265,6 +269,8 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[3].OnClick:=@RemoteDesktopProtocolVm;
   VirtualMachinesPopup.PopupMenu.Items[5].OnClick:=@CopyVmNameClick;
   VirtualMachinesPopup.PopupMenu.Items[6].OnClick:=@CopyComCommandClick;
+  VirtualMachinesPopup.PopupMenu.Items[7].OnClick:=@CopyIpv4AddressClick;
+  VirtualMachinesPopup.PopupMenu.Items[8].OnClick:=@CopyIpv6AddressClick;
 
   // Devices Popup Menu
   DevicesPopup:= TDevicesPopupMenu.Create(FormBhyveManager);
@@ -959,6 +965,10 @@ begin
   end;
 end;
 
+{
+  This procedure is called to show us the copy status of image files while it
+  is not finishedd.
+}
 procedure TFormBhyveManager.AppShowStatus(Status: Integer);
 var
   total : Int64;
@@ -969,6 +979,9 @@ begin
   StatusBarBhyveManager.SimpleText:='Copying '+total.ToString+' MB from image...';
 end;
 
+{
+  This procedure is called when copy of image file is finished.
+}
 procedure TFormBhyveManager.AppEndStatus(Status: Integer; AppName: String);
 var
   total : Int64;
@@ -1634,6 +1647,9 @@ begin
   end;
 end;
 
+{
+  This procedure is used to copy virtual machine name to desktop clipboard.
+}
 procedure TFormBhyveManager.CopyVmNameClick(Sender: TObject);
 begin
   if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Level <> 0) then
@@ -1645,6 +1661,9 @@ begin
   end;
 end;
 
+{
+  This procedure is used to copy com connection command to desktop clipboard.
+}
 procedure TFormBhyveManager.CopyComCommandClick(Sender: TObject);
 var
   ComDevice : String;
@@ -1676,6 +1695,28 @@ begin
     else if ComDevice.Contains('tcp=') and ComDevice.Contains('[') then
       Clipboard.AsText:='netcat -6 ::1 '+ExtractPortValue(ComDevice);
     {$endif}
+  end;
+end;
+
+{
+  This procedure is used to copy virtual machiine IPv4 address to desktop clipboard.
+}
+procedure TFormBhyveManager.CopyIpv4AddressClick(Sender: TObject);
+begin
+  if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Level <> 0) then
+  begin
+    Clipboard.AsText:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).ipaddress;
+  end;
+end;
+
+{
+  This procedure is used to copy virtual machiine IPv6 address to desktop clipboard.
+}
+procedure TFormBhyveManager.CopyIpv6AddressClick(Sender: TObject);
+begin
+  if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Level <> 0) then
+  begin
+    Clipboard.AsText:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).ip6address;
   end;
 end;
 
@@ -3195,6 +3236,7 @@ var
   Path : String = '.path';
   PciSlot : String;
   SeedRunCmd : String;
+  SeedNetwork : String;
   MyAppThread : AppProgressBarThread;
 begin
   if FormVmCreate.FormValidate() then
@@ -3210,6 +3252,7 @@ begin
       SeedImageConfig:=TStringList.Create;
 
       SeedRunCmd:=EmptyStr;
+      SeedNetwork:=EmptyStr;
 
       if UseZfs = 'yes' then
       begin
@@ -3414,6 +3457,18 @@ begin
           CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data', GetCurrentUserName());
           SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/meta-data');
 
+          if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
+          begin
+            SeedImageConfig.LoadFromFile(DatadirPath+'templates/network-config');
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%MACADDRESS%%', MacAddress, [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP4ADDRESS%%', FormVmCreate.EditIpv4Address.Text , [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY4%%', FormVmCreate.EditGateway.Text , [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS4SERVERS%%', FormVmCreate.EditDNS.Text , [rfReplaceAll]);
+
+            CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config', GetCurrentUserName());
+            SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config');
+          end;
+
           CreateFile(FormVmCreate.EditVmFolderPath.Text+'/seed.iso', GetCurrentUserName());
           CreateSeedIso(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/', FormVmCreate.EditVmFolderPath.Text+'/seed.iso');
 
@@ -3510,7 +3565,17 @@ begin
 
       if UseDnsmasq = 'yes' then
       begin
-        IpAddress:=GetNewIpAddress(GetSubnet);
+        if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
+        begin
+          IpAddress:=FormVmCreate.EditIpv4Address.Text;
+          AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
+        end
+        else
+        begin
+          IpAddress:=GetNewIpAddress(GetSubnet);
+          AddDnsmasqDhcpHostEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
+        end;
+
         NewVMConfig.SetOption('general','ipaddress', IpAddress );
 
         if (UseIpv6 = 'yes') and (FormVmCreate.CheckBoxIpv6Address.Checked) then
@@ -3521,7 +3586,6 @@ begin
           AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, Ip6Address, MacAddress);
         end;
 
-        AddDnsmasqDhcpHostEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
         RestartService('dnsmasq');
       end;
 
@@ -3923,6 +3987,10 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[5].Enabled:=False;
         // Copy cu/netcat command to virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[6].Enabled:=False;
+        // Copy IPv4 address
+        VirtualMachinesPopup.PopupMenu.Items.Items[7].Enabled:=False;
+        // Copy IPv6 address
+        VirtualMachinesPopup.PopupMenu.Items.Items[8].Enabled:=False;
 
         VirtualMachinesPopup.PopupMenu.PopUp;
       end
@@ -3940,6 +4008,11 @@ begin
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=True
         else
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
+
+        if TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).ipv6 then
+          VirtualMachinesPopup.PopupMenu.Items.Items[8].Enabled:=True
+        else
+          VirtualMachinesPopup.PopupMenu.Items.Items[8].Enabled:=False;
 
         VirtualMachinesPopup.PopupMenu.PopUp;
       end;
