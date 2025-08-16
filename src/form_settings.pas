@@ -548,7 +548,7 @@ begin
 
     SetSwtpmCmd(FileNameEditSwtpm.FileName);
     SetSwtpmIoctlCmd(FileNameEditSwtpmIoctl.FileName);
-    SetQemuImgCmd(FileNameEditBhyve.FileName);
+    SetQemuImgCmd(FileNameEditQemuImg.FileName);
 
     SetVncviewerCmd(FileNameEditVncviewer.FileName);
     SetXfreerdpCmd(FileNameEditXfreerdp.FileName);
