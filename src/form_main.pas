@@ -3251,6 +3251,8 @@ begin
       NewBhyveConfig:=TStringList.Create;
       SeedImageConfig:=TStringList.Create;
 
+      IpAddress:=EmptyStr;
+      Ip6Address:=EmptyStr;
       SeedRunCmd:=EmptyStr;
       SeedNetwork:=EmptyStr;
 
@@ -3570,20 +3572,18 @@ begin
       NewVMConfig.SetOption('general','image', PtrInt(FormVmCreate.ComboBoxSystemVersion.Items.Objects[FormVmCreate.ComboBoxSystemVersion.ItemIndex]).ToString);
       NewVMConfig.SetOption('general','rdp', 'False');
 
+      if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
+        IpAddress:=FormVmCreate.EditIpv4Address.Text;
+
       if UseDnsmasq = 'yes' then
       begin
         if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
-        begin
-          IpAddress:=FormVmCreate.EditIpv4Address.Text;
-          AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
-        end
+          AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress)
         else
         begin
           IpAddress:=GetNewIpAddress(GetSubnet);
           AddDnsmasqDhcpHostEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress);
         end;
-
-        NewVMConfig.SetOption('general','ipaddress', IpAddress );
 
         if (UseIpv6 = 'yes') and (FormVmCreate.CheckBoxIpv6Address.Checked) then
         begin
@@ -3595,6 +3595,9 @@ begin
 
         RestartService('dnsmasq');
       end;
+
+      if not (IpAddress = EmptyStr) then
+        NewVMConfig.SetOption('general','ipaddress', IpAddress );
 
       FormVmCreate.Hide;
 
