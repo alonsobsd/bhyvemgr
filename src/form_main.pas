@@ -3506,6 +3506,13 @@ begin
             SeedImageConfig.LoadFromFile(FormVmCreate.FileNameEditNetworkConfig.FileName);
             SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%MACADDRESS%%', MacAddress, [rfReplaceAll]);
 
+            if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
+            begin
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP4ADDRESS%%', FormVmCreate.EditIpv4Address.Text , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY4%%', FormVmCreate.EditGateway.Text , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS4SERVERS%%', FormVmCreate.EditDNS.Text , [rfReplaceAll]);
+            end;
+
             CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config', GetCurrentUserName());
             SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config');
           end;

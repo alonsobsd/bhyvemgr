@@ -47,7 +47,6 @@ type
     BitBtnDownload: TBitBtn;
     BitBtnCreateVm: TBitBtn;
     BitBtnSshPaste: TBitBtn;
-    CheckBoxUseStaticIpv4: TCheckBox;
     CheckBoxImageUseSudo: TCheckBox;
     CheckBoxImageMinimal: TCheckBox;
     CheckBoxImageFiles: TCheckBox;
@@ -56,14 +55,15 @@ type
     CheckBoxOnlyLocalhost: TCheckBox;
     CheckBoxUEFIBootvars: TCheckBox;
     CheckBoxUseMedia: TCheckBox;
+    CheckBoxUseStaticIpv4: TCheckBox;
     CheckBoxWaitVNC: TCheckBox;
     ComboBoxSystemType: TComboBox;
     ComboBoxSystemVersion: TComboBox;
     ComboBoxVirtualDeviceType: TComboBox;
     ComboBoxVirtualStorageType: TComboBox;
-    EditIpv4Address: TEdit;
-    EditGateway: TEdit;
     EditDNS: TEdit;
+    EditGateway: TEdit;
+    EditIpv4Address: TEdit;
     EditUrlImage: TEdit;
     EditUsername: TEdit;
     EditSshPubKey: TEdit;
@@ -77,6 +77,7 @@ type
     FileNameEditNetworkConfig: TFileNameEdit;
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
+    GroupBoxStaticIPv4: TGroupBox;
     GroupBoxDownloadImage: TGroupBox;
     GroupBoxSelectImage: TGroupBox;
     GroupBoxNewVirtualDisk: TGroupBox;
@@ -227,12 +228,12 @@ begin
 
   CheckBoxImageMinimal.Checked:=False;
   CheckBoxImageFiles.Checked:=False;
+  CheckBoxUseStaticIpv4.Checked:=False;
 
   EditUsername.Clear;
   EditSshPubKey.Clear;
   CheckBoxImageUseSudo.Checked:=False;
 
-  CheckBoxUseStaticIpv4.Checked:=False;
   EditIpv4Address.Enabled:=False;
   EditIpv4Address.Clear;
   EditGateway.Enabled:=False;
@@ -510,33 +511,6 @@ begin
         Result:=False;
         Exit;
       end;
-      if CheckBoxUseStaticIpv4.Checked then
-      begin
-        if (Trim(EditIpv4Address.Text) = EmptyStr) or not CheckCidrRange(EditIpv4Address.Text+'/32') then
-        begin
-          StatusBarVmCreate.Font.Color:=clRed;
-          StatusBarVmCreate.SimpleText:='IPv4 address is not valid.';
-
-          Result:=False;
-          Exit;
-        end;
-        if (Trim(EditGateway.Text) = EmptyStr) or not CheckCidrRange(EditGateway.Text+'/32') then
-        begin
-          StatusBarVmCreate.Font.Color:=clRed;
-          StatusBarVmCreate.SimpleText:='Gateway is not valid.';
-
-          Result:=False;
-          Exit;
-        end;
-        if Trim(EditDNS.Text) = EmptyStr then
-        begin
-          StatusBarVmCreate.Font.Color:=clRed;
-          StatusBarVmCreate.SimpleText:='DNS Servers is not valid.';
-
-          Result:=False;
-          Exit;
-        end;
-      end;
       if not FileExists(DatadirPath+'templates/user-data') or
          not FileExists(DatadirPath+'templates/meta-data') or
          not FileExists(DatadirPath+'templates/network-config') then
@@ -567,6 +541,34 @@ begin
         Result:=False;
         Exit;
       end;
+    end;
+  end;
+
+  if CheckBoxUseStaticIpv4.Checked then
+  begin
+    if (Trim(EditIpv4Address.Text) = EmptyStr) or not CheckCidrRange(EditIpv4Address.Text+'/32') then
+    begin
+      StatusBarVmCreate.Font.Color:=clRed;
+      StatusBarVmCreate.SimpleText:='IPv4 address is not valid.';
+
+      Result:=False;
+      Exit;
+    end;
+    if (Trim(EditGateway.Text) = EmptyStr) or not CheckCidrRange(EditGateway.Text+'/32') then
+    begin
+      StatusBarVmCreate.Font.Color:=clRed;
+      StatusBarVmCreate.SimpleText:='Gateway is not valid.';
+
+      Result:=False;
+      Exit;
+    end;
+    if Trim(EditDNS.Text) = EmptyStr then
+    begin
+      StatusBarVmCreate.Font.Color:=clRed;
+      StatusBarVmCreate.SimpleText:='DNS Servers is not valid.';
+
+      Result:=False;
+      Exit;
     end;
   end;
 
@@ -609,7 +611,7 @@ procedure TFormVmCreate.CheckBoxUseStaticIpv4Change(Sender: TObject);
 begin
   if CheckBoxUseStaticIpv4.Checked then
   begin
-    CheckBoxImageFiles.Checked:=False;
+    GroupBoxStaticIPv4.Enabled:=True;
     EditIpv4Address.Enabled:=True;
     EditGateway.Enabled:=True;
     EditDNS.Enabled:=True;
@@ -620,6 +622,7 @@ begin
   end
   else
   begin
+    GroupBoxStaticIPv4.Enabled:=False;
     EditIpv4Address.Enabled:=False;
     EditGateway.Enabled:=False;
     EditDNS.Enabled:=False;
@@ -648,6 +651,13 @@ begin
 
   FileNameEditImageFile.Clear;
   StatusBarVmCreate.SimpleText:=EmptyStr;
+
+  if not CheckUrl(EditUrlImage.Text) then
+  begin
+    StatusBarVmCreate.Font.Color:=clRed;
+    StatusBarVmCreate.SimpleText:='Enter a valid URL: only http://, https://, or file:// are supported.';
+    Exit;
+  end;
 
   if not FileExists(CloudVmImagesPath) then
     CreateDirectory(CloudVmImagesPath, GetCurrentUserName());
@@ -723,6 +733,7 @@ procedure TFormVmCreate.CheckBoxImageFilesChange(Sender: TObject);
 begin
   if CheckBoxImageFiles.Checked then
   begin
+    CheckBoxUseStaticIpv4.Enabled:=True;
     CheckBoxImageMinimal.Checked:=False;
     GroupBoxMinimalConfiguration.Enabled:=False;
     GroupBoxFileConfig.Enabled:=True;
@@ -731,6 +742,11 @@ begin
   end
   else
   begin
+    if not CheckBoxImageMinimal.Checked then
+    begin
+      CheckBoxUseStaticIpv4.Enabled:=False;
+      CheckBoxUseStaticIpv4.Checked:=False;
+    end;
     GroupBoxFileConfig.Enabled:=False;
     CheckBoxUseMedia.Enabled:=True;
   end;
@@ -740,6 +756,7 @@ procedure TFormVmCreate.CheckBoxImageMinimalChange(Sender: TObject);
 begin
   if CheckBoxImageMinimal.Checked then
   begin
+    CheckBoxUseStaticIpv4.Enabled:=True;
     CheckBoxImageFiles.Checked:=False;
     GroupBoxMinimalConfiguration.Enabled:=True;
     GroupBoxFileConfig.Enabled:=False;
@@ -748,6 +765,11 @@ begin
   end
   else
   begin
+    if not CheckBoxImageFiles.Checked then
+    begin
+      CheckBoxUseStaticIpv4.Enabled:=False;
+      CheckBoxUseStaticIpv4.Checked:=False;
+    end;
     GroupBoxMinimalConfiguration.Enabled:=False;
     CheckBoxUseMedia.Enabled:=True;
   end;

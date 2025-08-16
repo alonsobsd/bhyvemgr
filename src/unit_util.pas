@@ -51,6 +51,7 @@ function CheckIpv6Address(Address: String):Boolean;
 function CheckMacAddress(Mac: String):Boolean;
 function CheckNetworkDeviceName(Name: String):Boolean;
 function CheckSysctl(Name: String):String;
+function CheckUrl(Url: String):Boolean;
 function CheckUserName(Name: String):Boolean;
 function CheckVmName(Name: String):Boolean;
 function CheckVmRunning(Name: String):Integer;
@@ -981,6 +982,22 @@ begin
     else
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CheckSysCtl : '+ Name+' : '+output);
   end;
+end;
+
+function CheckUrl(Url: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^(https?|file):\/\/');
+
+  if RegText.Exec(Url) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
 end;
 
 function CheckUserName(Name: String): Boolean;

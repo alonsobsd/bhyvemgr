@@ -1,0 +1,11 @@
+version: 2
+ethernets:
+  net0:
+    match:
+      macaddress: %%MACADDRESS%%
+    dhcp4: false
+    addresses:
+      - %%IP4ADDRESS%%/24
+    gateway4: %%GATEWAY4%%
+    nameservers:
+      addresses: [%%DNS4SERVERS%%]
