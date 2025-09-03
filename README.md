@@ -19,10 +19,10 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - initial swtpm support on FreeBSD >= 1403000
 - ipv4/ipv6 support
 - aarch64 and amd64 support
+- i18n support
 - and more
 
 # TODO
-- i18n support
 - Allow change VM (zfs/ufs) directory to custom ones
 
 # Bhyvemgr dependencies
