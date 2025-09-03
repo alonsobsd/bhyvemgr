@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ComCtrls, LCLType, ExtCtrls, SpinEx, Clipbrd ,unit_thread;
+  Buttons, ComCtrls, LCLType, ExtCtrls, SpinEx, Clipbrd, LCLTranslator, unit_thread;
 
 type
 
@@ -158,7 +158,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_component, unit_global, unit_util;
+  unit_component, unit_global, unit_util, unit_language;
 
 { TFormVmCreate }
 
@@ -322,7 +322,7 @@ begin
           MyAppThread := AppProgressBarThread.Create(QemuImgCmd, ['convert', '-O', 'raw', '-S', '0', ImageFile, CloudVmImagesPath+'/'+NewRemoteFile]);
 
           LabelDownloadStatus.Visible:=True;
-          LabelDownloadStatus.Caption:='Converting...';
+          LabelDownloadStatus.Caption:=convert_status;
 
           ProgressBarImage.Style:=pbstMarquee;
 
@@ -335,7 +335,7 @@ begin
         else
         begin
           StatusBarVmCreate.Font.Color:=clRed;
-          StatusBarVmCreate.SimpleText:=ExtractFileName(QemuImgCmd) + ' can not retrieve '+ImageFile+' file size.';
+          StatusBarVmCreate.SimpleText:=Format(retrieve_size, [ExtractFileName(QemuImgCmd), ImageFile]);
         end;
       end;
     '.img',
@@ -347,7 +347,7 @@ begin
         if FileExists(CloudVmImagesPath+'/'+RemoteFile) and not (CheckFileType(CloudVmImagesPath+'/'+RemoteFile) = 'dos/mbr') then
         begin
           StatusBarVmCreate.Font.Color:=clTeal;
-          StatusBarVmCreate.SimpleText:=RemoteFile + ' could not be compatible with bhyve.';
+          StatusBarVmCreate.SimpleText:=Format(compatible_image, [RemoteFile]);
         end;
 
         SpinEditExDiskSize.Text:=GetFileSize(CloudVmImagesPath+'/'+RemoteFile,'G').ToString;
@@ -370,7 +370,7 @@ begin
           MyAppThread := AppProgressBarThread.Create(XzCmd, ['-dk', ImageFile]);
 
           LabelDownloadStatus.Visible:=True;
-          LabelDownloadStatus.Caption:='Extracting...';
+          LabelDownloadStatus.Caption:=extract_status;
 
           RemoteFile:=NewRemoteFile;
 
@@ -381,7 +381,7 @@ begin
         else
         begin
           StatusBarVmCreate.Font.Color:=clRed;
-          StatusBarVmCreate.SimpleText:=ExtractFileName(XzCmd) + ' can not retrieve '+ImageFile+' file size.';
+          StatusBarVmCreate.SimpleText:=Format(retrieve_size, [ExtractFileName(XzCmd), ImageFile]);
         end;
       end;
   end;
@@ -419,7 +419,7 @@ begin
       ProgressBarImage.Position:=ProgressBarImage.Max;
     end;
 
-    LabelDownloadStatus.Caption:='Done';
+    LabelDownloadStatus.Caption:=done_status;
 
     Sleep(100);
 
@@ -428,7 +428,7 @@ begin
   else if (Status > 0) then
   begin
     StatusBarVmCreate.Font.Color:=clRed;
-    StatusBarVmCreate.SimpleText:=AppName+' process generated an error: '+Status.ToString;
+    StatusBarVmCreate.SimpleText:=Format(error_status, [AppName, Status.ToString]);
   end;
 end;
 
@@ -439,7 +439,7 @@ begin
   if (ComboBoxSystemType.ItemIndex=-1) then
   begin
     StatusBarVmCreate.Font.Color:=clRed;
-    StatusBarVmCreate.SimpleText:='You must select an operating system type. e.g, BSD, Linux, etc.';
+    StatusBarVmCreate.SimpleText:=check_system_type;
 
     Result:=False;
     Exit;
@@ -447,7 +447,7 @@ begin
   if (ComboBoxSystemVersion.ItemIndex=-1) then
   begin
     StatusBarVmCreate.Font.Color:=clRed;
-    StatusBarVmCreate.SimpleText:='You must select an operating system version. e.g, FreeBSD 15.x, etc.';
+    StatusBarVmCreate.SimpleText:=check_system_version;
 
     Result:=False;
     Exit;
@@ -458,7 +458,7 @@ begin
     if (ComboBoxVirtualDeviceType.ItemIndex=-1) then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='You must select a virtual device type. e.g, ahci-hd, nvme, etc.';
+      StatusBarVmCreate.SimpleText:=check_device_type;
 
       Result:=False;
       Exit;
@@ -466,7 +466,7 @@ begin
     if (ComboBoxVirtualStorageType.ItemIndex=-1) then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='You must select a virtual storage type. e.g, image file, etc.';
+      StatusBarVmCreate.SimpleText:=check_storage_type;
 
       Result:=False;
       Exit;
@@ -478,7 +478,7 @@ begin
     if SpinEditExDiskSize.Value < GetFileSize(FileNameEditImageFile.FileName ,'G') then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='The virtual disk size can not be less than '+GetFileSize(FileNameEditImageFile.FileName ,'G').ToString+'G';
+      StatusBarVmCreate.SimpleText:=Format(check_disk_size, [GetFileSize(FileNameEditImageFile.FileName ,'G').ToString+'G']);
 
       Result:=False;
       Exit;
@@ -487,7 +487,7 @@ begin
     if not (FileExists(FileNameEditImageFile.FileName)) then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='The Cloud/VM image does not exist.';
+      StatusBarVmCreate.SimpleText:=check_image_path;
 
       Result:=False;
       Exit;
@@ -498,7 +498,7 @@ begin
       if not CheckUserName(EditUsername.Text) and (Trim(EditUsername.Text) = EmptyStr)  then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
-        StatusBarVmCreate.SimpleText:='Username is not valid.';
+        StatusBarVmCreate.SimpleText:=check_username;
 
         Result:=False;
         Exit;
@@ -506,7 +506,7 @@ begin
       if (Trim(EditSshPubKey.Text) = EmptyStr)  then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
-        StatusBarVmCreate.SimpleText:='SSH key can not be empty.';
+        StatusBarVmCreate.SimpleText:=check_ssh_key;
 
         Result:=False;
         Exit;
@@ -516,7 +516,7 @@ begin
          not FileExists(DatadirPath+'templates/network-config') then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
-        StatusBarVmCreate.SimpleText:='user-data, meta-data, or network-config are not available at templates directory.';
+        StatusBarVmCreate.SimpleText:=check_template_files;
 
         Result:=False;
         Exit;
@@ -528,7 +528,7 @@ begin
       if not FileExists(FileNameEditUserData.FileName)  then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
-        StatusBarVmCreate.SimpleText:='user-data file does not exist.';
+        StatusBarVmCreate.SimpleText:=check_userdata_file;
 
         Result:=False;
         Exit;
@@ -536,7 +536,7 @@ begin
       if not FileExists(FileNameEditMetaData.FileName)  then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
-        StatusBarVmCreate.SimpleText:='meta-data file does not exist.';
+        StatusBarVmCreate.SimpleText:=check_metadata_file;
 
         Result:=False;
         Exit;
@@ -549,7 +549,7 @@ begin
     if (Trim(EditIpv4Address.Text) = EmptyStr) or not CheckCidrRange(EditIpv4Address.Text+'/32') then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='IPv4 address is not valid.';
+      StatusBarVmCreate.SimpleText:=check_ipv4;
 
       Result:=False;
       Exit;
@@ -557,7 +557,7 @@ begin
     if (Trim(EditGateway.Text) = EmptyStr) or not CheckCidrRange(EditGateway.Text+'/32') then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='Gateway is not valid.';
+      StatusBarVmCreate.SimpleText:=check_gateway;
 
       Result:=False;
       Exit;
@@ -565,7 +565,7 @@ begin
     if Trim(EditDNS.Text) = EmptyStr then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='DNS Servers is not valid.';
+      StatusBarVmCreate.SimpleText:=check_dns;
 
       Result:=False;
       Exit;
@@ -577,7 +577,7 @@ begin
     if not FileExists(FileNameEditBootMedia.FileName) then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:='CD/DVD media does not exist.';
+      StatusBarVmCreate.SimpleText:=check_boot_media;
 
       Result:=False;
       Exit;
@@ -655,7 +655,7 @@ begin
   if not CheckUrl(EditUrlImage.Text) then
   begin
     StatusBarVmCreate.Font.Color:=clRed;
-    StatusBarVmCreate.SimpleText:='Enter a valid URL: only http://, https://, or file:// are supported.';
+    StatusBarVmCreate.SimpleText:=check_valid_url;
     Exit;
   end;
 
@@ -690,12 +690,12 @@ begin
             MyAppThread.Start;
 
             LabelDownloadStatus.Visible:=True;
-            LabelDownloadStatus.Caption:='Downloading...';
+            LabelDownloadStatus.Caption:=download_status;
           end
           else
           begin
             StatusBarVmCreate.Font.Color:=clRed;
-            StatusBarVmCreate.SimpleText:=ExtractFileName(FetchCmd) + ' can not retrieve '+ExtractFileName(EditUrlImage.Text)+' image file size.';
+            StatusBarVmCreate.SimpleText:=Format(retrieve_size, [ExtractFileName(FetchCmd), ExtractFileName(EditUrlImage.Text) ]);
           end;
         end
         else
@@ -705,17 +705,17 @@ begin
             RemoteFile:=RawFileName;
 
             LabelDownloadStatus.Visible:=True;
-            LabelDownloadStatus.Caption:='Done';
+            LabelDownloadStatus.Caption:=done_status;
           end;
           ConvertFileToRaw(RemoteFile);
         end;
       end;
   else
     LabelDownloadStatus.Visible:=True;
-    LabelDownloadStatus.Caption:='Nothing to do';
+    LabelDownloadStatus.Caption:=nothing_status;
 
     StatusBarVmCreate.Font.Color:=clRed;
-    StatusBarVmCreate.SimpleText:=ExtractFileName(EditUrlImage.Text) + ' file is not supported.';
+    StatusBarVmCreate.SimpleText:=Format(check_support_file, [ExtractFileName(EditUrlImage.Text)]);
   end;
 end;
 
@@ -795,14 +795,14 @@ begin
     PageControlVmCreate.ActivePageIndex:=0;
     EditVmName.SetFocus;
     StatusBarVmCreate.Font.Color:=clRed;
-    StatusBarVmCreate.SimpleText:='Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]';
+    StatusBarVmCreate.SimpleText:=check_vm_name;
   end;
   if not (GetNewVmName(EditVmName.Text)) then
   begin
     PageControlVmCreate.ActivePageIndex:=0;
     EditVmName.SetFocus;
     StatusBarVmCreate.Font.Color:=clRed;
-    StatusBarVmCreate.SimpleText:=EditVmName.Text + ' virtual machine name is not available';
+    StatusBarVmCreate.SimpleText:=Format(check_vm, [EditVmName.Text]);
   end
 end;
 
@@ -835,7 +835,7 @@ begin
     if not (CheckFileType(FileNameEditImageFile.FileName) = 'dos/mbr') then
     begin
       StatusBarVmCreate.Font.Color:=clTeal;
-      StatusBarVmCreate.SimpleText:=ExtractFileName(FileNameEditImageFile.FileName) + ' image could not be compatible with bhyve.';
+      StatusBarVmCreate.SimpleText:=Format(compatible_image, [ExtractFileName(FileNameEditImageFile.FileName)]);
     end
     else
     begin

@@ -4,7 +4,7 @@ object FormVmCreate: TFormVmCreate
   Top = 164
   Width = 733
   BorderStyle = bsSingle
-  Caption = 'FormVmCreate'
+  Caption = 'Bhyve Manager - Create virtual machine'
   ClientHeight = 733
   ClientWidth = 733
   Position = poDesktopCenter
@@ -1640,7 +1640,7 @@ object FormVmCreate: TFormVmCreate
           OnChange = CheckBoxImageMinimalChange
         end
         object CheckBoxImageFiles: TCheckBox
-          Left = 216
+          Left = 248
           Height = 22
           Top = 48
           Width = 159
@@ -1649,7 +1649,7 @@ object FormVmCreate: TFormVmCreate
           OnChange = CheckBoxImageFilesChange
         end
         object CheckBoxUseStaticIpv4: TCheckBox
-          Left = 384
+          Left = 488
           Height = 22
           Top = 48
           Width = 112

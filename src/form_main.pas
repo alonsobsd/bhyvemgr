@@ -36,13 +36,16 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, FileUtil, Graphics, Dialogs, StdCtrls, Menus, ExtCtrls,
-  ComCtrls, Buttons, RegExpr, StrUtils, unit_component, unit_device, unit_thread;
+  ComCtrls, Buttons, RegExpr, StrUtils, unit_component, unit_device, unit_thread, LCLTranslator,
+  Translations;
 
 type
 
   { TFormBhyveManager }
 
   TFormBhyveManager = class(TForm)
+    ComboBoxLanguage: TComboBox;
+    ImageLanguage: TImage;
     SpeedButtonAddVm: TSpeedButton;
     EditSystemType: TEdit;
     EditSystemVersion: TEdit;
@@ -70,6 +73,7 @@ type
     DeviceSettingsTreeView: TTreeView;
     GlobalSettingsTreeView: TTreeView;
     VirtualMachinesTreeView: TTreeView;
+    procedure ComboBoxLanguageChange(Sender: TObject);
     procedure ShowHideClick(Sender: TObject);
     procedure DeviceSettingsTreeViewDeletion(Sender: TObject; Node: TTreeNode);
     procedure FormActivate(Sender: TObject);
@@ -199,7 +203,7 @@ uses
   form_about, form_audio_device, form_change_value, form_console_device, form_display_device,
   form_hostbridge_device, form_input_device, form_lpc_device, form_network_device, form_passthru_device,
   form_rdp_connection, form_share_folder_device, form_storage_device, form_settings, form_vm_create,
-  form_vm_info, unit_configuration, unit_global, unit_util, Clipbrd, LazLogger;
+  form_vm_info, unit_configuration, unit_global, unit_util, unit_language, Clipbrd, LazLogger;
 
 { TFormBhyveManager }
 
@@ -214,18 +218,15 @@ begin
   DebugLogger.CloseLogFileBetweenWrites:= true;
   DebugLogger.LogName:= GetUserDir + '.config/bhyvemgr/bhyvemgr.log';
 
-  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyvemgr was started');
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '=debugln_bhyve_started);
 
   FormSettings:= TFormSettings.Create(FormBhyveManager);
   FormAbout:= TFormAbout.Create(FormBhyveManager);
   FormChangeValue:= TFormChangeValue.Create(FormBhyveManager);
   FormVMCreate:=TFormVmCreate.Create(FormBhyveManager);
-  FormVmCreate.Caption:=FormBhyveManagerCreateVmTitle;
   FormVmInfo:=TFormVmInfo.Create(FormBhyveManager);
-  FormVmInfo.Caption:=FormBhyveManagerEditVmInfoTitle;
   FormRdpConnection:=TFormRdpConnection.Create(FormBhyveManager);
 
-  FormBhyveManager.Caption:=FormBhyveManagerTitle;
   SettingsPageControl.TabIndex:=0;
 
   SystemImageList:=TSystemImageList.Create(FormBhyveManager);
@@ -309,6 +310,8 @@ begin
   VirtualMachineList := TStringList.Create;
 
   TmpDevicesStringList := TStringList.Create;
+
+  ComboBoxLanguage.ItemIndex:=ComboBoxLanguage.Items.IndexOf(Language);
 
   FillVirtualMachineList();
   FillDeviceCategoryList();
@@ -976,7 +979,7 @@ begin
   total:=ConvertFileSize(GetFileSize(DiskFile), 'M');
 
   StatusBarBhyveManager.Font.Color:=clTeal;
-  StatusBarBhyveManager.SimpleText:='Copying '+total.ToString+' MB from image...';
+  StatusBarBhyveManager.SimpleText:=Format(copy_status, [total.ToString]);
 end;
 
 {
@@ -991,21 +994,21 @@ begin
     total:=ConvertFileSize(GetFileSize(RemoteFile), 'M');
 
     StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText:='Copying '+total.ToString+' MB from image...';
+    StatusBarBhyveManager.SimpleText:=Format(copy_status, [total.ToString]);
 
     ResetTreeView(VirtualMachinesTreeView);
     VirtualMachinesTreeView.Items.Clear;
     FillVirtualMachineList();
 
     StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText:='A new '+FormVmCreate.EditVmName.Text+' virtual machine was created';
+    StatusBarBhyveManager.SimpleText:=Format(vm_create_status, [FormVmCreate.EditVmName.Text]);
 
     Sleep(100);
   end
   else if (Status > 0) then
   begin
     FormVmCreate.StatusBarVmCreate.Font.Color:=clRed;
-    FormVmCreate.StatusBarVmCreate.SimpleText:=FormVmCreate.EditVmName.Text+' VM : '+AppName+' process generated an error: '+Status.ToString;
+    FormVmCreate.StatusBarVmCreate.SimpleText:=Format(app_error_status, [FormVmCreate.EditVmName.Text, AppName, Status.ToString]);
   end;
 end;
 
@@ -1026,7 +1029,7 @@ begin
     FormChangeValue.SettingType:=SettingName;
     FillComboBooleanType(FormChangeValue.ComboBoxValue);
     FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-    FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+    FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
     FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
     FormChangeValue.Visible:=True;
   end;
@@ -1048,7 +1051,7 @@ begin
           FormChangeValue.SettingType:=SettingName;
           FillComboIntegerType(FormChangeValue.ComboBoxValue, 1, Trim(CheckSysctl('hw.vmm.maxcpu')).ToInteger, 1);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1062,7 +1065,7 @@ begin
           FormChangeValue.ComboBoxValue.Items.Add('0');
           FillComboIntegerType(FormChangeValue.ComboBoxValue, FirstGdbPortNumber, FirstGdbPortNumber + 100, 1);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1083,7 +1086,7 @@ begin
           FormChangeValue.SettingType:=SettingName;
           FillComboBootrom(FormChangeValue.ComboBoxValue);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1097,7 +1100,7 @@ begin
           FormChangeValue.SettingType:=SettingName;
           FillComboBootvars(FormChangeValue.ComboBoxValue);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1120,7 +1123,7 @@ begin
             FormChangeValue.ComboBoxValue.Items.Add('tcp=[::1]:'+GetNewComPortNumber());
           end;
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(ExtractFileName(extractVarValue(GlobalSettingsTreeView.Selected.Text)));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1134,7 +1137,7 @@ begin
           FormChangeValue.SettingType:=SettingName;
           FillComboKeyboardLayout(FormChangeValue.ComboBoxValue);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1166,7 +1169,7 @@ begin
               end;
           end;
 
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1179,7 +1182,7 @@ begin
           FormChangeValue.SettingType:=SettingName;
           FillComboTpmType(FormChangeValue.ComboBoxValue);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1192,7 +1195,7 @@ begin
           FormChangeValue.SettingType:=SettingName;
           FillComboTpmVersion(FormChangeValue.ComboBoxValue);
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1204,7 +1207,7 @@ begin
           FormChangeValue.SettingType:=SettingName;
           FormChangeValue.ShowSpinEx(256, Trim(CheckSysctl('hw.usermem')).ToInt64, 256);
           FormChangeValue.SpinEditExValue.Value:=extractVarValue(GlobalSettingsTreeView.Selected.Text).Replace('M', EmptyStr).ToInt64;
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text)+' in MB';
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text)+' (MB)';
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1241,7 +1244,7 @@ begin
 
           FormChangeValue.SettingType:=SettingName;
           FormChangeValue.ComboBoxValue.ItemIndex:=FormChangeValue.ComboBoxValue.Items.IndexOf(extractVarValue(GlobalSettingsTreeView.Selected.Text));
-          FormChangeValue.Caption:='Editing '+extractVarName(GlobalSettingsTreeView.Selected.Text);
+          FormChangeValue.Caption:=extractVarName(GlobalSettingsTreeView.Selected.Text);
           FormChangeValue.BitBtnSave.OnClick:=@GlobalChangeValue;
           FormChangeValue.Visible:=True;
         end;
@@ -1256,9 +1259,9 @@ end;
 procedure TFormBhyveManager.GlobalChangeValue(Sender: TObject);
 begin
   if (FormChangeValue.SettingType = 'memory.size') then
-    StatusBarBhyveManager.SimpleText:=FormChangeValue.SettingType+': value has been changed to '+FormChangeValue.SpinEditExValue.Text+'M'
+    StatusBarBhyveManager.SimpleText:=Format(edit_global_status+'M', [FormChangeValue.SettingType, FormChangeValue.SpinEditExValue.Text])
   else
-    StatusBarBhyveManager.SimpleText:=FormChangeValue.SettingType+': value has been changed to '+FormChangeValue.ComboBoxValue.Text;
+    StatusBarBhyveManager.SimpleText:=Format(edit_global_status, [FormChangeValue.SettingType, FormChangeValue.ComboBoxValue.Text]);
 
   if (FormChangeValue.SettingType = 'bootrom') then
   begin
@@ -1328,7 +1331,7 @@ procedure TFormBhyveManager.FormActivate(Sender: TObject);
 begin
   if NewConfig then
   begin
-    MessageDlg('A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press "Save settings button" if everything is ok.', mtInformation, [mbOk], 0);
+    MessageDlg(configuration_notice, mtInformation, [mbOk], 0);
     SetNewConfig(False);
     FormSettings.Show;
   end;
@@ -1346,7 +1349,7 @@ var
   CloseMessage : String;
   Node : TTreeNode;
 begin
-  CloseMessage := 'bhyvemgr detects VMs running. You must stop them before of close this app.'+sLineBreak+sLineBreak+'Do you really want to close?';
+  CloseMessage := check_vm_running;
 
   flag:=False;
 
@@ -1408,6 +1411,41 @@ begin
    FormBhyveManager.Hide;
 end;
 
+procedure TFormBhyveManager.ComboBoxLanguageChange(Sender: TObject);
+var
+  ConfigFile : ConfigurationClass;
+begin
+  ConfigFile:=ConfigurationClass.Create(GetUserDir + '.config/bhyvemgr/config.conf');
+
+  SetDefaultLang(ComboBoxLanguage.Text, DatadirPath+'languages');
+  Translations.TranslateUnitResourceStrings('LCLStrConsts', DatadirPath+'languages/lcl/lclstrconsts.'+ComboBoxLanguage.Text+'.po');
+
+  TrayIcon.TrayIcon.PopUpMenu.Items[0].Caption:=popup_tray_show_hide;
+  TrayIcon.TrayIcon.PopUpMenu.Items[1].Caption:=popup_tray_quit;
+
+  GlobalSettingsPopup.PopupMenu.Items[0].Caption:=popup_edit_global_setting;
+
+  VirtualMachinesPopup.PopupMenu.Items[0].Caption:=popup_add_vm;
+  VirtualMachinesPopup.PopupMenu.Items[1].Caption:=popup_modify_vm;
+  VirtualMachinesPopup.PopupMenu.Items[2].Caption:=popup_remove_vm;
+  VirtualMachinesPopup.PopupMenu.Items[3].Caption:=popup_rdp_vm;
+  VirtualMachinesPopup.PopupMenu.Items[5].Caption:=popup_copy_vm_name;
+  VirtualMachinesPopup.PopupMenu.Items[6].Caption:=popup_copy_com1_command;
+  VirtualMachinesPopup.PopupMenu.Items[7].Caption:=popup_copy_ipv4;
+  VirtualMachinesPopup.PopupMenu.Items[8].Caption:=popup_copy_ipv6;
+
+  DevicesPopup.PopupMenu.Items[0].Caption:=popup_add_device;
+  DevicesPopup.PopupMenu.Items[1].Caption:=popup_edit_device;
+  DevicesPopup.PopupMenu.Items[2].Caption:=popup_delete_device;
+
+  ConfigFile.SetOption('general', 'language', ComboBoxLanguage.Text);
+  SetLanguage(ComboBoxLanguage.Text);
+
+  StatusBarBhyveManager.SimpleText:=EmptyStr;
+
+  ConfigFile.Free;
+end;
+
 {
   This procedure is used to show "about" form when it is called from main menu.
 }
@@ -1439,7 +1477,7 @@ end;
 }
 procedure TFormBhyveManager.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyvemgr was finished');
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_bhyve_finished);
 
   GlobalNode.Free;
   GlobalSettingTypeList.Free;
@@ -1468,6 +1506,7 @@ end;
 }
 procedure TFormBhyveManager.AddDevice(Sender: TObject);
 var
+  i : Integer;
   Node : TTreeNode;
   PciSlot : String;
 begin
@@ -1536,6 +1575,12 @@ begin
             FormInputDevice.BitBtnSave.OnClick:=@SaveInputDevice;
             FormInputDevice.FormStyle:=fsSystemStayOnTop;
             FormInputDevice.LoadDefaultValues();
+
+            for i:=0 to DeviceSettingsTreeView.Items.FindTopLvlNode('Input').Count-1 do
+            begin
+              FormInputDevice.ComboBoxInputDevice.Items.Delete(FormInputDevice.ComboBoxInputDevice.Items.IndexOf(TVirtioInputDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Input').Items[i].Data).path));
+            end;
+
             FormInputDevice.FormAction:='Add';
             FormInputDevice.Show;
           end;
@@ -1575,6 +1620,12 @@ begin
             FormPassthruDevice.BitBtnSave.OnClick:=@SavePassthruDevice;
             FormPassthruDevice.FormStyle:=fsSystemStayOnTop;
             FormPassthruDevice.LoadDefaultValues();
+
+            for i:=0 to DeviceSettingsTreeView.Items.FindTopLvlNode('Passthru').Count-1 do
+            begin
+              FormPassthruDevice.ComboBoxDevice.Items.Delete(FormPassthruDevice.ComboBoxDevice.Items.IndexOf(TPassthruDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Passthru').Items[i].Data).pptdev));
+            end;
+
             FormPassthruDevice.FormAction:='Add';
             FormPassthruDevice.Show;
           end;
@@ -2090,7 +2141,7 @@ var
 begin
   if (Assigned(DeviceSettingsTreeView.Selected)) and (DeviceSettingsTreeView.Selected.Level = 1) then
   begin
-    if (MessageDlg('Virtual machine devices', 'This action will remove all files/resources created by this device. Do you want remove '+ExtractVarValue(DeviceSettingsTreeView.Selected.Text)+' device?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    if (MessageDlg(device_remove_title, Format(device_remove_notice, [ExtractVarValue(DeviceSettingsTreeView.Selected.Text)]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
     begin
 
       case DeviceSettingsTreeView.Selected.Parent.Text of
@@ -2289,7 +2340,7 @@ begin
  else
  begin
    FormAudioDevice.StatusBarAudioDevice.Font.Color:=clRed;
-   FormAudioDevice.StatusBarAudioDevice.SimpleText:='Audio device can not added/updated.';
+   FormAudioDevice.StatusBarAudioDevice.SimpleText:=Format(device_status, ['Audio']);
  end;
 end;
 
@@ -2350,7 +2401,7 @@ begin
  else
  begin
    FormConsoleDevice.StatusBarConsoleDevice.Font.Color:=clRed;
-   FormConsoleDevice.StatusBarConsoleDevice.SimpleText:='Console device can not added/updated.';
+   FormConsoleDevice.StatusBarConsoleDevice.SimpleText:=Format(device_status, ['Console']);
  end;
 end;
 
@@ -2421,7 +2472,7 @@ begin
  else
  begin
    FormDisplayDevice.StatusBarDisplayDevice.Font.Color:=clRed;
-   FormDisplayDevice.StatusBarDisplayDevice.SimpleText:='Display device can not added/updated.';
+   FormDisplayDevice.StatusBarDisplayDevice.SimpleText:=Format(device_status, ['Display']);
  end;
 end;
 
@@ -2468,7 +2519,7 @@ begin
  else
  begin
    FormHostbridgeDevice.StatusBarHostbridgeDevice.Font.Color:=clRed;
-   FormHostbridgeDevice.StatusBarHostbridgeDevice.SimpleText:='Hostbridge device can not added/updated.';
+   FormHostbridgeDevice.StatusBarHostbridgeDevice.SimpleText:=Format(device_status, ['Hostbridge']);
  end;
 end;
 
@@ -2514,7 +2565,7 @@ begin
  else
  begin
    FormInputDevice.StatusBarInputDevice.Font.Color:=clRed;
-   FormInputDevice.StatusBarInputDevice.SimpleText:='Input device can not added/updated.';
+   FormInputDevice.StatusBarInputDevice.SimpleText:=Format(device_status, ['Input']);
  end;
 end;
 
@@ -2655,7 +2706,7 @@ begin
  else
  begin
    FormLpcDevice.StatusBarLpcDevice.Font.Color:=clRed;
-   FormLpcDevice.StatusBarLpcDevice.SimpleText:='LPC device can not added/updated.';
+   FormLpcDevice.StatusBarLpcDevice.SimpleText:=Format(device_status, ['LPC']);;
  end;
 end;
 
@@ -2718,7 +2769,7 @@ begin
  else
  begin
    FormNetworkDevice.StatusBarNetworkDevice.Font.Color:=clRed;
-   FormNetworkDevice.StatusBarNetworkDevice.SimpleText:='Network device can not added/updated.';
+   FormNetworkDevice.StatusBarNetworkDevice.SimpleText:=Format(device_status, ['Network']);
  end;
 end;
 
@@ -2777,7 +2828,7 @@ begin
  else
  begin
     FormPassthruDevice.StatusBarPassthruDevice.Font.Color:=clRed;
-    FormPassthruDevice.StatusBarPassthruDevice.SimpleText:='Passthru device can not added/updated.';
+    FormPassthruDevice.StatusBarPassthruDevice.SimpleText:=Format(device_status, ['Passthru']);
  end;
 end;
 
@@ -2838,7 +2889,7 @@ begin
  else
  begin
    FormShareFolderDevice.StatusBarSharefolderDevice.Font.Color:=clRed;
-   FormShareFolderDevice.StatusBarSharefolderDevice.SimpleText:='Sharefolder device can not added/updated.';
+   FormShareFolderDevice.StatusBarSharefolderDevice.SimpleText:=Format(device_status, ['Sharefolder']);
  end;
 end;
 
@@ -3215,7 +3266,7 @@ begin
   else
   begin
     FormStorageDevice.StatusBarStorageDevice.Font.Color:=clRed;
-    FormStorageDevice.StatusBarStorageDevice.SimpleText:='Storage device can not added/updated.';
+    FormStorageDevice.StatusBarStorageDevice.SimpleText:=Format(device_status, ['Storage']);
   end;
 end;
 
@@ -3236,14 +3287,13 @@ var
   Path : String = '.path';
   PciSlot : String;
   SeedRunCmd : String;
-  SeedNetwork : String;
   MyAppThread : AppProgressBarThread;
 begin
   if FormVmCreate.FormValidate() then
   begin
     try
       FormVmCreate.StatusBarVmCreate.Font.Color:=clTeal;
-      FormVmCreate.StatusBarVmCreate.SimpleText:='Trying create '+FormVmCreate.EditVmName.Text+' virtual machine...';
+      FormVmCreate.StatusBarVmCreate.SimpleText:=Format(vm_try_status, [FormVmCreate.EditVmName.Text]);
       FormVmCreate.BitBtnCreateVm.Enabled:=False;
 
       Application.ProcessMessages;
@@ -3254,7 +3304,6 @@ begin
       IpAddress:=EmptyStr;
       Ip6Address:=EmptyStr;
       SeedRunCmd:=EmptyStr;
-      SeedNetwork:=EmptyStr;
 
       if UseZfs = 'yes' then
       begin
@@ -3262,13 +3311,13 @@ begin
         begin
           if not (CreateDirectory(VmPath, GetCurrentUserName())) or not (ZfsCreateDataset(VmPath.Remove(0,1))) then
           begin
-            DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' : Can not create ' + VmPath + 'dataset');
+            DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_dataset_status, [FormVmCreate.EditVmName.Text, VmPath]));
             Exit;
           end;
         end;
         if not ZfsCreateDataset(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text) then
         begin
-          DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' : Can not create '+ VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+' dataset');
+          DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_dataset_status, [FormVmCreate.EditVmName.Text, VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text]));
           Exit;
         end;
       end
@@ -3276,7 +3325,7 @@ begin
       begin
         if not CreateDirectory(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName()) then
         begin
-          DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' : Can not create '+ VmPath+'/'+FormVmCreate.EditVmName.Text+' directory.');
+          DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_directory_status, [FormVmCreate.EditVmName.Text, VmPath+'/'+FormVmCreate.EditVmName.Text]));
           Exit;
         end;
       end;
@@ -3608,9 +3657,9 @@ begin
         FillVirtualMachineList();
 
         StatusBarBhyveManager.Font.Color:=clTeal;
-        StatusBarBhyveManager.SimpleText:='A new '+FormVmCreate.EditVmName.Text+' virtual machine was created';
+        StatusBarBhyveManager.SimpleText:=Format(vm_create_status, [FormVmCreate.EditVmName.Text]);
 
-        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+FormVmCreate.EditVmName.Text+' VM was created');
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_create_status, [FormVmCreate.EditVmName.Text]));
       end;
     finally
       if Assigned(NewVMConfig) then
@@ -3687,7 +3736,7 @@ begin
   else
   begin
     FormVmInfo.StatusBarVmInfo.Font.Color:=clRed;
-    FormVmInfo.StatusBarVmInfo.SimpleText:='You must complete all form fields';
+    FormVmInfo.StatusBarVmInfo.SimpleText:=vm_fields_status;
   end;
 end;
 
@@ -3721,7 +3770,7 @@ begin
 
     VmName:=VirtualMachine.name;
 
-    if (MessageDlg('Remove VM', 'Do you want remove '+VmName+' VM data?', mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    if (MessageDlg(vm_remove_title, Format(vm_remove_notice, [VmName]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
     begin
       if UseZfs = 'yes' then
       begin
@@ -3729,7 +3778,7 @@ begin
           Status:=True
         else
         begin
-          if (MessageDlg('Remove VM', VmName+' VM data cannot be removed.'+sLineBreak+sLineBreak+'Do you want force it?', mtWarning, [mbYes, mbNo], 0) = mrYes) then
+          if (MessageDlg(vm_remove_title, Format(vm_remove_force, [VmName]), mtWarning, [mbYes, mbNo], 0) = mrYes) then
           begin
             if ZfsDestroy(VmPath.Remove(0,1)+'/'+VirtualMachine.name, True, True) then
               Status:=True;
@@ -3755,19 +3804,17 @@ begin
       VirtualMachinesTreeView.Items.Clear;
       FillVirtualMachineList();
 
-      MessageDlg('Remove VM', VmName+ ' VM data has been removed', mtInformation, [mbOK], 0);
-
       StatusBarBhyveManager.Font.Color:=clTeal;
-      StatusBarBhyveManager.SimpleText:=VmName+ ' VM data has been removed';
+      StatusBarBhyveManager.SimpleText:=Format(vm_remove_status, [VmName]);
 
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM has been removed');
+      MessageDlg(vm_remove_title, Format(vm_remove_status, [VmName]), mtInformation, [mbOK], 0);
+
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_remove_status, [VmName]));
     end
     else
     begin
-      MessageDlg('Remove VM', VmName+ ' VM data was not removed', mtInformation, [mbOK], 0);
-
       StatusBarBhyveManager.Font.Color:=clRed;
-      StatusBarBhyveManager.SimpleText:=VmName+ ' VM data was not removed';
+      StatusBarBhyveManager.SimpleText:=Format(vm_notremove_status, [VmName]);
     end;
   end;
 end;
@@ -3812,7 +3859,7 @@ begin
 
   Sleep(100);
 
-  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VirtualMachine.name+ ' VM have been started');
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_start_status, [VirtualMachine.name]));
 
   if CheckVmRunning(VirtualMachine.name) > 0 then
   begin
@@ -3875,7 +3922,7 @@ begin
     VirtualMachinesTreeView.Selected.Text:=VirtualMachine.name+' : Running';
 
     StatusBarBhyveManager.Font.Color := clTeal;
-    StatusBarBhyveManager.SimpleText := VirtualMachine.name+' VM has been started';
+    StatusBarBhyveManager.SimpleText := Format(vm_start_status, [VirtualMachine.name]);
   end
   else
   begin
@@ -4056,7 +4103,7 @@ begin
     EditSystemVersion.Text:=VirtualMachine.system_version;
 
     StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText:='virtual machine : '+VirtualMachine.name;
+    StatusBarBhyveManager.SimpleText:=virtual_machine+' : '+VirtualMachine.name;
 
     SpeedButtonStartVm.Enabled:=True;
     SpeedButtonRemoveVm.Enabled:=True;

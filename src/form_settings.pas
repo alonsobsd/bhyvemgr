@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
-  EditBtn, Buttons, Clipbrd;
+  EditBtn, Buttons, Clipbrd, LCLTranslator;
 
 type
 
@@ -102,10 +102,10 @@ type
     Label29: TLabel;
     Label3: TLabel;
     Label4: TLabel;
-    PageControl1: TPageControl;
+    PageControlSettings: TPageControl;
     StatusBarBhyveSettings: TStatusBar;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
+    TabSheetGeneral: TTabSheet;
+    TabSheetPaths: TTabSheet;
     procedure BitBtnCalculateIpv6Click(Sender: TObject);
     procedure BitBtnCloseSettingsClick(Sender: TObject);
     procedure BitBtnMacAddressClick(Sender: TObject);
@@ -133,14 +133,13 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_configuration, unit_component, unit_global, unit_util, LazLogger;
+  unit_configuration, unit_component, unit_global, unit_util, unit_language, LazLogger;
 
 { TFormSettings }
 
 procedure TFormSettings.FormShow(Sender: TObject);
 begin
-  Self.Caption:=FormBhyveManagerSettingsTitle;
-  Self.PageControl1.ActivePageIndex:=0;
+  Self.PageControlSettings.ActivePageIndex:=0;
   FillComboZpool;
 
   EditBridgeMac.Clear;
@@ -152,7 +151,7 @@ begin
   DebugLogger.CloseLogFileBetweenWrites:= true;
   DebugLogger.LogName:= GetUserDir + '.config/bhyvemgr/bhyvemgr.log';
 
-  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : settings form was opened.');
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_bhyve_settings_opened);
 end;
 
 function TFormSettings.FormValidate(): Boolean;
@@ -166,7 +165,7 @@ begin
     if not CheckZfsSupport() or not FileExists(ZfsCmd) or not FileExists(ZpoolCmd)
        or (ComboBoxZpool.ItemIndex = -1) then
     begin
-      StatusBarBhyveSettings.SimpleText:='Support for zfs/zpool is not available';
+      StatusBarBhyveSettings.SimpleText:= check_zfs;
       Result:=False;
       Exit;
     end
@@ -176,7 +175,7 @@ begin
   begin
     if not FileExists(DnsmasqBinPath) then
     begin
-      StatusBarBhyveSettings.SimpleText:='dnsmasq was not found. Please install dns/dnsmasq for fix it';
+      StatusBarBhyveSettings.SimpleText:=check_dnsmasq;
       Result:=False;
       Exit;
     end;
@@ -186,7 +185,7 @@ begin
   begin
     if (Trim(EditIpv6Prefix.Text) = EmptyStr) or not (CheckIpv6Address(EditIpv6Prefix.Text)) then
     begin
-      StatusBarBhyveSettings.SimpleText:='A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses.';
+      StatusBarBhyveSettings.SimpleText:=check_ipv6;
       Result:=False;
       Exit;
     end;
@@ -196,7 +195,7 @@ begin
   begin
     if not FileExists(FileNameEditSudo.FileName) or not (ExtractFileName(FileNameEditSudo.FileName) = 'sudo') then
     begin
-      StatusBarBhyveSettings.SimpleText:='sudo was not found. Please install security/sudo for fix it';
+      StatusBarBhyveSettings.SimpleText:=check_sudo;
       Result:=False;
       Exit;
     end;
@@ -205,7 +204,7 @@ begin
   begin
     if not FileExists(FileNameEditDoas.FileName) or not (ExtractFileName(FileNameEditDoas.FileName) = 'doas') then
     begin
-      StatusBarBhyveSettings.SimpleText:='doas was not found. Please install security/doas for fix it';
+      StatusBarBhyveSettings.SimpleText:=check_doas;
       Result:=False;
       Exit;
     end;
@@ -216,13 +215,13 @@ begin
     {$ifdef CPUAMD64}
     if not FileExists(FileNameEditSwtpm.FileName) or not (ExtractFileName(FileNameEditSwtpm.FileName) = 'swtpm') then
     begin
-      StatusBarBhyveSettings.SimpleText:='swtpm binary was not found';
+      StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['swtpm']);
       Result:=False;
       Exit;
     end
     else if not FileExists(FileNameEditSwtpmIoctl.FileName) or not (ExtractFileName(FileNameEditSwtpmIoctl.FileName) = 'swtpm_ioctl') then
     begin
-      StatusBarBhyveSettings.SimpleText:='swtpm_iocl binary was not found';
+      StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['swtpm_ioctl']);
       Result:=False;
       Exit;
     end;
@@ -231,155 +230,155 @@ begin
 
   if Trim(EditBridgeInterface.Text) = EmptyStr then
   begin
-    StatusBarBhyveSettings.SimpleText:='A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings.';
+    StatusBarBhyveSettings.SimpleText:=check_bridge;
     Result:=False;
     Exit;
   end
   else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
   begin
-    StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign/generate ip address.';
+    StatusBarBhyveSettings.SimpleText:=check_subnet;
     Result:=False;
     Exit;
   end
   else if not FileExists(FileNameEditBhyve.FileName) or not (ExtractFileName(FileNameEditBhyve.FileName) = 'bhyve') then
   begin
-    StatusBarBhyveSettings.SimpleText:='bhyve binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['bhyve']);
     Result:=False;
     Exit;
   end
   else if not FileExists(FileNameEditBhyvectl.FileName) or not (ExtractFileName(FileNameEditBhyvectl.FileName) = 'bhyvectl') then
   begin
-    StatusBarBhyveSettings.SimpleText:='bhyvectl binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['bhyvectl']);
     Result:=False;
     Exit;
   end
   {$ifdef CPUAMD64}
   else if not FileExists(FileNameEditBhyveload.FileName) or not (ExtractFileName(FileNameEditBhyveload.FileName) = 'bhyveload') then
   begin
-    StatusBarBhyveSettings.SimpleText:='bhyveload binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['bhyveload']);
     Result:=False;
     Exit;
   end
   {$endif}
   else if not FileExists(FileNameEditVncviewer.FileName) or not (ExtractFileName(FileNameEditVncviewer.FileName) = 'remote-viewer') then
   begin
-    StatusBarBhyveSettings.SimpleText:='vnc support will not available. net-mgmt/virt-viewer is not installed.';
+    StatusBarBhyveSettings.SimpleText:=check_vnc;
     Result:=False;
     Exit;
   end
   else if not FileExists(FileNameEditXfreerdp.FileName) or not (ExtractFileName(FileNameEditXfreerdp.FileName) = 'xfreerdp3') then
   begin
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : freerdp support will not be available. net/freerdp3 is not installed.');
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_check_freerdp);
   end
   else if not FileExists(ChownCmd) or not (ExtractFileName(ChownCmd) = 'chown') then
   begin
-    StatusBarBhyveSettings.SimpleText:='chown binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['chown']);
     Result:=False;
     Exit;
   end
   else if not FileExists(ChmodCmd) or not (ExtractFileName(ChmodCmd) = 'chmod') then
   begin
-    StatusBarBhyveSettings.SimpleText:='chmod binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['chmod']);
     Result:=False;
     Exit;
   end
   else if not FileExists(CpCmd) or not (ExtractFileName(CpCmd) = 'cp') then
   begin
-    StatusBarBhyveSettings.SimpleText:='cp binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['cp']);
     Result:=False;
     Exit;
   end
   else if not FileExists(IfconfigCmd) or not (ExtractFileName(IfconfigCmd) = 'ifconfig') then
   begin
-    StatusBarBhyveSettings.SimpleText:='ifconfig binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['ifconfig']);
     Result:=False;
     Exit;
   end
   else if not FileExists(InstallCmd) or not (ExtractFileName(InstallCmd) = 'install') then
   begin
-    StatusBarBhyveSettings.SimpleText:='install binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['install']);
     Result:=False;
     Exit;
   end
   else if not FileExists(FetchCmd) or not (ExtractFileName(FetchCmd) = 'fetch') then
   begin
-    StatusBarBhyveSettings.SimpleText:='fetch binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['fetch']);
     Result:=False;
     Exit;
   end
   else if not FileExists(FileCmd) or not (ExtractFileName(FileCmd) = 'file') then
   begin
-    StatusBarBhyveSettings.SimpleText:='file binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['file']);
     Result:=False;
     Exit;
   end
   else if not FileExists(KillCmd) or not (ExtractFileName(KillCmd) = 'kill') then
   begin
-    StatusBarBhyveSettings.SimpleText:='kill binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['kill']);
     Result:=False;
     Exit;
   end
   else if not FileExists(KldloadCmd) or not (ExtractFileName(KldloadCmd) = 'kldload') then
   begin
-    StatusBarBhyveSettings.SimpleText:='kldload binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['kldload']);
     Result:=False;
     Exit;
   end
   else if not FileExists(KldstatCmd) or not (ExtractFileName(KldstatCmd) = 'kldstat') then
   begin
-    StatusBarBhyveSettings.SimpleText:='kldstat binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['kldstat']);
     Result:=False;
     Exit;
   end
   else if not FileExists(MakefsCmd) or not (ExtractFileName(MakefsCmd) = 'makefs') then
   begin
-    StatusBarBhyveSettings.SimpleText:='makefs binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['makefs']);
     Result:=False;
     Exit;
   end
   else if not FileExists(PciconfCmd) or not (ExtractFileName(PciconfCmd) = 'pciconf') then
   begin
-    StatusBarBhyveSettings.SimpleText:='pciconf binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['pciconf']);
     Result:=False;
     Exit;
   end
   else if not FileExists(PgrepCmd) or not (ExtractFileName(PgrepCmd) = 'pgrep') then
   begin
-    StatusBarBhyveSettings.SimpleText:='pgrep binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['pgrep']);
     Result:=False;
     Exit;
   end
   else if not FileExists(FileNameEditQemuImg.FileName) or not (ExtractFileName(FileNameEditQemuImg.FileName) = 'qemu-img') then
   begin
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : qcow2 convert support will not be available. qemu-tools is not installed.');
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_check_qemu);
   end
   else if not FileExists(RmCmd) or not (ExtractFileName(RmCmd) = 'rm') then
   begin
-    StatusBarBhyveSettings.SimpleText:='rm binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['rm']);
     Result:=False;
     Exit;
   end
   else if not FileExists(ServiceCmd) or not (ExtractFileName(ServiceCmd) = 'service') then
   begin
-    StatusBarBhyveSettings.SimpleText:='service binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['service']);
     Result:=False;
     Exit;
   end
   else if not FileExists(SysctlCmd) or not (ExtractFileName(SysctlCmd) = 'sysctl') then
   begin
-    StatusBarBhyveSettings.SimpleText:='sysctl binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['sysctl']);
     Result:=False;
     Exit;
   end
   else if not FileExists(TruncateCmd) or not (ExtractFileName(TruncateCmd) = 'truncate') then
   begin
-    StatusBarBhyveSettings.SimpleText:='truncate binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['truncate']);
     Result:=False;
     Exit;
   end
   else if not FileExists(XzCmd) or not (ExtractFileName(XzCmd) = 'xz') then
   begin
-    StatusBarBhyveSettings.SimpleText:='xz binary was not found';
+    StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['xz']);
     Result:=False;
     Exit;
   end
@@ -421,9 +420,10 @@ procedure TFormSettings.EditSubnetExit(Sender: TObject);
 begin
   if not CheckCidrRange(EditSubnet.Text) then
   begin
+    PageControlSettings.ActivePageIndex:=0;
     EditSubnet.SetFocus;
     StatusBarBhyveSettings.Font.Color:=clRed;
-    StatusBarBhyveSettings.SimpleText:='A valid subnet must be defined. It will be used for assign/generate ip address';
+    StatusBarBhyveSettings.SimpleText:=check_subnet;
   end
   else
   begin
@@ -437,7 +437,7 @@ end;
 procedure TFormSettings.FormClose(Sender: TObject; var CloseAction: TCloseAction
   );
 begin
-  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : settings form was closed.');
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_bhyve_settings_closed);
 end;
 
 procedure TFormSettings.BitBtnSaveSettingsClick(Sender: TObject);
@@ -565,7 +565,7 @@ begin
     StatusBarBhyveSettings.Font.Color:=clTeal;
     StatusBarBhyveSettings.SimpleText:=EmptyStr;
 
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Bhyve Settings : Settings were saved successfully.');
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+ debugln_bhyve_settings_saved);
     MessageDlg('Settings information', 'Settings were saved successfully', mtInformation, [mbOK], 0);
 
     SetNewConfig(False);
@@ -590,14 +590,13 @@ begin
   begin
     EditBridgeIpv6.Text:=GetNewIp6Address(EditIpv6Prefix.Text, EditBridgeMac.Text);
     StatusBarBhyveSettings.Font.Color:=clTeal;
-    StatusBarBhyveSettings.SimpleText:='Now, assign this IPv6 address to '+EditBridgeInterface.Text+' interface. Do not forget add accept_rtadv and auto_linklocal options to it too.';
+    StatusBarBhyveSettings.SimpleText:=Format(calculated_ipv6, [EditBridgeInterface.Text]);
   end
   else
   begin
     StatusBarBhyveSettings.Font.Color:=clRed;
-    StatusBarBhyveSettings.SimpleText:=EditBridgeInterface.Text+' IPv6 address can not calculated. IPv6 prefix or Mac address are not valid.';
+    StatusBarBhyveSettings.SimpleText:=Format(no_calculated_ipv6, [EditBridgeInterface.Text]);
   end;
-
 end;
 
 procedure TFormSettings.CheckBoxUseDnsmasqChange(Sender: TObject);

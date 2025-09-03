@@ -4,7 +4,7 @@ object FormSettings: TFormSettings
   Top = 147
   Width = 799
   BorderStyle = bsSingle
-  Caption = 'FormSettings'
+  Caption = 'Bhyve Manager - Settings'
   ClientHeight = 671
   ClientWidth = 799
   Position = poMainFormCenter
@@ -12,15 +12,15 @@ object FormSettings: TFormSettings
   LCLVersion = '4.2.0.0'
   OnClose = FormClose
   OnShow = FormShow
-  object PageControl1: TPageControl
+  object PageControlSettings: TPageControl
     Left = 16
     Height = 576
     Top = 16
     Width = 768
-    ActivePage = TabSheet1
+    ActivePage = TabSheetGeneral
     TabIndex = 0
     TabOrder = 0
-    object TabSheet1: TTabSheet
+    object TabSheetGeneral: TTabSheet
       Caption = 'General settings'
       ClientHeight = 541
       ClientWidth = 762
@@ -1462,7 +1462,7 @@ object FormSettings: TFormSettings
         TabOrder = 9
       end
     end
-    object TabSheet2: TTabSheet
+    object TabSheetPaths: TTabSheet
       Caption = 'Path settings'
       ClientHeight = 541
       ClientWidth = 762

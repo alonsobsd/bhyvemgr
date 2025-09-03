@@ -35,7 +35,7 @@ unit form_about;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, LCLIntf, InterfaceBase;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, LCLIntf, InterfaceBase, LCLTranslator;
 
 type
 
@@ -78,7 +78,6 @@ end;
 
 procedure TFormAbout.FormShow(Sender: TObject);
 begin
-  Self.Caption:=FormBhyveManagerAboutTitle;
   LabelVersion.Caption:='v'+BhyvemgrVersion;
   LabelArch.Caption:={$I %FPCTARGETCPU%}+'-'+GetLCLWidgetTypeName;
 end;

@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, EditBtn,
-  Buttons, ComCtrls, SpinEx;
+  Buttons, ComCtrls, SpinEx, LCLTranslator;
 
 type
 
@@ -90,7 +90,6 @@ type
     procedure CheckBoxNvmUseRamChange(Sender: TObject);
     procedure ComboBoxStorageDeviceChange(Sender: TObject);
     procedure ComboBoxStorageTypeChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     DiskName : String;
     procedure FillComboAhciNmrr(Combo: TComboBox);
@@ -204,11 +203,6 @@ begin
       FileNameEditStoragePath.Text:='/dev/zvol'+VmPath+'/'+VmName+'/'+DiskName;
     end;
   end;
-end;
-
-procedure TFormStorageDevice.FormShow(Sender: TObject);
-begin
-  FormStorageDevice.Caption:=FormBhyveManagerStorageDeviceTitle;
 end;
 
 function TFormStorageDevice.FormValidate(): Boolean;

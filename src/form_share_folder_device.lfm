@@ -4,12 +4,11 @@ object FormShareFolderDevice: TFormShareFolderDevice
   Top = 425
   Width = 344
   BorderStyle = bsSingle
-  Caption = 'FormShareFolderDevice'
+  Caption = 'Share folder device'
   ClientHeight = 253
   ClientWidth = 344
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.2.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 176
@@ -46,7 +45,7 @@ object FormShareFolderDevice: TFormShareFolderDevice
       Left = 11
       Height = 22
       Top = 8
-      Width = 87
+      Width = 83
       Caption = 'Read only'
       TabOrder = 0
     end

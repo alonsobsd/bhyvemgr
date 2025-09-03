@@ -1,0 +1,7 @@
+{"version":1,"strings":[
+{"hash":258738245,"name":"tformhostbridgedevice.caption","sourcebytes":[72,111,115,116,98,114,105,100,103,101,32,100,101,118,105,99,101],"value":"Hostbridge device"},
+{"hash":3792691,"name":"tformhostbridgedevice.groupbox1.caption","sourcebytes":[71,101,110,101,114,97,108,32,115,101,116,116,105,110,103,115],"value":"General settings"},
+{"hash":178130037,"name":"tformhostbridgedevice.comboboxhostbridgedevice.text","sourcebytes":[104,111,115,116,98,114,105,100,103,101],"value":"hostbridge"},
+{"hash":78434197,"name":"tformhostbridgedevice.label1.caption","sourcebytes":[68,101,118,105,99,101],"value":"Device"},
+{"hash":366789,"name":"tformhostbridgedevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+]}

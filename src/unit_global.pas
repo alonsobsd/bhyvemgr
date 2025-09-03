@@ -56,6 +56,8 @@ function GetUseSystray:string;
 procedure SetUseSystray(const Value:string);
 function GetUseIpv6:string;
 procedure SetUseIpv6(const Value:string);
+function GetLanguage:string;
+procedure SetLanguage(const Value:string);
 { Bhyve section }
 function GetBhyveCmd:string;
 procedure SetBhyveCmd(const Value:string);
@@ -145,6 +147,7 @@ property VmPath:string read GetVmPath write SetVmPath;
 property CloudVmImagesPath:string read GetCloudVmImagesPath write SetCloudVmImagesPath;
 property UseSystray:string read GetUseSystray write SetUseSystray;
 property UseIpv6:string read GetUseIpv6 write SetUseIpv6;
+property Language:string read GetLanguage write SetLanguage;
 { Bhyve section }
 property BhyveCmd:string read GetBhyveCmd write SetBhyveCmd;
 property BhyvectlCmd:string read GetBhyvectlCmd write SetBhyvectlCmd;
@@ -191,7 +194,7 @@ property ZfsCreateOptions:string read GetZfsCreateOptions write SetZfsCreateOpti
 const
   BhyveOui = '58:9c:fc:0';
   {$IFDEF DEBUG}
-  DatadirPath = '../';
+  DatadirPath = '';
   {$ELSE}
   DatadirPath = '/usr/local/share/bhyvemgr/';
   {$ENDIF}
@@ -201,21 +204,7 @@ const
   KeyBoardLayoutPath = '/usr/share/bhyve/kbdlayout';
   DnsmasqDirectory = '/usr/local/etc/dnsmasq.d/bhyvemgr';
   DnsmasqBinPath = '/usr/local/sbin/dnsmasq';
-  FormBhyveManagerTitle = 'Bhyve Manager - FreeBSD';
-  FormBhyveManagerAboutTitle = 'Bhyve Manager - About';
-  FormBhyveManagerAudioDeviceTitle = 'Audio device';
-  FormBhyveManagerConsoleDeviceTitle = 'Console device';
-  FormBhyveManagerDisplayDeviceTitle = 'Display device';
-  FormBhyveManagerHostbridgeDeviceTitle = 'Hostbridge device';
-  FormBhyveManagerInputDeviceTitle = 'Input device';
-  FormBhyveManagerLPCDeviceTitle = 'LPC Device';
-  FormBhyveManagerNetworkDeviceTitle = 'Network Device';
-  FormBhyveManagerPassthruDeviceTitle = 'Passthru Device';
-  FormBhyveManagerSettingsTitle = 'Bhyve Manager - Settings';
-  FormBhyveManagerStorageDeviceTitle = 'Storage Device';
-  FormBhyveManagerShareFolderDeviceTitle = 'Share folder device';
-  FormBhyveManagerCreateVmTitle = 'Bhyve Manager - Create virtual machine';
-  FormBhyveManagerEditVmInfoTitle = 'Bhyve Manager - Edit virtual machine info';
+
   TrayIconNotifytimeout = 3000;
   FirstVncPortNumber = 5900;
   FirstGdbPortNumber = 50000;
@@ -231,6 +220,7 @@ var
   CloudVmImagesPathVar: String;
   UseSystrayVar: String;
   UseIpv6Var: String;
+  LanguageVar: String;
   BhyveCmdVar: String;
   BhyvectlCmdVar: String;
   BhyveloadCmdVar: String;
@@ -359,6 +349,16 @@ end;
 procedure SetUseIpv6(const Value: string);
 begin
   UseIpv6Var := Value;
+end;
+
+function GetLanguage: string;
+begin
+  Result := LanguageVar;
+end;
+
+procedure SetLanguage(const Value: string);
+begin
+  LanguageVar := Value;
 end;
 
 function GetBhyveCmd: string;
@@ -730,7 +730,6 @@ procedure SetZfsCreateOptions(const value: string);
 begin
   ZfsCreateOptionsVar := Value;
 end;
-
 
 end.
 

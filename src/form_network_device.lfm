@@ -4,12 +4,11 @@ object FormNetworkDevice: TFormNetworkDevice
   Top = 386
   Width = 337
   BorderStyle = bsSingle
-  Caption = 'FormNetworkDevice'
+  Caption = 'Network device'
   ClientHeight = 272
   ClientWidth = 337
   Position = poMainFormCenter
-  LCLVersion = '4.0.0.4'
-  OnShow = FormShow
+  LCLVersion = '4.2.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 192

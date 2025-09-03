@@ -285,6 +285,9 @@ begin
   if ConfigFile.ReadString('general','cloudvm_images_path', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('general','cloudvm_images_path', GetUserDir+'.bhyvemgr');
 
+  if ConfigFile.ReadString('general','language', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('general','language', 'en');
+
    ZfsPoolList.Free;
 
    Result:=True;

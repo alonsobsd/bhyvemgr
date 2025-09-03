@@ -1,0 +1,9 @@
+{"version":1,"strings":[
+{"hash":168993285,"name":"tformnetworkdevice.caption","sourcebytes":[78,101,116,119,111,114,107,32,100,101,118,105,99,101],"value":"Network device"},
+{"hash":3792691,"name":"tformnetworkdevice.groupbox1.caption","sourcebytes":[71,101,110,101,114,97,108,32,115,101,116,116,105,110,103,115],"value":"General settings"},
+{"hash":78434197,"name":"tformnetworkdevice.label1.caption","sourcebytes":[68,101,118,105,99,101],"value":"Device"},
+{"hash":142220292,"name":"tformnetworkdevice.label10.caption","sourcebytes":[66,97,99,107,101,110,100],"value":"Backend"},
+{"hash":21363,"name":"tformnetworkdevice.label13.caption","sourcebytes":[77,97,99],"value":"Mac"},
+{"hash":21685,"name":"tformnetworkdevice.label4.caption","sourcebytes":[77,116,117],"value":"Mtu"},
+{"hash":366789,"name":"tformnetworkdevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+]}

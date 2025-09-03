@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls;
+  ComCtrls, LCLTranslator;
 
 type
 
@@ -59,7 +59,6 @@ type
     StatusBarDisplayDevice: TStatusBar;
     procedure CheckBoxOnlyLocalhostChange(Sender: TObject);
     procedure CheckBoxUsePasswordChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     procedure FillComboVga(Combo: TComboBox);
   public
@@ -80,11 +79,6 @@ uses
   unit_component, unit_util, unit_global;
 
 { TFormDisplayDevice }
-
-procedure TFormDisplayDevice.FormShow(Sender: TObject);
-begin
-  FormDisplayDevice.Caption:=FormBhyveManagerDisplayDeviceTitle;
-end;
 
 procedure TFormDisplayDevice.CheckBoxOnlyLocalhostChange(Sender: TObject);
 begin

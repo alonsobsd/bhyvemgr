@@ -8,7 +8,7 @@ object FormRdpConnection: TFormRdpConnection
   ClientHeight = 224
   ClientWidth = 343
   Position = poMainFormCenter
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   OnDeactivate = FormDeactivate
   OnHide = FormHide
   OnShow = FormShow
@@ -29,7 +29,7 @@ object FormRdpConnection: TFormRdpConnection
       Caption = 'Password'
     end
     object EditPassword: TEdit
-      Left = 85
+      Left = 88
       Height = 32
       Top = 72
       Width = 216
@@ -45,7 +45,7 @@ object FormRdpConnection: TFormRdpConnection
       Caption = 'Username'
     end
     object EditUsername: TEdit
-      Left = 85
+      Left = 88
       Height = 32
       Top = 40
       Width = 216
@@ -59,7 +59,7 @@ object FormRdpConnection: TFormRdpConnection
       Caption = 'Resolution'
     end
     object ComboBoxResolution: TComboBox
-      Left = 85
+      Left = 88
       Height = 32
       Top = 8
       Width = 216

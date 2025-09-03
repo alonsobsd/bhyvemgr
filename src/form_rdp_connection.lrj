@@ -1,0 +1,8 @@
+{"version":1,"strings":[
+{"hash":205562670,"name":"tformrdpconnection.caption","sourcebytes":[70,111,114,109,82,100,112,67,111,110,110,101,99,116,105,111,110],"value":"FormRdpConnection"},
+{"hash":174291171,"name":"tformrdpconnection.groupbox1.caption","sourcebytes":[82,68,80,32,76,111,103,105,110,32,99,114,101,100,101,110,116,105,97,108,115],"value":"RDP Login credentials"},
+{"hash":145417188,"name":"tformrdpconnection.label4.caption","sourcebytes":[80,97,115,115,119,111,114,100],"value":"Password"},
+{"hash":164185077,"name":"tformrdpconnection.label6.caption","sourcebytes":[85,115,101,114,110,97,109,101],"value":"Username"},
+{"hash":104408318,"name":"tformrdpconnection.label1.caption","sourcebytes":[82,101,115,111,108,117,116,105,111,110],"value":"Resolution"},
+{"hash":174410724,"name":"tformrdpconnection.bitbtnconnect.caption","sourcebytes":[67,111,110,110,101,99,116],"value":"Connect"}
+]}

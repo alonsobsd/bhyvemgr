@@ -4,12 +4,11 @@ object FormLpcDevice: TFormLpcDevice
   Top = 360
   Width = 345
   BorderStyle = bsSingle
-  Caption = 'FormLpcDevice'
+  Caption = 'LPC device'
   ClientHeight = 346
   ClientWidth = 345
   Position = poMainFormCenter
   LCLVersion = '4.2.0.0'
-  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 272

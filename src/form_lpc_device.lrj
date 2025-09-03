@@ -1,0 +1,12 @@
+{"version":1,"strings":[
+{"hash":111795141,"name":"tformlpcdevice.caption","sourcebytes":[76,80,67,32,100,101,118,105,99,101],"value":"LPC device"},
+{"hash":3792691,"name":"tformlpcdevice.groupbox1.caption","sourcebytes":[71,101,110,101,114,97,108,32,115,101,116,116,105,110,103,115],"value":"General settings"},
+{"hash":304642,"name":"tformlpcdevice.label1.caption","sourcebytes":[67,111,109,50],"value":"Com2"},
+{"hash":304643,"name":"tformlpcdevice.label2.caption","sourcebytes":[67,111,109,51],"value":"Com3"},
+{"hash":157727005,"name":"tformlpcdevice.label3.caption","sourcebytes":[66,111,111,116,114,111,109],"value":"Bootrom"},
+{"hash":304641,"name":"tformlpcdevice.label5.caption","sourcebytes":[67,111,109,49],"value":"Com1"},
+{"hash":304644,"name":"tformlpcdevice.label6.caption","sourcebytes":[67,111,109,52],"value":"Com4"},
+{"hash":171870053,"name":"tformlpcdevice.checkboxpcdebug.caption","sourcebytes":[69,110,97,98,108,101,32,112,99,32,100,101,98,117,103,47,116,101,115,116,32,100,101,118,105,99,101],"value":"Enable pc debug/test device"},
+{"hash":107727875,"name":"tformlpcdevice.label4.caption","sourcebytes":[66,111,111,116,118,97,114,115],"value":"Bootvars"},
+{"hash":366789,"name":"tformlpcdevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+]}

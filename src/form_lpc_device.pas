@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls;
+  ComCtrls, LCLTranslator;
 
 type
 
@@ -67,7 +67,6 @@ type
     procedure CheckBoxCom2Change(Sender: TObject);
     procedure CheckBoxCom3Change(Sender: TObject);
     procedure CheckBoxCom4Change(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
 
   public
@@ -119,11 +118,6 @@ begin
     ComboBoxCom4.Enabled:=True
   else
     ComboBoxCom4.Enabled:=False;
-end;
-
-procedure TFormLpcDevice.FormShow(Sender: TObject);
-begin
-  FormLpcDevice.Caption:=FormBhyveManagerLPCDeviceTitle;
 end;
 
 function TFormLpcDevice.FormValidate(): Boolean;

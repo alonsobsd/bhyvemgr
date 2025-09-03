@@ -35,7 +35,7 @@ unit unit_component;
 interface
 
 uses
-  Classes, SysUtils, Menus, Dialogs, Controls, StdCtrls, ExtCtrls, FileUtil;
+  Classes, SysUtils, Menus, Dialogs, Controls, StdCtrls, ExtCtrls, FileUtil, LCLTranslator;
 
 type
 
@@ -130,6 +130,7 @@ type
   function FillComboKeyboardLayout(Combo: TComboBox):Boolean;
   function FillComboBootrom(Combo: TComboBox):Boolean;
   function FillComboBootvars(Combo: TComboBox):Boolean;
+  procedure FillComboLanguage(Combo: TComboBox);
   procedure FillComboTpmDevice(Combo: TComboBox);
   procedure FillComboTpmType(Combo: TComboBox);
   procedure FillComboTpmVersion(Combo: TComboBox);
@@ -143,7 +144,7 @@ type
 implementation
 
 uses
-  unit_global, unit_util;
+  unit_global, unit_util, unit_language;
 
 constructor TPopupMenuDevices.Create(component : TComponent);
 begin
@@ -151,17 +152,17 @@ begin
   PopupMenu.AutoPopup:=False;
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Add device';
+  PopupMenuItem.Caption:=popup_add_device;
 
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Edit device';
+  PopupMenuItem.Caption:=popup_edit_device;
 
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Delete device';
+  PopupMenuItem.Caption:=popup_delete_device;
 
   PopupMenu.Items.Add(PopupMenuItem);
 end;
@@ -174,15 +175,15 @@ begin
   PopupMenu.AutoPopup:=False;
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Add device';
+  PopupMenuItem.Caption:=popup_add_device;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Edit device';
+  PopupMenuItem.Caption:=popup_edit_device;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Delete device';
+  PopupMenuItem.Caption:=popup_delete_device;
   PopupMenu.Items.Add(PopupMenuItem);
 end;
 
@@ -194,7 +195,7 @@ begin
   PopupMenu.AutoPopup:=False;
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Edit global setting';
+  PopupMenuItem.Caption:=popup_edit_global_setting;
   PopupMenu.Items.Add(PopupMenuItem);
 end;
 
@@ -206,19 +207,19 @@ begin
   PopupMenu.AutoPopup:=False;
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Add virtual machine';
+  PopupMenuItem.Caption:=popup_add_vm;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Modify virtual machine info';
+  PopupMenuItem.Caption:=popup_modify_vm;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Remove virtual machine';
+  PopupMenuItem.Caption:=popup_remove_vm;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='RDP to virtual machine';
+  PopupMenuItem.Caption:=popup_rdp_vm;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
@@ -226,19 +227,19 @@ begin
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Copy VM name';
+  PopupMenuItem.Caption:=popup_copy_vm_name;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Copy COM1 command';
+  PopupMenuItem.Caption:=popup_copy_com1_command;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Copy IPv4 address';
+  PopupMenuItem.Caption:=popup_copy_ipv4;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption:='Copy IPv6 address';
+  PopupMenuItem.Caption:=popup_copy_ipv6;
   PopupMenu.Items.Add(PopupMenuItem);
 end;
 
@@ -439,11 +440,11 @@ begin
   PopupMenu := TPopupMenu.Create(component);
 
   PopupMenuItem := TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption := 'Show/Hide Bhyvemgr';
+  PopupMenuItem.Caption := popup_tray_show_hide;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem := TMenuItem.Create(PopupMenu);
-  PopupMenuItem.Caption := 'Quit Bhyvemgr';
+  PopupMenuItem.Caption := popup_tray_quit;
   PopupMenu.Items.Add(PopupMenuItem);
 end;
 
@@ -515,6 +516,12 @@ begin
   Combo.Items.Add('uefi-vars.fd');
 {$endif CPUAMD64}
   Result:=True;
+end;
+
+procedure FillComboLanguage(Combo: TComboBox);
+begin
+  Combo.Items.Add('en');
+  Combo.Items.Add('es');
 end;
 
 procedure FillComboTpmDevice(Combo: TComboBox);

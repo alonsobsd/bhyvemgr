@@ -4,12 +4,11 @@ object FormHostbridgeDevice: TFormHostbridgeDevice
   Top = 428
   Width = 349
   BorderStyle = bsSingle
-  Caption = 'FormHostbridgeDevice'
+  Caption = 'Hostbridge device'
   ClientHeight = 156
   ClientWidth = 349
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.2.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 80

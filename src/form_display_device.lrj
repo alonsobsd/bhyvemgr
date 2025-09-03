@@ -1,0 +1,12 @@
+{"version":1,"strings":[
+{"hash":101442453,"name":"tformdisplaydevice.caption","sourcebytes":[68,105,115,112,108,97,121,32,100,101,118,105,99,101],"value":"Display device"},
+{"hash":3792691,"name":"tformdisplaydevice.groupbox1.caption","sourcebytes":[71,101,110,101,114,97,108,32,115,101,116,116,105,110,103,115],"value":"General settings"},
+{"hash":104408318,"name":"tformdisplaydevice.label1.caption","sourcebytes":[82,101,115,111,108,117,116,105,111,110],"value":"Resolution"},
+{"hash":4706302,"name":"tformdisplaydevice.checkboxwaitvnc.caption","sourcebytes":[87,97,105,116,32,102,111,114,32,86,78,67,32,99,111,110,110,101,99,116,105,111,110],"value":"Wait for VNC connection"},
+{"hash":145417188,"name":"tformdisplaydevice.label4.caption","sourcebytes":[80,97,115,115,119,111,114,100],"value":"Password"},
+{"hash":23761,"name":"tformdisplaydevice.label5.caption","sourcebytes":[86,103,97],"value":"Vga"},
+{"hash":224637412,"name":"tformdisplaydevice.checkboxusepassword.caption","sourcebytes":[85,115,101,32,112,97,115,115,119,111,114,100],"value":"Use password"},
+{"hash":201714254,"name":"tformdisplaydevice.checkboxonlylocalhost.caption","sourcebytes":[79,110,108,121,32,108,111,99,97,108,104,111,115,116,32,86,78,67,32,99,111,110,110,101,99,116,105,111,110],"value":"Only localhost VNC connection"},
+{"hash":325284,"name":"tformdisplaydevice.label6.caption","sourcebytes":[72,111,115,116],"value":"Host"},
+{"hash":366789,"name":"tformdisplaydevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+]}

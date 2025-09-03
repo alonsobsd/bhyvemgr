@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls, SpinEx;
+  ComCtrls, SpinEx, LCLTranslator;
 
 type
 
@@ -54,7 +54,6 @@ type
     Label4: TLabel;
     SpinEditExMtu: TSpinEditEx;
     StatusBarNetworkDevice: TStatusBar;
-    procedure FormShow(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
   public
@@ -76,11 +75,6 @@ uses
   unit_global, unit_util;
 
 { TFormNetworkDevice }
-
-procedure TFormNetworkDevice.FormShow(Sender: TObject);
-begin
-  FormNetworkDevice.Caption:=FormBhyveManagerNetworkDeviceTitle;
-end;
 
 function TFormNetworkDevice.FormValidate(): Boolean;
 begin

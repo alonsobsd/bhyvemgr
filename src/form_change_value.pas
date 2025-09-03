@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  SpinEx;
+  SpinEx, LCLTranslator;
 
 type
 

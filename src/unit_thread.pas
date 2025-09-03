@@ -104,7 +104,7 @@ type
 implementation
 
 uses
-  unit_global, process;
+  unit_global, unit_language, process;
 
 { VmThread }
 
@@ -152,36 +152,36 @@ begin
       begin
         if ExitStatus = 0 then
         begin
-          ExitMessage:=AppVmName+' VM is rebooting';
+          ExitMessage:=Format(vm_reboot_status, [AppVmName]);
           Synchronize(@Showstatus);
         end
         else if ExitStatus = 1 then
         begin
-          ExitMessage:=AppVmName+' VM has been powered off';
+          ExitMessage:=Format(vm_poweroff_status, [AppVmName]);
           Synchronize(@Showstatus);
         end
         else if ExitStatus = 2 then
         begin
-          ExitMessage:=AppVmName+' VM is halted';
+          ExitMessage:=Format(vm_halt_status, [AppVmName]);
           Synchronize(@Showstatus);
         end
         else if ExitStatus = 3 then
         begin
           ErrorMessage:=AppProcessOutput.Text;
-          ExitMessage:=AppVmName+' VM is triple fault';
+          ExitMessage:=Format(vm_triplefault_status, [AppVmName]);
           Synchronize(@Showstatus);
         end
         else if ExitStatus = 4 then
         begin
           ErrorMessage:=AppProcessOutput.Text;
-          ExitMessage:=AppVmName+' VM exited due to an error';
+          ExitMessage:=Format(vm_exiterror_status, [AppVmName]);
           Synchronize(@Showstatus);
         end
         else
         begin
           ExitStatus:=6;
           ErrorMessage:=AppProcessOutput.Text;
-          ExitMessage:=AppVmName+' VM exited';
+          ExitMessage:=Format(vm_exit_status, [AppVmName]);
           Synchronize(@Showstatus);
         end;
 
@@ -192,7 +192,7 @@ begin
       begin
         ExitStatus:=5;
         ErrorMessage:=AppProcessOutput.Text;
-        ExitMessage:='An exception was raised: ' + E.Message;
+        ExitMessage:=Format(exception_status, [E.Message]);
         Synchronize(@Showstatus);
       end;
     end;
@@ -224,7 +224,7 @@ end;
 
 procedure AppThread.ShowAppStatus;
 begin
-  MessageDlg('Error message', ExitMessage, mtError, [mbOK], 0);
+  MessageDlg(error_title, ExitMessage, mtError, [mbOK], 0);
 end;
 
 procedure AppThread.Execute;
@@ -264,7 +264,7 @@ begin
       on E: Exception do
       begin
         ExitStatus:=5;
-        ExitMessage:='An exception was raised: ' + E.Message;
+        ExitMessage:=Format(exception_status, [E.Message]);
         Synchronize(@ShowAppStatus);
       end;
     end;
@@ -365,7 +365,7 @@ begin
       on E: Exception do
       begin
         ExitStatus:=5;
-        ExitMessage:='An exception was raised: ' + E.Message;
+        ExitMessage:=Format(exception_status, [E.Message]);
         Synchronize(@EndAppStatus);
       end;
     end;

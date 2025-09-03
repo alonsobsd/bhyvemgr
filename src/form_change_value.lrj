@@ -1,0 +1,7 @@
+{"version":1,"strings":[
+{"hash":79030421,"name":"tformchangevalue.caption","sourcebytes":[70,111,114,109,67,104,97,110,103,101,86,97,108,117,101],"value":"FormChangeValue"},
+{"hash":6063029,"name":"tformchangevalue.label1.caption","sourcebytes":[86,97,108,117,101],"value":"Value"},
+{"hash":213905509,"name":"tformchangevalue.comboboxvalue.text","sourcebytes":[67,111,109,98,111,66,111,120,86,97,108,117,101],"value":"ComboBoxValue"},
+{"hash":125434741,"name":"tformchangevalue.bitbtnsave.hint","sourcebytes":[83,97,118,101,32,118,97,108,117,101],"value":"Save value"},
+{"hash":162990149,"name":"tformchangevalue.bitbtnsave.caption","sourcebytes":[66,105,116,66,116,110,83,97,118,101],"value":"BitBtnSave"}
+]}

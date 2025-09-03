@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":201156708,"name":"tformabout.caption","sourcebytes":[66,104,121,118,101,32,77,97,110,97,103,101,114,32,45,32,65,98,111,117,116],"value":"Bhyve Manager - About"},
+{"hash":176470738,"name":"tformabout.label1.caption","sourcebytes":[66,104,121,118,101,32,77,97,110,97,103,101,114],"value":"Bhyve Manager"},
+{"hash":166597710,"name":"tformabout.labelversion.caption","sourcebytes":[76,97,98,101,108,86,101,114,115,105,111,110],"value":"LabelVersion"},
+{"hash":146856680,"name":"tformabout.labelarch.caption","sourcebytes":[76,97,98,101,108,65,114,99,104],"value":"LabelArch"}
+]}

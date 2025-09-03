@@ -1,0 +1,11 @@
+{"version":1,"strings":[
+{"hash":206840239,"name":"tformvminfo.caption","sourcebytes":[66,104,121,118,101,32,77,97,110,97,103,101,114,32,45,32,69,100,105,116,32,118,105,114,116,117,97,108,32,109,97,99,104,105,110,101,32,105,110,102,111],"value":"Bhyve Manager - Edit virtual machine info"},
+{"hash":54184015,"name":"tformvminfo.groupbox1.caption","sourcebytes":[71,101,110,101,114,97,108,32,105,110,102,111],"value":"General info"},
+{"hash":376933,"name":"tformvminfo.label3.caption","sourcebytes":[84,121,112,101],"value":"Type"},
+{"hash":346165,"name":"tformvminfo.label5.caption","sourcebytes":[78,97,109,101],"value":"Name"},
+{"hash":156067838,"name":"tformvminfo.label6.caption","sourcebytes":[68,101,115,99,114,105,112,116,105,111,110],"value":"Description"},
+{"hash":214540302,"name":"tformvminfo.label4.caption","sourcebytes":[86,101,114,115,105,111,110],"value":"Version"},
+{"hash":167742030,"name":"tformvminfo.checkboxrdp.caption","sourcebytes":[87,111,114,107,115,32,119,105,116,104,32,82,68,80,32,99,111,110,110,101,99,116,105,111,110],"value":"Works with RDP connection"},
+{"hash":158655062,"name":"tformvminfo.checkboxipv6.caption","sourcebytes":[85,115,101,32,73,80,118,54],"value":"Use IPv6"},
+{"hash":366789,"name":"tformvminfo.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+]}

@@ -3,12 +3,11 @@ object FormInputDevice: TFormInputDevice
   Height = 156
   Top = 484
   Width = 348
-  Caption = 'FormInputDevice'
+  Caption = 'Input device'
   ClientHeight = 156
   ClientWidth = 348
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.2.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 80

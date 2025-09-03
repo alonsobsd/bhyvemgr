@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls;
+  ComCtrls, LCLTranslator;
 
 type
 
@@ -50,7 +50,6 @@ type
     Label1: TLabel;
     Label2: TLabel;
     StatusBarAudioDevice: TStatusBar;
-    procedure FormShow(Sender: TObject);
   private
   public
     FormAction : String;
@@ -69,11 +68,6 @@ uses
   unit_global;
 
 { TFormAudioDevice }
-
-procedure TFormAudioDevice.FormShow(Sender: TObject);
-begin
-  FormAudioDevice.Caption:=FormBhyveManagerAudioDeviceTitle;
-end;
 
 function TFormAudioDevice.FormValidate(): Boolean;
 begin

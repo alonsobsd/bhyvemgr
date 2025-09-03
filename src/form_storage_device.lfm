@@ -4,12 +4,11 @@ object FormStorageDevice: TFormStorageDevice
   Top = 208
   Width = 593
   BorderStyle = bsSingle
-  Caption = 'FormStorageDevice'
+  Caption = 'Storage device'
   ClientHeight = 576
   ClientWidth = 593
   Position = poMainFormCenter
   LCLVersion = '4.2.0.0'
-  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 200

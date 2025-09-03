@@ -4,12 +4,12 @@ object FormAbout: TFormAbout
   Top = 422
   Width = 415
   BorderStyle = bsSingle
-  Caption = 'About'
+  Caption = 'Bhyve Manager - About'
   ClientHeight = 170
   ClientWidth = 415
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   OnShow = FormShow
   object Image1: TImage
     Left = 24

@@ -4,12 +4,11 @@ object FormDisplayDevice: TFormDisplayDevice
   Top = 340
   Width = 343
   BorderStyle = bsSingle
-  Caption = 'FormDisplayDevice'
+  Caption = 'Display device'
   ClientHeight = 329
   ClientWidth = 343
   Position = poMainFormCenter
   LCLVersion = '4.2.0.0'
-  OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8
     Height = 256
@@ -20,7 +19,7 @@ object FormDisplayDevice: TFormDisplayDevice
     ClientWidth = 324
     TabOrder = 0
     object ComboBoxResolution: TComboBox
-      Left = 80
+      Left = 88
       Height = 32
       Top = 152
       Width = 152
@@ -51,7 +50,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Caption = 'Password'
     end
     object EditPassword: TEdit
-      Left = 80
+      Left = 88
       Height = 32
       Top = 184
       Width = 216
@@ -67,7 +66,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Caption = 'Vga'
     end
     object ComboBoxVga: TComboBox
-      Left = 80
+      Left = 88
       Height = 32
       Top = 120
       Width = 72
@@ -101,7 +100,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Caption = 'Host'
     end
     object ComboBoxHost: TComboBox
-      Left = 81
+      Left = 88
       Height = 32
       Top = 88
       Width = 152

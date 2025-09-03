@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  ComCtrls;
+  ComCtrls, LCLTranslator;
 
 type
 
@@ -52,7 +52,6 @@ type
     Label5: TLabel;
     Label6: TLabel;
     StatusBarConsoleDevice: TStatusBar;
-    procedure FormShow(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
   public
@@ -74,11 +73,6 @@ uses
   unit_global;
 
 { TFormConsoleDevice }
-
-procedure TFormConsoleDevice.FormShow(Sender: TObject);
-begin
-  FormConsoleDevice.Caption:=FormBhyveManagerConsoleDeviceTitle;
-end;
 
 procedure TFormConsoleDevice.FillComboDevice(Combo: TComboBox);
 begin

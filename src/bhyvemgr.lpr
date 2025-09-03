@@ -40,6 +40,9 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
+  DefaultTranslator,
+  LCLTranslator,
+  Translations,
   Forms, UniqueInstanceRaw, lazcontrols, form_main, unit_configuration, unit_device
   { you can add units after this }
   ,SysUtils, form_vm_create, form_change_value, unit_global, unit_component,
@@ -47,7 +50,7 @@ uses
   form_hostbridge_device, form_lpc_device, form_network_device,
   form_storage_device, form_about, form_settings, Dialogs,
   form_share_folder_device, form_console_device, form_passthru_device,
-  form_input_device, form_rdp_connection, form_vm_info;
+  form_input_device, form_rdp_connection, form_vm_info, unit_language;
 
 {$R *.res}
 var
@@ -66,6 +69,7 @@ begin
     SetCloudVmImagesPath(Configuration.GetOption('general','cloudvm_images_path'));
     SetUseSystray(Configuration.GetOption('general','use_systray'));
     SetUseIpv6(Configuration.GetOption('general','use_ipv6'));
+    SetLanguage(Configuration.GetOption('general','language'));
 
     SetBhyveCmd(Configuration.GetOption('bhyve-tools','bhyve_cmd'));
     SetBhyvectlCmd(Configuration.GetOption('bhyve-tools','bhyvectl_cmd'));
@@ -116,6 +120,9 @@ begin
 
     Configuration.Free;
 
+    SetDefaultLang(Language, DatadirPath+'languages');
+    Translations.TranslateUnitResourceStrings('LCLStrConsts', DatadirPath+'languages/lcl/lclstrconsts.'+Language+'.po');
+
     LoadKernelModule('vmm');
     LoadKernelModule('nmdm');
 
@@ -128,7 +135,7 @@ begin
     {$ENDIF DEBUG}
 
     RequireDerivedFormResource:=True;
-    Application.Scaled:=True;
+  Application.Scaled:=True;
     Application.Initialize;
     Application.CreateForm(TFormBhyveManager, FormBhyveManager);
     Application.Run;

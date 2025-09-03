@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
-  EditBtn, ComCtrls;
+  EditBtn, ComCtrls, LCLTranslator;
 
 type
 
@@ -53,7 +53,6 @@ type
     Label6: TLabel;
     StatusBarPassthruDevice: TStatusBar;
     procedure ComboBoxDeviceChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
   public
@@ -70,7 +69,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_global, unit_util;
+  unit_global, unit_util, unit_language;
 
 { TFormPassthruDevice }
 
@@ -80,11 +79,6 @@ begin
   begin
     EditDescripcion.Text:=GetPciDeviceDescripcion(ComboBoxDevice.Text);
   end;
-end;
-
-procedure TFormPassthruDevice.FormShow(Sender: TObject);
-begin
-  FormPassthruDevice.Caption:=FormBhyveManagerPassthruDeviceTitle;
 end;
 
 procedure TFormPassthruDevice.FillComboDevice(Combo: TComboBox);
@@ -118,10 +112,12 @@ procedure TFormPassthruDevice.LoadDefaultValues();
 begin
   FillComboDevice(ComboBoxDevice);
 
+  EditDescripcion.Text:=EmptyStr;
+
   if ComboBoxDevice.Items.Count = 0 then
   begin
     StatusBarPassthruDevice.Font.Color:=clRed;
-    StatusBarPassthruDevice.SimpleText:='ppt devices were not detected';
+    StatusBarPassthruDevice.SimpleText:=ppt_devices_status;
   end;
 end;
 

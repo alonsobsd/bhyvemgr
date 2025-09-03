@@ -4,12 +4,12 @@ object FormVmInfo: TFormVmInfo
   Top = 482
   Width = 584
   BorderStyle = bsSingle
-  Caption = 'FormVmInfo'
+  Caption = 'Bhyve Manager - Edit virtual machine info'
   ClientHeight = 247
   ClientWidth = 584
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.0.0.4'
+  LCLVersion = '4.2.0.0'
   OnShow = FormShow
   object GroupBox1: TGroupBox
     Left = 8

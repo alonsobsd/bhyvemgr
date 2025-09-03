@@ -16,13 +16,17 @@
       </XPManifest>
       <Icon Value="0"/>
     </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="../languages"/>
+    </i18n>
     <BuildModes>
       <Item Name="Release" Default="True"/>
       <Item Name="Debug">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bhyvemgr"/>
+            <Filename Value="../bhyvemgr"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -267,12 +271,16 @@
         <Filename Value="../components/uniqueinstance/uniqueinstanceraw.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="unit_language.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="bhyvemgr"/>
+      <Filename Value="../bhyvemgr"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

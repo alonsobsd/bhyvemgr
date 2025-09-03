@@ -1,0 +1,1508 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Bhyvemgr\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-02\n"
+"PO-Revision-Date: 2025-09-02\n"
+"Last-Translator: Alonso Cárdenas <acardenas@bsd-peru.org>\n"
+"Language-Team: Español; Castellano <>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Native-Language: Español\n"
+
+#: tformabout.caption
+msgid "Bhyve Manager - About"
+msgstr "Bhyve Manager - Acerca"
+
+#: tformabout.label1.caption
+msgid "Bhyve Manager"
+msgstr ""
+
+#: tformabout.labelarch.caption
+msgid "LabelArch"
+msgstr ""
+
+#: tformabout.labelversion.caption
+msgid "LabelVersion"
+msgstr ""
+
+#: tformaudiodevice.bitbtnsave.caption
+msgctxt "tformaudiodevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformaudiodevice.caption
+msgid "Audio device"
+msgstr ""
+
+#: tformaudiodevice.editplaydevice.text
+msgid "EditPlayDevice"
+msgstr ""
+
+#: tformaudiodevice.editrecdevice.text
+msgid "EditRecDevice"
+msgstr ""
+
+#: tformaudiodevice.groupbox1.caption
+msgctxt "tformaudiodevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformaudiodevice.label1.caption
+msgid "Play"
+msgstr "Repr."
+
+#: tformaudiodevice.label2.caption
+msgid "Rec"
+msgstr "Grab."
+
+#: tformbhyvemanager.caption
+msgid "Bhyve Manager - FreeBSD"
+msgstr ""
+
+#: tformbhyvemanager.devicesettingstabsheet.caption
+msgid "Device settings"
+msgstr "Configuración de dispositivos"
+
+#: tformbhyvemanager.globalsettingstabsheet.caption
+msgid "Global settings"
+msgstr "Configuraciones globales"
+
+#: tformbhyvemanager.label1.caption
+msgid "System type"
+msgstr "Tipo de sistema"
+
+#: tformbhyvemanager.label2.caption
+msgctxt "tformbhyvemanager.label2.caption"
+msgid "Version"
+msgstr "Versión"
+
+#: tformbhyvemanager.label4.caption
+msgctxt "tformbhyvemanager.label4.caption"
+msgid "Description"
+msgstr "Descripción"
+
+#: tformbhyvemanager.menuitem5.caption
+msgid "&File"
+msgstr "Arc&hivo"
+
+#: tformbhyvemanager.menuitem6.caption
+msgid "&Options"
+msgstr "&Opciones"
+
+#: tformbhyvemanager.menuitem7.caption
+msgid "&Help"
+msgstr "A&yuda"
+
+#: tformbhyvemanager.menuitemabout.caption
+msgid "A&bout"
+msgstr "A&cerca"
+
+#: tformbhyvemanager.menuitemexit.caption
+msgid "&Exit"
+msgstr "&Salir"
+
+#: tformbhyvemanager.menuitemsettings.caption
+msgid "Sett&ings"
+msgstr "Conf&iguración"
+
+#: tformbhyvemanager.speedbuttonaddvm.caption
+msgid "&Add"
+msgstr "&Agregar"
+
+#: tformbhyvemanager.speedbuttonaddvm.hint
+msgid "Add a new VM"
+msgstr "Agrega una nueva VM"
+
+#: tformbhyvemanager.speedbuttonreloadvmconfig.caption
+msgid "R&eload"
+msgstr "R&ecargar"
+
+#: tformbhyvemanager.speedbuttonremovevm.caption
+msgid "&Remove"
+msgstr "&Remover"
+
+#: tformbhyvemanager.speedbuttonstartvm.caption
+msgid "&Start"
+msgstr "I&niciar"
+
+#: tformbhyvemanager.speedbuttonstopvm.caption
+msgid "S&top"
+msgstr "De&tener"
+
+#: tformbhyvemanager.speedbuttonvncvm.caption
+msgid "V&NC"
+msgstr "V&NC"
+
+#: tformbhyvemanager.virtualmachinesgroupbox.caption
+msgid "Virtual machines"
+msgstr "Máquinas virtuales"
+
+#: tformchangevalue.bitbtnsave.caption
+msgid "BitBtnSave"
+msgstr ""
+
+#: tformchangevalue.bitbtnsave.hint
+msgid "Save value"
+msgstr "Grabar valor"
+
+#: tformchangevalue.caption
+msgid "FormChangeValue"
+msgstr ""
+
+#: tformchangevalue.comboboxvalue.text
+msgid "ComboBoxValue"
+msgstr ""
+
+#: tformchangevalue.label1.caption
+msgid "Value"
+msgstr "Valor"
+
+#: tformconsoledevice.bitbtnsave.caption
+msgctxt "tformconsoledevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformconsoledevice.caption
+msgid "Console device"
+msgstr ""
+
+#: tformconsoledevice.groupbox1.caption
+msgctxt "tformconsoledevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformconsoledevice.label3.caption
+msgctxt "tformconsoledevice.label3.caption"
+msgid "Device"
+msgstr "Dispositivo"
+
+#: tformconsoledevice.label5.caption
+msgctxt "tformconsoledevice.label5.caption"
+msgid "Name"
+msgstr "Nombre"
+
+#: tformconsoledevice.label6.caption
+msgctxt "tformconsoledevice.label6.caption"
+msgid "Path"
+msgstr "Ruta"
+
+#: tformdisplaydevice.bitbtnsave.caption
+msgctxt "tformdisplaydevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformdisplaydevice.caption
+msgid "Display device"
+msgstr ""
+
+#: tformdisplaydevice.checkboxonlylocalhost.caption
+msgctxt "tformdisplaydevice.checkboxonlylocalhost.caption"
+msgid "Only localhost VNC connection"
+msgstr "Solo conexión VNC local"
+
+#: tformdisplaydevice.checkboxusepassword.caption
+msgid "Use password"
+msgstr "Usar contraseña"
+
+#: tformdisplaydevice.checkboxwaitvnc.caption
+msgid "Wait for VNC connection"
+msgstr "Esperar por conexión VNC"
+
+#: tformdisplaydevice.groupbox1.caption
+msgctxt "tformdisplaydevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformdisplaydevice.label1.caption
+msgctxt "tformdisplaydevice.label1.caption"
+msgid "Resolution"
+msgstr "Resolución"
+
+#: tformdisplaydevice.label4.caption
+msgctxt "tformdisplaydevice.label4.caption"
+msgid "Password"
+msgstr "Contraseña"
+
+#: tformdisplaydevice.label5.caption
+msgid "Vga"
+msgstr "Vga"
+
+#: tformdisplaydevice.label6.caption
+msgid "Host"
+msgstr "Host"
+
+#: tformhostbridgedevice.bitbtnsave.caption
+msgctxt "tformhostbridgedevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformhostbridgedevice.caption
+msgid "Hostbridge device"
+msgstr ""
+
+#: tformhostbridgedevice.comboboxhostbridgedevice.text
+msgid "hostbridge"
+msgstr ""
+
+#: tformhostbridgedevice.groupbox1.caption
+msgctxt "tformhostbridgedevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformhostbridgedevice.label1.caption
+msgctxt "tformhostbridgedevice.label1.caption"
+msgid "Device"
+msgstr "Dispositivo"
+
+#: tforminputdevice.bitbtnsave.caption
+msgctxt "tforminputdevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tforminputdevice.caption
+msgid "Input device"
+msgstr ""
+
+#: tforminputdevice.groupbox1.caption
+msgctxt "tforminputdevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tforminputdevice.label1.caption
+msgctxt "tforminputdevice.label1.caption"
+msgid "Path"
+msgstr "Ruta"
+
+#: tformlpcdevice.bitbtnsave.caption
+msgctxt "tformlpcdevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformlpcdevice.caption
+msgid "LPC device"
+msgstr ""
+
+#: tformlpcdevice.checkboxpcdebug.caption
+msgid "Enable pc debug/test device"
+msgstr "Habilitar dispositivo pc debug/test"
+
+#: tformlpcdevice.groupbox1.caption
+msgctxt "tformlpcdevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformlpcdevice.label1.caption
+msgid "Com2"
+msgstr ""
+
+#: tformlpcdevice.label2.caption
+msgid "Com3"
+msgstr ""
+
+#: tformlpcdevice.label3.caption
+msgid "Bootrom"
+msgstr ""
+
+#: tformlpcdevice.label4.caption
+msgid "Bootvars"
+msgstr ""
+
+#: tformlpcdevice.label5.caption
+msgid "Com1"
+msgstr ""
+
+#: tformlpcdevice.label6.caption
+msgid "Com4"
+msgstr ""
+
+#: tformnetworkdevice.bitbtnsave.caption
+msgctxt "tformnetworkdevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformnetworkdevice.caption
+msgid "Network device"
+msgstr ""
+
+#: tformnetworkdevice.groupbox1.caption
+msgctxt "tformnetworkdevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformnetworkdevice.label1.caption
+msgctxt "tformnetworkdevice.label1.caption"
+msgid "Device"
+msgstr "Dispositivo"
+
+#: tformnetworkdevice.label10.caption
+msgid "Backend"
+msgstr ""
+
+#: tformnetworkdevice.label13.caption
+msgid "Mac"
+msgstr ""
+
+#: tformnetworkdevice.label4.caption
+msgid "Mtu"
+msgstr ""
+
+#: tformpassthrudevice.bitbtnsave.caption
+msgctxt "tformpassthrudevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformpassthrudevice.caption
+msgid "Passthru Device"
+msgstr ""
+
+#: tformpassthrudevice.groupbox1.caption
+msgctxt "tformpassthrudevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformpassthrudevice.label1.caption
+msgctxt "tformpassthrudevice.label1.caption"
+msgid "Device"
+msgstr "Dispositivo"
+
+#: tformpassthrudevice.label4.caption
+msgctxt "tformpassthrudevice.label4.caption"
+msgid "Description"
+msgstr "Descripción"
+
+#: tformpassthrudevice.label6.caption
+msgid "Rom"
+msgstr ""
+
+#: tformrdpconnection.bitbtnconnect.caption
+msgid "Connect"
+msgstr "Conectar"
+
+#: tformrdpconnection.caption
+msgid "FormRdpConnection"
+msgstr ""
+
+#: tformrdpconnection.groupbox1.caption
+msgid "RDP Login credentials"
+msgstr "Credenciales de acceso RDP"
+
+#: tformrdpconnection.label1.caption
+msgctxt "tformrdpconnection.label1.caption"
+msgid "Resolution"
+msgstr "Resolución"
+
+#: tformrdpconnection.label4.caption
+msgctxt "tformrdpconnection.label4.caption"
+msgid "Password"
+msgstr "Contraseña"
+
+#: tformrdpconnection.label6.caption
+msgctxt "tformrdpconnection.label6.caption"
+msgid "Username"
+msgstr "Usuario"
+
+#: tformsettings.bitbtncalculateipv6.caption
+msgid "Calculate"
+msgstr "Calcular"
+
+#: tformsettings.bitbtnclosesettings.caption
+msgid "Close settings"
+msgstr "Cerrar configuración"
+
+#: tformsettings.bitbtnsavesettings.caption
+msgid "Save settings"
+msgstr "Grabar configuración"
+
+#: tformsettings.caption
+msgid "Bhyve Manager - Settings"
+msgstr "Bhyve Manager - Configuración"
+
+#: tformsettings.checkboxusednsmasq.caption
+msgid "Use dnsmasq for DHCP/DNS support"
+msgstr "dnmasq para soporte DHCP/DNS"
+
+#: tformsettings.checkboxuseipv6.caption
+msgid "Use dnsmasq for IPv6 support"
+msgstr "dnsmasq para soporte IPv6"
+
+#: tformsettings.checkboxusesudo.caption
+msgid "Use sudo instead of doas"
+msgstr "Usar sudo en vez de doas"
+
+#: tformsettings.checkboxusesystray.caption
+msgid "Enable systray icon (need restart)"
+msgstr "Habilita systray (necesita reiniciar)"
+
+#: tformsettings.checkboxusezfs.caption
+msgid "Use ZFS support if it is available"
+msgstr "Usa ZFS si está disponible"
+
+#: tformsettings.comboboxzpool.text
+msgid "zroot"
+msgstr ""
+
+#: tformsettings.editbridgeinterface.text
+msgid "bhyve0"
+msgstr ""
+
+#: tformsettings.editbridgeipv6.text
+msgid "editbridgeipv6"
+msgstr ""
+
+#: tformsettings.editbridgemac.text
+msgid "editbridgemac"
+msgstr ""
+
+#: tformsettings.editrdpargs.text
+msgid "EditRdpArgs"
+msgstr ""
+
+#: tformsettings.editsubnet.text
+msgid "10.0.0.0/24"
+msgstr ""
+
+#: tformsettings.editvmpathsetting.text
+msgid "EditVmPathSetting"
+msgstr ""
+
+#: tformsettings.editzfscreateoptions.text
+msgid "EditZfsCreateOptions"
+msgstr ""
+
+#: tformsettings.filenameeditbhyve.text
+msgid "/usr/sbin/bhyve"
+msgstr ""
+
+#: tformsettings.filenameeditbhyvectl.text
+msgid "/usr/sbin/bhyvectl"
+msgstr ""
+
+#: tformsettings.filenameeditbhyveload.text
+msgid "/usr/sbin/bhyveload"
+msgstr ""
+
+#: tformsettings.filenameeditdoas.text
+msgid "/usr/local/bin/doas"
+msgstr ""
+
+#: tformsettings.filenameeditqemuimg.text
+msgid "/usr/local/bin/qemu-img"
+msgstr ""
+
+#: tformsettings.filenameeditsudo.text
+msgid "/usr/local/bin/sudo"
+msgstr ""
+
+#: tformsettings.filenameeditswtpm.text
+msgid "/usr/local/bin/swtpm"
+msgstr ""
+
+#: tformsettings.filenameeditswtpmioctl.text
+msgid "/usr/local/bin/swtpm_ioctl"
+msgstr ""
+
+#: tformsettings.filenameeditvncviewer.text
+msgid "/usr/local/bin/remote-viewer"
+msgstr ""
+
+#: tformsettings.filenameeditxfreerdp.text
+msgid "/usr/local/bin/xfreerdp3"
+msgstr ""
+
+#: tformsettings.groupboxbhyvepaths.caption
+msgid "Bhyve paths"
+msgstr "Rutas de bhyve"
+
+#: tformsettings.groupboxextratoolpaths.caption
+msgid "Extra tool paths"
+msgstr "Rutas de herramientas extra"
+
+#: tformsettings.groupboxnetworksettings.caption
+msgid "Network settings"
+msgstr "Configuración de red"
+
+#: tformsettings.groupboxremotetoolpaths.caption
+msgid "Remote tool paths"
+msgstr "Rutas de herramienta remota"
+
+#: tformsettings.groupboxremotetoolsettings.caption
+msgid "Remote tool settings"
+msgstr "Configuración de herramienta remota"
+
+#: tformsettings.groupboxswtpmtoolpaths.caption
+msgid "Swtpm tool paths"
+msgstr "Ruta de Swtpm"
+
+#: tformsettings.groupboxusertoolpaths.caption
+msgid "User tool paths"
+msgstr "Rutas de herramienta de usuario"
+
+#: tformsettings.groupboxzfssettings.caption
+msgid "ZFS settings"
+msgstr "Configuración de ZFS"
+
+#: tformsettings.label1.caption
+msgid "VM directory"
+msgstr "Directorio de VM"
+
+#: tformsettings.label12.caption
+msgid "/64"
+msgstr ""
+
+#: tformsettings.label13.caption
+msgid "Bridge MAC"
+msgstr ""
+
+#: tformsettings.label2.caption
+msgid "bhyve"
+msgstr ""
+
+#: tformsettings.label20.caption
+msgid "Bridge interface"
+msgstr "Interfaz de bridge"
+
+#: tformsettings.label21.caption
+msgid "Subnet"
+msgstr ""
+
+#: tformsettings.label22.caption
+msgid "vnc viewer"
+msgstr ""
+
+#: tformsettings.label23.caption
+msgid "xfreerdp client"
+msgstr "cliente xfreerdp"
+
+#: tformsettings.label24.caption
+msgid "swtpm"
+msgstr ""
+
+#: tformsettings.label25.caption
+msgid "swtpm_ioctl"
+msgstr ""
+
+#: tformsettings.label27.caption
+msgid "Zpool"
+msgstr ""
+
+#: tformsettings.label28.caption
+msgid "Zfs create options"
+msgstr "Opciones ZFS"
+
+#: tformsettings.label29.caption
+msgid "Xfreerdp args"
+msgstr "Opciones FreeRDP"
+
+#: tformsettings.label3.caption
+msgid "bhyvectl"
+msgstr ""
+
+#: tformsettings.label31.caption
+msgid "sudo"
+msgstr ""
+
+#: tformsettings.label32.caption
+msgid "doas"
+msgstr ""
+
+#: tformsettings.label33.caption
+msgid "Bridge IPv6"
+msgstr ""
+
+#: tformsettings.label34.caption
+msgid "Cloud/VM images"
+msgstr "Imágenes Cloud/VM"
+
+#: tformsettings.label4.caption
+msgid "bhyveload"
+msgstr ""
+
+#: tformsettings.label5.caption
+msgid "qemu-img"
+msgstr ""
+
+#: tformsettings.labelnetmask.caption
+msgid "LabelNetmask"
+msgstr ""
+
+#: tformsettings.prefix.caption
+msgid "IPv6 prefix"
+msgstr "Prefijo IPv6"
+
+#: tformsettings.tabsheetgeneral.caption
+#, fuzzy
+msgctxt "tformsettings.tabsheetgeneral.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformsettings.tabsheetpaths.caption
+#, fuzzy
+msgctxt "tformsettings.tabsheetpaths.caption"
+msgid "Path settings"
+msgstr "Configuración de rutas"
+
+#: tformsharefolderdevice.bitbtnsave.caption
+msgctxt "tformsharefolderdevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformsharefolderdevice.caption
+msgid "Share folder device"
+msgstr ""
+
+#: tformsharefolderdevice.checkboxreadonly.caption
+msgid "Read only"
+msgstr "Solo lectura"
+
+#: tformsharefolderdevice.groupbox1.caption
+msgctxt "tformsharefolderdevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformsharefolderdevice.label3.caption
+msgctxt "tformsharefolderdevice.label3.caption"
+msgid "Device"
+msgstr "Dispositivo"
+
+#: tformsharefolderdevice.label5.caption
+msgid "Sharename"
+msgstr ""
+
+#: tformsharefolderdevice.label6.caption
+msgctxt "tformsharefolderdevice.label6.caption"
+msgid "Path"
+msgstr "Ruta"
+
+#: tformstoragedevice.bitbtnsave.caption
+msgctxt "tformstoragedevice.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformstoragedevice.caption
+msgid "Storage device"
+msgstr ""
+
+#: tformstoragedevice.checkboxnocache.caption
+msgid "no cache"
+msgstr ""
+
+#: tformstoragedevice.checkboxnodelete.caption
+msgid "no delete"
+msgstr "no borrar"
+
+#: tformstoragedevice.checkboxnvmuseram.caption
+msgid "use ram"
+msgstr "Usar ram"
+
+#: tformstoragedevice.checkboxreadonly.caption
+msgid "read-only"
+msgstr "solo-lectura"
+
+#: tformstoragedevice.checkboxsync.caption
+msgid "sync"
+msgstr ""
+
+#: tformstoragedevice.comboboxahcinmrr.text
+msgid "0"
+msgstr ""
+
+#: tformstoragedevice.comboboxnvmedsm.text
+msgid "auto"
+msgstr ""
+
+#: tformstoragedevice.editahcimodel.text
+msgid "EditAhciModel"
+msgstr ""
+
+#: tformstoragedevice.editahcirev.text
+msgid "EditAhci"
+msgstr ""
+
+#: tformstoragedevice.editahcisectorsize.text
+msgid "EditAhciSectorSize"
+msgstr ""
+
+#: tformstoragedevice.editnvmeeui64.text
+msgid "EditNvmeEui64"
+msgstr ""
+
+#: tformstoragedevice.editnvmeioslots.text
+msgid "EditNvmeIoslots"
+msgstr ""
+
+#: tformstoragedevice.editnvmemaxq.text
+msgid "EditNvmeMaxq"
+msgstr ""
+
+#: tformstoragedevice.editnvmeqsz.text
+msgid "EditNvmeQsz"
+msgstr ""
+
+#: tformstoragedevice.editnvmesectsz.text
+msgid "EditNvmeSectsz"
+msgstr ""
+
+#: tformstoragedevice.editser.text
+msgid "EditSer"
+msgstr ""
+
+#: tformstoragedevice.groupbox1.caption
+msgctxt "tformstoragedevice.groupbox1.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformstoragedevice.groupboxahci.caption
+msgid "AHCI settings"
+msgstr "Configuración AHCI"
+
+#: tformstoragedevice.groupboxnvme.caption
+msgid "Nvme settings"
+msgstr "Configuración Nvme"
+
+#: tformstoragedevice.label1.caption
+msgctxt "tformstoragedevice.label1.caption"
+msgid "Storage"
+msgstr "Almacena."
+
+#: tformstoragedevice.label10.caption
+msgid "Ser"
+msgstr ""
+
+#: tformstoragedevice.label11.caption
+msgid "Rev"
+msgstr ""
+
+#: tformstoragedevice.label12.caption
+msgid "Model"
+msgstr ""
+
+#: tformstoragedevice.label13.caption
+msgid "Eui64"
+msgstr ""
+
+#: tformstoragedevice.label14.caption
+msgid "Dsm"
+msgstr ""
+
+#: tformstoragedevice.label15.caption
+msgctxt "tformstoragedevice.label15.caption"
+msgid "MB"
+msgstr ""
+
+#: tformstoragedevice.label16.caption
+msgid "Ram"
+msgstr ""
+
+#: tformstoragedevice.label17.caption
+msgctxt "tformstoragedevice.label17.caption"
+msgid "Size"
+msgstr "Tamaño"
+
+#: tformstoragedevice.label18.caption
+msgctxt "tformstoragedevice.label18.caption"
+msgid "GB"
+msgstr ""
+
+#: tformstoragedevice.label2.caption
+msgctxt "tformstoragedevice.label2.caption"
+msgid "Type"
+msgstr "Tipo"
+
+#: tformstoragedevice.label3.caption
+msgctxt "tformstoragedevice.label3.caption"
+msgid "Path"
+msgstr "Ruta"
+
+#: tformstoragedevice.label4.caption
+msgid "Sectorsize"
+msgstr ""
+
+#: tformstoragedevice.label5.caption
+msgid "Nmrr"
+msgstr ""
+
+#: tformstoragedevice.label6.caption
+msgid "Maxq"
+msgstr ""
+
+#: tformstoragedevice.label7.caption
+msgid "Qsz"
+msgstr ""
+
+#: tformstoragedevice.label8.caption
+msgid "Ioslots"
+msgstr ""
+
+#: tformstoragedevice.label9.caption
+msgid "Sectsz"
+msgstr ""
+
+#: tformvmcreate.bitbtncreatevm.caption
+msgid "Create Virtual Machine"
+msgstr "Crear máquina virtual"
+
+#: tformvmcreate.bitbtndownload.caption
+msgid "&Download"
+msgstr "&Descargar"
+
+#: tformvmcreate.caption
+msgid "Bhyve Manager - Create virtual machine"
+msgstr "Bhyve Manager - Crear máquina virtual"
+
+#: tformvmcreate.checkboxframebuffer.caption
+msgid "Enable framebuffer"
+msgstr "Habilitar framebuffer"
+
+#: tformvmcreate.checkboximagefiles.caption
+msgid "Use files configuration"
+msgstr "Configuración desde archivos"
+
+#: tformvmcreate.checkboximageminimal.caption
+msgid "Use minimal configuration"
+msgstr "Configuración mínima"
+
+#: tformvmcreate.checkboximageusesudo.caption
+msgid "Use sudo"
+msgstr "Usar sudo"
+
+#: tformvmcreate.checkboxipv6address.caption
+msgctxt "tformvmcreate.checkboxipv6address.caption"
+msgid "Use IPv6"
+msgstr "Usar IPv6"
+
+#: tformvmcreate.checkboxonlylocalhost.caption
+msgctxt "tformvmcreate.checkboxonlylocalhost.caption"
+msgid "Only localhost VNC connection"
+msgstr "Solo conexión VNC local"
+
+#: tformvmcreate.checkboxuefibootvars.caption
+msgid "Enable UEFI bootvars"
+msgstr "Habilita UEFI bootvars"
+
+#: tformvmcreate.checkboxusemedia.caption
+msgid "Use a CD/DVD media"
+msgstr "Usar CD/DVD"
+
+#: tformvmcreate.checkboxusestaticipv4.caption
+msgid "Use static IPv4"
+msgstr "Usar IPv4 estática"
+
+#: tformvmcreate.checkboxwaitvnc.caption
+msgid "Wait for VNC connection for boot"
+msgstr "Esperar por una conexión VNC para iniciar"
+
+#: tformvmcreate.groupbox1.caption
+msgid "Name and operating system"
+msgstr "Nombre y sistema operativo"
+
+#: tformvmcreate.groupbox2.caption
+msgid "Initial configuration"
+msgstr "Configuración inicial"
+
+#: tformvmcreate.groupboxdownloadimage.caption
+msgid "Download image"
+msgstr "Descargar imagen"
+
+#: tformvmcreate.groupboxfileconfig.caption
+msgid "Files configuration"
+msgstr "Configuración desde archivos"
+
+#: tformvmcreate.groupboxminimalconfiguration.caption
+msgid "Minimal configuration"
+msgstr "Configuración mínima"
+
+#: tformvmcreate.groupboxnewvirtualdisk.caption
+msgid "New virtual disk"
+msgstr "Nuevo disco virtual"
+
+#: tformvmcreate.groupboxselectimage.caption
+msgid "Select image"
+msgstr "Selección de imagen"
+
+#: tformvmcreate.groupboxstaticipv4.caption
+msgid "Static IPv4 settings"
+msgstr "Configuración IPv4 estática"
+
+#: tformvmcreate.label1.caption
+msgid "Memory"
+msgstr "Memoria"
+
+#: tformvmcreate.label10.caption
+msgid "Select media"
+msgstr "Seleccionar medio"
+
+#: tformvmcreate.label11.caption
+msgctxt "tformvmcreate.label11.caption"
+msgid "Storage"
+msgstr "Almacen."
+
+#: tformvmcreate.label12.caption
+msgctxt "tformvmcreate.label12.caption"
+msgid "Description"
+msgstr "Descripción"
+
+#: tformvmcreate.label13.caption
+msgid "SSH key"
+msgstr "Llave SSH"
+
+#: tformvmcreate.label14.caption
+msgid "IPv4 address"
+msgstr "Dirección IPv4"
+
+#: tformvmcreate.label15.caption
+msgid "Gateway"
+msgstr ""
+
+#: tformvmcreate.label16.caption
+msgctxt "tformvmcreate.label16.caption"
+msgid "Username"
+msgstr "Usuario"
+
+#: tformvmcreate.label17.caption
+msgctxt "tformvmcreate.label17.caption"
+msgid "Image"
+msgstr "Imagen"
+
+#: tformvmcreate.label18.caption
+msgid "DNS Servers"
+msgstr "Servidores DNS"
+
+#: tformvmcreate.label2.caption
+msgctxt "tformvmcreate.label2.caption"
+msgid "Size"
+msgstr "Tamaño"
+
+#: tformvmcreate.label22.caption
+msgid "Url"
+msgstr "Url"
+
+#: tformvmcreate.label27.caption
+msgid "User data"
+msgstr ""
+
+#: tformvmcreate.label28.caption
+msgid "Meta data"
+msgstr ""
+
+#: tformvmcreate.label29.caption
+msgid "Network config"
+msgstr ""
+
+#: tformvmcreate.label3.caption
+msgctxt "tformvmcreate.label3.caption"
+msgid "Name"
+msgstr "Nombre"
+
+#: tformvmcreate.label4.caption
+msgctxt "tformvmcreate.label4.caption"
+msgid "MB"
+msgstr ""
+
+#: tformvmcreate.label5.caption
+msgctxt "tformvmcreate.label5.caption"
+msgid "GB"
+msgstr ""
+
+#: tformvmcreate.label6.caption
+msgid "Folder"
+msgstr "Directorio"
+
+#: tformvmcreate.label7.caption
+msgctxt "tformvmcreate.label7.caption"
+msgid "Type"
+msgstr "Tipo"
+
+#: tformvmcreate.label8.caption
+msgctxt "tformvmcreate.label8.caption"
+msgid "Version"
+msgstr "Versión"
+
+#: tformvmcreate.label9.caption
+msgctxt "tformvmcreate.label9.caption"
+msgid "Type"
+msgstr "Tipo"
+
+#: tformvmcreate.labeldownloadstatus.caption
+msgid "Status"
+msgstr ""
+
+#: tformvmcreate.radiobuttondiskfromimage.caption
+msgid "Create a virtual disk from image"
+msgstr "Crear un disco virtual desde imagen"
+
+#: tformvmcreate.radiobuttonnewdisk.caption
+msgid "Create and use new virtual disk"
+msgstr "Crear y usar un nuevo disco virtual"
+
+#: tformvmcreate.radiobuttonnotdisk.caption
+msgid "Do not add virtual disk"
+msgstr "No agregar un disco virtual"
+
+#: tformvmcreate.tabsheetgeneral.caption
+msgid "General"
+msgstr ""
+
+#: tformvmcreate.tabsheetimage.caption
+msgctxt "tformvmcreate.tabsheetimage.caption"
+msgid "Image"
+msgstr "Imagen"
+
+#: tformvminfo.bitbtnsave.caption
+msgctxt "tformvminfo.bitbtnsave.caption"
+msgid "Save"
+msgstr "Grabar"
+
+#: tformvminfo.caption
+msgid "Bhyve Manager - Edit virtual machine info"
+msgstr "Bhyve Manager - Editar info de máquina vitual"
+
+#: tformvminfo.checkboxipv6.caption
+msgctxt "tformvminfo.checkboxipv6.caption"
+msgid "Use IPv6"
+msgstr "Usar IPv6"
+
+#: tformvminfo.checkboxrdp.caption
+msgid "Works with RDP connection"
+msgstr "Funciona con conexión RDP"
+
+#: tformvminfo.groupbox1.caption
+msgid "General info"
+msgstr "Información general"
+
+#: tformvminfo.label3.caption
+msgctxt "tformvminfo.label3.caption"
+msgid "Type"
+msgstr "Tipo"
+
+#: tformvminfo.label4.caption
+msgctxt "tformvminfo.label4.caption"
+msgid "Version"
+msgstr "Versión"
+
+#: tformvminfo.label5.caption
+msgctxt "tformvminfo.label5.caption"
+msgid "Name"
+msgstr "Nombre"
+
+#: tformvminfo.label6.caption
+msgctxt "tformvminfo.label6.caption"
+msgid "Description"
+msgstr "Descripción"
+
+#: unit_language.app_error_status
+#, object-pascal-format
+msgid "%0:s: VM : %1:s: process generated an error: %2:s:"
+msgstr "%0:s: VM : proceso %1:s: generó un error: %2:s:"
+
+#: unit_language.calculated_ipv6
+#, object-pascal-format
+msgid "Now, assign this IPv6 address to %s interface. Do not forget add accept_rtadv and auto_linklocal options to it too."
+msgstr "Ahora, asigna la dirección IPv6 a la interfaz %s. No olvides agregar las opciones accept_rtadv y auto_linklocal."
+
+#: unit_language.check_base_binary
+#, object-pascal-format
+msgid "%s binary was not found"
+msgstr "%s no ha sido encontrado "
+
+#: unit_language.check_boot_media
+msgid "CD/DVD media does not exist."
+msgstr "Fuente de CD/DVD no existe"
+
+#: unit_language.check_bridge
+msgid "A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings."
+msgstr "Un nombre de bridge debe ser definido. Será usado por bhyvemgr para la configuración de red de máquinas virtuales"
+
+#: unit_language.check_device_type
+msgid "You must select a virtual device type. e.g, ahci-hd, nvme, etc."
+msgstr "Debes seleecionar un tipo de dispositivo virtual. p. ej. ahci-hd, nvme, etc."
+
+#: unit_language.check_disk_size
+#, object-pascal-format
+msgid "The virtual disk size can not be less than %s"
+msgstr "El tamaño de disco no puede ser menor a %s"
+
+#: unit_language.check_dns
+msgid "DNS Servers is not valid."
+msgstr "Servidor DNS no es válido"
+
+#: unit_language.check_dnsmasq
+msgid "dnsmasq was not found. Please install dns/dnsmasq for fix it"
+msgstr "dnsmasq no fue encontrado. Por favor, instale dns/dnsmasq para corregirlo"
+
+#: unit_language.check_doas
+msgid "doas was not found. Please install security/doas for fix it"
+msgstr "doas no fue encontrado. Por favor, instale security/doas para corregirlo"
+
+#: unit_language.check_gateway
+msgid "Gateway is not valid."
+msgstr "Gateway no es válido"
+
+#: unit_language.check_image_path
+msgid "The Cloud/VM image does not exist."
+msgstr "La imagen Cloud/VM no existe"
+
+#: unit_language.check_ipv4
+msgid "IPv4 address is not valid."
+msgstr "Dirección IPv4 no válida"
+
+#: unit_language.check_ipv6
+msgid "A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses."
+msgstr "Un prefijo IPv6 válido debe ser definido. Será usado para asignar direcciones ipv6 a las máquinas virtuales"
+
+#: unit_language.check_metadata_file
+msgid "meta-data file does not exist."
+msgstr "El archivo meta-data no existe"
+
+#: unit_language.check_ssh_key
+msgid "SSH key can not be empty."
+msgstr "La llave SSH no puede ser vacía"
+
+#: unit_language.check_storage_type
+msgid "You must select a virtual storage type. e.g, image file, etc."
+msgstr "Debes seleccionar un tipo virtual de almacenamiento. p.ej. image file, etc."
+
+#: unit_language.check_subnet
+msgid "A valid subnet must be defined. It will be used for assign/generate ip address."
+msgstr "Una subnet válida debe ser definida. Sera usada para asignar/generar direcciones ip"
+
+#: unit_language.check_sudo
+msgid "sudo was not found. Please install security/sudo for fix it"
+msgstr "sudo no fue detectado. Por favor, instale security/sudo para corregirlo"
+
+#: unit_language.check_support_file
+#, object-pascal-format
+msgid "%s file is not supported."
+msgstr "El archivo %s no es soportado."
+
+#: unit_language.check_system_type
+msgid "You must select an operating system type. e.g, BSD, Linux, etc."
+msgstr "Debes seleccionar un tipo de sistema operativo. p.ej. BSD, Linux, etc."
+
+#: unit_language.check_system_version
+msgid "You must select an operating system version. e.g, FreeBSD 15.x, etc."
+msgstr "Debes seleccionar una versión de sistema operativo. p.ej. FreeBSD 15.x, etc."
+
+#: unit_language.check_template_files
+msgid "user-data, meta-data, or network-config are not available at templates directory."
+msgstr "user-data, meta-data, o network-config no estan disponibles en el directorio de templates."
+
+#: unit_language.check_userdata_file
+msgid "user-data file does not exist."
+msgstr "El archivo userdata no existe"
+
+#: unit_language.check_username
+msgid "Username is not valid."
+msgstr "Usuario no válido"
+
+#: unit_language.check_valid_url
+msgid "Enter a valid URL: only http://, https://, or file:// are supported."
+msgstr "Ingrese una URL válida: solo http://, https://, o file:// son soportadas."
+
+#: unit_language.check_vm
+#, object-pascal-format
+msgid "%s virtual machine name is not available"
+msgstr "El nombre de máquina virtual %s no está disponible"
+
+#: unit_language.check_vm_name
+msgid "Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]"
+msgstr "Nombre de máquina virtual no es válido. Caracteres válidos son [a-z][-_][0-9]"
+
+#: unit_language.check_vm_running
+msgid ""
+"bhyvemgr detects VMs running. You must stop them before of close this app. \n"
+"\n"
+"Do you really want to close?"
+msgstr ""
+"bhyvemgr detectó máquinas ejecutandose. Debes detenerlas antes de cerrar la aplicación. \n"
+"\n"
+"¿Realmente deseas cerrar?"
+
+#: unit_language.check_vnc
+msgid "vnc support will not available. net-mgmt/virt-viewer is not installed."
+msgstr "soporte vnc no estará disponible. net-mgmt/virt-viewer no está instalado."
+
+#: unit_language.check_zfs
+msgid "Support for zfs/zpool is not available"
+msgstr "Soporte para zfs/zpool no está disponible"
+
+#: unit_language.compatible_image
+#, object-pascal-format
+msgid "%s could not be compatible with bhyve."
+msgstr "%s podría no ser compatible con bhyve."
+
+#: unit_language.configuration_notice
+msgid "A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press \"Save settings button\" if everything is ok."
+msgstr "Archivo de configuración generado. Un formulario de configuración será abierto para revisar/modificar las opciones de bhyvemgr. Presione \"Botón de grabar configuración\" si todo está correcto."
+
+#: unit_language.convert_status
+msgctxt "unit_language.convert_status"
+msgid "Converting..."
+msgstr "Convirtiendo..."
+
+#: unit_language.copy_status
+#, object-pascal-format
+msgid "Copying %s MB from image..."
+msgstr "Copiando %s MB desde imagen..."
+
+#: unit_language.debugln_bhyve_finished
+msgid "Bhyvemgr was finished"
+msgstr "Bhyvemgr fue finalizado"
+
+#: unit_language.debugln_bhyve_settings_closed
+msgid "Bhyve Settings : settings form was closed."
+msgstr "Configuración de Bhyve : Formulario de configuración fue cerrado."
+
+#: unit_language.debugln_bhyve_settings_opened
+msgid "Bhyve Settings : settings form was opened."
+msgstr "Configuración de Bhyve : Formulario de configuración fue abierto."
+
+#: unit_language.debugln_bhyve_settings_saved
+msgid "Bhyve Settings : settings were saved successfully."
+msgstr "Configuración de Bhyve : Configuraciones fueron grabadas."
+
+#: unit_language.debugln_bhyve_started
+msgid "Bhyvemgr was started"
+msgstr "Bhyvemgr fue iniciado"
+
+#: unit_language.debugln_check_freerdp
+msgid "Bhyve Settings : freerdp support will not be available. net/freerdp3 is not installed."
+msgstr "Configuración de Bhyve : Soporte de freerdp no estará disponible. net/freerdp3 no está instalado."
+
+#: unit_language.debugln_check_qemu
+msgid "Bhyve Settings : qcow2 convert support will not be available. qemu-tools is not installed."
+msgstr "Configuración de Bhyve : Soporte de conversión de qcow2 no estará disponible. qemu-tools no está instalado."
+
+#: unit_language.debugln_dataset_status
+#, object-pascal-format
+msgid "%0:s: : Can not create %1:s: dataset"
+msgstr "%0:s: : No se puede crear el dataset %1:s:"
+
+#: unit_language.debugln_directory_status
+#, object-pascal-format
+msgid "%0:s: : Can not create %1:s: directory"
+msgstr "%0:s: : No se puede crear el directorio %1:s:"
+
+#: unit_language.device_remove_notice
+#, object-pascal-format
+msgctxt "unit_language.device_remove_notice"
+msgid "This action will remove all files/resources created by this device. Do you want remove %s device?"
+msgstr "Esta acción removerá todos los archivos/recursos creados para este dispositivo. ¿Deseas remove el dispositivo %s?"
+
+#: unit_language.device_remove_title
+msgctxt "unit_language.device_remove_title"
+msgid "Virtual machine devices"
+msgstr "Dispositivos de máquina virtual"
+
+#: unit_language.device_status
+#, object-pascal-format
+msgid "%s device can not added/updated."
+msgstr "Dispositivo %s no puede ser agregado/actualizado"
+
+#: unit_language.done_status
+msgid "Done"
+msgstr "Hecho"
+
+#: unit_language.download_status
+msgctxt "unit_language.download_status"
+msgid "Downloading..."
+msgstr "Descargando..."
+
+#: unit_language.edit_global_status
+#, object-pascal-format
+msgid "%0:s: value has been changed to %1:s"
+msgstr "%0:s: valor ha sido cambiado a %1:s"
+
+#: unit_language.error_status
+#, object-pascal-format
+msgid "%0:s process generated an error: %1:s"
+msgstr "proceso %0:s generó un error: %1:s"
+
+#: unit_language.error_title
+msgid "Error message"
+msgstr "Mensaje de error"
+
+#: unit_language.exception_status
+#, object-pascal-format
+msgid "An exception was raised: %s"
+msgstr "Se ha generado una excepción: %s"
+
+#: unit_language.extract_status
+msgid "Extracting..."
+msgstr "Extrayendo..."
+
+#: unit_language.nothing_status
+msgid "Nothing to do"
+msgstr "Nada para hacer"
+
+#: unit_language.no_calculated_ipv6
+#, object-pascal-format
+msgid "%s IPv6 address can not calculated. IPv6 prefix or Mac address are not valid."
+msgstr "Dirección IPv6 de %s no puede ser calculada. Prefijo IPv6 o dirección Mac no son válidos."
+
+#: unit_language.popup_add_device
+msgctxt "unit_language.popup_add_device"
+msgid "Add device"
+msgstr "Agregar dispositivo"
+
+#: unit_language.popup_add_vm
+msgctxt "unit_language.popup_add_vm"
+msgid "Add virtual machine"
+msgstr "Agregar máquina virtual"
+
+#: unit_language.popup_copy_com1_command
+msgctxt "unit_language.popup_copy_com1_command"
+msgid "Copy COM1 command"
+msgstr "Copiar comando COM1"
+
+#: unit_language.popup_copy_ipv4
+msgctxt "unit_language.popup_copy_ipv4"
+msgid "Copy IPv4 address"
+msgstr "Copiar dirección IPv4"
+
+#: unit_language.popup_copy_ipv6
+msgctxt "unit_language.popup_copy_ipv6"
+msgid "Copy IPv6 address"
+msgstr "Copiar dirección IPv6"
+
+#: unit_language.popup_copy_vm_name
+msgctxt "unit_language.popup_copy_vm_name"
+msgid "Copy VM name"
+msgstr "Copiar nombre de VM"
+
+#: unit_language.popup_delete_device
+msgctxt "unit_language.popup_delete_device"
+msgid "Delete device"
+msgstr "Borrar dispositivo"
+
+#: unit_language.popup_edit_device
+msgctxt "unit_language.popup_edit_device"
+msgid "Edit device"
+msgstr "Editar dispositivo"
+
+#: unit_language.popup_edit_global_setting
+msgctxt "unit_language.popup_edit_global_setting"
+msgid "Edit global setting"
+msgstr "Editar configuración global"
+
+#: unit_language.popup_modify_vm
+msgctxt "unit_language.popup_modify_vm"
+msgid "Modify virtual machine info"
+msgstr "Modificar info de máquina virtual"
+
+#: unit_language.popup_rdp_vm
+msgctxt "unit_language.popup_rdp_vm"
+msgid "RDP to virtual machine"
+msgstr "RDP hacia máquina virtual"
+
+#: unit_language.popup_remove_vm
+msgctxt "unit_language.popup_remove_vm"
+msgid "Remove virtual machine"
+msgstr "Remover máquina virtual"
+
+#: unit_language.popup_tray_quit
+msgctxt "unit_language.popup_tray_quit"
+msgid "Quit Bhyvemgr"
+msgstr "Salir de Bhyvemgr"
+
+#: unit_language.popup_tray_show_hide
+msgctxt "unit_language.popup_tray_show_hide"
+msgid "Show/Hide Bhyvemgr"
+msgstr "Mostrar/Ocultar Bhyvemgr"
+
+#: unit_language.ppt_devices_status
+msgid "ppt devices were not detected"
+msgstr "no se han detectado dispositivos ppt"
+
+#: unit_language.retrieve_size
+#, object-pascal-format
+msgid "%0:s can not retrieve %1:s file size."
+msgstr "%0:s no puede obtener el tamaño de archivo de %1:s."
+
+#: unit_language.virtual_machine
+msgid "virtual machine"
+msgstr "máquina virtual"
+
+#: unit_language.vm_create_status
+#, object-pascal-format
+msgctxt "unit_language.vm_create_status"
+msgid "A new %s virtual machine was created"
+msgstr "Una nueva máquina virtual %s fue creada"
+
+#: unit_language.vm_exiterror_status
+#, object-pascal-format
+msgid "%s VM exited due to an error"
+msgstr "%s VM salió debido a un error"
+
+#: unit_language.vm_exit_status
+#, object-pascal-format
+msgid "%s VM exited"
+msgstr "%s VM salió"
+
+#: unit_language.vm_fields_status
+msgid "You must complete all form fields"
+msgstr "Debes completar todos los campos del formulario"
+
+#: unit_language.vm_halt_status
+#, object-pascal-format
+msgid "%s VM is halted"
+msgstr "%s VM se detuvo"
+
+#: unit_language.vm_notremove_status
+#, object-pascal-format
+msgid "%s VM data was not removed"
+msgstr "Los datos de %s VM no fueron removidos"
+
+#: unit_language.vm_poweroff_status
+#, object-pascal-format
+msgid "%s VM has been powered off"
+msgstr "%s VM fue apagada"
+
+#: unit_language.vm_reboot_status
+#, object-pascal-format
+msgid "%s VM is rebooting"
+msgstr "%s VM está reiniciando"
+
+#: unit_language.vm_remove_force
+#, object-pascal-format
+msgid ""
+"%s VM data cannot be removed.\n"
+"\n"
+"Do you want force it?"
+msgstr ""
+"%s VM no se puede remover.\n"
+"\n"
+"¿Deseas forzarlo?"
+
+#: unit_language.vm_remove_notice
+#, object-pascal-format
+msgid "Do you want remove %s VM data?"
+msgstr "¿Deseas remover los datos de %s VM?"
+
+#: unit_language.vm_remove_status
+#, object-pascal-format
+msgid "%s VM data has been removed"
+msgstr "Los datos de %s VM han sido removidos"
+
+#: unit_language.vm_remove_title
+msgid "Remove VM"
+msgstr "Remover VM"
+
+#: unit_language.vm_start_status
+#, object-pascal-format
+msgid "%s VM have been started"
+msgstr "%s VM ha sido iniciada"
+
+#: unit_language.vm_triplefault_status
+#, object-pascal-format
+msgid "%s VM is triple fault"
+msgstr "%s VM tiene triple fallo"
+
+#: unit_language.vm_try_status
+#, object-pascal-format
+msgctxt "unit_language.vm_try_status"
+msgid "Trying create %s virtual machine..."
+msgstr "Intentando crear la máquina virtual %s..."
+

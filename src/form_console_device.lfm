@@ -4,12 +4,11 @@ object FormConsoleDevice: TFormConsoleDevice
   Top = 448
   Width = 345
   BorderStyle = bsSingle
-  Caption = 'FormConsoleDevice'
+  Caption = 'Console device'
   ClientHeight = 220
   ClientWidth = 345
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '4.2.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 144
