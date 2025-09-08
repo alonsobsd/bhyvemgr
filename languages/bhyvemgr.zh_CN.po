@@ -594,7 +594,7 @@ msgstr "zfs 创建选项"
 
 #: tformsettings.label29.caption
 msgid "Xfreerdp args"
-msgstr "Xfreerdp args"
+msgstr "Xfreerdp 参数"
 
 #: tformsettings.label3.caption
 msgid "bhyvectl"
