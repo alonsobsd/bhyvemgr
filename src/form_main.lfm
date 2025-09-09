@@ -23,7 +23,7 @@ object FormBhyveManager: TFormBhyveManager
     Caption = 'Virtual machines'
     ClientHeight = 395
     ClientWidth = 380
-    TabOrder = 0
+    TabOrder = 1
     object VirtualMachinesTreeView: TTreeView
       Left = 16
       Height = 360
@@ -49,7 +49,7 @@ object FormBhyveManager: TFormBhyveManager
     Width = 392
     ActivePage = GlobalSettingsTabSheet
     TabIndex = 0
-    TabOrder = 1
+    TabOrder = 2
     object GlobalSettingsTabSheet: TTabSheet
       Caption = 'Global settings'
       ClientHeight = 389
@@ -120,7 +120,7 @@ object FormBhyveManager: TFormBhyveManager
     Top = 496
     Width = 144
     ReadOnly = True
-    TabOrder = 2
+    TabOrder = 3
   end
   object EditSystemVersion: TEdit
     Left = 136
@@ -128,7 +128,7 @@ object FormBhyveManager: TFormBhyveManager
     Top = 528
     Width = 248
     ReadOnly = True
-    TabOrder = 3
+    TabOrder = 4
   end
   object Label4: TLabel
     Left = 16
@@ -143,7 +143,7 @@ object FormBhyveManager: TFormBhyveManager
     Top = 560
     Width = 408
     ReadOnly = True
-    TabOrder = 4
+    TabOrder = 5
   end
   object SpeedButtonAddVm: TSpeedButton
     Left = 16
@@ -986,17 +986,17 @@ object FormBhyveManager: TFormBhyveManager
     OnClick = SpeedButtonReloadVmConfigClick
   end
   object ComboBoxLanguage: TComboBox
-    Left = 752
+    Left = 736
     Height = 32
     Top = 16
-    Width = 56
+    Width = 72
     ItemHeight = 24
     Style = csDropDownList
-    TabOrder = 6
+    TabOrder = 0
     OnChange = ComboBoxLanguageChange
   end
   object ImageLanguage: TImage
-    Left = 720
+    Left = 704
     Height = 32
     Top = 16
     Width = 32

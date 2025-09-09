@@ -429,6 +429,12 @@ begin
   { Index 22 }
   Image.Picture.LoadFromFile(DatadirPath+'images/systems/linuxmint.png');
   SystemList.Add(Image.Picture.Bitmap, nil);
+  { Index 23 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/systems/cachyos.png');
+  SystemList.Add(Image.Picture.Bitmap, nil);
+  { Index 24 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/systems/zorinos.png');
+  SystemList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;
 end;
@@ -606,6 +612,7 @@ begin
       combo.AddItem('Almalinux 10.x', TObject(15));
       combo.AddItem('Alpinelinux 3.x', TObject(16));
       combo.AddItem('Arch Linux 2025.x', TObject(1));
+      combo.AddItem('CachyOS 25x', TObject(23));
       combo.AddItem('Debian 13.x', TObject(2));
       combo.AddItem('EndeavourOS 2025.x', TObject(17));
       combo.AddItem('Fedora 42.x', TObject(4));
@@ -619,6 +626,7 @@ begin
       combo.AddItem('Rockylinux 10.x', TObject(10));
       combo.AddItem('Ubuntu 24.x', TObject(11));
       combo.AddItem('Ubuntu 25.x', TObject(11));
+      combo.AddItem('Zorin OS 17.x', TObject(24));
       combo.AddItem('Other', TObject(5));
     end;
   'Windows':
