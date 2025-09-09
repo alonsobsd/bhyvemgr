@@ -522,6 +522,7 @@ procedure FillComboLanguage(Combo: TComboBox);
 begin
   Combo.Items.Add('en');
   Combo.Items.Add('es');
+  Combo.Items.Add('zh_CN');
 end;
 
 procedure FillComboTpmDevice(Combo: TComboBox);

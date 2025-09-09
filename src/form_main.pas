@@ -311,6 +311,7 @@ begin
 
   TmpDevicesStringList := TStringList.Create;
 
+  FillComboLanguage(ComboBoxLanguage);
   ComboBoxLanguage.ItemIndex:=ComboBoxLanguage.Items.IndexOf(Language);
 
   FillVirtualMachineList();

@@ -991,10 +991,6 @@ object FormBhyveManager: TFormBhyveManager
     Top = 16
     Width = 56
     ItemHeight = 24
-    Items.Strings = (
-      'en'
-      'es'
-    )
     Style = csDropDownList
     TabOrder = 6
     OnChange = ComboBoxLanguageChange
