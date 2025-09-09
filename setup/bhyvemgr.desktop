@@ -1,7 +1,10 @@
 [Desktop Entry]
 Name=Bhyvemgr
+Name[zh_CN]=Bhyve 管理器
 GenericName=Bhyve management GUI
+GenericName[zh_CN]=图形界面的 Bhyve 管理器
 Comment=Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus for FreeBSD
+Comment[zh_CN]=Bhyve 管理器使用 Freepascal/Lazarus 进行开发，为 FreeBSD 的 bhyve 提供了图形化的管理界面。
 Exec=bhyvemgr %F
 Terminal=false
 Type=Application
