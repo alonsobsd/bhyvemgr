@@ -7,7 +7,7 @@ object FormSettings: TFormSettings
   Caption = 'Bhyve Manager - Settings'
   ClientHeight = 671
   ClientWidth = 799
-  Position = poMainFormCenter
+  Position = poDesktopCenter
   ShowInTaskBar = stAlways
   LCLVersion = '4.2.0.0'
   OnClose = FormClose
