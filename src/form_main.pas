@@ -398,9 +398,7 @@ begin
   GlobalCategoryList.Add('Memory');
   GlobalCategoryList.Add('ACPI');
   GlobalCategoryList.Add('Debugging');
-  {$ifdef CPUAMD64}
   GlobalCategoryList.Add('TPM');
-  {$endif}
   GlobalCategoryList.Add('BIOS');
   {$ifdef CPUAMD64}
   GlobalCategoryList.Add('x86');
@@ -462,11 +460,9 @@ begin
   GlobalSettingDefaultValueList.Values['gdb.port'] := '0';
   GlobalSettingDefaultValueList.Values['gdb.wait'] := 'false';
   { TPM }
-  {$ifdef CPUAMD64}
   GlobalSettingDefaultValueList.Values['tpm.path'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.type'] := EmptyStr;
   GlobalSettingDefaultValueList.Values['tpm.version'] := EmptyStr;
-  {$endif}
   { x86 }
   {$ifdef CPUAMD64}
   GlobalSettingDefaultValueList.Values['x86.mptable'] := 'true';
@@ -537,11 +533,9 @@ begin
   GlobalSettingTypeList.Values['gdb.port'] := 'Integer';
   GlobalSettingTypeList.Values['gdb.wait'] := 'Boolean';
   { TPM }
-  {$ifdef CPUAMD64}
   GlobalSettingTypeList.Values['tpm.path'] := 'String';
   GlobalSettingTypeList.Values['tpm.type'] := 'String';
   GlobalSettingTypeList.Values['tpm.version'] := 'String';
-  {$endif}
   { Bios }
   GlobalSettingTypeList.Values['bios.vendor'] := 'String';
   GlobalSettingTypeList.Values['bios.version'] := 'String';
@@ -612,11 +606,9 @@ begin
   GlobalSettingCategoryList.Values['gdb.port'] := 'Debugging';
   GlobalSettingCategoryList.Values['gdb.wait'] := 'Debugging';
   { TPM }
-  {$ifdef CPUAMD64}
   GlobalSettingCategoryList.Values['tpm.path'] := 'TPM';
   GlobalSettingCategoryList.Values['tpm.type'] := 'TPM';
   GlobalSettingCategoryList.Values['tpm.version'] := 'TPM';
-  {$endif}
   { Bios }
   GlobalSettingCategoryList.Values['bios.vendor'] := 'BIOS';
   GlobalSettingCategoryList.Values['bios.version'] := 'BIOS';
@@ -1624,7 +1616,8 @@ begin
 
             for i:=0 to DeviceSettingsTreeView.Items.FindTopLvlNode('Passthru').Count-1 do
             begin
-              FormPassthruDevice.ComboBoxDevice.Items.Delete(FormPassthruDevice.ComboBoxDevice.Items.IndexOf(TPassthruDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Passthru').Items[i].Data).pptdev));
+              if (FormPassthruDevice.ComboBoxDevice.Items.IndexOf(TPassthruDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Passthru').Items[i].Data).pptdev) <> -1) then
+                FormPassthruDevice.ComboBoxDevice.Items.Delete(FormPassthruDevice.ComboBoxDevice.Items.IndexOf(TPassthruDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Passthru').Items[i].Data).pptdev));
             end;
 
             FormPassthruDevice.FormAction:='Add';
@@ -1640,7 +1633,7 @@ begin
 
               RNGDevice:=FillDetailRngDevice(TmpDevicesStringList.Text, PciSlot, 'virtio-rnd');
 
-              GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('RNG'), 'device : '+RNGDevice.device);
+              GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindTopLvlNode('RNG'), 'device : '+RNGDevice.device);
               GlobalNode.Data:=RNGDevice;
               GlobalNode.ImageIndex:=12;
               GlobalNode.SelectedIndex:=12;
@@ -1684,7 +1677,7 @@ begin
 
               UsbXhciDevice:=FillDetailUsbXhciDevice(TmpDevicesStringList.Text, PciSlot, 'xhci', 1);
 
-              GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('USB'), 'device : '+UsbXhciDevice.device+'-'+UsbXhciDevice.slot_device);
+              GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindTopLvlNode('USB'), 'device : '+UsbXhciDevice.device+'-'+UsbXhciDevice.slot_device);
               GlobalNode.Data:=UsbXhciDevice;
               GlobalNode.ImageIndex:=14;
               GlobalNode.SelectedIndex:=14;
@@ -3845,7 +3838,8 @@ begin
   { Remove this condition when bhyve will be updated on FreeBSD 13.x and 14.x }
   if GetOsreldate.ToInt64 >= 1403000 then
   begin
-    if (CheckTpmSocketRunning(VirtualMachine.name) = -1) and (ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) = 'swtpm') then
+    if (CheckTpmSocketRunning(VirtualMachine.name) = -1) and (Assigned(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM')))
+       and (ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) = 'swtpm') then
     begin
       if not (DirectoryExists(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)))) then
         CreateDirectory(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)), GetCurrentUserName(), '750');
@@ -3864,7 +3858,8 @@ begin
 
   if CheckVmRunning(VirtualMachine.name) > 0 then
   begin
-    if DeviceSettingsTreeView.Items.TopLvlItems[2].Count = 1 then
+    if (Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Display')))
+       and (DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Count = 1) then
       SpeedButtonVncVm.Enabled:=True
     else
       SpeedButtonVncVm.Enabled:=False;
@@ -3963,7 +3958,8 @@ procedure TFormBhyveManager.SpeedButtonVncVmClick(Sender: TObject);
 var
   DisplayNode : TTreeNode;
 begin
-  if (DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Count = 1) AND (DeviceSettingsTreeView.Items.TopLvlItems[2].Text = 'Display') then
+  if (Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Display')))
+     and (DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Count = 1) then
   begin
     DisplayNode:=DeviceSettingsTreeView.Items.TopLvlItems[2].Items[0];
     DisplayDevice:=TDisplayDeviceClass(DisplayNode.Data);

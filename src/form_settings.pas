@@ -481,6 +481,9 @@ begin
       ConfigFile.SetOption('network', 'bridge_interface', EditBridgeInterface.Text);
       ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
 
+      if not DirectoryExists(DnsmasqDirectory) then
+        CreateDirectory(DnsmasqDirectory, 'root');
+
       SetUseDnsmasq('yes');
       SetBridgeInterface(EditBridgeInterface.Text);
       SetSubnet(EditSubnet.Text);

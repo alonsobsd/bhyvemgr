@@ -110,6 +110,7 @@ end;
 
 procedure TFormPassthruDevice.LoadDefaultValues();
 begin
+  StatusBarPassthruDevice.SimpleText:=EmptyStr;
   FillComboDevice(ComboBoxDevice);
 
   EditDescripcion.Text:=EmptyStr;
