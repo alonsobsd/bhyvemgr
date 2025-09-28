@@ -1,21 +1,21 @@
 object FormLpcDevice: TFormLpcDevice
   Left = 654
-  Height = 346
+  Height = 379
   Top = 360
   Width = 345
   BorderStyle = bsSingle
   Caption = 'LPC device'
-  ClientHeight = 346
+  ClientHeight = 379
   ClientWidth = 345
   Position = poMainFormCenter
   LCLVersion = '4.2.0.0'
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 272
+    Height = 304
     Top = 8
     Width = 328
     Caption = 'General settings'
-    ClientHeight = 243
+    ClientHeight = 275
     ClientWidth = 324
     TabOrder = 0
     object Label1: TLabel
@@ -154,11 +154,27 @@ object FormLpcDevice: TFormLpcDevice
       ReadOnly = True
       TabOrder = 10
     end
+    object Label7: TLabel
+      Left = 12
+      Height = 18
+      Top = 240
+      Width = 35
+      Caption = 'Fwcfg'
+    end
+    object ComboBoxFwcfg: TComboBox
+      Left = 80
+      Height = 32
+      Top = 232
+      Width = 112
+      ItemHeight = 30
+      ReadOnly = True
+      TabOrder = 11
+    end
   end
   object BitBtnSave: TBitBtn
     Left = 128
     Height = 30
-    Top = 288
+    Top = 320
     Width = 96
     Caption = 'Save'
     Default = True
@@ -205,7 +221,7 @@ object FormLpcDevice: TFormLpcDevice
   object StatusBarLpcDevice: TStatusBar
     Left = 0
     Height = 23
-    Top = 323
+    Top = 356
     Width = 345
     Panels = <>
   end

@@ -4,10 +4,12 @@ users:
   - name: user
     groups: wheel,sudo
     sudo: ALL=(ALL) NOPASSWD:ALL
+    doas: permit nopass user as root
     ssh_authorized_keys:
       - ssh-ed25519 d666b5b2a02f212b82ad185fe536ba96023d5b1ba7d1a619d171d81f30615bb5 user@bhyvemgr
 packages:
   - sudo
+  - doas
 growpart:
   mode: auto
   devices: ['/']

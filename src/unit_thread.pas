@@ -39,8 +39,8 @@ uses
 
 type
   TExitStatusEvent = procedure(Status: Integer; Message : String; VmName : String; ErrorMessage : String) of Object;
-  TShowStatusEvent = procedure(Status: Integer) of Object;
-  TEndStatusEvent = procedure(Status: Integer; AppName : String) of Object;
+  TShowStatusEvent = procedure(Status: Integer; AppPid: Integer) of Object;
+  TEndStatusEvent = procedure(Status: Integer; AppName : String; AppPid: Integer) of Object;
 
   { VmThread }
 
@@ -86,6 +86,7 @@ type
   private
     AppName : string;
     AppResult : Boolean;
+    AppPid : Integer;
     AppParams: TStringArray;
     ExitMessage : String;
     ExitStatus : Integer;
@@ -291,7 +292,7 @@ procedure AppProgressBarThread.ShowAppStatus;
 begin
   if Assigned(FOnShowStatus) then
   begin
-    FOnShowStatus(ExitStatus);
+    FOnShowStatus(ExitStatus, AppPid);
   end;
 end;
 
@@ -299,7 +300,7 @@ procedure AppProgressBarThread.EndAppStatus;
 begin
   if Assigned(FOnEndStatus) then
   begin
-    FOnEndStatus(ExitStatus, AppName);
+    FOnEndStatus(ExitStatus, AppName, AppPid);
   end;
 end;
 
@@ -326,6 +327,7 @@ begin
     try
       AppProcess.Execute;
 
+      AppPid:=AppProcess.ProcessID;
       Synchronize(@ShowAppStatus);
 
       I:=0;

@@ -134,6 +134,7 @@ type
     SystemImageList : TSystemImageList;
     ActionImageList : TActionImageList;
     MyVmThread: VmThread;
+    ProcessPid : Integer;
     function FillDetailAudioDevice(Details : String; pci : String; device : String):TAudioDeviceClass;
     function FillDetailConsoleDevice(Details : String; pci : String; device : String; port : Integer):TSerialVirtioConsoleDeviceClass;
     function FillDetailDisplayDevice(Details : String; pci : String; device : String):TDisplayDeviceClass;
@@ -160,8 +161,8 @@ type
     procedure ResetTreeView(TreeView : TTreeView);
     function SaveVirtualMachineConfig():Boolean;
     procedure VirtualMachineShowStatus(Status: Integer; Message : String; VmName : String; ErrorMessage : String);
-    procedure AppShowStatus(Status: Integer);
-    procedure AppEndStatus(Status: Integer; AppName : String);
+    procedure AppShowStatus(Status: Integer; AppPid: Integer);
+    procedure AppEndStatus(Status: Integer; AppName : String; AppPid: Integer);
   public
 
   end;
@@ -310,6 +311,7 @@ begin
   VirtualMachineList := TStringList.Create;
 
   TmpDevicesStringList := TStringList.Create;
+  ProcessPid:=-1;
 
   FillComboLanguage(ComboBoxLanguage);
   ComboBoxLanguage.ItemIndex:=ComboBoxLanguage.Items.IndexOf(Language);
@@ -965,10 +967,12 @@ end;
   This procedure is called to show us the copy status of image files while it
   is not finishedd.
 }
-procedure TFormBhyveManager.AppShowStatus(Status: Integer);
+procedure TFormBhyveManager.AppShowStatus(Status: Integer; AppPid: Integer);
 var
   total : Int64;
 begin
+  ProcessPid:=AppPid;
+
   total:=ConvertFileSize(GetFileSize(DiskFile), 'M');
 
   StatusBarBhyveManager.Font.Color:=clTeal;
@@ -978,12 +982,14 @@ end;
 {
   This procedure is called when copy of image file is finished.
 }
-procedure TFormBhyveManager.AppEndStatus(Status: Integer; AppName: String);
+procedure TFormBhyveManager.AppEndStatus(Status: Integer; AppName: String; AppPid: Integer);
 var
   total : Int64;
 begin
   if (Status = 0) then
   begin
+    ProcessPid:=-1;
+
     total:=ConvertFileSize(GetFileSize(RemoteFile), 'M');
 
     StatusBarBhyveManager.Font.Color:=clTeal;
@@ -1339,12 +1345,28 @@ procedure TFormBhyveManager.FormCloseQuery(Sender: TObject;
 var
   i, j : Integer;
   flag : Boolean;
-  CloseMessage : String;
   Node : TTreeNode;
 begin
-  CloseMessage := check_vm_running;
-
   flag:=False;
+  CanClose:=True;
+
+  if FormVmCreate.IsVisible and (FormVmCreate.ProcessPid > 0) then
+  begin
+    MessageDlg(check_create_task, mtWarning, [mbOk], 0);
+    CanClose:=False;
+    Exit;
+  end;
+
+  if ProcessPid > 0 then
+  begin
+    if MessageDlg(check_create_task_confirmation, mtConfirmation, [mbOk, mbCancel], 0) = mrOK then
+    begin
+      KillPid(ProcessPid);
+      ProcessPid:=-1;
+      StatusBarBhyveManager.SimpleText:=EmptyStr;
+      Exit;
+    end;
+  end;
 
   for i:=0 to VirtualMachinesTreeView.Items.TopLvlCount-1 do
   begin
@@ -1366,8 +1388,8 @@ begin
 
   if flag then
   begin
-    if MessageDlg(CloseMessage, mtConfirmation, [mbOk, mbCancel], 0) = mrCancel then
-      CanClose := false;
+    if MessageDlg(check_vm_running, mtConfirmation, [mbOk, mbCancel], 0) = mrCancel then
+      CanClose := False;
   end;
 end;
 
@@ -1930,6 +1952,17 @@ begin
 
               FormLpcDevice.ComboBoxCom1.ItemIndex:=FormLpcDevice.ComboBoxCom1.Items.IndexOf(LPCDevice.com1);
               FormLpcDevice.CheckBoxCom1.Checked:=True;
+            end
+            else
+            begin
+              FormLpcDevice.ComboBoxCom1.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
+              FormLpcDevice.ComboBoxCom1.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
+
+              if UseIpv6 = 'yes' then
+              begin
+                FormLpcDevice.ComboBoxCom1.Items.Add('tcp=[::1]:'+GetNewComPortNumber());
+                FormLpcDevice.ComboBoxCom1.Items.Add('tcp=[::]:'+GetNewComPortNumber());
+              end;
             end;
 
             if LPCDevice.com2 <> EmptyStr then
@@ -1949,6 +1982,8 @@ begin
               FormLpcDevice.ComboBoxCom4.ItemIndex:=FormLpcDevice.ComboBoxCom4.Items.IndexOf(LPCDevice.com4);
               FormLpcDevice.CheckBoxCom4.Checked:=True;
             end;
+
+            FormLpcDevice.ComboBoxFwcfg.ItemIndex:=FormLpcDevice.ComboBoxFwcfg.Items.IndexOf(LPCDevice.fwcfg);
 
             FormLpcDevice.Show;
           end;
@@ -2597,12 +2632,12 @@ begin
      {$endif CPUAARCH64}
    end;
 
-   TmpDevicesStringList.Values['lpc.fwcfg']:='bhyve';
-
    if FormLpcDevice.CheckBoxCom1.Checked then TmpDevicesStringList.Values['lpc.com1.path']:=FormLpcDevice.ComboBoxCom1.Text;
    if FormLpcDevice.CheckBoxCom2.Checked then TmpDevicesStringList.Values['lpc.com2.path']:=FormLpcDevice.ComboBoxCom2.Text;
    if FormLpcDevice.CheckBoxCom3.Checked then TmpDevicesStringList.Values['lpc.com3.path']:=FormLpcDevice.ComboBoxCom3.Text;
    if FormLpcDevice.CheckBoxCom4.Checked then TmpDevicesStringList.Values['lpc.com4.path']:=FormLpcDevice.ComboBoxCom4.Text;
+
+   TmpDevicesStringList.Values['lpc.fwcfg']:=FormLpcDevice.ComboBoxFwcfg.Text;
 
    LPCDevice:=FillDetailLpcDevice(TmpDevicesStringList.Text, PciSlot, 'lpc');
 
@@ -2692,6 +2727,8 @@ begin
      if TmpDevicesStringList.IndexOfName('lpc.com4.path') <> -1 then
        TmpDevicesStringList.Delete(TmpDevicesStringList.IndexOfName('lpc.com4.path'));
    end;
+
+   TmpDevicesStringList.Values['lpc.fwcfg']:=FormLpcDevice.ComboBoxFwcfg.Text;
 
    FormLpcDevice.Hide;
 
@@ -3462,15 +3499,26 @@ begin
           CreateDirectory(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
           SeedImageConfig.LoadFromFile(DatadirPath+'templates/user-data');
 
-          if FormVmCreate.CheckBoxImageUseSudo.Checked then
+          if FormVmCreate.CheckBoxImageUseSudo.Checked or FormVmCreate.CheckBoxImageUseDoas.Checked then
           begin
-            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDO%%', ',sudo'+sLineBreak+'    sudo: ALL=(ALL) NOPASSWD:ALL', [rfReplaceAll]);
-            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOPACKAGE%%', 'package:'+sLineBreak+'  - sudo', [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%PACKAGES%%', 'packages:', [rfReplaceAll]);
+
+            if FormVmCreate.CheckBoxImageUseSudo.Checked then
+            begin
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOAS%%', ',sudo'+sLineBreak+'    sudo: ALL=(ALL) NOPASSWD:ALL', [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOASPACKAGE%%', '  - sudo', [rfReplaceAll]);
+            end;
+            if FormVmCreate.CheckBoxImageUseDoas.Checked then
+            begin
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOAS%%', sLineBreak+'    doas: permit nopass '+FormVmCreate.EditUsername.Text+' as root', [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOASPACKAGE%%', '  - doas', [rfReplaceAll]);
+            end;
           end
           else
           begin
-            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDO%%', EmptyStr, [rfReplaceAll]);
-            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOPACKAGE%%', EmptyStr, [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%PACKAGES%%', EmptyStr, [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOAS%%', EmptyStr, [rfReplaceAll]);
+            SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%SUDOASPACKAGE%%', EmptyStr, [rfReplaceAll]);
           end;
 
           if FormVmCreate.CheckBoxIpv6Address.Checked then

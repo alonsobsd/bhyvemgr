@@ -307,6 +307,10 @@ msgstr ""
 msgid "Com4"
 msgstr ""
 
+#: tformlpcdevice.label7.caption
+msgid "Fwcfg"
+msgstr ""
+
 #: tformnetworkdevice.bitbtnsave.caption
 msgctxt "tformnetworkdevice.bitbtnsave.caption"
 msgid "Save"
@@ -851,6 +855,10 @@ msgstr ""
 msgid "Use minimal configuration"
 msgstr ""
 
+#: tformvmcreate.checkboximageusedoas.caption
+msgid "Use doas"
+msgstr ""
+
 #: tformvmcreate.checkboximageusesudo.caption
 msgid "Use sudo"
 msgstr ""
@@ -1100,6 +1108,19 @@ msgstr ""
 
 #: unit_language.check_bridge
 msgid "A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings."
+msgstr ""
+
+#: unit_language.check_create_task
+msgctxt "unit_language.check_create_task"
+msgid "The Create Virtual Machine form is open and some tasks are not finished. Please, close it before trying to close this app."
+msgstr ""
+
+#: unit_language.check_create_task_confirmation
+msgctxt "unit_language.check_create_task_confirmation"
+msgid ""
+"The virtual machine creation task has not finished. \n"
+"\n"
+"Do you really want to stop it and close form?"
 msgstr ""
 
 #: unit_language.check_device_type

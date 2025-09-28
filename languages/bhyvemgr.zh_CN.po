@@ -318,6 +318,10 @@ msgstr "Com1"
 msgid "Com4"
 msgstr "Com4"
 
+#: tformlpcdevice.label7.caption
+msgid "Fwcfg"
+msgstr ""
+
 #: tformnetworkdevice.bitbtnsave.caption
 msgctxt "tformnetworkdevice.bitbtnsave.caption"
 msgid "Save"
@@ -862,6 +866,10 @@ msgstr "使用文件配置"
 msgid "Use minimal configuration"
 msgstr "使用最简配置"
 
+#: tformvmcreate.checkboximageusedoas.caption
+msgid "Use doas"
+msgstr "使用 doas"
+
 #: tformvmcreate.checkboximageusesudo.caption
 msgid "Use sudo"
 msgstr "使用 sudo"
@@ -1097,12 +1105,8 @@ msgstr "%0:s：虚拟机 %1:s：进程出错：%2:s："
 
 #: unit_language.calculated_ipv6
 #, object-pascal-format
-msgid ""
-"Now, assign this IPv6 address to %s interface. Do not forget add "
-"accept_rtadv and auto_linklocal options to it too."
-msgstr ""
-"现在，将此 IPv6 地址分配给接口 %s。别忘了同时添加选项 accept_rtadv 和 "
-"auto_linklocal。"
+msgid "Now, assign this IPv6 address to %s interface. Do not forget add accept_rtadv and auto_linklocal options to it too."
+msgstr "现在，将此 IPv6 地址分配给接口 %s。别忘了同时添加选项 accept_rtadv 和 auto_linklocal。"
 
 #: unit_language.check_base_binary
 #, object-pascal-format
@@ -1114,10 +1118,21 @@ msgid "CD/DVD media does not exist."
 msgstr "CD/DVD 介质不存在。"
 
 #: unit_language.check_bridge
-msgid ""
-"A bridge name must be defined. It will be used by bhyvemgr for virtual "
-"machines network settings."
+msgid "A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings."
 msgstr "必须定义桥接名称。它将由 bhyve 管理器用于虚拟机的网络设置。"
+
+#: unit_language.check_create_task
+msgctxt "unit_language.check_create_task"
+msgid "The Create Virtual Machine form is open and some tasks are not finished. Please, close it before trying to close this app."
+msgstr ""
+
+#: unit_language.check_create_task_confirmation
+msgctxt "unit_language.check_create_task_confirmation"
+msgid ""
+"The virtual machine creation task has not finished. \n"
+"\n"
+"Do you really want to stop it and close form?"
+msgstr ""
 
 #: unit_language.check_device_type
 msgid "You must select a virtual device type. e.g, ahci-hd, nvme, etc."
@@ -1153,9 +1168,7 @@ msgid "IPv4 address is not valid."
 msgstr "IPv4 地址无效。"
 
 #: unit_language.check_ipv6
-msgid ""
-"A valid IPv6 prefix must be defined. It will be used to assign virtual "
-"machine ipv6 addresses."
+msgid "A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses."
 msgstr "必须定义有效的 IPv6 前缀。它将用于为虚拟机分配 IPv6 地址。"
 
 #: unit_language.check_metadata_file
@@ -1171,9 +1184,7 @@ msgid "You must select a virtual storage type. e.g, image file, etc."
 msgstr "您必须选择虚拟存储类型，例如镜像文件等。"
 
 #: unit_language.check_subnet
-msgid ""
-"A valid subnet must be defined. It will be used for assign/generate ip "
-"address."
+msgid "A valid subnet must be defined. It will be used for assign/generate ip address."
 msgstr "必须定义有效的子网。它将用于分配和生成 IP 地址。"
 
 #: unit_language.check_sudo
@@ -1194,9 +1205,7 @@ msgid "You must select an operating system version. e.g, FreeBSD 15.x, etc."
 msgstr "您必须选择操作系统版本，如 FreeBSD 15.x 等。"
 
 #: unit_language.check_template_files
-msgid ""
-"user-data, meta-data, or network-config are not available at templates "
-"directory."
+msgid "user-data, meta-data, or network-config are not available at templates directory."
 msgstr "模板目录中缺少 user-data、meta-data 或 network-config。"
 
 #: unit_language.check_userdata_file
@@ -1226,8 +1235,7 @@ msgid ""
 "\n"
 "Do you really want to close?"
 msgstr ""
-"bhyve 管理器检测到有虚拟机正在运行。您必须先停止它们，然后再退出此应用程"
-"序。\n"
+"bhyve 管理器检测到有虚拟机正在运行。您必须先停止它们，然后再退出此应用程序。\n"
 "\n"
 "您确定要退出吗？"
 
@@ -1245,12 +1253,8 @@ msgid "%s could not be compatible with bhyve."
 msgstr "bhyve 可能不兼容 %s。"
 
 #: unit_language.configuration_notice
-msgid ""
-"A configuration file was generated. A settings form will be open to review / "
-"modify bhyvemgr options. Press \"Save settings button\" if everything is ok."
-msgstr ""
-"已生成配置文件。将打开设置表单，可查看或修改 bhyve 管理器的选项。若一切正常，"
-"请点击“保存设置”按钮。"
+msgid "A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press \"Save settings button\" if everything is ok."
+msgstr "已生成配置文件。将打开设置表单，可查看或修改 bhyve 管理器的选项。若一切正常，请点击“保存设置”按钮。"
 
 #: unit_language.convert_status
 msgctxt "unit_language.convert_status"
@@ -1283,15 +1287,11 @@ msgid "Bhyvemgr was started"
 msgstr "Bhyve 管理器已启动"
 
 #: unit_language.debugln_check_freerdp
-msgid ""
-"Bhyve Settings : freerdp support will not be available. net/freerdp3 is not "
-"installed."
+msgid "Bhyve Settings : freerdp support will not be available. net/freerdp3 is not installed."
 msgstr "Bhyve 设置：freerdp 支持将不可用。未安装 net/freerdp3。"
 
 #: unit_language.debugln_check_qemu
-msgid ""
-"Bhyve Settings : qcow2 convert support will not be available. qemu-tools is "
-"not installed."
+msgid "Bhyve Settings : qcow2 convert support will not be available. qemu-tools is not installed."
 msgstr "Bhyve 设置：qcow2 转换支持将不可用。未安装 qemu-tools。"
 
 #: unit_language.debugln_dataset_status
@@ -1307,9 +1307,7 @@ msgstr "%0:s：无法创建目录 %1:s"
 #: unit_language.device_remove_notice
 #, object-pascal-format
 msgctxt "unit_language.device_remove_notice"
-msgid ""
-"This action will remove all files/resources created by this device. Do you "
-"want remove %s device?"
+msgid "This action will remove all files/resources created by this device. Do you want remove %s device?"
 msgstr "该操作将删除该设备创建的所有文件和资源。是否要删除设备 %s？"
 
 #: unit_language.device_remove_title
@@ -1360,8 +1358,7 @@ msgstr "无事可做"
 
 #: unit_language.no_calculated_ipv6
 #, object-pascal-format
-msgid ""
-"%s IPv6 address can not calculated. IPv6 prefix or Mac address are not valid."
+msgid "%s IPv6 address can not calculated. IPv6 prefix or Mac address are not valid."
 msgstr "无法计算 %s 的 IPv6 地址。IPv6 前缀或 MAC 地址无效。"
 
 #: unit_language.popup_add_device
@@ -1527,3 +1524,4 @@ msgstr "虚拟机 %s 出现 Triple fault"
 msgctxt "unit_language.vm_try_status"
 msgid "Trying create %s virtual machine..."
 msgstr "正在尝试创建虚拟机 %s……"
+

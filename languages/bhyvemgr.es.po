@@ -318,6 +318,10 @@ msgstr ""
 msgid "Com4"
 msgstr ""
 
+#: tformlpcdevice.label7.caption
+msgid "Fwcfg"
+msgstr ""
+
 #: tformnetworkdevice.bitbtnsave.caption
 msgctxt "tformnetworkdevice.bitbtnsave.caption"
 msgid "Save"
@@ -864,6 +868,10 @@ msgstr "Configuración desde archivos"
 msgid "Use minimal configuration"
 msgstr "Configuración mínima"
 
+#: tformvmcreate.checkboximageusedoas.caption
+msgid "Use doas"
+msgstr "Usar doas"
+
 #: tformvmcreate.checkboximageusesudo.caption
 msgid "Use sudo"
 msgstr "Usar sudo"
@@ -1114,6 +1122,24 @@ msgstr "Fuente de CD/DVD no existe"
 #: unit_language.check_bridge
 msgid "A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings."
 msgstr "Un nombre de bridge debe ser definido. Será usado por bhyvemgr para la configuración de red de máquinas virtuales"
+
+#: unit_language.check_create_task
+#, fuzzy
+#| msgid "Create virtual machine form is open and some tasks are not finished. Close it before of close this app."
+msgctxt "unit_language.check_create_task"
+msgid "The Create Virtual Machine form is open and some tasks are not finished. Please, close it before trying to close this app."
+msgstr "La ventana Crear máquina virtual está abierta y algunas tareas no han finalizado. Por favor, ciérrala antes de intentar cerrar esta app."
+
+#: unit_language.check_create_task_confirmation
+msgctxt "unit_language.check_create_task_confirmation"
+msgid ""
+"The virtual machine creation task has not finished. \n"
+"\n"
+"Do you really want to stop it and close form?"
+msgstr ""
+"La tarea de creación de máquina virtual no ha terminado. \n"
+"\n"
+"¿Realmente deseas detener la tarea y cerrar esta ventana?"
 
 #: unit_language.check_device_type
 msgid "You must select a virtual device type. e.g, ahci-hd, nvme, etc."

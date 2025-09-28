@@ -39,6 +39,7 @@
 {"hash":164185077,"name":"tformvmcreate.label16.caption","sourcebytes":[85,115,101,114,110,97,109,101],"value":"Username"},
 {"hash":142242201,"name":"tformvmcreate.label13.caption","sourcebytes":[83,83,72,32,107,101,121],"value":"SSH key"},
 {"hash":158838383,"name":"tformvmcreate.checkboximageusesudo.caption","sourcebytes":[85,115,101,32,115,117,100,111],"value":"Use sudo"},
+{"hash":158773315,"name":"tformvmcreate.checkboximageusedoas.caption","sourcebytes":[85,115,101,32,100,111,97,115],"value":"Use doas"},
 {"hash":166635166,"name":"tformvmcreate.groupboxfileconfig.caption","sourcebytes":[70,105,108,101,115,32,99,111,110,102,105,103,117,114,97,116,105,111,110],"value":"Files configuration"},
 {"hash":205976625,"name":"tformvmcreate.label27.caption","sourcebytes":[85,115,101,114,32,100,97,116,97],"value":"User data"},
 {"hash":171375457,"name":"tformvmcreate.label28.caption","sourcebytes":[77,101,116,97,32,100,97,116,97],"value":"Meta data"},

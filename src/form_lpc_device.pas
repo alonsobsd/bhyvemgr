@@ -55,6 +55,7 @@ type
     ComboBoxCom4: TComboBox;
     ComboBoxBootrom: TComboBox;
     ComboBoxBootvars: TComboBox;
+    ComboBoxFwcfg: TComboBox;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
@@ -62,6 +63,7 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     StatusBarLpcDevice: TStatusBar;
     procedure CheckBoxCom1Change(Sender: TObject);
     procedure CheckBoxCom2Change(Sender: TObject);
@@ -129,6 +131,7 @@ begin
   else if CheckBoxCom2.Checked and (ComboBoxCom2.ItemIndex = -1) then Result:=False
   else if CheckBoxCom3.Checked and (ComboBoxCom3.ItemIndex = -1) then Result:=False
   else if CheckBoxCom4.Checked and (ComboBoxCom4.ItemIndex = -1) then Result:=False
+  else if ComboBoxFwcfg.ItemIndex=-1 then Result:=False
 end;
 
 procedure TFormLpcDevice.LoadDefaultValues();
@@ -137,6 +140,8 @@ begin
   FillComboBootrom(ComboBoxBootrom);
   ComboBoxBootvars.Clear;
   FillComboBootvars(ComboBoxBootvars);
+  ComboBoxFwcfg.Clear;
+  FillComboFwcfg(ComboBoxFwcfg);
 
   {$ifdef CPUAMD64}
   ComboBoxBootrom.ItemIndex:=ComboBoxBootrom.Items.IndexOf('BHYVE_UEFI.fd');
@@ -183,6 +188,8 @@ begin
   ComboBoxCom4.Clear;
   ComboBoxCom4.Enabled:=False;
   ComboBoxCom4.Items.Add('/dev/nmdm-'+FormVmName+'.4A');
+
+  ComboBoxFwcfg.ItemIndex:=ComboBoxFwcfg.Items.IndexOf('bhyve');
 end;
 
 end.

@@ -51,6 +51,7 @@ type
     CheckBoxImageMinimal: TCheckBox;
     CheckBoxImageFiles: TCheckBox;
     CheckBoxFramebuffer: TCheckBox;
+    CheckBoxImageUseDoas: TCheckBox;
     CheckBoxIpv6Address: TCheckBox;
     CheckBoxOnlyLocalhost: TCheckBox;
     CheckBoxUEFIBootvars: TCheckBox;
@@ -122,6 +123,8 @@ type
     procedure CheckBoxFramebufferChange(Sender: TObject);
     procedure CheckBoxImageFilesChange(Sender: TObject);
     procedure CheckBoxImageMinimalChange(Sender: TObject);
+    procedure CheckBoxImageUseDoasChange(Sender: TObject);
+    procedure CheckBoxImageUseSudoChange(Sender: TObject);
     procedure CheckBoxOnlyLocalhostChange(Sender: TObject);
     procedure CheckBoxUseMediaChange(Sender: TObject);
     procedure CheckBoxUseStaticIpv4Change(Sender: TObject);
@@ -134,6 +137,7 @@ type
     procedure FileNameEditMetaDataButtonClick(Sender: TObject);
     procedure FileNameEditNetworkConfigButtonClick(Sender: TObject);
     procedure FileNameEditUserDataButtonClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure RadioButtonDiskFromImageClick(Sender: TObject);
     procedure RadioButtonNewDiskChange(Sender: TObject);
@@ -143,9 +147,10 @@ type
   private
     MyAppThread: AppProgressBarThread;
     function ConvertFileToRaw(ImageFile : String):Boolean;
-    procedure ShowStatus(Status: Integer);
-    procedure EndStatus(Status: Integer; AppName : String);
+    procedure ShowStatus(Status: Integer; AppPid: Integer);
+    procedure EndStatus(Status: Integer; AppName : String; AppPid: Integer);
   public
+    ProcessPid : Integer;
     function FormValidate():Boolean;
   end;
 
@@ -164,6 +169,8 @@ uses
 
 procedure TFormVmCreate.FormShow(Sender: TObject);
 begin
+  ProcessPid:=-1;
+
   PageControlVmCreate.ActivePage:=TabSheetGeneral;
   TabSheetImage.TabVisible:=False;
 
@@ -233,6 +240,7 @@ begin
   EditUsername.Clear;
   EditSshPubKey.Clear;
   CheckBoxImageUseSudo.Checked:=False;
+  CheckBoxImageUseDoas.Checked:=False;
 
   EditIpv4Address.Enabled:=False;
   EditIpv4Address.Clear;
@@ -389,10 +397,12 @@ begin
   Result:=True;
 end;
 
-procedure TFormVmCreate.ShowStatus(Status: Integer);
+procedure TFormVmCreate.ShowStatus(Status: Integer; AppPid: Integer);
 var
   total : Int64;
 begin
+  ProcessPid:=AppPid;
+
   if not (ExtractFileExt(OldRemoteFile) = '.qcow2') then
   begin
     total:=ConvertFileSize(GetFileSize(CloudVmImagesPath+'/'+RemoteFile), 'M');
@@ -400,11 +410,9 @@ begin
   end;
 end;
 
-procedure TFormVmCreate.EndStatus(Status: Integer; AppName : String);
-var
-  total : Int64;
+procedure TFormVmCreate.EndStatus(Status: Integer; AppName : String; AppPid: Integer);
 begin
-  total:=0;
+  ProcessPid:=-1;
 
   if (Status = 0) then
   begin
@@ -415,7 +423,6 @@ begin
     end
     else
     begin
-      total:=ConvertFileSize(GetFileSize(CloudVmImagesPath+'/'+RemoteFile), 'M');
       ProgressBarImage.Position:=ProgressBarImage.Max;
     end;
 
@@ -678,7 +685,17 @@ begin
 
         ChDir(CloudVmImagesPath);
 
-        if FileExists(FetchCmd) and not FileExists(CloudVmImagesPath+'/'+RemoteFile) and not FileExists(CloudVmImagesPath+'/'+RawFileName) then
+        if FileExists(CloudVmImagesPath+'/'+RemoteFile) and
+           (GetRemoteSize(EditUrlImage.Text) > GetFileSize(CloudVmImagesPath+'/'+RemoteFile)) then
+        begin
+          RemoveFile(CloudVmImagesPath+'/'+RemoteFile);
+
+          if FileExists(CloudVmImagesPath+'/'+RawFileName) then
+            RemoveFile(CloudVmImagesPath+'/'+RawFileName);
+        end;
+
+        if FileExists(FetchCmd) and not FileExists(CloudVmImagesPath+'/'+RawFileName) and not
+           FileExists(CloudVmImagesPath+'/'+RemoteFile) then
         begin
           ProgressBarImage.Max:=ConvertFileSize(GetRemoteSize(EditUrlImage.Text), 'M');
 
@@ -775,6 +792,18 @@ begin
   end;
 end;
 
+procedure TFormVmCreate.CheckBoxImageUseDoasChange(Sender: TObject);
+begin
+  if CheckBoxImageUseDoas.Checked then
+    CheckBoxImageUseSudo.Checked:=False;
+end;
+
+procedure TFormVmCreate.CheckBoxImageUseSudoChange(Sender: TObject);
+begin
+  if CheckBoxImageUseSudo.Checked then
+    CheckBoxImageUseDoas.Checked:=False;
+end;
+
 procedure TFormVmCreate.CheckBoxWaitVNCChange(Sender: TObject);
 begin
   if CheckBoxWaitVNC.Checked then
@@ -858,6 +887,21 @@ end;
 procedure TFormVmCreate.FileNameEditUserDataButtonClick(Sender: TObject);
 begin
   FileNameEditUserData.InitialDir:=GetUserDir;
+end;
+
+procedure TFormVmCreate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  if ProcessPid > 0 then
+  begin
+    if MessageDlg(check_create_task_confirmation, mtConfirmation, [mbOk, mbCancel], 0) = mrCancel then
+      CanClose := false
+    else
+    begin
+      KillPid(ProcessPid);
+
+      CanClose := True;
+    end;
+  end;
 end;
 
 end.

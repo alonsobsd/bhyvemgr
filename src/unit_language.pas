@@ -129,6 +129,8 @@ resourcestring
   check_boot_media = 'CD/DVD media does not exist.';
   check_vm_name = 'Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]';
   check_vm = '%s virtual machine name is not available';
+  check_create_task = 'The Create Virtual Machine form is open and some tasks are not finished. Please, close it before trying to close this app.';
+  check_create_task_confirmation = 'The virtual machine creation task has not finished. '+sLineBreak+sLineBreak+'Do you really want to stop it and close form?';
   { form_passthru_device strings }
   ppt_devices_status = 'ppt devices were not detected';
 

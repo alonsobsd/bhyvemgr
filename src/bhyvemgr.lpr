@@ -113,11 +113,6 @@ begin
     SetZfsZpool(Configuration.getOption('zfs','zfs_zpool'));
     SetZfsCreateOptions(Configuration.getOption('zfs','zfs_create_options'));
 
-  {  if (UseZfs = 'yes') and (CheckKernelModule('zfs')) then
-      SetVmPath('/'+ZfsZpool+'/'+configuration.getOption('general','vm_path'))
-    else
-      SetVmPath('/usr/local/'+configuration.getOption('general','vm_path'));}
-
     Configuration.Free;
 
     SetDefaultLang(Language, DatadirPath+'languages');

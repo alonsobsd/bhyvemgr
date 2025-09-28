@@ -130,6 +130,7 @@ type
   function FillComboKeyboardLayout(Combo: TComboBox):Boolean;
   function FillComboBootrom(Combo: TComboBox):Boolean;
   function FillComboBootvars(Combo: TComboBox):Boolean;
+  function FillComboFwcfg(Combo: TComboBox):Boolean;
   procedure FillComboLanguage(Combo: TComboBox);
   procedure FillComboTpmDevice(Combo: TComboBox);
   procedure FillComboTpmType(Combo: TComboBox);
@@ -524,6 +525,14 @@ begin
   Result:=True;
 end;
 
+function FillComboFwcfg(Combo: TComboBox): Boolean;
+begin
+  Combo.Items.Add('bhyve');
+  Combo.Items.Add('qemu');
+
+  Result:=True;
+end;
+
 procedure FillComboLanguage(Combo: TComboBox);
 begin
   Combo.Items.Add('en');
@@ -598,6 +607,7 @@ begin
       combo.AddItem('FreeBSD 13.x', TObject(6));
       combo.AddItem('FreeBSD 14.x', TObject(6));
       combo.AddItem('FreeBSD 15.x', TObject(6));
+      combo.AddItem('FreeBSD 16.x', TObject(6));
       combo.AddItem('GhostBSD 25.x', TObject(13));
       combo.AddItem('NomadBSD 14.x', TObject(14));
       combo.AddItem('NetBSD 9.x', TObject(7));

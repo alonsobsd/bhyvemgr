@@ -2,10 +2,11 @@
 hostname: %%HOSTNAME%%
 users:
   - name: %%USERNAME%%
-    groups: wheel%%SUDO%%
+    groups: wheel%%SUDOAS%%
     ssh_authorized_keys:
       - %%SSH-KEY%%
-%%SUDOPACKAGE%%
+%%PACKAGES%%
+%%SUDOASPACKAGE%%
 growpart:
   mode: auto
   devices: ['/']

@@ -8,5 +8,6 @@
 {"hash":304644,"name":"tformlpcdevice.label6.caption","sourcebytes":[67,111,109,52],"value":"Com4"},
 {"hash":171870053,"name":"tformlpcdevice.checkboxpcdebug.caption","sourcebytes":[69,110,97,98,108,101,32,112,99,32,100,101,98,117,103,47,116,101,115,116,32,100,101,118,105,99,101],"value":"Enable pc debug/test device"},
 {"hash":107727875,"name":"tformlpcdevice.label4.caption","sourcebytes":[66,111,111,116,118,97,114,115],"value":"Bootvars"},
+{"hash":5102023,"name":"tformlpcdevice.label7.caption","sourcebytes":[70,119,99,102,103],"value":"Fwcfg"},
 {"hash":366789,"name":"tformlpcdevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
 ]}
