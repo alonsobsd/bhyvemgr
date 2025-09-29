@@ -1124,7 +1124,7 @@ msgstr "必须定义桥接名称。它将由 bhyve 管理器用于虚拟机的�
 #: unit_language.check_create_task
 msgctxt "unit_language.check_create_task"
 msgid "The Create Virtual Machine form is open and some tasks are not finished. Please, close it before trying to close this app."
-msgstr ""
+msgstr "创建虚拟机窗口当前处于打开状态，部分任务尚未完成。请先关闭该窗口，然后再尝试关闭此应用程序。"
 
 #: unit_language.check_create_task_confirmation
 msgctxt "unit_language.check_create_task_confirmation"
@@ -1133,6 +1133,9 @@ msgid ""
 "\n"
 "Do you really want to stop it and close form?"
 msgstr ""
+"虚拟机创建任务尚未完成。\n"
+"\n"
+"您确定要停止并关闭此表单吗？"
 
 #: unit_language.check_device_type
 msgid "You must select a virtual device type. e.g, ahci-hd, nvme, etc."
