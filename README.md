@@ -251,11 +251,11 @@ When bhyvemgr starts in the first time, this will create a initial config file. 
 
 # Demo
 
-## bhyvemgr on FreeBSD aarch64
+### On FreeBSD aarch64
 
 [![bhyvemgr aarch64](https://img.youtube.com/vi/PagnKjWE_Uw/0.jpg)](https://www.youtube.com/watch?v=PagnKjWE_Uw)
 
-## bhyvemgr on FreeBSD amd64
+### On FreeBSD amd64
 
 [![bhyvemgr amd64](https://img.youtube.com/vi/B-GPRHfnZsc/0.jpg)](https://www.youtube.com/watch?v=B-GPRHfnZsc)
 
