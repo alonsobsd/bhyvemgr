@@ -251,7 +251,13 @@ When bhyvemgr starts in the first time, this will create a initial config file. 
 
 # Demo
 
-https://github.com/user-attachments/assets/4e761b97-926c-4bc6-8941-3897359e07e6
+## bhyvemgr on FreeBSD aarch64
+
+[![bhyvemgr aarch64](https://img.youtube.com/vi/PagnKjWE_Uw/0.jpg)](https://www.youtube.com/watch?v=PagnKjWE_Uw)
+
+## bhyvemgr on FreeBSD amd64
+
+[![bhyvemgr amd64](https://img.youtube.com/vi/B-GPRHfnZsc/0.jpg)](https://www.youtube.com/watch?v=B-GPRHfnZsc)
 
 Enjoy creating and testing your virtual machines on FreeBSD
 
