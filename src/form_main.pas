@@ -1537,8 +1537,8 @@ begin
 
             FormAudioDevice.BitBtnSave.OnClick:=@SaveAudioDevice;
             FormAudioDevice.FormStyle:=fsSystemStayOnTop;
-            FormAudioDevice.LoadDefaultValues();
             FormAudioDevice.FormAction:='Add';
+            FormAudioDevice.LoadDefaultValues();
             FormAudioDevice.Show;
           end;
         'Console':
@@ -1550,8 +1550,8 @@ begin
             FormConsoleDevice.FormStyle:=fsSystemStayOnTop;
             FormConsoleDevice.VtconName:='vtcon'+GetNewConsoleName(TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name);
             FormConsoleDevice.VmName:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
-            FormConsoleDevice.LoadDefaultValues();
             FormConsoleDevice.FormAction:='Add';
+            FormConsoleDevice.LoadDefaultValues();
             FormConsoleDevice.Show;
           end;
         'Display':
@@ -1563,8 +1563,8 @@ begin
 
               FormDisplayDevice.BitBtnSave.OnClick:=@SaveDisplayDevice;
               FormDisplayDevice.FormStyle:=fsSystemStayOnTop;
-              FormDisplayDevice.LoadDefaultValues();
               FormDisplayDevice.FormAction:='Add';
+              FormDisplayDevice.LoadDefaultValues();
               FormDisplayDevice.Show;
             end;
           end;
@@ -1577,8 +1577,8 @@ begin
 
               FormHostbridgeDevice.BitBtnSave.OnClick:=@SaveHostbridgeDevice;
               FormHostbridgeDevice.FormStyle:=fsSystemStayOnTop;
-              FormHostbridgeDevice.LoadDefaultValues();
               FormHostbridgeDevice.FormAction:='Add';
+              FormHostbridgeDevice.LoadDefaultValues();
               FormHostbridgeDevice.Show;
             end;
           end;
