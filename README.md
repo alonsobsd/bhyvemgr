@@ -219,7 +219,7 @@ pass in inet proto icmp all icmp-type echoreq
 pass out inet proto icmp all icmp-type echoreq
 
 pass in inet proto tcp from 10.0.0.0/24 to any port $tcp_services flags S/SA keep state
-pass in inet proto tcp from 10.0.0.0/24 to any port $udp_services flags S/SA keep state
+pass in inet proto udp from 10.0.0.0/24 to any port $udp_services
 pass in inet proto tcp from 10.0.0.0/24 to any port $ksm_service flags S/SA keep state
 pass in inet proto tcp from 10.0.0.1 to any port bootps flags S/SA keep state
 pass in inet proto tcp from 10.0.0.1 to any port bootpc flags S/SA keep state
@@ -230,8 +230,6 @@ pass out quick on bhyve0 proto udp from port bootps to port bootps keep state
 pass in quick on bhyve0 proto icmp6
 pass in quick on bhyve0 proto udp from any port dhcpv6-client to any port dhcpv6-server
 pass out quick on bhyve0 proto udp from any port dhcpv6-server to any port dhcpv6-client
-
-pass out quick on $ext_if inet proto { tcp udp } from any to any
 ```
 
 Don't forget to add the following line to your **/etc/rc.conf** file:
