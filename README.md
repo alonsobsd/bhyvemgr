@@ -32,7 +32,7 @@ bhyve, bhyvectl, bhyveload, chown, chmod, fetch, file, ifconfig, install, kill, 
 bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), qemu-tools (emulatorsd/qemu@tools), remote-viewer (net-mgmt/virt-viewer), swtpm (sysutils/swtpm), sudo (security/sudo), and xfreerdp3 (net/freerdp3)
 
 ### Network configuration
-bhyvemgr can use two kind of network settings: *Quick network configuration* or *Optimal network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines. Take a look at https://github.com/alonsobsd/bhyvemgr/wiki/network_config for details like use/configure them.
+bhyvemgr can use two kind of network settings: *Quick network configuration* or *Optimal network configuration*. Choose one of them accord to your own needs. I recommend second one because it permits a complete network management of virtual machines. Take a look at [network configuration guide](https://github.com/alonsobsd/bhyvemgr/wiki/network_config) for details like use/configure them.
 
 ### sudo / doas configuration
 
