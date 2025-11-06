@@ -20,6 +20,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - ipv4/ipv6 support
 - aarch64 and amd64 support
 - i18n support
+- PF/NAT support
 - and more
 
 # TODO
@@ -77,7 +78,7 @@ When bhyvemgr starts in the first time, this will create a initial config file. 
 
 ![image](https://github.com/user-attachments/assets/35b0ea78-8449-4c08-bc13-c09977e0c30a)
 
-<img width="811" height="720" alt="image" src="https://github.com/user-attachments/assets/d7e70bec-df74-413a-928d-6b9a0215f897" />
+<img width="811" height="564" alt="image" src="https://github.com/user-attachments/assets/eb3463e3-3cc4-4ffa-a453-f4113a2d42b0" />
 
 # Demo
 
