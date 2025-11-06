@@ -19,6 +19,7 @@
 {"hash":159931827,"name":"tformvmcreate.checkboxuefibootvars.caption","sourcebytes":[69,110,97,98,108,101,32,85,69,70,73,32,98,111,111,116,118,97,114,115],"value":"Enable UEFI bootvars"},
 {"hash":158655062,"name":"tformvmcreate.checkboxipv6address.caption","sourcebytes":[85,115,101,32,73,80,118,54],"value":"Use IPv6"},
 {"hash":100871669,"name":"tformvmcreate.radiobuttondiskfromimage.caption","sourcebytes":[67,114,101,97,116,101,32,97,32,118,105,114,116,117,97,108,32,100,105,115,107,32,102,114,111,109,32,105,109,97,103,101],"value":"Create a virtual disk from image"},
+{"hash":89066260,"name":"tformvmcreate.checkboxnat.caption","sourcebytes":[85,115,101,32,80,70,47,78,65,84],"value":"Use PF/NAT"},
 {"hash":3377083,"name":"tformvmcreate.groupboxnewvirtualdisk.caption","sourcebytes":[78,101,119,32,118,105,114,116,117,97,108,32,100,105,115,107],"value":"New virtual disk"},
 {"hash":368901,"name":"tformvmcreate.label2.caption","sourcebytes":[83,105,122,101],"value":"Size"},
 {"hash":1202,"name":"tformvmcreate.label5.caption","sourcebytes":[71,66],"value":"GB"},

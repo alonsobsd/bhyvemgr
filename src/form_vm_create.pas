@@ -47,6 +47,7 @@ type
     BitBtnDownload: TBitBtn;
     BitBtnCreateVm: TBitBtn;
     BitBtnSshPaste: TBitBtn;
+    CheckBoxNat: TCheckBox;
     CheckBoxImageUseSudo: TCheckBox;
     CheckBoxImageMinimal: TCheckBox;
     CheckBoxImageFiles: TCheckBox;
@@ -200,6 +201,11 @@ begin
     CheckBoxIpv6Address.Enabled:=True
   else
     CheckBoxIpv6Address.Enabled:=False;
+
+  if UsePf = 'yes' then
+    CheckBoxNat.Enabled:=True
+  else
+    CheckBoxNat.Enabled:=False;
 
   {$ifdef CPUAARCH64}
   CheckBoxFramebuffer.Enabled:=False;

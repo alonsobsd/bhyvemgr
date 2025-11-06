@@ -18,7 +18,6 @@ object FormVmCreate: TFormVmCreate
     Top = 664
     Width = 344
     Caption = 'Create Virtual Machine'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000064000000640000000000000000000000000000000000
@@ -289,6 +288,14 @@ object FormVmCreate: TFormVmCreate
           Caption = 'Create a virtual disk from image'
           TabOrder = 3
           OnClick = RadioButtonDiskFromImageClick
+        end
+        object CheckBoxNat: TCheckBox
+          Left = 464
+          Height = 22
+          Top = 104
+          Width = 95
+          Caption = 'Use PF/NAT'
+          TabOrder = 9
         end
       end
       object GroupBoxNewVirtualDisk: TGroupBox

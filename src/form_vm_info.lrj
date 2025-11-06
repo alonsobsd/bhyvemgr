@@ -7,5 +7,6 @@
 {"hash":214540302,"name":"tformvminfo.label4.caption","sourcebytes":[86,101,114,115,105,111,110],"value":"Version"},
 {"hash":167742030,"name":"tformvminfo.checkboxrdp.caption","sourcebytes":[87,111,114,107,115,32,119,105,116,104,32,82,68,80,32,99,111,110,110,101,99,116,105,111,110],"value":"Works with RDP connection"},
 {"hash":158655062,"name":"tformvminfo.checkboxipv6.caption","sourcebytes":[85,115,101,32,73,80,118,54],"value":"Use IPv6"},
+{"hash":89066260,"name":"tformvminfo.checkboxpfnat.caption","sourcebytes":[85,115,101,32,80,70,47,78,65,84],"value":"Use PF/NAT"},
 {"hash":366789,"name":"tformvminfo.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
 ]}

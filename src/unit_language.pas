@@ -47,6 +47,7 @@ resourcestring
   popup_modify_vm = 'Modify virtual machine info';
   popup_remove_vm = 'Remove virtual machine';
   popup_rdp_vm = 'RDP to virtual machine';
+  popup_pf_rules_vm = 'PF Rules';
   popup_copy_vm_name = 'Copy VM name';
   popup_copy_com1_command = 'Copy COM1 command';
   popup_copy_ipv4 = 'Copy IPv4 address';
@@ -90,13 +91,17 @@ resourcestring
   debugln_check_qemu = 'Bhyve Settings : qcow2 convert support will not be available. qemu-tools is not installed.';
   debugln_bhyve_settings_closed = 'Bhyve Settings : settings form was closed.';
   debugln_bhyve_settings_saved = 'Bhyve Settings : settings were saved successfully.';
+  settings_saved = 'Settings were saved successfully';
+  settings_saved_title = 'Settings information';
   check_zfs = 'Support for zfs/zpool is not available';
   check_dnsmasq = 'dnsmasq was not found. Please install dns/dnsmasq for fix it';
   check_ipv6 = 'A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses.';
+  check_pf = 'pfctl was not found. Please install OpenBSD packet filter for fix it.';
   check_sudo = 'sudo was not found. Please install security/sudo for fix it';
   check_doas = 'doas was not found. Please install security/doas for fix it';
   check_bridge = 'A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings.';
   check_subnet = 'A valid subnet must be defined. It will be used for assign/generate ip address.';
+  check_nat = 'A valid external interface and external IPv4 must be selected. It will be used for define PF rules.';
   check_vnc = 'vnc support will not available. net-mgmt/virt-viewer is not installed.';
   check_base_binary = '%s binary was not found';
   calculated_ipv6 = 'Now, assign this IPv6 address to %s interface. Do not forget add accept_rtadv and auto_linklocal options to it too.';
@@ -133,6 +138,36 @@ resourcestring
   check_create_task_confirmation = 'The virtual machine creation task has not finished. '+sLineBreak+sLineBreak+'Do you really want to stop it and close form?';
   { form_passthru_device strings }
   ppt_devices_status = 'ppt devices were not detected';
+  { form_packet_filter_rules strings }
+  check_network_device = 'Network interface is not selected.';
+  check_af = 'Address Family (AF) is not selected.';
+  check_protocol = 'Protocol (Proto) is not selected.';
+  check_source_info = 'Source info is not complete.';
+  check_destination = 'Destination info is not complete.';
+  check_custom_ip_destination = 'Custom destination is not a valid %s address.';
+  check_custom_ip_source = 'Custom source is not a valid %s address.';
+  check_port = 'Port is not selected.';
+  check_vm_port = 'Virtual machine port is not valid.';
+  check_range_ports = 'Port or range ports are not valid.';
+  check_host_range_ports = 'Host port or range of ports are not valid.';
+  check_inbound_rule = 'Cannot add the same inbound rule twice.';
+  check_outbound_rule = 'Cannot add the same outbound rule twice.';
+  check_redirect_rule = 'Cannot add the same redirect rule twice.';
+  check_redirect_ipv6 = 'IPv6 does not support port redirection using NAT.';
+  save_rules_title = 'Packet Filter rules information';
+  save_rules = '%s PF rules were saved successfully.';
+  save_rules_reload = '%s PF rules were reloaded successfully.';
+  save_rules_reload_error = 'An error occurred trying reload %s PF rules.';
+  vm_apply_rules_confirmation = 'Do you want to apply these rules to the running virtual machine %s?';
+  out_grid_interface = 'Interface';
+  out_grid_destination = 'Destination';
+  out_grid_port = 'Port';
+  in_grid_interface = 'Interface';
+  in_grid_source = 'Source';
+  in_grid_port = 'Port';
+  rdr_grid_source = 'Source';
+  rdr_grid_host_port = 'Host port';
+  rdr_grid_vm_port = 'VM port';
 
 implementation
 

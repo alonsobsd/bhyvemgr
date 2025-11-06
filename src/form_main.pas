@@ -101,6 +101,7 @@ type
     procedure CreateVmClick(Sender: TObject);
     procedure EditDevice(Sender: TObject);
     procedure EditVirtualMachineInfo(Sender: TObject);
+    procedure PacketFilterRulesVm(Sender: TObject);
     procedure RemoveDevice(Sender: TObject);
     procedure RemoteDesktopProtocolVm(Sender: TObject);
     procedure SaveAudioDevice(Sender: TObject);
@@ -204,7 +205,8 @@ uses
   form_about, form_audio_device, form_change_value, form_console_device, form_display_device,
   form_hostbridge_device, form_input_device, form_lpc_device, form_network_device, form_passthru_device,
   form_rdp_connection, form_share_folder_device, form_storage_device, form_settings, form_vm_create,
-  form_vm_info, unit_configuration, unit_global, unit_util, unit_language, Clipbrd, LazLogger;
+  form_vm_info, form_packet_filter_rules, unit_configuration, unit_global, unit_util, unit_language,
+  Clipbrd, LazLogger;
 
 { TFormBhyveManager }
 
@@ -227,6 +229,7 @@ begin
   FormVMCreate:=TFormVmCreate.Create(FormBhyveManager);
   FormVmInfo:=TFormVmInfo.Create(FormBhyveManager);
   FormRdpConnection:=TFormRdpConnection.Create(FormBhyveManager);
+  FormPacketFilterRules:=TFormPacketFilterRules.Create(FormBhyveManager);
 
   SettingsPageControl.TabIndex:=0;
 
@@ -260,19 +263,21 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[1].ImageIndex:=1;
   VirtualMachinesPopup.PopupMenu.Items[2].ImageIndex:=2;
   VirtualMachinesPopup.PopupMenu.Items[3].ImageIndex:=3;
-  VirtualMachinesPopup.PopupMenu.Items[5].ImageIndex:=8;
-  VirtualMachinesPopup.PopupMenu.Items[6].ImageIndex:=7;
-  VirtualMachinesPopup.PopupMenu.Items[7].ImageIndex:=9;
+  VirtualMachinesPopup.PopupMenu.Items[4].ImageIndex:=10;
+  VirtualMachinesPopup.PopupMenu.Items[6].ImageIndex:=8;
+  VirtualMachinesPopup.PopupMenu.Items[7].ImageIndex:=7;
   VirtualMachinesPopup.PopupMenu.Items[8].ImageIndex:=9;
+  VirtualMachinesPopup.PopupMenu.Items[9].ImageIndex:=9;
 
   VirtualMachinesPopup.PopupMenu.Items[0].OnClick:=@SpeedButtonAddVmClick;
   VirtualMachinesPopup.PopupMenu.Items[1].OnClick:=@EditVirtualMachineInfo;
   VirtualMachinesPopup.PopupMenu.Items[2].OnClick:=@SpeedButtonRemoveVmClick;
   VirtualMachinesPopup.PopupMenu.Items[3].OnClick:=@RemoteDesktopProtocolVm;
-  VirtualMachinesPopup.PopupMenu.Items[5].OnClick:=@CopyVmNameClick;
-  VirtualMachinesPopup.PopupMenu.Items[6].OnClick:=@CopyComCommandClick;
-  VirtualMachinesPopup.PopupMenu.Items[7].OnClick:=@CopyIpv4AddressClick;
-  VirtualMachinesPopup.PopupMenu.Items[8].OnClick:=@CopyIpv6AddressClick;
+  VirtualMachinesPopup.PopupMenu.Items[4].OnClick:=@PacketFilterRulesVm;
+  VirtualMachinesPopup.PopupMenu.Items[6].OnClick:=@CopyVmNameClick;
+  VirtualMachinesPopup.PopupMenu.Items[7].OnClick:=@CopyComCommandClick;
+  VirtualMachinesPopup.PopupMenu.Items[8].OnClick:=@CopyIpv4AddressClick;
+  VirtualMachinesPopup.PopupMenu.Items[9].OnClick:=@CopyIpv6AddressClick;
 
   // Devices Popup Menu
   DevicesPopup:= TDevicesPopupMenu.Create(FormBhyveManager);
@@ -852,6 +857,14 @@ begin
       CreateDirectory(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName());
     end;
 
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
+    begin
+      PfUnloadRules(VmName, 'nat');
+      PfUnloadRules(VmName, 'rdr');
+      PfUnloadRules(VmName, 'pass-in');
+      PfUnloadRules(VmName, 'pass-out');
+    end;
+
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText := Message;
 
@@ -868,6 +881,14 @@ begin
     MyVmThread := VmThread.Create(VmName);
     MyVmThread.OnExitStatus := @VirtualMachineShowStatus;
     MyVmThread.Start;
+
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
+    begin
+      PfloadRules(VmName, 'nat');
+      PfloadRules(VmName, 'rdr');
+      PfloadRules(VmName, 'pass-in');
+      PfloadRules(VmName, 'pass-out');
+    end;
   end
   { Powered off and Halted}
   else if (Status = 1) OR (Status = 2) then
@@ -914,6 +935,14 @@ begin
       TrayIcon.TrayIcon.ShowBalloonHint;
     end;
 
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
+    begin
+      PfUnloadRules(VmName, 'nat');
+      PfUnloadRules(VmName, 'rdr');
+      PfUnloadRules(VmName, 'pass-in');
+      PfUnloadRules(VmName, 'pass-out');
+    end;
+
     DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
   end
   { Other exit status }
@@ -949,6 +978,14 @@ begin
         if PidNumber > 0 then
           KillPid(PidNumber);
       end;
+    end;
+
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
+    begin
+      PfUnloadRules(VmName, 'nat');
+      PfUnloadRules(VmName, 'rdr');
+      PfUnloadRules(VmName, 'pass-in');
+      PfUnloadRules(VmName, 'pass-out');
     end;
 
     StatusBarBhyveManager.SimpleText := EmptyStr;
@@ -1444,10 +1481,11 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[1].Caption:=popup_modify_vm;
   VirtualMachinesPopup.PopupMenu.Items[2].Caption:=popup_remove_vm;
   VirtualMachinesPopup.PopupMenu.Items[3].Caption:=popup_rdp_vm;
-  VirtualMachinesPopup.PopupMenu.Items[5].Caption:=popup_copy_vm_name;
-  VirtualMachinesPopup.PopupMenu.Items[6].Caption:=popup_copy_com1_command;
-  VirtualMachinesPopup.PopupMenu.Items[7].Caption:=popup_copy_ipv4;
-  VirtualMachinesPopup.PopupMenu.Items[8].Caption:=popup_copy_ipv6;
+  VirtualMachinesPopup.PopupMenu.Items[4].Caption:=popup_pf_rules_vm;
+  VirtualMachinesPopup.PopupMenu.Items[6].Caption:=popup_copy_vm_name;
+  VirtualMachinesPopup.PopupMenu.Items[7].Caption:=popup_copy_com1_command;
+  VirtualMachinesPopup.PopupMenu.Items[8].Caption:=popup_copy_ipv4;
+  VirtualMachinesPopup.PopupMenu.Items[9].Caption:=popup_copy_ipv6;
 
   DevicesPopup.PopupMenu.Items[0].Caption:=popup_add_device;
   DevicesPopup.PopupMenu.Items[1].Caption:=popup_edit_device;
@@ -3690,6 +3728,12 @@ begin
       if not (IpAddress = EmptyStr) then
         NewVMConfig.SetOption('general','ipaddress', IpAddress );
 
+      if FormVmCreate.CheckBoxNat.Checked then
+      begin
+        NewVMConfig.SetOption('general','nat', 'True');
+        PfCreateRules(FormVmCreate.EditVmName.Text, 'nat on '+ExternalInterface+' from '+IpAddress+' to any -> '+ExternalIpv4, 'nat');
+      end;
+
       FormVmCreate.Hide;
 
       if not FormVmCreate.RadioButtonDiskFromImage.Checked then
@@ -3734,15 +3778,54 @@ begin
     FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachine.system_version);
     FormVmInfo.EditVmName.Text:=VirtualMachine.name;
     FormVmInfo.EditVmDescription.Text:=VirtualMachine.description;
+    FormVmInfo.Ip4Address:=VirtualMachine.ipaddress;
+
     if VirtualMachine.rdp = StrToBool('True') then
       FormVmInfo.CheckBoxRDP.Checked:=True
     else
       FormVmInfo.CheckBoxRDP.Checked:=False;
 
-    if VirtualMachine.ipv6 = StrToBool('True') then
-      FormVmInfo.CheckBoxIpv6.Checked:=True
+    if UseIpv6 = 'yes' then
+    begin
+      if VirtualMachine.ipv6 = StrToBool('True') then
+        FormVmInfo.CheckBoxIpv6.Checked:=True
+      else
+        FormVmInfo.CheckBoxIpv6.Checked:=False;
+    end
     else
-      FormVmInfo.CheckBoxIpv6.Checked:=False;
+      FormVmInfo.CheckBoxIpv6.Enabled:=False;
+
+    if (UsePf = 'yes') and not (Trim(VirtualMachine.ipaddress) = EmptyStr) then
+    begin
+      FormVmInfo.CheckBoxPfNat.Enabled:=True;
+
+      if VirtualMachine.nat = StrToBool('True') then
+        FormVmInfo.CheckBoxPfNat.Checked:=True
+      else
+        FormVmInfo.CheckBoxPfNat.Checked:=False;
+    end
+    else
+      FormVmInfo.CheckBoxPfNat.Enabled:=False;
+  end;
+end;
+
+{
+  This procedure is called when "PF Rules" option is
+  selected from "Virtual machines" treeview. An "Packet Filter rules"
+  form is opened to do some changes.
+}
+procedure TFormBhyveManager.PacketFilterRulesVm(Sender: TObject);
+begin
+  if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
+  begin
+    GlobalNode:=VirtualMachinesTreeView.Selected;
+    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
+
+    FormPacketFilterRules.Visible:=True;
+    FormPacketFilterRules.VmIp4Adress:=VirtualMachine.ipaddress;
+    FormPacketFilterRules.VmIp6Adress:=VirtualMachine.ip6address;
+    FormPacketFilterRules.VmName:=VirtualMachine.name;
+    FormPacketFilterRules.LoadDefaultValues();
   end;
 end;
 
@@ -3766,6 +3849,25 @@ begin
 
     if not FormVmInfo.CheckBoxIpv6.Checked then
       Configuration.SetOption('general','ip6address', EmptyStr);
+
+    Configuration.SetOption('general','nat', BoolToStr(FormVmInfo.CheckBoxPfNat.Checked, 'True', 'False'));
+
+    if FormVmInfo.CheckBoxPfNat.Checked then
+    begin
+      if PfCreateRules(FormVmInfo.EditVmName.Text, 'nat on '+ExternalInterface+' from '+FormVmInfo.Ip4Address+' to any -> '+ExternalIpv4, 'nat') then
+      begin
+        if CheckVmRunning(FormVmInfo.EditVmName.Text) > 0 then
+        begin
+          if MessageDlg(Format(vm_apply_rules_confirmation, [FormVmInfo.EditVmName.Text]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+          begin
+            PfLoadRules(FormVmInfo.EditVmName.Text, 'nat');
+            PfLoadRules(FormVmInfo.EditVmName.Text, 'rdr');
+            PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-in');
+            PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-out');
+          end;
+        end;
+      end;
+    end;
 
     Configuration.Free;
 
@@ -3948,6 +4050,14 @@ begin
               RestartService('dnsmasq');
             end;
 
+            if VirtualMachine.nat then
+            begin
+              PfLoadRules(VirtualMachine.name, 'nat');
+              PfLoadRules(VirtualMachine.name, 'rdr');
+              PfLoadRules(VirtualMachine.name, 'pass-in');
+              PfLoadRules(VirtualMachine.name, 'pass-out');
+            end;
+
             VmConfig.Free;
           end;
         end;
@@ -4085,14 +4195,16 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[2].Enabled:=False;
         // RDP to virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
+        // PF Rules to virtual machine
+        VirtualMachinesPopup.PopupMenu.Items.Items[4].Enabled:=False;
         // Copy virtual machine name
-        VirtualMachinesPopup.PopupMenu.Items.Items[5].Enabled:=False;
-        // Copy cu/netcat command to virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[6].Enabled:=False;
-        // Copy IPv4 address
+        // Copy cu/netcat command to virtual machine
         VirtualMachinesPopup.PopupMenu.Items.Items[7].Enabled:=False;
-        // Copy IPv6 address
+        // Copy IPv4 address
         VirtualMachinesPopup.PopupMenu.Items.Items[8].Enabled:=False;
+        // Copy IPv6 address
+        VirtualMachinesPopup.PopupMenu.Items.Items[9].Enabled:=False;
 
         VirtualMachinesPopup.PopupMenu.PopUp;
       end
@@ -4101,8 +4213,8 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[0].Enabled:=False;
         VirtualMachinesPopup.PopupMenu.Items.Items[1].Enabled:=True;
         VirtualMachinesPopup.PopupMenu.Items.Items[2].Enabled:=True;
-        VirtualMachinesPopup.PopupMenu.Items.Items[5].Enabled:=True;
         VirtualMachinesPopup.PopupMenu.Items.Items[6].Enabled:=True;
+        VirtualMachinesPopup.PopupMenu.Items.Items[7].Enabled:=True;
 
         if (ExtractVarValue(VirtualMachinesTreeView.Selected.Text) = 'Running') and
            (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).rdp = True) and
@@ -4111,10 +4223,15 @@ begin
         else
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
 
-        if TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).ipv6 then
-          VirtualMachinesPopup.PopupMenu.Items.Items[8].Enabled:=True
+        if TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).nat then
+          VirtualMachinesPopup.PopupMenu.Items.Items[4].Enabled:=True
         else
-          VirtualMachinesPopup.PopupMenu.Items.Items[8].Enabled:=False;
+          VirtualMachinesPopup.PopupMenu.Items.Items[4].Enabled:=False;
+
+        if TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).ipv6 then
+          VirtualMachinesPopup.PopupMenu.Items.Items[9].Enabled:=True
+        else
+          VirtualMachinesPopup.PopupMenu.Items.Items[9].Enabled:=False;
 
         VirtualMachinesPopup.PopupMenu.PopUp;
       end;
@@ -5042,6 +5159,11 @@ begin
       VirtualMachine.ipv6:=False;
       VirtualMachine.ip6address:=EmptyStr;
     end;
+
+    if (UsePf = 'yes') and (Configuration.GetOption('general','nat') = 'True') then
+      VirtualMachine.nat:=True
+    else
+      VirtualMachine.nat:=False;
   end;
 
   Configuration.Free;

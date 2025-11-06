@@ -342,6 +342,152 @@ msgstr ""
 msgid "Mtu"
 msgstr ""
 
+#: tformpacketfilterrules.bitbtnclose.caption
+msgid "Close"
+msgstr ""
+
+#: tformpacketfilterrules.bitbtninaddrule.caption
+msgctxt "tformpacketfilterrules.bitbtninaddrule.caption"
+msgid "Add rule"
+msgstr ""
+
+#: tformpacketfilterrules.bitbtninremoverule.caption
+msgctxt "tformpacketfilterrules.bitbtninremoverule.caption"
+msgid "Remove rule"
+msgstr ""
+
+#: tformpacketfilterrules.bitbtnoutaddrule.caption
+msgctxt "tformpacketfilterrules.bitbtnoutaddrule.caption"
+msgid "Add rule"
+msgstr ""
+
+#: tformpacketfilterrules.bitbtnoutremoverule.caption
+msgctxt "tformpacketfilterrules.bitbtnoutremoverule.caption"
+msgid "Remove rule"
+msgstr ""
+
+#: tformpacketfilterrules.bitbtnrdraddrule.caption
+msgctxt "tformpacketfilterrules.bitbtnrdraddrule.caption"
+msgid "Add rule"
+msgstr ""
+
+#: tformpacketfilterrules.bitbtnrdrremoverule.caption
+msgctxt "tformpacketfilterrules.bitbtnrdrremoverule.caption"
+msgid "Remove rule"
+msgstr ""
+
+#: tformpacketfilterrules.bitbtnsaverules.caption
+msgctxt "tformpacketfilterrules.bitbtnsaverules.caption"
+msgid "Save all rules"
+msgstr ""
+
+#: tformpacketfilterrules.caption
+msgid "Bhyve Manager - Packet Filter rules"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox1.caption
+msgctxt "tformpacketfilterrules.groupbox1.caption"
+msgid "Header"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox10.caption
+msgctxt "tformpacketfilterrules.groupbox10.caption"
+msgid "Port"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox2.caption
+msgctxt "tformpacketfilterrules.groupbox2.caption"
+msgid "Destination"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox3.caption
+msgctxt "tformpacketfilterrules.groupbox3.caption"
+msgid "Port"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox4.caption
+msgctxt "tformpacketfilterrules.groupbox4.caption"
+msgid "Header"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox5.caption
+msgid "Host port "
+msgstr ""
+
+#: tformpacketfilterrules.groupbox6.caption
+msgctxt "tformpacketfilterrules.groupbox6.caption"
+msgid "VM port"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox7.caption
+msgctxt "tformpacketfilterrules.groupbox7.caption"
+msgid "Source"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox8.caption
+msgctxt "tformpacketfilterrules.groupbox8.caption"
+msgid "Header"
+msgstr ""
+
+#: tformpacketfilterrules.groupbox9.caption
+msgctxt "tformpacketfilterrules.groupbox9.caption"
+msgid "Source"
+msgstr ""
+
+#: tformpacketfilterrules.label1.caption
+msgctxt "tformpacketfilterrules.label1.caption"
+msgid "Interface"
+msgstr ""
+
+#: tformpacketfilterrules.label2.caption
+msgctxt "tformpacketfilterrules.label2.caption"
+msgid "AF"
+msgstr ""
+
+#: tformpacketfilterrules.label3.caption
+msgctxt "tformpacketfilterrules.label3.caption"
+msgid "Proto"
+msgstr ""
+
+#: tformpacketfilterrules.label4.caption
+msgctxt "tformpacketfilterrules.label4.caption"
+msgid "AF"
+msgstr ""
+
+#: tformpacketfilterrules.label5.caption
+msgctxt "tformpacketfilterrules.label5.caption"
+msgid "Proto"
+msgstr ""
+
+#: tformpacketfilterrules.label6.caption
+msgctxt "tformpacketfilterrules.label6.caption"
+msgid "AF"
+msgstr ""
+
+#: tformpacketfilterrules.label7.caption
+msgctxt "tformpacketfilterrules.label7.caption"
+msgid "Proto"
+msgstr ""
+
+#: tformpacketfilterrules.label8.caption
+msgctxt "tformpacketfilterrules.label8.caption"
+msgid "Interface"
+msgstr ""
+
+#: tformpacketfilterrules.tabsheetinbound.caption
+msgid "Inbound"
+msgstr ""
+
+#: tformpacketfilterrules.tabsheetoutbound.caption
+msgctxt "tformpacketfilterrules.tabsheetoutbound.caption"
+msgid "Outbound"
+msgstr ""
+
+#: tformpacketfilterrules.tabsheetredirect.caption
+msgctxt "tformpacketfilterrules.tabsheetredirect.caption"
+msgid "Redirect"
+msgstr ""
+
 #: tformpassthrudevice.bitbtnsave.caption
 msgctxt "tformpassthrudevice.bitbtnsave.caption"
 msgid "Save"
@@ -421,6 +567,11 @@ msgstr ""
 msgid "Use dnsmasq for IPv6 support"
 msgstr ""
 
+#: tformsettings.checkboxusepf.caption
+msgctxt "tformsettings.checkboxusepf.caption"
+msgid "Use PF/NAT support"
+msgstr ""
+
 #: tformsettings.checkboxusesudo.caption
 msgid "Use sudo instead of doas"
 msgstr ""
@@ -435,10 +586,6 @@ msgstr ""
 
 #: tformsettings.comboboxzpool.text
 msgid "zroot"
-msgstr ""
-
-#: tformsettings.editbridgeinterface.text
-msgid "bhyve0"
 msgstr ""
 
 #: tformsettings.editbridgeipv6.text
@@ -513,7 +660,13 @@ msgstr ""
 msgid "Extra tool paths"
 msgstr ""
 
+#: tformsettings.groupboxnatsettings.caption
+msgctxt "tformsettings.groupboxnatsettings.caption"
+msgid "PF/NAT Settings"
+msgstr ""
+
 #: tformsettings.groupboxnetworksettings.caption
+msgctxt "tformsettings.groupboxnetworksettings.caption"
 msgid "Network settings"
 msgstr ""
 
@@ -577,6 +730,10 @@ msgstr ""
 msgid "swtpm_ioctl"
 msgstr ""
 
+#: tformsettings.label26.caption
+msgid "External interface"
+msgstr ""
+
 #: tformsettings.label27.caption
 msgid "Zpool"
 msgstr ""
@@ -591,6 +748,10 @@ msgstr ""
 
 #: tformsettings.label3.caption
 msgid "bhyvectl"
+msgstr ""
+
+#: tformsettings.label30.caption
+msgid "External IPv4"
 msgstr ""
 
 #: tformsettings.label31.caption
@@ -609,12 +770,20 @@ msgstr ""
 msgid "Cloud/VM images"
 msgstr ""
 
+#: tformsettings.label35.caption
+msgid "External IPv6"
+msgstr ""
+
 #: tformsettings.label4.caption
 msgid "bhyveload"
 msgstr ""
 
 #: tformsettings.label5.caption
 msgid "qemu-img"
+msgstr ""
+
+#: tformsettings.labelexternalip6.caption
+msgid "Optional"
 msgstr ""
 
 #: tformsettings.labelnetmask.caption
@@ -628,6 +797,11 @@ msgstr ""
 #: tformsettings.tabsheetgeneral.caption
 msgctxt "tformsettings.tabsheetgeneral.caption"
 msgid "General settings"
+msgstr ""
+
+#: tformsettings.tabsheetnetwork.caption
+msgctxt "tformsettings.tabsheetnetwork.caption"
+msgid "Network settings"
 msgstr ""
 
 #: tformsettings.tabsheetpaths.caption
@@ -868,6 +1042,11 @@ msgctxt "tformvmcreate.checkboxipv6address.caption"
 msgid "Use IPv6"
 msgstr ""
 
+#: tformvmcreate.checkboxnat.caption
+msgctxt "tformvmcreate.checkboxnat.caption"
+msgid "Use PF/NAT"
+msgstr ""
+
 #: tformvmcreate.checkboxonlylocalhost.caption
 msgctxt "tformvmcreate.checkboxonlylocalhost.caption"
 msgid "Only localhost VNC connection"
@@ -1059,6 +1238,11 @@ msgctxt "tformvminfo.checkboxipv6.caption"
 msgid "Use IPv6"
 msgstr ""
 
+#: tformvminfo.checkboxpfnat.caption
+msgctxt "tformvminfo.checkboxpfnat.caption"
+msgid "Use PF/NAT"
+msgstr ""
+
 #: tformvminfo.checkboxrdp.caption
 msgid "Works with RDP connection"
 msgstr ""
@@ -1097,6 +1281,10 @@ msgstr ""
 msgid "Now, assign this IPv6 address to %s interface. Do not forget add accept_rtadv and auto_linklocal options to it too."
 msgstr ""
 
+#: unit_language.check_af
+msgid "Address Family (AF) is not selected."
+msgstr ""
+
 #: unit_language.check_base_binary
 #, object-pascal-format
 msgid "%s binary was not found"
@@ -1121,6 +1309,20 @@ msgid ""
 "The virtual machine creation task has not finished. \n"
 "\n"
 "Do you really want to stop it and close form?"
+msgstr ""
+
+#: unit_language.check_custom_ip_destination
+#, object-pascal-format
+msgid "Custom destination is not a valid %s address."
+msgstr ""
+
+#: unit_language.check_custom_ip_source
+#, object-pascal-format
+msgid "Custom source is not a valid %s address."
+msgstr ""
+
+#: unit_language.check_destination
+msgid "Destination info is not complete."
 msgstr ""
 
 #: unit_language.check_device_type
@@ -1148,8 +1350,16 @@ msgstr ""
 msgid "Gateway is not valid."
 msgstr ""
 
+#: unit_language.check_host_range_ports
+msgid "Host port or range of ports are not valid."
+msgstr ""
+
 #: unit_language.check_image_path
 msgid "The Cloud/VM image does not exist."
+msgstr ""
+
+#: unit_language.check_inbound_rule
+msgid "Cannot add the same inbound rule twice."
 msgstr ""
 
 #: unit_language.check_ipv4
@@ -1162,6 +1372,46 @@ msgstr ""
 
 #: unit_language.check_metadata_file
 msgid "meta-data file does not exist."
+msgstr ""
+
+#: unit_language.check_nat
+msgid "A valid external interface and external IPv4 must be selected. It will be used for define PF rules."
+msgstr ""
+
+#: unit_language.check_network_device
+msgid "Network interface is not selected."
+msgstr ""
+
+#: unit_language.check_outbound_rule
+msgid "Cannot add the same outbound rule twice."
+msgstr ""
+
+#: unit_language.check_pf
+msgid "pfctl was not found. Please install OpenBSD packet filter for fix it."
+msgstr ""
+
+#: unit_language.check_port
+msgid "Port is not selected."
+msgstr ""
+
+#: unit_language.check_protocol
+msgid "Protocol (Proto) is not selected."
+msgstr ""
+
+#: unit_language.check_range_ports
+msgid "Port or range ports are not valid."
+msgstr ""
+
+#: unit_language.check_redirect_ipv6
+msgid "IPv6 does not support port redirection using NAT."
+msgstr ""
+
+#: unit_language.check_redirect_rule
+msgid "Cannot add the same redirect rule twice."
+msgstr ""
+
+#: unit_language.check_source_info
+msgid "Source info is not complete."
 msgstr ""
 
 #: unit_language.check_ssh_key
@@ -1216,6 +1466,10 @@ msgstr ""
 
 #: unit_language.check_vm_name
 msgid "Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]"
+msgstr ""
+
+#: unit_language.check_vm_port
+msgid "Virtual machine port is not valid."
 msgstr ""
 
 #: unit_language.check_vm_running
@@ -1338,6 +1592,21 @@ msgstr ""
 msgid "Extracting..."
 msgstr ""
 
+#: unit_language.in_grid_interface
+msgctxt "unit_language.in_grid_interface"
+msgid "Interface"
+msgstr ""
+
+#: unit_language.in_grid_port
+msgctxt "unit_language.in_grid_port"
+msgid "Port"
+msgstr ""
+
+#: unit_language.in_grid_source
+msgctxt "unit_language.in_grid_source"
+msgid "Source"
+msgstr ""
+
 #: unit_language.nothing_status
 msgid "Nothing to do"
 msgstr ""
@@ -1345,6 +1614,21 @@ msgstr ""
 #: unit_language.no_calculated_ipv6
 #, object-pascal-format
 msgid "%s IPv6 address can not calculated. IPv6 prefix or Mac address are not valid."
+msgstr ""
+
+#: unit_language.out_grid_destination
+msgctxt "unit_language.out_grid_destination"
+msgid "Destination"
+msgstr ""
+
+#: unit_language.out_grid_interface
+msgctxt "unit_language.out_grid_interface"
+msgid "Interface"
+msgstr ""
+
+#: unit_language.out_grid_port
+msgctxt "unit_language.out_grid_port"
+msgid "Port"
 msgstr ""
 
 #: unit_language.popup_add_device
@@ -1397,6 +1681,10 @@ msgctxt "unit_language.popup_modify_vm"
 msgid "Modify virtual machine info"
 msgstr ""
 
+#: unit_language.popup_pf_rules_vm
+msgid "PF Rules"
+msgstr ""
+
 #: unit_language.popup_rdp_vm
 msgctxt "unit_language.popup_rdp_vm"
 msgid "RDP to virtual machine"
@@ -1421,13 +1709,59 @@ msgstr ""
 msgid "ppt devices were not detected"
 msgstr ""
 
+#: unit_language.rdr_grid_host_port
+msgid "Host port"
+msgstr ""
+
+#: unit_language.rdr_grid_source
+msgctxt "unit_language.rdr_grid_source"
+msgid "Source"
+msgstr ""
+
+#: unit_language.rdr_grid_vm_port
+msgctxt "unit_language.rdr_grid_vm_port"
+msgid "VM port"
+msgstr ""
+
 #: unit_language.retrieve_size
 #, object-pascal-format
 msgid "%0:s can not retrieve %1:s file size."
 msgstr ""
 
+#: unit_language.save_rules
+#, object-pascal-format
+msgid "%s PF rules were saved successfully."
+msgstr ""
+
+#: unit_language.save_rules_reload
+#, object-pascal-format
+msgid "%s PF rules were reloaded successfully."
+msgstr ""
+
+#: unit_language.save_rules_reload_error
+#, object-pascal-format
+msgid "An error occurred trying reload %s PF rules."
+msgstr ""
+
+#: unit_language.save_rules_title
+msgid "Packet Filter rules information"
+msgstr ""
+
+#: unit_language.settings_saved
+msgid "Settings were saved successfully"
+msgstr ""
+
+#: unit_language.settings_saved_title
+msgid "Settings information"
+msgstr ""
+
 #: unit_language.virtual_machine
 msgid "virtual machine"
+msgstr ""
+
+#: unit_language.vm_apply_rules_confirmation
+#, object-pascal-format
+msgid "Do you want to apply these rules to the running virtual machine %s?"
 msgstr ""
 
 #: unit_language.vm_create_status

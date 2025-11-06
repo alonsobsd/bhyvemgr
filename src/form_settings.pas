@@ -47,19 +47,23 @@ type
     BitBtnMacAddress: TBitBtn;
     BitBtnSaveSettings: TBitBtn;
     BitBtnCloseSettings: TBitBtn;
+    CheckBoxUsePF: TCheckBox;
     CheckBoxUseIpv6: TCheckBox;
     CheckBoxUseSystray: TCheckBox;
     CheckBoxUseDnsmasq: TCheckBox;
     CheckBoxUseSudo: TCheckBox;
     CheckBoxUseZfs: TCheckBox;
+    ComboBoxInterface: TComboBox;
+    ComboBoxBridgeInterface: TComboBox;
+    ComboBoxIp4: TComboBox;
+    ComboBoxIp6: TComboBox;
     ComboBoxZpool: TComboBox;
     DirectoryEditImagesPath: TDirectoryEdit;
-    EditBridgeMac: TEdit;
     EditBridgeIpv6: TEdit;
+    EditBridgeMac: TEdit;
     EditIpv6Prefix: TEdit;
-    EditVmPathSetting: TEdit;
-    EditBridgeInterface: TEdit;
     EditSubnet: TEdit;
+    EditVmPathSetting: TEdit;
     EditZfsCreateOptions: TEdit;
     EditRdpArgs: TEdit;
     FileNameEditBhyve: TFileNameEdit;
@@ -72,27 +76,29 @@ type
     FileNameEditSwtpm: TFileNameEdit;
     FileNameEditSwtpmIoctl: TFileNameEdit;
     FileNameEditBhyveload: TFileNameEdit;
+    GroupBoxNatSettings: TGroupBox;
     GroupBoxBhyvePaths: TGroupBox;
+    GroupBoxNetworkSettings: TGroupBox;
     GroupBoxRemoteToolPaths: TGroupBox;
     GroupBoxSwtpmToolPaths: TGroupBox;
     GroupBoxExtraToolPaths: TGroupBox;
     GroupBoxUserToolPaths: TGroupBox;
     GroupBoxZfsSettings: TGroupBox;
-    GroupBoxNetworkSettings: TGroupBox;
     GroupBoxRemoteToolSettings: TGroupBox;
     Label1: TLabel;
     Label12: TLabel;
     Label13: TLabel;
-    Label33: TLabel;
-    Label34: TLabel;
-    Label5: TLabel;
-    Prefix: TLabel;
-    Label31: TLabel;
-    Label32: TLabel;
-    LabelNetmask: TLabel;
-    Label2: TLabel;
     Label20: TLabel;
     Label21: TLabel;
+    Label26: TLabel;
+    Label30: TLabel;
+    Label33: TLabel;
+    Label34: TLabel;
+    Label35: TLabel;
+    Label5: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
+    Label2: TLabel;
     Label22: TLabel;
     Label23: TLabel;
     Label24: TLabel;
@@ -102,17 +108,23 @@ type
     Label29: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    LabelNetmask: TLabel;
+    LabelExternalIp6: TLabel;
     PageControlSettings: TPageControl;
+    Prefix: TLabel;
     StatusBarBhyveSettings: TStatusBar;
+    TabSheetNetwork: TTabSheet;
     TabSheetGeneral: TTabSheet;
     TabSheetPaths: TTabSheet;
     procedure BitBtnCalculateIpv6Click(Sender: TObject);
     procedure BitBtnCloseSettingsClick(Sender: TObject);
     procedure BitBtnMacAddressClick(Sender: TObject);
     procedure BitBtnSaveSettingsClick(Sender: TObject);
+    procedure CheckBoxUsePFChange(Sender: TObject);
     procedure CheckBoxUseDnsmasqChange(Sender: TObject);
     procedure CheckBoxUseIpv6Change(Sender: TObject);
     procedure CheckBoxUseZfsChange(Sender: TObject);
+    procedure ComboBoxInterfaceChange(Sender: TObject);
     procedure ComboBoxZpoolChange(Sender: TObject);
     procedure EditSubnetExit(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -141,6 +153,13 @@ procedure TFormSettings.FormShow(Sender: TObject);
 begin
   Self.PageControlSettings.ActivePageIndex:=0;
   FillComboZpool;
+
+  ComboBoxInterface.Clear;
+  ComboBoxIp4.Clear;
+  ComboBoxIp6.Clear;
+
+  FillComboExternalInterfaceList(ComboBoxInterface, 'ether');
+  FillComboExternalInterfaceList(ComboBoxBridgeInterface, 'bridge');
 
   EditBridgeMac.Clear;
   EditBridgeIpv6.Clear;
@@ -191,6 +210,16 @@ begin
     end;
   end;
 
+  if CheckBoxUsePF.Checked then
+  begin
+    if not (FileExists(PfctlCmd)) then
+    begin
+      StatusBarBhyveSettings.SimpleText:=check_pf;
+      Result:=False;
+      Exit;
+    end;
+  end;
+
   if CheckBoxUseSudo.Checked then
   begin
     if not FileExists(FileNameEditSudo.FileName) or not (ExtractFileName(FileNameEditSudo.FileName) = 'sudo') then
@@ -228,7 +257,7 @@ begin
     {$endif}
   end;
 
-  if Trim(EditBridgeInterface.Text) = EmptyStr then
+  if ComboBoxBridgeInterface.ItemIndex = -1 then
   begin
     StatusBarBhyveSettings.SimpleText:=check_bridge;
     Result:=False;
@@ -237,6 +266,12 @@ begin
   else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
   begin
     StatusBarBhyveSettings.SimpleText:=check_subnet;
+    Result:=False;
+    Exit;
+  end
+  else if (ComboBoxInterface.ItemIndex = -1) or (ComboBoxIp4.ItemIndex = -1) then
+  begin
+    StatusBarBhyveSettings.SimpleText:=check_nat;
     Result:=False;
     Exit;
   end
@@ -400,6 +435,14 @@ begin
   end;
 end;
 
+procedure TFormSettings.ComboBoxInterfaceChange(Sender: TObject);
+begin
+  ComboBoxIp4.Clear;
+  FillComboExternalIp4List(ComboBoxIp4, ComboBoxInterface.Text);
+  ComboBoxIp6.Clear;
+  FillComboExternalIp6List(ComboBoxIp6, ComboBoxInterface.Text);
+end;
+
 procedure TFormSettings.ComboBoxZpoolChange(Sender: TObject);
 begin
   if CheckKernelModule('zfs') then
@@ -478,24 +521,24 @@ begin
     if CheckBoxUseDnsmasq.Checked then
     begin
       ConfigFile.SetOption('general', 'use_dnsmasq', 'yes');
-      ConfigFile.SetOption('network', 'bridge_interface', EditBridgeInterface.Text);
+      ConfigFile.SetOption('network', 'bridge_interface', ComboBoxBridgeInterface.Text);
       ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
 
       if not DirectoryExists(DnsmasqDirectory) then
         CreateDirectory(DnsmasqDirectory, 'root');
 
       SetUseDnsmasq('yes');
-      SetBridgeInterface(EditBridgeInterface.Text);
+      SetBridgeInterface(ComboBoxBridgeInterface.Text);
       SetSubnet(EditSubnet.Text);
     end
     else
     begin
       ConfigFile.SetOption('general', 'use_dnsmasq', 'no');
-      ConfigFile.SetOption('network', 'bridge_interface', EditBridgeInterface.Text);
+      ConfigFile.SetOption('network', 'bridge_interface', ComboBoxBridgeInterface.Text);
       ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
 
       SetUseDnsmasq('no');
-      SetBridgeInterface(EditBridgeInterface.Text);
+      SetBridgeInterface(ComboBoxBridgeInterface.Text);
       SetSubnet(EditSubnet.Text);
     end;
 
@@ -522,6 +565,26 @@ begin
       ConfigFile.SetOption('general', 'use_ipv6', 'no');
       SetUseIpv6('no');
       SetIpv6Prefix(EmptyStr);
+    end;
+
+    if CheckBoxUsePF.Checked then
+    begin
+      ConfigFile.SetOption('general', 'use_pf', 'yes');
+      ConfigFile.SetOption('network', 'external_interface', ComboBoxInterface.Text);
+      ConfigFile.SetOption('network', 'external_ipv4', ComboBoxIp4.Text);
+      ConfigFile.SetOption('network', 'external_ipv6', ComboBoxIp6.Text);
+      SetUsePf('yes');
+      SetExternalInterface(ComboBoxInterface.Text);
+      SetExternalIpv4(ComboBoxIp4.Text);
+      SetExternalIpv6(ComboBoxIp6.Text);
+    end
+    else
+    begin
+      ConfigFile.SetOption('general', 'use_pf', 'no');
+      SetUsePf('yes');
+      SetExternalInterface(EmptyStr);
+      SetExternalIpv4(EmptyStr);
+      SetExternalIpv6(EmptyStr);
     end;
 
     ConfigFile.SetOption('general','vm_path', EditVmPathSetting.Text);
@@ -569,11 +632,27 @@ begin
     StatusBarBhyveSettings.SimpleText:=EmptyStr;
 
     DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+ debugln_bhyve_settings_saved);
-    MessageDlg('Settings information', 'Settings were saved successfully', mtInformation, [mbOK], 0);
+    MessageDlg(settings_saved_title, settings_saved, mtInformation, [mbOK], 0);
 
     SetNewConfig(False);
   end;
   ConfigFile.Free;
+end;
+
+procedure TFormSettings.CheckBoxUsePFChange(Sender: TObject);
+begin
+  if CheckKernelModule('pf') then
+  begin
+    if CheckBoxUsePF.Checked then
+      GroupBoxNatSettings.Enabled:=True
+    else
+      GroupBoxNatSettings.Enabled:=False;
+  end
+  else
+  begin
+    CheckBoxUsePF.Checked:=False;
+    GroupBoxNatSettings.Enabled:=False;
+  end;
 end;
 
 procedure TFormSettings.BitBtnCloseSettingsClick(Sender: TObject);
@@ -593,12 +672,12 @@ begin
   begin
     EditBridgeIpv6.Text:=GetNewIp6Address(EditIpv6Prefix.Text, EditBridgeMac.Text);
     StatusBarBhyveSettings.Font.Color:=clTeal;
-    StatusBarBhyveSettings.SimpleText:=Format(calculated_ipv6, [EditBridgeInterface.Text]);
+    StatusBarBhyveSettings.SimpleText:=Format(calculated_ipv6, [ComboBoxBridgeInterface.Text]);
   end
   else
   begin
     StatusBarBhyveSettings.Font.Color:=clRed;
-    StatusBarBhyveSettings.SimpleText:=Format(no_calculated_ipv6, [EditBridgeInterface.Text]);
+    StatusBarBhyveSettings.SimpleText:=Format(no_calculated_ipv6, [ComboBoxBridgeInterface.Text]);
   end;
 end;
 
@@ -608,12 +687,15 @@ begin
   begin
     EditSubnet.Enabled:=True;
     CheckBoxUseIpv6.Enabled:=True;
+    CheckBoxUsePF.Enabled:=True;
   end
   else
   begin
     EditSubnet.Enabled:=True;
     CheckBoxUseIpv6.Enabled:=False;
     CheckBoxUseIpv6.Checked:=False;
+    CheckBoxUsePF.Enabled:=False;
+    CheckBoxUsePF.Checked:=False;
   end;
 end;
 
@@ -669,6 +751,25 @@ begin
     CheckBoxUseIpv6.Enabled:=False;
   end;
 
+  if UsePf = 'yes' then
+  begin
+    CheckBoxUsePF.Checked:=True;
+    ComboBoxInterface.ItemIndex:=ComboBoxInterface.Items.IndexOf(ExternalInterface);
+    FillComboExternalIp4List(ComboBoxIp4, ComboBoxInterface.Text);
+    ComboBoxIp4.ItemIndex:=ComboBoxIp4.Items.IndexOf(ExternalIpv4);
+    FillComboExternalIp6List(ComboBoxIp6, ComboBoxInterface.Text);
+    ComboBoxIp6.ItemIndex:=ComboBoxIp6.Items.IndexOf(ExternalIpv6);
+    GroupBoxNatSettings.Enabled:=True;
+  end
+  else
+  begin
+    CheckBoxUsePF.Checked:=False;
+    ComboBoxInterface.ItemIndex:=-1;
+    ComboBoxIp4.ItemIndex:=-1;
+    ComboBoxIp6.ItemIndex:=-1;
+    GroupBoxNatSettings.Enabled:=False;
+  end;
+
   if UseSudo = 'yes' then
     CheckBoxUseSudo.Checked:=True
   else
@@ -699,7 +800,7 @@ begin
     EditIpv6Prefix.Enabled:=False;
   end;
 
-  EditBridgeInterface.Text:=BridgeInterface;
+  ComboBoxBridgeInterface.ItemIndex:=ComboBoxBridgeInterface.Items.IndexOf(BridgeInterface);
 
   EditSubnet.Text:=Subnet;
 

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bhyve 管理器\n"
 "POT-Creation-Date: 2025-09-08\n"
-"PO-Revision-Date: 2025-09-08\n"
+"PO-Revision-Date: 2025-11-05\n"
 "Last-Translator: ykla <yklaxds@gmail.com>\n"
 "Language-Team: ykla <yklaxds@gmail.com>\n"
 "Language: zh_CN\n"
@@ -353,6 +353,152 @@ msgstr "MAC"
 msgid "Mtu"
 msgstr "MTU"
 
+#: tformpacketfilterrules.bitbtnclose.caption
+msgid "Close"
+msgstr "关闭"
+
+#: tformpacketfilterrules.bitbtninaddrule.caption
+msgctxt "tformpacketfilterrules.bitbtninaddrule.caption"
+msgid "Add rule"
+msgstr "添加规则"
+
+#: tformpacketfilterrules.bitbtninremoverule.caption
+msgctxt "tformpacketfilterrules.bitbtninremoverule.caption"
+msgid "Remove rule"
+msgstr "移除规则"
+
+#: tformpacketfilterrules.bitbtnoutaddrule.caption
+msgctxt "tformpacketfilterrules.bitbtnoutaddrule.caption"
+msgid "Add rule"
+msgstr "添加规则"
+
+#: tformpacketfilterrules.bitbtnoutremoverule.caption
+msgctxt "tformpacketfilterrules.bitbtnoutremoverule.caption"
+msgid "Remove rule"
+msgstr "移除规则"
+
+#: tformpacketfilterrules.bitbtnrdraddrule.caption
+msgctxt "tformpacketfilterrules.bitbtnrdraddrule.caption"
+msgid "Add rule"
+msgstr "添加规则"
+
+#: tformpacketfilterrules.bitbtnrdrremoverule.caption
+msgctxt "tformpacketfilterrules.bitbtnrdrremoverule.caption"
+msgid "Remove rule"
+msgstr "移除规则"
+
+#: tformpacketfilterrules.bitbtnsaverules.caption
+msgctxt "tformpacketfilterrules.bitbtnsaverules.caption"
+msgid "Save all rules"
+msgstr "保存所有规则"
+
+#: tformpacketfilterrules.caption
+msgid "Bhyve Manager - Packet Filter rules"
+msgstr "Bhyve 管理器 - 数据包过滤规则"
+
+#: tformpacketfilterrules.groupbox1.caption
+msgctxt "tformpacketfilterrules.groupbox1.caption"
+msgid "Header"
+msgstr "标题"
+
+#: tformpacketfilterrules.groupbox10.caption
+msgctxt "tformpacketfilterrules.groupbox10.caption"
+msgid "Port"
+msgstr "港口"
+
+#: tformpacketfilterrules.groupbox2.caption
+msgctxt "tformpacketfilterrules.groupbox2.caption"
+msgid "Destination"
+msgstr "目的地"
+
+#: tformpacketfilterrules.groupbox3.caption
+msgctxt "tformpacketfilterrules.groupbox3.caption"
+msgid "Port"
+msgstr "港口"
+
+#: tformpacketfilterrules.groupbox4.caption
+msgctxt "tformpacketfilterrules.groupbox4.caption"
+msgid "Header"
+msgstr "标题"
+
+#: tformpacketfilterrules.groupbox5.caption
+msgid "Host port "
+msgstr "Host 港口"
+
+#: tformpacketfilterrules.groupbox6.caption
+msgctxt "tformpacketfilterrules.groupbox6.caption"
+msgid "VM port"
+msgstr "VM 港口"
+
+#: tformpacketfilterrules.groupbox7.caption
+msgctxt "tformpacketfilterrules.groupbox7.caption"
+msgid "Source"
+msgstr "来源"
+
+#: tformpacketfilterrules.groupbox8.caption
+msgctxt "tformpacketfilterrules.groupbox8.caption"
+msgid "Header"
+msgstr "标题"
+
+#: tformpacketfilterrules.groupbox9.caption
+msgctxt "tformpacketfilterrules.groupbox9.caption"
+msgid "Source"
+msgstr "来源"
+
+#: tformpacketfilterrules.label1.caption
+msgctxt "tformpacketfilterrules.label1.caption"
+msgid "Interface"
+msgstr "界面"
+
+#: tformpacketfilterrules.label2.caption
+msgctxt "tformpacketfilterrules.label2.caption"
+msgid "AF"
+msgstr "AF"
+
+#: tformpacketfilterrules.label3.caption
+msgctxt "tformpacketfilterrules.label3.caption"
+msgid "Proto"
+msgstr "Proto"
+
+#: tformpacketfilterrules.label4.caption
+msgctxt "tformpacketfilterrules.label4.caption"
+msgid "AF"
+msgstr "AF"
+
+#: tformpacketfilterrules.label5.caption
+msgctxt "tformpacketfilterrules.label5.caption"
+msgid "Proto"
+msgstr "Proto"
+
+#: tformpacketfilterrules.label6.caption
+msgctxt "tformpacketfilterrules.label6.caption"
+msgid "AF"
+msgstr "AF"
+
+#: tformpacketfilterrules.label7.caption
+msgctxt "tformpacketfilterrules.label7.caption"
+msgid "Proto"
+msgstr "Proto"
+
+#: tformpacketfilterrules.label8.caption
+msgctxt "tformpacketfilterrules.label8.caption"
+msgid "Interface"
+msgstr "界面"
+
+#: tformpacketfilterrules.tabsheetinbound.caption
+msgid "Inbound"
+msgstr "入境"
+
+#: tformpacketfilterrules.tabsheetoutbound.caption
+msgctxt "tformpacketfilterrules.tabsheetoutbound.caption"
+msgid "Outbound"
+msgstr "出站"
+
+#: tformpacketfilterrules.tabsheetredirect.caption
+msgctxt "tformpacketfilterrules.tabsheetredirect.caption"
+msgid "Redirect"
+msgstr "重定向"
+
 #: tformpassthrudevice.bitbtnsave.caption
 msgctxt "tformpassthrudevice.bitbtnsave.caption"
 msgid "Save"
@@ -432,6 +578,11 @@ msgstr "使用 dnsmasq 提供 DHCP/DNS 支持"
 msgid "Use dnsmasq for IPv6 support"
 msgstr "使用 dnsmasq 提供 IPv6 支持"
 
+#: tformsettings.checkboxusepf.caption
+msgctxt "tformsettings.checkboxusepf.caption"
+msgid "Use PF/NAT support"
+msgstr "使用 PF/NAT 支持"
+
 #: tformsettings.checkboxusesudo.caption
 msgid "Use sudo instead of doas"
 msgstr "使用 sudo 替代 doas"
@@ -447,10 +598,6 @@ msgstr "使用 ZFS 支持（若可用）"
 #: tformsettings.comboboxzpool.text
 msgid "zroot"
 msgstr "zroot"
-
-#: tformsettings.editbridgeinterface.text
-msgid "bhyve0"
-msgstr "bhyve0"
 
 #: tformsettings.editbridgeipv6.text
 msgid "editbridgeipv6"
@@ -524,7 +671,13 @@ msgstr "Bhyve 路径"
 msgid "Extra tool paths"
 msgstr "额外工具路径"
 
+#: tformsettings.groupboxnatsettings.caption
+msgctxt "tformsettings.groupboxnatsettings.caption"
+msgid "PF/NAT Settings"
+msgstr "PF/NAT 设置"
+
 #: tformsettings.groupboxnetworksettings.caption
+msgctxt "tformsettings.groupboxnetworksettings.caption"
 msgid "Network settings"
 msgstr "网络设置"
 
@@ -588,6 +741,10 @@ msgstr "swtpm"
 msgid "swtpm_ioctl"
 msgstr "swtpm_ioctl"
 
+#: tformsettings.label26.caption
+msgid "External interface"
+msgstr "外部接口"
+
 #: tformsettings.label27.caption
 msgid "Zpool"
 msgstr "Zpool"
@@ -603,6 +760,10 @@ msgstr "Xfreerdp 参数"
 #: tformsettings.label3.caption
 msgid "bhyvectl"
 msgstr "bhyvectl"
+
+#: tformsettings.label30.caption
+msgid "External IPv4"
+msgstr "外部 IPv4"
 
 #: tformsettings.label31.caption
 msgid "sudo"
@@ -620,6 +781,10 @@ msgstr "桥接 IPv6"
 msgid "Cloud/VM images"
 msgstr "云/虚拟机镜像"
 
+#: tformsettings.label35.caption
+msgid "External IPv6"
+msgstr "外部 IPv6"
+
 #: tformsettings.label4.caption
 msgid "bhyveload"
 msgstr "bhyveload"
@@ -627,6 +792,10 @@ msgstr "bhyveload"
 #: tformsettings.label5.caption
 msgid "qemu-img"
 msgstr "qemu-img"
+
+#: tformsettings.labelexternalip6.caption
+msgid "Optional"
+msgstr "选修的"
 
 #: tformsettings.labelnetmask.caption
 msgid "LabelNetmask"
@@ -640,6 +809,11 @@ msgstr "IPv6 前缀"
 msgctxt "tformsettings.tabsheetgeneral.caption"
 msgid "General settings"
 msgstr "通用设置"
+
+#: tformsettings.tabsheetnetwork.caption
+msgctxt "tformsettings.tabsheetnetwork.caption"
+msgid "Network settings"
+msgstr "网络设置"
 
 #: tformsettings.tabsheetpaths.caption
 msgctxt "tformsettings.tabsheetpaths.caption"
@@ -879,6 +1053,11 @@ msgctxt "tformvmcreate.checkboxipv6address.caption"
 msgid "Use IPv6"
 msgstr "使用 IPv6"
 
+#: tformvmcreate.checkboxnat.caption
+msgctxt "tformvmcreate.checkboxnat.caption"
+msgid "Use PF/NAT"
+msgstr "使用 PF/NAT"
+
 #: tformvmcreate.checkboxonlylocalhost.caption
 msgctxt "tformvmcreate.checkboxonlylocalhost.caption"
 msgid "Only localhost VNC connection"
@@ -1070,6 +1249,11 @@ msgctxt "tformvminfo.checkboxipv6.caption"
 msgid "Use IPv6"
 msgstr "使用 IPv6"
 
+#: tformvminfo.checkboxpfnat.caption
+msgctxt "tformvminfo.checkboxpfnat.caption"
+msgid "Use PF/NAT"
+msgstr "使用 PF/NAT"
+
 #: tformvminfo.checkboxrdp.caption
 msgid "Works with RDP connection"
 msgstr "适用于 RDP 连接"
@@ -1108,6 +1292,10 @@ msgstr "%0:s：虚拟机 %1:s：进程出错：%2:s："
 msgid "Now, assign this IPv6 address to %s interface. Do not forget add accept_rtadv and auto_linklocal options to it too."
 msgstr "现在，将此 IPv6 地址分配给接口 %s。别忘了同时添加选项 accept_rtadv 和 auto_linklocal。"
 
+#: unit_language.check_af
+msgid "Address Family (AF) is not selected."
+msgstr "未选择地址族 (AF)。"
+
 #: unit_language.check_base_binary
 #, object-pascal-format
 msgid "%s binary was not found"
@@ -1137,6 +1325,20 @@ msgstr ""
 "\n"
 "您确定要停止并关闭此表单吗？"
 
+#: unit_language.check_custom_ip_destination
+#, object-pascal-format
+msgid "Custom destination is not a valid %s address."
+msgstr "自定义目的地不是有效的 %s 地址。"
+
+#: unit_language.check_custom_ip_source
+#, object-pascal-format
+msgid "Custom source is not a valid %s address."
+msgstr "自定义来源不是有效的 %s 地址。"
+
+#: unit_language.check_destination
+msgid "Destination info is not complete."
+msgstr "目的地信息不完整。"
+
 #: unit_language.check_device_type
 msgid "You must select a virtual device type. e.g, ahci-hd, nvme, etc."
 msgstr "您必须选择虚拟设备类型，如 ahci-hd、nvme 等。"
@@ -1162,9 +1364,17 @@ msgstr "未找到 doas。要解决此问题请安装 security/doas"
 msgid "Gateway is not valid."
 msgstr "网关无效。"
 
+#: unit_language.check_host_range_ports
+msgid "Host port or range of ports are not valid."
+msgstr "主机端口或端口范围无效。"
+
 #: unit_language.check_image_path
 msgid "The Cloud/VM image does not exist."
 msgstr "云/虚拟机镜像不存在。"
+
+#: unit_language.check_inbound_rule
+msgid "Cannot add the same inbound rule twice."
+msgstr "不能添加两次相同的入站规则。"
 
 #: unit_language.check_ipv4
 msgid "IPv4 address is not valid."
@@ -1177,6 +1387,46 @@ msgstr "必须定义有效的 IPv6 前缀。它将用于为虚拟机分配 IPv6 
 #: unit_language.check_metadata_file
 msgid "meta-data file does not exist."
 msgstr "元数据文件不存在。"
+
+#: unit_language.check_nat
+msgid "A valid external interface and external IPv4 must be selected. It will be used for define PF rules."
+msgstr "必须选择有效的外部接口和外部 IPv4 地址。这将用于定义 PF 规则。"
+
+#: unit_language.check_network_device
+msgid "Network interface is not selected."
+msgstr "未选择网络接口。"
+
+#: unit_language.check_outbound_rule
+msgid "Cannot add the same outbound rule twice."
+msgstr "不能添加两次相同的出站规则。"
+
+#: unit_language.check_pf
+msgid "pfctl was not found. Please install OpenBSD packet filter for fix it."
+msgstr "未找到 pfctl。请安装 OpenBSD 数据包过滤器以解决此问题。"
+
+#: unit_language.check_port
+msgid "Port is not selected."
+msgstr "未选择端口。"
+
+#: unit_language.check_protocol
+msgid "Protocol (Proto) is not selected."
+msgstr "未选择协议（Proto）。"
+
+#: unit_language.check_range_ports
+msgid "Port or range ports are not valid."
+msgstr "端口或端口范围无效。"
+
+#: unit_language.check_redirect_ipv6
+msgid "IPv6 does not support port redirection using NAT."
+msgstr "IPv6 不支持使用 NAT 进行端口重定向。"
+
+#: unit_language.check_redirect_rule
+msgid "Cannot add the same redirect rule twice."
+msgstr "不能添加两次相同的重定向规则。"
+
+#: unit_language.check_source_info
+msgid "Source info is not complete."
+msgstr "信息来源不完整。"
 
 #: unit_language.check_ssh_key
 msgid "SSH key can not be empty."
@@ -1231,6 +1481,10 @@ msgstr "虚拟机名称 %s 不可用"
 #: unit_language.check_vm_name
 msgid "Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]"
 msgstr "虚拟机名称无效。有效字符为 [a-z][-_][0-9]。"
+
+#: unit_language.check_vm_port
+msgid "Virtual machine port is not valid."
+msgstr "虚拟机端口无效。"
 
 #: unit_language.check_vm_running
 msgid ""
@@ -1355,6 +1609,21 @@ msgstr "发生异常：%s"
 msgid "Extracting..."
 msgstr "正在提取……"
 
+#: unit_language.in_grid_interface
+msgctxt "unit_language.in_grid_interface"
+msgid "Interface"
+msgstr "界面"
+
+#: unit_language.in_grid_port
+msgctxt "unit_language.in_grid_port"
+msgid "Port"
+msgstr "港口"
+
+#: unit_language.in_grid_source
+msgctxt "unit_language.in_grid_source"
+msgid "Source"
+msgstr "来源"
+
 #: unit_language.nothing_status
 msgid "Nothing to do"
 msgstr "无事可做"
@@ -1363,6 +1632,21 @@ msgstr "无事可做"
 #, object-pascal-format
 msgid "%s IPv6 address can not calculated. IPv6 prefix or Mac address are not valid."
 msgstr "无法计算 %s 的 IPv6 地址。IPv6 前缀或 MAC 地址无效。"
+
+#: unit_language.out_grid_destination
+msgctxt "unit_language.out_grid_destination"
+msgid "Destination"
+msgstr "目的地"
+
+#: unit_language.out_grid_interface
+msgctxt "unit_language.out_grid_interface"
+msgid "Interface"
+msgstr "界面"
+
+#: unit_language.out_grid_port
+msgctxt "unit_language.out_grid_port"
+msgid "Port"
+msgstr "港口"
 
 #: unit_language.popup_add_device
 msgctxt "unit_language.popup_add_device"
@@ -1414,6 +1698,10 @@ msgctxt "unit_language.popup_modify_vm"
 msgid "Modify virtual machine info"
 msgstr "修改虚拟机信息"
 
+#: unit_language.popup_pf_rules_vm
+msgid "PF Rules"
+msgstr "PF 规则"
+
 #: unit_language.popup_rdp_vm
 msgctxt "unit_language.popup_rdp_vm"
 msgid "RDP to virtual machine"
@@ -1438,14 +1726,60 @@ msgstr "显示/隐藏 Bhyve 管理器"
 msgid "ppt devices were not detected"
 msgstr "未检测到 PPT 设备"
 
+#: unit_language.rdr_grid_host_port
+msgid "Host port"
+msgstr "Host 港口"
+
+#: unit_language.rdr_grid_source
+msgctxt "unit_language.rdr_grid_source"
+msgid "Source"
+msgstr "来源"
+
+#: unit_language.rdr_grid_vm_port
+msgctxt "unit_language.rdr_grid_vm_port"
+msgid "VM port"
+msgstr "VM 港口"
+
 #: unit_language.retrieve_size
 #, object-pascal-format
 msgid "%0:s can not retrieve %1:s file size."
 msgstr "%0:s 无法获取 %1:s 文件大小。"
 
+#: unit_language.save_rules
+#, object-pascal-format
+msgid "%s PF rules were saved successfully."
+msgstr "%s PF 规则已成功保存。"
+
+#: unit_language.save_rules_reload
+#, object-pascal-format
+msgid "%s PF rules were reloaded successfully."
+msgstr "%s PF 规则已成功重新加载"
+
+#: unit_language.save_rules_reload_error
+#, object-pascal-format
+msgid "An error occurred trying reload %s PF rules."
+msgstr "尝试重新加载 %s PF 规则时发生错误。"
+
+#: unit_language.save_rules_title
+msgid "Packet Filter rules information"
+msgstr "数据包过滤规则信息"
+
+#: unit_language.settings_saved
+msgid "Settings were saved successfully"
+msgstr "设置已成功保存"
+
+#: unit_language.settings_saved_title
+msgid "Settings information"
+msgstr "设置信息"
+
 #: unit_language.virtual_machine
 msgid "virtual machine"
 msgstr "虚拟机"
+
+#: unit_language.vm_apply_rules_confirmation
+#, object-pascal-format
+msgid "Do you want to apply these rules to the running virtual machine %s?"
+msgstr "是否要将这些规则应用于正在运行的虚拟机 %s？"
 
 #: unit_language.vm_create_status
 #, object-pascal-format

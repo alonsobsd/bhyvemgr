@@ -130,17 +130,24 @@ type
   function FillComboKeyboardLayout(Combo: TComboBox):Boolean;
   function FillComboBootrom(Combo: TComboBox):Boolean;
   function FillComboBootvars(Combo: TComboBox):Boolean;
+  function FillComboExternalInterfaceList(Combo: TComboBox; NetworkInterfaceType : String):Boolean;
+  function FillComboExternalIp4List(Combo: TComboBox; NetworkInterface : String):Boolean;
+  function FillComboExternalIp6List(Combo: TComboBox; NetworkInterface : String):Boolean;
   function FillComboFwcfg(Combo: TComboBox):Boolean;
   procedure FillComboLanguage(Combo: TComboBox);
   procedure FillComboTpmDevice(Combo: TComboBox);
   procedure FillComboTpmType(Combo: TComboBox);
   procedure FillComboTpmVersion(Combo: TComboBox);
   procedure FillComboResolution(Combo: TComboBox);
+  function FillComboServicePorts(combo : TComboBox; Protocol : String):Boolean;
   function FillComboSystemType(Combo: TComboBox):Boolean;
   function FillComboSystemVersion(Combo: TComboBox; System: String ):Boolean;
   function FillComboVirtualDeviceType(Combo: TComboBox):Boolean;
   function FillComboVirtualStorageType(Combo: TComboBox):Boolean;
   function FillComboZpoolList(Combo: TComboBox):Boolean;
+  function FillComboPacketFilterAf(Combo: TComboBox):Boolean;
+  function FillComboPacketFilterProto(Combo: TComboBox):Boolean;
+  function FillComboPacketFilterHostType(Combo: TComboBox): Boolean;
 
 implementation
 
@@ -221,6 +228,10 @@ begin
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
   PopupMenuItem.Caption:=popup_rdp_vm;
+  PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:=popup_pf_rules_vm;
   PopupMenu.Items.Add(PopupMenuItem);
 
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
@@ -344,6 +355,9 @@ begin
   ActionList.Add(Image.Picture.Bitmap, nil);
   { Index 9 }
   Image.Picture.LoadFromFile(DatadirPath+'images/menu/ip.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 10 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/pf.png');
   ActionList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;
@@ -525,6 +539,62 @@ begin
   Result:=True;
 end;
 
+function FillComboExternalInterfaceList(Combo: TComboBox; NetworkInterfaceType : String): Boolean;
+var
+  i : Integer;
+  interface_list : TStringList;
+begin
+  interface_list:=TStringList.Create;
+  interface_list.Text:=GetNetworkInterfaceList(NetworkInterfaceType);
+
+  for i:=0 to interface_list.Count-1 do
+  begin
+    combo.Items.Add(interface_list[i]);
+  end;
+
+  interface_list.Free;
+
+  Result:=True;
+end;
+
+function FillComboExternalIp4List(Combo: TComboBox; NetworkInterface: String
+  ): Boolean;
+var
+  i : Integer;
+  interface_list : TStringList;
+begin
+  interface_list:=TStringList.Create;
+  interface_list.Text:=GetNetworkIp4List(NetworkInterface);
+
+  for i:=0 to interface_list.Count-1 do
+  begin
+    combo.Items.Add(interface_list[i]);
+  end;
+
+  interface_list.Free;
+
+  Result:=True;
+end;
+
+function FillComboExternalIp6List(Combo: TComboBox; NetworkInterface: String
+  ): Boolean;
+var
+  i : Integer;
+  interface_list : TStringList;
+begin
+  interface_list:=TStringList.Create;
+  interface_list.Text:=GetNetworkIp6List(NetworkInterface);
+
+  for i:=0 to interface_list.Count-1 do
+  begin
+    combo.Items.Add(interface_list[i]);
+  end;
+
+  interface_list.Free;
+
+  Result:=True;
+end;
+
 function FillComboFwcfg(Combo: TComboBox): Boolean;
 begin
   Combo.Items.Add('bhyve');
@@ -587,6 +657,23 @@ begin
   Combo.Items.Add('2048x1080');
   Combo.Items.Add('2560x1440');
   Combo.Items.Add('3840x2160');
+end;
+
+function FillComboServicePorts(combo: TComboBox; Protocol : String): Boolean;
+var
+  i : Integer;
+  service_list : TStringList;
+begin
+  service_list:=GetServicePortList(Protocol);
+
+  for i:=0 to service_list.Count-1 do
+  begin
+    combo.AddItem(service_list.Names[i], TObject(service_list.ValueFromIndex[i].ToInt64));
+  end;
+
+  service_list.Free;
+
+  Result:=True;
 end;
 
 function FillComboSystemType(Combo: TComboBox): Boolean;
@@ -694,6 +781,28 @@ begin
   zpool_list.Free;
 
   Result:=True;
+end;
+
+function FillComboPacketFilterAf(Combo: TComboBox): Boolean;
+begin
+  combo.Items.Add('inet');
+  combo.Items.Add('inet6');
+  Result:= True;
+end;
+
+function FillComboPacketFilterProto(Combo: TComboBox): Boolean;
+begin
+  combo.Items.Add('sctp');
+  combo.Items.Add('tcp');
+  combo.Items.Add('udp');
+  Result:= True;
+end;
+
+function FillComboPacketFilterHostType(Combo: TComboBox): Boolean;
+begin
+  combo.Items.Add('any');
+  combo.Items.Add('custom');
+  Result:= True;
 end;
 
 end.

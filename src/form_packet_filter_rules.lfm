@@ -1,0 +1,657 @@
+object FormPacketFilterRules: TFormPacketFilterRules
+  Left = 545
+  Height = 466
+  Top = 303
+  Width = 777
+  BorderStyle = bsSingle
+  Caption = 'Bhyve Manager - Packet Filter rules'
+  ClientHeight = 466
+  ClientWidth = 777
+  Position = poDesktopCenter
+  ShowInTaskBar = stAlways
+  LCLVersion = '4.2.0.0'
+  object PageControlPacketFilter: TPageControl
+    Left = 8
+    Height = 392
+    Top = 8
+    Width = 760
+    ActivePage = TabSheetInbound
+    TabIndex = 0
+    TabOrder = 0
+    object TabSheetInbound: TTabSheet
+      Caption = 'Inbound'
+      ClientHeight = 357
+      ClientWidth = 754
+      object GroupBox8: TGroupBox
+        Left = 8
+        Height = 144
+        Top = 8
+        Width = 216
+        Caption = 'Header'
+        ClientHeight = 115
+        ClientWidth = 212
+        TabOrder = 0
+        object Label6: TLabel
+          Left = 16
+          Height = 18
+          Top = 48
+          Width = 15
+          Caption = 'AF'
+        end
+        object Label7: TLabel
+          Left = 16
+          Height = 18
+          Top = 80
+          Width = 34
+          Caption = 'Proto'
+        end
+        object ComboBoxInAf: TComboBox
+          Left = 80
+          Height = 32
+          Top = 40
+          Width = 100
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 1
+        end
+        object ComboBoxInProto: TComboBox
+          Left = 80
+          Height = 32
+          Top = 71
+          Width = 100
+          AutoComplete = True
+          AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactRetainPrefixCase, cbactSearchCaseSensitive, cbactSearchAscending]
+          ItemHeight = 24
+          ReadOnly = True
+          Sorted = True
+          Style = csDropDownList
+          TabOrder = 2
+          OnChange = ComboBoxInProtoChange
+        end
+        object Label8: TLabel
+          Left = 16
+          Height = 18
+          Top = 18
+          Width = 53
+          Caption = 'Interface'
+        end
+        object ComboBoxInInterface: TComboBox
+          Left = 80
+          Height = 32
+          Top = 8
+          Width = 100
+          AutoComplete = True
+          AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactRetainPrefixCase, cbactSearchCaseSensitive, cbactSearchAscending]
+          ItemHeight = 24
+          ReadOnly = True
+          Sorted = True
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxOutProtoChange
+        end
+      end
+      object GroupBox9: TGroupBox
+        Left = 232
+        Height = 144
+        Top = 8
+        Width = 296
+        Caption = 'Source'
+        ClientHeight = 115
+        ClientWidth = 292
+        TabOrder = 1
+        object ComboBoxInSourceType: TComboBox
+          Left = 16
+          Height = 32
+          Top = 24
+          Width = 100
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxInSourceTypeChange
+        end
+        object EditInSourceAddress: TEdit
+          Left = 16
+          Height = 32
+          Top = 56
+          Width = 258
+          Enabled = False
+          TabOrder = 1
+        end
+      end
+      object GroupBox10: TGroupBox
+        Left = 536
+        Height = 144
+        Top = 8
+        Width = 208
+        Caption = 'Port'
+        ClientHeight = 115
+        ClientWidth = 204
+        TabOrder = 2
+        object ComboBoxInPort: TComboBox
+          Left = 24
+          Height = 32
+          Top = 24
+          Width = 150
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxInPortChange
+        end
+        object EditInPort: TEdit
+          Left = 24
+          Height = 32
+          Top = 56
+          Width = 100
+          ReadOnly = True
+          TabOrder = 1
+        end
+      end
+      object BitBtnInAddRule: TBitBtn
+        Left = 208
+        Height = 30
+        Top = 160
+        Width = 160
+        Caption = 'Add rule'
+        Kind = bkOK
+        ModalResult = 1
+        TabOrder = 3
+        OnClick = BitBtnInAddRuleClick
+      end
+      object BitBtnInRemoveRule: TBitBtn
+        Left = 368
+        Height = 30
+        Top = 160
+        Width = 160
+        Caption = 'Remove rule'
+        Enabled = False
+        Kind = bkNo
+        ModalResult = 7
+        TabOrder = 4
+        OnClick = BitBtnInRemoveRuleClick
+      end
+      object StringGridInRules: TStringGrid
+        Left = 8
+        Height = 152
+        Top = 200
+        Width = 736
+        AlternateColor = clScrollBar
+        AutoFillColumns = True
+        ColumnClickSorts = True
+        FixedCols = 0
+        RowCount = 1
+        TabOrder = 5
+        OnClick = StringGridInRulesClick
+        OnSelectCell = StringGridInRulesSelectCell
+        ColWidths = (
+          148
+          147
+          147
+          147
+          147
+        )
+        Cells = (
+          5
+          0
+          0
+          'Interface'
+          1
+          0
+          'AF'
+          2
+          0
+          'Proto'
+          3
+          0
+          'Source'
+          4
+          0
+          'Port'
+        )
+      end
+    end
+    object TabSheetOutbound: TTabSheet
+      Caption = 'Outbound'
+      ClientHeight = 357
+      ClientWidth = 754
+      object GroupBox1: TGroupBox
+        Left = 8
+        Height = 144
+        Top = 8
+        Width = 216
+        Caption = 'Header'
+        ClientHeight = 115
+        ClientWidth = 212
+        TabOrder = 0
+        object Label2: TLabel
+          Left = 16
+          Height = 18
+          Top = 48
+          Width = 15
+          Caption = 'AF'
+        end
+        object Label3: TLabel
+          Left = 16
+          Height = 18
+          Top = 80
+          Width = 34
+          Caption = 'Proto'
+        end
+        object ComboBoxOutAf: TComboBox
+          Left = 80
+          Height = 32
+          Top = 40
+          Width = 100
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 1
+        end
+        object ComboBoxOutProto: TComboBox
+          Left = 80
+          Height = 32
+          Top = 71
+          Width = 100
+          AutoComplete = True
+          AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactRetainPrefixCase, cbactSearchCaseSensitive, cbactSearchAscending]
+          ItemHeight = 24
+          ReadOnly = True
+          Sorted = True
+          Style = csDropDownList
+          TabOrder = 2
+          OnChange = ComboBoxOutProtoChange
+        end
+        object Label1: TLabel
+          Left = 16
+          Height = 18
+          Top = 18
+          Width = 53
+          Caption = 'Interface'
+        end
+        object ComboBoxOutInterface: TComboBox
+          Left = 80
+          Height = 32
+          Top = 8
+          Width = 100
+          AutoComplete = True
+          AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactRetainPrefixCase, cbactSearchCaseSensitive, cbactSearchAscending]
+          ItemHeight = 24
+          ReadOnly = True
+          Sorted = True
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxOutProtoChange
+        end
+      end
+      object GroupBox2: TGroupBox
+        Left = 232
+        Height = 144
+        Top = 8
+        Width = 296
+        Caption = 'Destination'
+        ClientHeight = 115
+        ClientWidth = 292
+        TabOrder = 1
+        object ComboBoxOutHostType: TComboBox
+          Left = 16
+          Height = 32
+          Top = 24
+          Width = 100
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxOutHostTypeChange
+        end
+        object EditOutHostAddress: TEdit
+          Left = 16
+          Height = 32
+          Top = 56
+          Width = 258
+          Enabled = False
+          TabOrder = 1
+        end
+      end
+      object GroupBox3: TGroupBox
+        Left = 536
+        Height = 144
+        Top = 8
+        Width = 208
+        Caption = 'Port'
+        ClientHeight = 115
+        ClientWidth = 204
+        TabOrder = 2
+        object ComboBoxOutPort: TComboBox
+          Left = 24
+          Height = 32
+          Top = 24
+          Width = 150
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxOutPortChange
+        end
+        object EditOutPort: TEdit
+          Left = 24
+          Height = 32
+          Top = 56
+          Width = 100
+          ReadOnly = True
+          TabOrder = 1
+        end
+      end
+      object BitBtnOutAddRule: TBitBtn
+        Left = 208
+        Height = 30
+        Top = 160
+        Width = 160
+        Caption = 'Add rule'
+        Kind = bkOK
+        ModalResult = 1
+        TabOrder = 3
+        OnClick = BitBtnOutAddRuleClick
+      end
+      object BitBtnOutRemoveRule: TBitBtn
+        Left = 368
+        Height = 30
+        Top = 160
+        Width = 160
+        Caption = 'Remove rule'
+        Enabled = False
+        Kind = bkNo
+        ModalResult = 7
+        TabOrder = 4
+        OnClick = BitBtnOutRemoveRuleClick
+      end
+      object StringGridOutRules: TStringGrid
+        Left = 8
+        Height = 152
+        Top = 200
+        Width = 736
+        AlternateColor = clScrollBar
+        AutoFillColumns = True
+        ColumnClickSorts = True
+        FixedCols = 0
+        RowCount = 1
+        TabOrder = 5
+        OnClick = StringGridOutRulesClick
+        OnSelectCell = StringGridOutRulesSelectCell
+        ColWidths = (
+          148
+          147
+          147
+          147
+          147
+        )
+        Cells = (
+          5
+          0
+          0
+          'Interface'
+          1
+          0
+          'AF'
+          2
+          0
+          'Proto'
+          3
+          0
+          'Destination'
+          4
+          0
+          'Port'
+        )
+      end
+    end
+    object TabSheetRedirect: TTabSheet
+      Caption = 'Redirect'
+      ClientHeight = 357
+      ClientWidth = 754
+      object GroupBox4: TGroupBox
+        Left = 8
+        Height = 144
+        Top = 8
+        Width = 184
+        Caption = 'Header'
+        ClientHeight = 115
+        ClientWidth = 180
+        TabOrder = 0
+        object Label4: TLabel
+          Left = 16
+          Height = 18
+          Top = 32
+          Width = 15
+          Caption = 'AF'
+        end
+        object ComboBoxRdrAf: TComboBox
+          Left = 72
+          Height = 32
+          Top = 24
+          Width = 100
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 0
+        end
+        object Label5: TLabel
+          Left = 16
+          Height = 18
+          Top = 64
+          Width = 34
+          Caption = 'Proto'
+        end
+        object ComboBoxRdrProto: TComboBox
+          Left = 72
+          Height = 32
+          Top = 56
+          Width = 100
+          AutoComplete = True
+          AutoCompleteText = [cbactEnabled, cbactEndOfLineComplete, cbactRetainPrefixCase, cbactSearchCaseSensitive, cbactSearchAscending]
+          ItemHeight = 24
+          ReadOnly = True
+          Sorted = True
+          Style = csDropDownList
+          TabOrder = 1
+          OnChange = ComboBoxRdrProtoChange
+        end
+      end
+      object GroupBox5: TGroupBox
+        Left = 472
+        Height = 144
+        Top = 8
+        Width = 120
+        Caption = 'Host port '
+        ClientHeight = 115
+        ClientWidth = 116
+        TabOrder = 2
+        object EditRdrHostPort: TEdit
+          Left = 8
+          Height = 32
+          Top = 40
+          Width = 100
+          TabOrder = 0
+        end
+      end
+      object GroupBox6: TGroupBox
+        Left = 599
+        Height = 144
+        Top = 8
+        Width = 145
+        Caption = 'VM port'
+        ClientHeight = 115
+        ClientWidth = 141
+        TabOrder = 3
+        object EditRdrVmPort: TEdit
+          Left = 16
+          Height = 32
+          Top = 56
+          Width = 112
+          NumbersOnly = True
+          TabOrder = 1
+        end
+        object ComboBoxRdrVmPort: TComboBox
+          Left = 16
+          Height = 32
+          Top = 24
+          Width = 112
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxRdrVmPortChange
+        end
+      end
+      object StringGridRdrRules: TStringGrid
+        Left = 8
+        Height = 152
+        Top = 200
+        Width = 736
+        AlternateColor = clScrollBar
+        AutoFillColumns = True
+        ColumnClickSorts = True
+        FixedCols = 0
+        RowCount = 1
+        TabOrder = 6
+        OnClick = StringGridRdrRulesClick
+        OnSelectCell = StringGridRdrRulesSelectCell
+        ColWidths = (
+          148
+          147
+          147
+          147
+          147
+        )
+        Cells = (
+          5
+          0
+          0
+          'AF'
+          1
+          0
+          'Proto'
+          2
+          0
+          'Source'
+          3
+          0
+          'Host port'
+          4
+          0
+          'VM port'
+        )
+      end
+      object GroupBox7: TGroupBox
+        Left = 200
+        Height = 144
+        Top = 8
+        Width = 264
+        Caption = 'Source'
+        ClientHeight = 115
+        ClientWidth = 260
+        TabOrder = 1
+        object ComboBoxRdrFromType: TComboBox
+          Left = 8
+          Height = 32
+          Top = 24
+          Width = 100
+          ItemHeight = 24
+          Style = csDropDownList
+          TabOrder = 0
+          OnChange = ComboBoxRdrFromTypeChange
+        end
+        object EditRdrFromAddress: TEdit
+          Left = 8
+          Height = 32
+          Top = 56
+          Width = 240
+          Enabled = False
+          TabOrder = 1
+        end
+      end
+      object BitBtnRdrAddRule: TBitBtn
+        Left = 208
+        Height = 30
+        Top = 160
+        Width = 160
+        Caption = 'Add rule'
+        Kind = bkOK
+        ModalResult = 1
+        TabOrder = 4
+        OnClick = BitBtnRdrAddRuleClick
+      end
+      object BitBtnRdrRemoveRule: TBitBtn
+        Left = 368
+        Height = 30
+        Top = 160
+        Width = 160
+        Caption = 'Remove rule'
+        Enabled = False
+        Kind = bkNo
+        ModalResult = 7
+        TabOrder = 5
+        OnClick = BitBtnRdrRemoveRuleClick
+      end
+    end
+  end
+  object StatusBarPacketFilterRules: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 443
+    Width = 777
+    Panels = <>
+  end
+  object BitBtnSaveRules: TBitBtn
+    Left = 128
+    Height = 30
+    Top = 408
+    Width = 256
+    Caption = 'Save all rules'
+    Enabled = False
+    Glyph.Data = {
+      36040000424D3604000000000000360000002800000010000000100000000100
+      2000000000000004000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000A09093E0000000200000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000100F0E63292623FC1A1817A400000003000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000100F0E65252220E6090807351F1D1AC01B1917A5000000030000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000110F0E6725221FE506060528000000000201010A1F1C1ABE1B1917A70000
+      0003000000000000000000000000000000000000000000000000000000000000
+      00001513128206060527000000000000000000000000010101091E1C1ABC1B19
+      17A9010101040000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000010101091E1C
+      1ABA1B1917AB0101010400000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000101
+      01081E1B19B81C1A18AD01010105000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000010101071D1B19B61C1A18AF010101050000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000010101071D1B19B41B1917AA0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000010101060909083A0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000
+    }
+    ModalResult = 1
+    TabOrder = 2
+    OnClick = BitBtnSaveRulesClick
+  end
+  object BitBtnClose: TBitBtn
+    Left = 384
+    Height = 30
+    Top = 408
+    Width = 256
+    Cancel = True
+    Caption = 'Close'
+    Kind = bkCancel
+    ModalResult = 2
+    TabOrder = 3
+    OnClick = BitBtnCloseClick
+  end
+end

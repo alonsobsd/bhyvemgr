@@ -207,6 +207,7 @@ type
     ip6address:String;
     rdp:Boolean;
     ipv6:Boolean;
+    nat:Boolean;
   end;
 
 implementation

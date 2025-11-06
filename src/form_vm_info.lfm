@@ -98,6 +98,14 @@ object FormVmInfo: TFormVmInfo
       Caption = 'Use IPv6'
       TabOrder = 2
     end
+    object CheckBoxPfNat: TCheckBox
+      Left = 438
+      Height = 22
+      Top = 42
+      Width = 95
+      Caption = 'Use PF/NAT'
+      TabOrder = 6
+    end
   end
   object BitBtnSave: TBitBtn
     Left = 232

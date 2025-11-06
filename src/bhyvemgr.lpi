@@ -275,6 +275,13 @@
         <Filename Value="unit_language.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="form_packet_filter_rules.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormPacketFilterRules"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

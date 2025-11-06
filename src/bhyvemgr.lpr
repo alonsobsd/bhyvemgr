@@ -50,7 +50,7 @@ uses
   form_hostbridge_device, form_lpc_device, form_network_device,
   form_storage_device, form_about, form_settings, Dialogs,
   form_share_folder_device, form_console_device, form_passthru_device,
-  form_input_device, form_rdp_connection, form_vm_info, unit_language;
+  form_input_device, form_rdp_connection, form_vm_info, unit_language, form_packet_filter_rules;
 
 {$R *.res}
 var
@@ -69,6 +69,7 @@ begin
     SetCloudVmImagesPath(Configuration.GetOption('general','cloudvm_images_path'));
     SetUseSystray(Configuration.GetOption('general','use_systray'));
     SetUseIpv6(Configuration.GetOption('general','use_ipv6'));
+    SetUsePf(Configuration.GetOption('general','use_pf'));
     SetLanguage(Configuration.GetOption('general','language'));
 
     SetBhyveCmd(Configuration.GetOption('bhyve-tools','bhyve_cmd'));
@@ -78,6 +79,9 @@ begin
     SetBridgeInterface(Configuration.GetOption('network','bridge_interface'));
     SetSubnet(Configuration.GetOption('network','subnet'));
     SetIpv6Prefix(Configuration.GetOption('network','ipv6_prefix'));
+    SetExternalInterface(Configuration.GetOption('network','external_interface'));
+    SetExternalIpv4(Configuration.GetOption('network','external_ipv4'));
+    SetExternalIpv6(Configuration.GetOption('network','external_ipv6'));
 
     SetDoasCmd(Configuration.GetOption('user-tools','doas_cmd'));
     SetSudoCmd(Configuration.GetOption('user-tools','sudo_cmd'));
@@ -98,6 +102,7 @@ begin
     SetKldstatCmd(Configuration.GetOption('extra-tools','kldstat_cmd'));
     SetMakefsCmd(Configuration.GetOption('extra-tools','makefs_cmd'));
     SetPciconfCmd(Configuration.GetOption('extra-tools','pciconf_cmd'));
+    SetPfctlCmd(Configuration.GetOption('extra-tools','pfctl_cmd'));
     SetPgrepCmd(Configuration.GetOption('extra-tools','pgrep_cmd'));
     SetQemuImgCmd(Configuration.GetOption('extra-tools','qemu-img_cmd'));
     SetRmCmd(Configuration.GetOption('extra-tools','rm_cmd'));

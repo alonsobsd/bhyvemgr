@@ -44,6 +44,7 @@ type
 
   TFormVmInfo = class(TForm)
     BitBtnSave: TBitBtn;
+    CheckBoxPfNat: TCheckBox;
     CheckBoxIpv6: TCheckBox;
     CheckBoxRDP: TCheckBox;
     ComboBoxVmType: TComboBox;
@@ -61,6 +62,7 @@ type
   private
 
   public
+    Ip4Address : String;
     function FormValidate():Boolean;
   end;
 

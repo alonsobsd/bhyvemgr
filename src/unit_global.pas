@@ -56,6 +56,8 @@ function GetUseSystray:string;
 procedure SetUseSystray(const Value:string);
 function GetUseIpv6:string;
 procedure SetUseIpv6(const Value:string);
+function GetUsePf:string;
+procedure SetUsePf(const Value:string);
 function GetLanguage:string;
 procedure SetLanguage(const Value:string);
 { Bhyve section }
@@ -77,6 +79,12 @@ function GetSubnet:string;
 procedure SetSubnet(const Value:string);
 function GetIpv6Prefix:string;
 procedure SetIpv6Prefix(const Value:string);
+function GetExternalInterface:string;
+procedure SetExternalInterface(const Value:string);
+function GetExternalIpv4:string;
+procedure SetExternalIpv4(const Value:string);
+function GetExternalIpv6:string;
+procedure SetExternalIpv6(const Value:string);
 { Remote tools section }
 function GetVncviewerCmd:string;
 procedure SetVncviewerCmd(const Value:string);
@@ -109,6 +117,8 @@ function GetMakefsCmd:string;
 procedure SetMakefsCmd(const value:string);
 function GetPciconfCmd:string;
 procedure SetPciconfCmd(const value:string);
+function GetPfctlCmd:string;
+procedure SetPfctlCmd(const value:string);
 function GetPgrepCmd:string;
 procedure SetPgrepCmd(const value:string);
 function GetQemuImgCmd:string;
@@ -147,6 +157,7 @@ property VmPath:string read GetVmPath write SetVmPath;
 property CloudVmImagesPath:string read GetCloudVmImagesPath write SetCloudVmImagesPath;
 property UseSystray:string read GetUseSystray write SetUseSystray;
 property UseIpv6:string read GetUseIpv6 write SetUseIpv6;
+property UsePf:string read GetUsePf write SetUsePf;
 property Language:string read GetLanguage write SetLanguage;
 { Bhyve section }
 property BhyveCmd:string read GetBhyveCmd write SetBhyveCmd;
@@ -156,6 +167,9 @@ property BhyveLoadCmd:string read GetBhyveloadCmd write SetBhyveloadCmd;
 property BridgeInterface:string read GetBridgeInterface write SetBridgeInterface;
 property Subnet:string read GetSubnet write SetSubnet;
 property Ipv6Prefix:string read GetIpv6Prefix write SetIpv6Prefix;
+property ExternalInterface:string read GetExternalInterface write SetExternalInterface;
+property ExternalIpv4:string read GetExternalIpv4 write SetExternalIpv4;
+property ExternalIpv6:string read GetExternalIpv6 write SetExternalIpv6;
 { User tools section }
 property DoasCmd:string read GetDoasCmd write SetDoasCmd;
 property SudoCmd:string read GetSudoCmd write SetSudoCmd;
@@ -176,6 +190,7 @@ property KldloadCmd:string read GetKldloadCmd write SetKldloadCmd;
 property KldstatCmd:string read GetKldstatCmd write SetKldstatCmd;
 property MakefsCmd:string read GetMakefsCmd write SetMakefsCmd;
 property PciconfCmd:string read GetPciconfCmd write SetPciconfCmd;
+property PfctlCmd:string read GetPfctlCmd write SetPfctlCmd;
 property PgrepCmd:string read GetPgrepCmd write SetPgrepCmd;
 property QemuImgCmd:string read GetQemuImgCmd write SetQemuImgCmd;
 property RmCmd:string read GetRmCmd write SetRmCmd;
@@ -204,6 +219,11 @@ const
   KeyBoardLayoutPath = '/usr/share/bhyve/kbdlayout';
   DnsmasqDirectory = '/usr/local/etc/dnsmasq.d/bhyvemgr';
   DnsmasqBinPath = '/usr/local/sbin/dnsmasq';
+  ServicesFilePath = '/etc/services';
+  PfNatAnchor = 'bhyvemgr-nat';
+  PfRdrAnchor = 'bhyvemgr-rdr';
+  PfPassInAnchor = 'bhyvemgr-in';
+  PfPassOutAnchor = 'bhyvemgr-out';
 
   TrayIconNotifytimeout = 3000;
   FirstVncPortNumber = 5900;
@@ -220,6 +240,7 @@ var
   CloudVmImagesPathVar: String;
   UseSystrayVar: String;
   UseIpv6Var: String;
+  UsePfVar: String;
   LanguageVar: String;
   BhyveCmdVar: String;
   BhyvectlCmdVar: String;
@@ -232,6 +253,9 @@ var
   BridgeInterfaceVar: String;
   SubnetVar: String;
   Ipv6PrefixVar: String;
+  ExternalInterfaceVar: String;
+  ExternalIpv4Var: String;
+  ExternalIpv6Var: String;
   ChownCmdVar: String;
   ChmodCmdVar: String;
   CpCmdVar: String;
@@ -244,6 +268,7 @@ var
   KldstatCmdVar: String;
   MakefsCmdVar: String;
   PciconfCmdVar: String;
+  PfctlCmdVar: String;
   PgrepCmdVar: String;
   QemuImgCmdVar: String;
   RmCmdVar: String;
@@ -351,6 +376,16 @@ begin
   UseIpv6Var := Value;
 end;
 
+function GetUsePf: string;
+begin
+  Result := UsePfVar;
+end;
+
+procedure SetUsePf(const Value: string);
+begin
+  UsePfVar := Value;
+end;
+
 function GetLanguage: string;
 begin
   Result := LanguageVar;
@@ -439,6 +474,36 @@ end;
 procedure SetIpv6Prefix(const Value: string);
 begin
   Ipv6PrefixVar := Value;
+end;
+
+function GetExternalInterface: string;
+begin
+  Result := ExternalInterfaceVar;
+end;
+
+procedure SetExternalInterface(const Value: string);
+begin
+  ExternalInterfaceVar := Value;
+end;
+
+function GetExternalIpv4: string;
+begin
+  Result := ExternalIpv4Var;
+end;
+
+procedure SetExternalIpv4(const Value: string);
+begin
+  ExternalIpv4Var := Value;
+end;
+
+function GetExternalIpv6: string;
+begin
+  Result := ExternalIpv6Var;
+end;
+
+procedure SetExternalIpv6(const Value: string);
+begin
+  ExternalIpv6Var := Value;
 end;
 
 function GetVncviewerCmd: string;
@@ -589,6 +654,16 @@ end;
 procedure SetPciconfCmd(const value: string);
 begin
   PciconfCmdVar := Value;
+end;
+
+function GetPfctlCmd: string;
+begin
+  Result := PfctlCmdVar;
+end;
+
+procedure SetPfctlCmd(const value: string);
+begin
+  PfctlCmdVar := Value;
 end;
 
 function GetPgrepCmd: string;

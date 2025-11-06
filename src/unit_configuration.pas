@@ -147,6 +147,9 @@ begin
   if ConfigFile.ReadString('general','use_ipv6', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('general','use_ipv6', 'no');
 
+  if ConfigFile.ReadString('general','use_pf', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('general','use_pf', 'no');
+
   if ConfigFile.ReadString('bhyve-tools','bhyve_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('bhyve-tools','bhyve_cmd', '/usr/sbin/bhyve');
 
@@ -192,6 +195,9 @@ begin
   if ConfigFile.ReadString('extra-tools','pciconf_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','pciconf_cmd', '/usr/sbin/pciconf');
 
+  if ConfigFile.ReadString('extra-tools','pfctl_cmd', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('extra-tools','pfctl_cmd', '/sbin/pfctl');
+
   if ConfigFile.ReadString('extra-tools','pgrep_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('extra-tools','pgrep_cmd', '/usr/bin/pgrep');
 
@@ -233,6 +239,15 @@ begin
 
   if ConfigFile.ReadString('network','ipv6_prefix', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('network','ipv6_prefix', 'fd92:5e7a:bd00:1::');
+
+  if ConfigFile.ReadString('network','external_interface', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('network','external_interface', '');
+
+  if ConfigFile.ReadString('network','external_ipv4', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('network','external_ipv4', '');
+
+  if ConfigFile.ReadString('network','external_ipv6', EmptyStr) = EmptyStr then
+    ConfigFile.WriteString('network','external_ipv6', '');
 
   if ConfigFile.ReadString('remote-tools','vncviewer_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('remote-tools','vncviewer_cmd', '/usr/local/bin/remote-viewer');

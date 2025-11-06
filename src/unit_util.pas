@@ -48,8 +48,10 @@ function CheckFileExtension(ImageName: String): String;
 function CheckFileType(ImageName: String): String;
 function CheckKernelModule(Module: String):Boolean;
 function CheckIpv6Address(Address: String):Boolean;
+function CheckIpvAddress(Address: String):Boolean;
 function CheckMacAddress(Mac: String):Boolean;
 function CheckNetworkDeviceName(Name: String):Boolean;
+function CheckNetworkPort(Port: String):Boolean;
 function CheckSysctl(Name: String):String;
 function CheckUrl(Url: String):Boolean;
 function CheckUserName(Name: String):Boolean;
@@ -84,6 +86,9 @@ function GetCurrentUserName(): String;
 function GetFileSize(FilePath : String; SizeUnit : String = 'B'): Int64;
 function GetEventDeviceList(Path : String; Pattern : String):String;
 function GetExtractSize(FilePath: String; FileType: String): Int64;
+function GetNetworkInterfaceList(NetworkInterfaceType : String): String;
+function GetNetworkIp4List(NetworkInterface : String): String;
+function GetNetworkIp6List(NetworkInterface : String): String;
 function GetNewConsoleName(VmName : String): String;
 function GetNewIpAddress(Subnet : String): String;
 function GetNewIp6Address(prefix : String; mac : String): String;
@@ -101,12 +106,16 @@ function GetPciDeviceDescripcion(Device : String):String;
 function GetPciDeviceList(Device : String):String;
 function GetPidValue(Pattern : String): Integer;
 function GetRemoteSize(Url : String): Int64;
+function GetServicePortList(Protocol : String):TStringList;
 function GetStorageSize(StoragePath : String): String;
 function GetStorageType(StoragePath : String): String;
 function GetZpoolList():String;
 function InstallFile(SourceFileName: String; DestinationFileName : String; UserName : String; FileMode : String = '600'):Boolean;
 function KillPid(Pid : Integer; Signal : String = '-TERM'): Boolean;
 function LoadKernelModule(Module : String):Boolean;
+function PfCreateRules(VmName : String; VmRules: String; RulesType : String):Boolean;
+function PfLoadRules(VmName : String; RulesType : String):Boolean;
+function PfUnloadRules(VmName : String; RulesType : String):Boolean;
 function NetworkAddress(Subnet : String):String;
 function RdpConnect(VmName : String; Username : String; Password : String; Width : String; Height : String):Boolean;
 function RemoveDirectory(Directory: String; Recursive : Boolean):Boolean;
@@ -286,6 +295,148 @@ begin
   end;
 
   Result:=DecimalToIP(Netmask);
+end;
+
+function PfCreateRules(VmName: String; VmRules: String; RulesType: String): Boolean;
+var
+  FilePath : TStringList;
+  DirePath : String;
+  ConfigFile : String;
+begin
+  Result:=True;
+
+  FilePath:=TStringList.Create;
+
+  DirePath:=VmPath+'/'+VmName+'/pf';
+  ConfigFile:=DirePath+'/'+RulesType+'.rules';
+
+  if not DirectoryExists(DirePath) then
+    CreateDirectory(DirePath, GetCurrentUserName(), '750');
+
+  try
+    FilePath.Text:=VmRules;
+
+    if FilePath.Count = 0 then
+    begin
+      if FileExists(ConfigFile) then
+      begin
+        RemoveFile(ConfigFile);
+      end;
+    end
+    else
+    begin
+      if not FileExists(ConfigFile) then
+        CreateFile(ConfigFile, GetCurrentUserName(), '660');
+      FilePath.SaveToFile(ConfigFile);
+    end;
+  except
+    MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
+    Result:=False;
+  end;
+
+  FilePath.Free;
+end;
+
+function PfLoadRules(VmName: String; RulesType: String): Boolean;
+var
+  root_cmd : String;
+  pfctl_cmd : String;
+  output : String;
+  anchor : String;
+  rules_path : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:=False;
+  anchor:=EmptyStr;
+
+  root_cmd:=SudoCmd;
+  pfctl_cmd:=PfctlCmd;
+
+  if UseSudo = 'no' then
+    root_cmd:=DoasCmd;
+
+  case RulesType of
+    'nat':anchor:=PfNatAnchor+'/'+VmName;
+    'rdr':anchor:=PfRdrAnchor+'/'+VmName;
+    'pass-in':anchor:=PfPassInAnchor+'/'+VmName;
+    'pass-out':anchor:=PfPassOutAnchor+'/'+VmName;
+  end;
+
+  rules_path:=VmPath+'/'+VmName+'/pf/'+RulesType+'.rules';
+
+  parameters:=[pfctl_cmd, '-a', anchor, '-f', rules_path];
+
+  if FileExists(pfctl_cmd) and FileExists(rules_path) then
+  begin
+    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=status
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : PfLoadRules : '+ RulesType+' : '+output);
+    end;
+  end;
+end;
+
+function PfUnloadRules(VmName: String; RulesType: String): Boolean;
+var
+  root_cmd : String;
+  pfctl_cmd : String;
+  output : String;
+  anchor : String;
+  flush_type : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:=False;
+
+  anchor:=EmptyStr;
+  flush_type:=EmptyStr;
+
+  root_cmd:=SudoCmd;
+  pfctl_cmd:=PfctlCmd;
+
+  if UseSudo = 'no' then
+    root_cmd:=DoasCmd;
+
+  case RulesType of
+    'nat':
+      begin
+        anchor:=PfNatAnchor+'/'+VmName;
+        flush_type:='nat';
+      end;
+    'rdr':
+      begin
+        anchor:=PfRdrAnchor+'/'+VmName;
+        flush_type:='nat';
+      end;
+    'pass-in':
+      begin
+        anchor:=PfPassInAnchor+'/'+VmName;
+        flush_type:='rules';
+      end;
+    'pass-out':
+      begin
+        anchor:=PfPassOutAnchor+'/'+VmName;
+        flush_type:='rules';
+      end;
+  end;
+
+  parameters:=[pfctl_cmd, '-a', anchor, '-F', flush_type];
+
+  if FileExists(pfctl_cmd) then
+  begin
+    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=status
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : PfUnLoadRules : '+ RulesType+' : '+output);
+    end;
+  end;
 end;
 
 function NetworkAddress(Subnet : String):String;
@@ -931,6 +1082,22 @@ begin
   RegText.Free
 end;
 
+function CheckIpvAddress(Address: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^(?:\b\.?(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){4}$');
+
+  if RegText.Exec(Address) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
+end;
+
 function CheckMacAddress(Mac: String): Boolean;
 var
   RegText: TRegExpr;
@@ -956,6 +1123,22 @@ begin
   RegText := TRegExpr.Create('^tap[0-9]+$|^vmnet[0-9]+$');
 
   if RegText.Exec(Name) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
+end;
+
+function CheckNetworkPort(Port: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^(?:6553[0-5]|655[0-2]\d|65[0-4]\d{2}|6[0-4]\d{3}|[1-5]\d{1,4}|[1-9]\d{0,3})(?::(?:6553[0-5]|655[0-2]\d|65[0-4]\d{2}|6[0-4]\d{3}|[1-5]\d{1,4}|[1-9]\d{0,3}))?$');
+
+  if RegText.Exec(Port) then
   begin
     Result:=True;
   end;
@@ -1360,7 +1543,7 @@ begin
       Result:=status
     else
     begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : DestroyVirtualMachne : '+VmName+' : '+output);
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : DestroyVirtualMachine : '+VmName+' : '+output);
     end;
   end;
 end;
@@ -1519,6 +1702,153 @@ begin
   end;
 
   RegText.Free;
+end;
+
+function GetNetworkInterfaceList(NetworkInterfaceType : String): String;
+var
+  NetworkList : TStringList;
+  RegexObj: TRegExpr;
+  TmpOutput:String;
+  ifconfig_cmd : String;
+  output : String;
+  parameters : TStringArray;
+  status : Boolean;
+begin
+  Result:=EmptyStr;
+  TmpOutput:=EmptyStr;
+
+  NetworkList:=TStringList.Create();
+
+  ifconfig_cmd:=IfconfigCmd;
+
+  if NetworkInterfaceType = 'ether' then
+    parameters:=['-l', '-u', 'ether']
+  else if NetworkInterfaceType = 'bridge' then
+    parameters:=['-l', '-u', '-g', 'bridge' ];
+
+  if FileExists(ifconfig_cmd) then
+  begin
+    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+
+    if status then
+      TmpOutput:=Trim(output)
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetNetworkInterfaceList : '+output);
+    end;
+  end;
+
+  RegexObj := TRegExpr.Create;
+  RegexObj.Expression := '(\S+)';
+
+  if RegexObj.Exec(TmpOutput) then
+  begin
+    repeat
+      NetworkList.Add(RegexObj.Match[1]);
+    until not RegexObj.ExecNext;
+  end;
+
+  NetworkList.Sorted:=True;
+
+  Result:=NetworkList.Text;
+  RegexObj.Free;
+  NetworkList.free;
+end;
+
+function GetNetworkIp4List(NetworkInterface: String): String;
+var
+  InetList : TStringList;
+  RegexObj: TRegExpr;
+  TmpOutput:String;
+  ifconfig_cmd : String;
+  output : String;
+  parameters : TStringArray;
+  status : Boolean;
+begin
+  Result:=EmptyStr;
+  TmpOutput:=EmptyStr;
+
+  InetList:=TStringList.Create();
+
+  ifconfig_cmd:=IfconfigCmd;
+
+  parameters:=[NetworkInterface];
+
+  if FileExists(ifconfig_cmd) then
+  begin
+    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+
+    if status then
+      TmpOutput:=Trim(output)
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetNetworkIp4List : '+NetworkInterface+' : '+output);
+    end;
+  end;
+
+  RegexObj := TRegExpr.Create;
+  RegexObj.Expression := 'inet\s(\S+)\s';
+
+  if RegexObj.Exec(TmpOutput) then
+  begin
+    repeat
+      InetList.Add(RegexObj.Match[1]);
+    until not RegexObj.ExecNext;
+  end;
+
+  InetList.Sorted:=True;
+
+  Result:=InetList.Text;
+  RegexObj.Free;
+  InetList.free;
+end;
+
+function GetNetworkIp6List(NetworkInterface: String): String;
+var
+  InetList : TStringList;
+  RegexObj: TRegExpr;
+  TmpOutput:String;
+  ifconfig_cmd : String;
+  output : String;
+  parameters : TStringArray;
+  status : Boolean;
+begin
+  Result:=EmptyStr;
+  TmpOutput:=EmptyStr;
+
+  InetList:=TStringList.Create();
+
+  ifconfig_cmd:=IfconfigCmd;
+
+  parameters:=[NetworkInterface];
+
+  if FileExists(ifconfig_cmd) then
+  begin
+    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+
+    if status then
+      TmpOutput:=Trim(output)
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetNetworkIp6List : '+NetworkInterface+' : '+output);
+    end;
+  end;
+
+  RegexObj := TRegExpr.Create;
+  RegexObj.Expression := 'inet6\s(\S+)\s';
+
+  if RegexObj.Exec(TmpOutput) then
+  begin
+    repeat
+      InetList.Add(RegexObj.Match[1]);
+    until not RegexObj.ExecNext;
+  end;
+
+  InetList.Sorted:=True;
+
+  Result:=InetList.Text;
+  RegexObj.Free;
+  InetList.free;
 end;
 
 function GetNewConsoleName(VmName : String): String;
@@ -1879,6 +2209,36 @@ begin
         DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetRemoteSize : '+Url+' : '+output);
     end;
   end;
+end;
+
+function GetServicePortList(Protocol: String): TStringList;
+var
+  ServiceList : TStringList;
+  RegexObj: TRegExpr;
+  TmpOutput:String;
+begin
+  TmpOutput:=EmptyStr;
+
+  ServiceList:=TStringList.Create();
+  ServiceList.LoadFromFile(ServicesFilePath);
+
+  TmpOutput:=ServiceList.Text;
+  ServiceList.Clear;
+
+  RegexObj := TRegExpr.Create;
+  RegexObj.Expression := '([-_a-zA-Z0-9\/]+)\s+(\d+)\/'+Protocol;
+
+  if RegexObj.Exec(TmpOutput) then
+  begin
+    repeat
+      ServiceList.Add(RegexObj.Match[1]+'='+RegexObj.Match[2]);
+    until not RegexObj.ExecNext;
+  end;
+
+  ServiceList.Sorted:=True;
+  RegexObj.Free;
+
+  Result:=ServiceList;
 end;
 
 function GetStorageSize(StoragePath: String): String;
