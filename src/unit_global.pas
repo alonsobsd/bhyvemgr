@@ -230,6 +230,8 @@ const
   FirstGdbPortNumber = 50000;
   FirstComPortNumber = 60000;
 
+implementation
+
 var
   OsreldateVar: String;
   NewConfigVar: Boolean;
@@ -283,8 +285,6 @@ var
   ZfsEnableVar: String;
   ZfsZpoolVar: String;
   ZfsCreateOptionsVar: String;
-
-implementation
 
 function GetNewConfig: Boolean;
 begin

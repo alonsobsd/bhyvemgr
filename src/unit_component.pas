@@ -148,11 +148,47 @@ type
   function FillComboPacketFilterAf(Combo: TComboBox):Boolean;
   function FillComboPacketFilterProto(Combo: TComboBox):Boolean;
   function FillComboPacketFilterHostType(Combo: TComboBox): Boolean;
+  function MessageDialog(TypeDialog: TMsgDlgType; Message: String):Integer;
 
 implementation
 
 uses
-  unit_global, unit_util, unit_language;
+  unit_global, unit_util, unit_language, Forms, Buttons, Graphics;
+
+procedure createYesNoButton(OwnForm: TForm);
+var
+  ButtonOne : TBitBtn;
+  ButtonTwo : TBitBtn;
+begin
+  ButtonOne:=TBitBtn.Create(OwnForm);
+  ButtonOne.Parent:=OwnForm;
+  ButtonOne.Width:=104;
+  ButtonOne.Height:=30;
+  ButtonOne.Top:=104;
+  ButtonOne.Left:=272;
+  ButtonOne.Kind:=bkYes;
+
+  ButtonTwo:=TBitBtn.Create(OwnForm);
+  ButtonTwo.Parent:=OwnForm;
+  ButtonTwo.Width:=104;
+  ButtonTwo.Height:=30;
+  ButtonTwo.Top:=104;
+  ButtonTwo.Left:=384;
+  ButtonTwo.Kind:=bkNo;
+end;
+
+procedure createOkButton(OwnForm: TForm);
+var
+  ButtonOne : TBitBtn;
+begin
+  ButtonOne:=TBitBtn.Create(OwnForm);
+  ButtonOne.Parent:=OwnForm;
+  ButtonOne.Width:=104;
+  ButtonOne.Height:=30;
+  ButtonOne.Top:=104;
+  ButtonOne.Left:=384;
+  ButtonOne.Kind:=bkOK;
+end;
 
 constructor TPopupMenuDevices.Create(component : TComponent);
 begin
@@ -803,6 +839,80 @@ begin
   combo.Items.Add('any');
   combo.Items.Add('custom');
   Result:= True;
+end;
+
+function MessageDialog(TypeDialog: TMsgDlgType; Message: String): Integer;
+var
+  FormDialog: TForm;
+  ImageSymbol: TImage;
+  MemoMessage : TMemo;
+  SymbolImagePath : String;
+  TitleMessage : String;
+begin
+  TitleMessage:=EmptyStr;
+  SymbolImagePath:=EmptyStr;
+
+  FormDialog := TForm.Create(Nil);
+  FormDialog.Width:=500;
+  FormDialog.Height:=140;
+  FormDialog.BorderStyle:=bsSingle;
+  FormDialog.Position:=poOwnerFormCenter;
+  FormDialog.BorderIcons:=[];
+
+  case TypeDialog of
+  mtError:
+    begin
+      SymbolImagePath:=DatadirPath+'images/dialog/error.png';
+      TitleMessage:=error_message;
+      createOkButton(FormDialog);
+    end;
+  mtWarning:
+    begin
+      SymbolImagePath:=DatadirPath+'images/dialog/warning.png';
+      TitleMessage:=warning_message;
+      createYesNoButton(FormDialog);
+    end;
+  mtInformation:
+    begin
+      SymbolImagePath:=DatadirPath+'images/dialog/information.png';
+      TitleMessage:=information_message;
+      createOkButton(FormDialog);
+    end;
+  mtConfirmation:
+    begin
+      SymbolImagePath:=DatadirPath+'images/dialog/confirmation.png';
+      TitleMessage:=confirmation_message;
+      createYesNoButton(FormDialog);
+    end;
+  end;
+
+  ImageSymbol := TImage.Create(FormDialog);
+  ImageSymbol.Parent :=FormDialog;
+  ImageSymbol.Height:=80;
+  ImageSymbol.Width:=80;
+  ImageSymbol.Top:=16;
+  ImageSymbol.Left:=8;
+  ImageSymbol.Center:=True;
+  ImageSymbol.Proportional:=True;
+
+  ImageSymbol.Picture.LoadFromFile(SymbolImagePath);
+  FormDialog.Caption:=TitleMessage;
+
+  MemoMessage:=TMemo.Create(FormDialog);
+  MemoMessage.Parent:=FormDialog;
+  MemoMessage.BorderStyle:=bsNone;
+  MemoMessage.Color:=clForm;
+  MemoMessage.Height:=88;
+  MemoMessage.Width:=376;
+  MemoMessage.Top:=8;
+  MemoMessage.ReadOnly:=True;
+  MemoMessage.TabStop:=False;
+  MemoMessage.Left:=112;
+  MemoMessage.Caption:=Message;
+
+  Result:=FormDialog.ShowModal;
+
+  FreeAndNil(FormDialog);
 end;
 
 end.

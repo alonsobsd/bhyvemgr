@@ -63,13 +63,11 @@ resourcestring
   edit_global_status = '%0:s: value has been changed to %1:s';
   configuration_notice = 'A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press "Save settings button" if everything is ok.';
   check_vm_running = 'bhyvemgr detects VMs running. You must stop them before of close this app. '+sLineBreak+sLineBreak+'Do you really want to close?';
-  device_remove_title = 'Virtual machine devices';
   device_remove_notice = 'This action will remove all files/resources created by this device. Do you want remove %s device?';
   device_status = '%s device can not added/updated.';
   vm_start_status = '%s VM have been started';
   vm_try_status = 'Trying create %s virtual machine...';
   vm_create_status = 'A new %s virtual machine was created';
-  vm_fields_status = 'You must complete all form fields';
   vm_reboot_status = '%s VM is rebooting';
   vm_poweroff_status = '%s VM has been powered off';
   vm_halt_status = '%s VM is halted';
@@ -77,14 +75,17 @@ resourcestring
   vm_exiterror_status = '%s VM exited due to an error';
   vm_exit_status = '%s VM exited';
   exception_status = 'An exception was raised: %s';
-  error_title = 'Error message';
-  vm_remove_title = 'Remove VM';
   vm_remove_notice = 'Do you want remove %s VM data?';
   vm_remove_force = '%s VM data cannot be removed.'+sLineBreak+sLineBreak+'Do you want force it?';
   vm_remove_status = '%s VM data has been removed';
   vm_notremove_status = '%s VM data was not removed';
   app_error_status = '%0:s: VM : %1:s: process generated an error: %2:s:';
   virtual_machine = 'virtual machine';
+  confirmation_message = 'Confirmation message';
+  error_message = 'Error message';
+  information_message = 'Information message';
+  warning_message = 'Warning message';
+  error_saving_file = 'Error saving data to %s file';
   { form_settings strings }
   debugln_bhyve_settings_opened = 'Bhyve Settings : settings form was opened.';
   debugln_check_freerdp = 'Bhyve Settings : freerdp support will not be available. net/freerdp3 is not installed.';
@@ -92,7 +93,6 @@ resourcestring
   debugln_bhyve_settings_closed = 'Bhyve Settings : settings form was closed.';
   debugln_bhyve_settings_saved = 'Bhyve Settings : settings were saved successfully.';
   settings_saved = 'Settings were saved successfully';
-  settings_saved_title = 'Settings information';
   check_zfs = 'Support for zfs/zpool is not available';
   check_dnsmasq = 'dnsmasq was not found. Please install dns/dnsmasq for fix it';
   check_ipv6 = 'A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses.';
@@ -128,14 +128,22 @@ resourcestring
   check_userdata_file = 'user-data file does not exist.';
   check_metadata_file = 'meta-data file does not exist.';
   check_valid_url = 'Enter a valid URL: only http://, https://, or file:// are supported.';
-  check_ipv4 = 'IPv4 address is not valid.';
+  check_static_ipv4 = 'IPv4 address is not valid.';
+  check_static_ipv6 = 'IPv6 address is not valid.';
   check_gateway = 'Gateway is not valid.';
-  check_dns = 'DNS Servers is not valid.';
+  check_gateway_ipv6 = 'Gateway IPv6 is not valid.';
+  check_dns = 'DNS Server is not valid.';
+  check_dns_ipv6 = 'DNS Server IPv6 is not valid.';
   check_boot_media = 'CD/DVD media does not exist.';
   check_vm_name = 'Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]';
   check_vm = '%s virtual machine name is not available';
   check_create_task = 'The Create Virtual Machine form is open and some tasks are not finished. Please, close it before trying to close this app.';
   check_create_task_confirmation = 'The virtual machine creation task has not finished. '+sLineBreak+sLineBreak+'Do you really want to stop it and close form?';
+  { form_vm_info strings }
+  check_vm_type = 'A type must be selected.';
+  check_vm_version = 'A version must be selected.';
+  check_vm_ipv4 = 'A valid IPv4 address must be defined.';
+  check_vm_ipv6 = 'A valid IPv6 address must be defined.';
   { form_passthru_device strings }
   ppt_devices_status = 'ppt devices were not detected';
   { form_packet_filter_rules strings }
@@ -154,7 +162,6 @@ resourcestring
   check_outbound_rule = 'Cannot add the same outbound rule twice.';
   check_redirect_rule = 'Cannot add the same redirect rule twice.';
   check_redirect_ipv6 = 'IPv6 does not support port redirection using NAT.';
-  save_rules_title = 'Packet Filter rules information';
   save_rules = '%s PF rules were saved successfully.';
   save_rules_reload = '%s PF rules were reloaded successfully.';
   save_rules_reload_error = 'An error occurred trying reload %s PF rules.';

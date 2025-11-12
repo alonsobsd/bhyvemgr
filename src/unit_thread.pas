@@ -105,7 +105,7 @@ type
 implementation
 
 uses
-  unit_global, unit_language, process;
+  unit_global, unit_language, unit_component, process;
 
 { VmThread }
 
@@ -225,7 +225,7 @@ end;
 
 procedure AppThread.ShowAppStatus;
 begin
-  MessageDlg(error_title, ExitMessage, mtError, [mbOK], 0);
+  MessageDialog(mtError, ExitMessage);
 end;
 
 procedure AppThread.Execute;

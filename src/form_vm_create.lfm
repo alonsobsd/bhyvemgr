@@ -67,15 +67,15 @@ object FormVmCreate: TFormVmCreate
   end
   object PageControlVmCreate: TPageControl
     Left = 8
-    Height = 640
+    Height = 642
     Top = 16
     Width = 712
-    ActivePage = TabSheetGeneral
-    TabIndex = 0
+    ActivePage = TabSheetImage
+    TabIndex = 1
     TabOrder = 0
     object TabSheetGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 605
+      ClientHeight = 607
       ClientWidth = 706
       object GroupBox1: TGroupBox
         Left = 8
@@ -215,7 +215,7 @@ object FormVmCreate: TFormVmCreate
           OnClick = RadioButtonNewDiskClick
         end
         object CheckBoxWaitVNC: TCheckBox
-          Left = 376
+          Left = 344
           Height = 22
           Top = 32
           Width = 222
@@ -226,7 +226,7 @@ object FormVmCreate: TFormVmCreate
           OnChange = CheckBoxWaitVNCChange
         end
         object CheckBoxFramebuffer: TCheckBox
-          Left = 376
+          Left = 344
           Height = 22
           Top = 8
           Width = 140
@@ -252,7 +252,7 @@ object FormVmCreate: TFormVmCreate
           Value = 256
         end
         object CheckBoxOnlyLocalhost: TCheckBox
-          Left = 376
+          Left = 344
           Height = 22
           Top = 58
           Width = 208
@@ -263,7 +263,7 @@ object FormVmCreate: TFormVmCreate
           OnChange = CheckBoxOnlyLocalhostChange
         end
         object CheckBoxUEFIBootvars: TCheckBox
-          Left = 376
+          Left = 344
           Height = 22
           Top = 80
           Width = 152
@@ -273,12 +273,13 @@ object FormVmCreate: TFormVmCreate
           TabOrder = 7
         end
         object CheckBoxIpv6Address: TCheckBox
-          Left = 376
+          Left = 344
           Height = 22
           Top = 104
           Width = 76
           Caption = 'Use IPv6'
           TabOrder = 8
+          OnChange = CheckBoxIpv6AddressChange
         end
         object RadioButtonDiskFromImage: TRadioButton
           Left = 32
@@ -288,14 +289,6 @@ object FormVmCreate: TFormVmCreate
           Caption = 'Create a virtual disk from image'
           TabOrder = 3
           OnClick = RadioButtonDiskFromImageClick
-        end
-        object CheckBoxNat: TCheckBox
-          Left = 464
-          Height = 22
-          Top = 104
-          Width = 95
-          Caption = 'Use PF/NAT'
-          TabOrder = 9
         end
       end
       object GroupBoxNewVirtualDisk: TGroupBox
@@ -404,7 +397,7 @@ object FormVmCreate: TFormVmCreate
     end
     object TabSheetImage: TTabSheet
       Caption = 'Image'
-      ClientHeight = 605
+      ClientHeight = 607
       ClientWidth = 706
       TabVisible = False
       object GroupBoxDownloadImage: TGroupBox
@@ -1608,11 +1601,11 @@ object FormVmCreate: TFormVmCreate
       end
       object GroupBoxSelectImage: TGroupBox
         Left = 15
-        Height = 104
+        Height = 128
         Top = 168
         Width = 670
         Caption = 'Select image'
-        ClientHeight = 75
+        ClientHeight = 99
         ClientWidth = 666
         TabOrder = 2
         object Label17: TLabel
@@ -1648,16 +1641,16 @@ object FormVmCreate: TFormVmCreate
           OnChange = CheckBoxImageMinimalChange
         end
         object CheckBoxImageFiles: TCheckBox
-          Left = 248
+          Left = 24
           Height = 22
-          Top = 48
+          Top = 72
           Width = 159
           Caption = 'Use files configuration'
           TabOrder = 2
           OnChange = CheckBoxImageFilesChange
         end
         object CheckBoxUseStaticIpv4: TCheckBox
-          Left = 488
+          Left = 336
           Height = 22
           Top = 48
           Width = 112
@@ -1666,28 +1659,38 @@ object FormVmCreate: TFormVmCreate
           TabOrder = 3
           OnChange = CheckBoxUseStaticIpv4Change
         end
+        object CheckBoxUseStaticIpv6: TCheckBox
+          Left = 336
+          Height = 22
+          Top = 72
+          Width = 111
+          Caption = 'Use static IPv6'
+          Enabled = False
+          TabOrder = 4
+          OnChange = CheckBoxUseStaticIpv6Change
+        end
       end
       object GroupBoxMinimalConfiguration: TGroupBox
         Left = 15
-        Height = 160
-        Top = 280
+        Height = 144
+        Top = 304
         Width = 333
         Caption = 'Minimal configuration'
-        ClientHeight = 131
+        ClientHeight = 115
         ClientWidth = 329
         Enabled = False
         TabOrder = 3
         object Label16: TLabel
           Left = 24
           Height = 18
-          Top = 56
+          Top = 48
           Width = 62
           Caption = 'Username'
         end
         object EditUsername: TEdit
           Left = 96
           Height = 32
-          Top = 48
+          Top = 40
           Width = 152
           MaxLength = 32
           TabOrder = 1
@@ -1695,21 +1698,21 @@ object FormVmCreate: TFormVmCreate
         object EditSshPubKey: TEdit
           Left = 96
           Height = 32
-          Top = 80
+          Top = 72
           Width = 181
           TabOrder = 2
         end
         object Label13: TLabel
           Left = 24
           Height = 18
-          Top = 88
+          Top = 80
           Width = 48
           Caption = 'SSH key'
         end
         object CheckBoxImageUseSudo: TCheckBox
           Left = 24
           Height = 22
-          Top = 16
+          Top = 8
           Width = 80
           Caption = 'Use sudo'
           TabOrder = 0
@@ -1718,7 +1721,7 @@ object FormVmCreate: TFormVmCreate
         object BitBtnSshPaste: TBitBtn
           Left = 278
           Height = 30
-          Top = 82
+          Top = 74
           Width = 30
           Glyph.Data = {
             36900000424D3690000000000000360000002800000060000000600000000100
@@ -2882,7 +2885,7 @@ object FormVmCreate: TFormVmCreate
         object CheckBoxImageUseDoas: TCheckBox
           Left = 120
           Height = 22
-          Top = 16
+          Top = 8
           Width = 79
           Caption = 'Use doas'
           TabOrder = 4
@@ -2891,39 +2894,39 @@ object FormVmCreate: TFormVmCreate
       end
       object GroupBoxFileConfig: TGroupBox
         Left = 352
-        Height = 160
-        Top = 280
+        Height = 144
+        Top = 304
         Width = 333
         Caption = 'Files configuration'
-        ClientHeight = 131
+        ClientHeight = 115
         ClientWidth = 329
         Enabled = False
         TabOrder = 4
         object Label27: TLabel
-          Left = 24
+          Left = 32
           Height = 18
-          Top = 24
+          Top = 18
           Width = 58
           Caption = 'User data'
         end
         object Label28: TLabel
-          Left = 24
+          Left = 32
           Height = 18
-          Top = 56
+          Top = 50
           Width = 61
           Caption = 'Meta data'
         end
         object Label29: TLabel
-          Left = 24
+          Left = 32
           Height = 18
-          Top = 88
+          Top = 82
           Width = 93
           Caption = 'Network config'
         end
         object FileNameEditUserData: TFileNameEdit
-          Left = 125
+          Left = 133
           Height = 32
-          Top = 16
+          Top = 10
           Width = 178
           Filter = 'User data config file|user-data'
           FilterIndex = 0
@@ -2936,9 +2939,9 @@ object FormVmCreate: TFormVmCreate
           OnButtonClick = FileNameEditUserDataButtonClick
         end
         object FileNameEditMetaData: TFileNameEdit
-          Left = 125
+          Left = 133
           Height = 32
-          Top = 48
+          Top = 42
           Width = 178
           Filter = 'Meta data config file|meta-data'
           FilterIndex = 0
@@ -2951,9 +2954,9 @@ object FormVmCreate: TFormVmCreate
           OnButtonClick = FileNameEditMetaDataButtonClick
         end
         object FileNameEditNetworkConfig: TFileNameEdit
-          Left = 125
+          Left = 133
           Height = 32
-          Top = 80
+          Top = 74
           Width = 178
           Filter = 'Network config file|network-config'
           FilterIndex = 0
@@ -2987,50 +2990,103 @@ object FormVmCreate: TFormVmCreate
       object GroupBoxStaticIPv4: TGroupBox
         Left = 15
         Height = 144
-        Top = 448
-        Width = 670
+        Top = 456
+        Width = 333
         Caption = 'Static IPv4 settings'
         ClientHeight = 115
-        ClientWidth = 666
+        ClientWidth = 329
         Enabled = False
         TabOrder = 5
         object Label14: TLabel
-          Left = 208
+          Left = 24
           Height = 18
           Top = 16
           Width = 76
           Caption = 'IPv4 address'
         end
         object EditIpv4Address: TEdit
-          Left = 333
+          Left = 149
           Height = 32
           Top = 8
           Width = 152
           TabOrder = 0
         end
         object Label15: TLabel
-          Left = 208
+          Left = 24
           Height = 18
           Top = 48
           Width = 52
           Caption = 'Gateway'
         end
         object EditGateway: TEdit
-          Left = 333
+          Left = 149
           Height = 32
           Top = 40
           Width = 152
           TabOrder = 1
         end
         object Label18: TLabel
-          Left = 208
+          Left = 24
           Height = 18
           Top = 80
-          Width = 73
-          Caption = 'DNS Servers'
+          Width = 68
+          Caption = 'DNS Server'
         end
-        object EditDNS: TEdit
-          Left = 333
+        object EditDns: TEdit
+          Left = 149
+          Height = 32
+          Top = 72
+          Width = 152
+          TabOrder = 2
+        end
+      end
+      object GroupBoxStaticIPv6: TGroupBox
+        Left = 352
+        Height = 144
+        Top = 456
+        Width = 333
+        Caption = 'Static IPv6 settings'
+        ClientHeight = 115
+        ClientWidth = 329
+        Enabled = False
+        TabOrder = 6
+        object Label19: TLabel
+          Left = 24
+          Height = 18
+          Top = 16
+          Width = 76
+          Caption = 'IPv6 address'
+        end
+        object EditIpv6Address: TEdit
+          Left = 149
+          Height = 32
+          Top = 8
+          Width = 152
+          TabOrder = 0
+        end
+        object Label20: TLabel
+          Left = 24
+          Height = 18
+          Top = 48
+          Width = 52
+          Caption = 'Gateway'
+        end
+        object EditGatewayIpv6: TEdit
+          Left = 149
+          Height = 32
+          Top = 40
+          Width = 152
+          TabOrder = 1
+        end
+        object Label21: TLabel
+          Left = 24
+          Height = 18
+          Top = 80
+          Width = 68
+          Caption = 'DNS Server'
+        end
+        object EditDnsIpv6: TEdit
+          Left = 149
           Height = 32
           Top = 72
           Width = 152

@@ -654,11 +654,11 @@ begin
     StatusBarPacketFilterRules.Font.Color:=clTeal;
     StatusBarPacketFilterRules.SimpleText:=Format(save_rules, [VmName]);
 
-    MessageDlg(save_rules_title, Format(save_rules, [VmName]), mtInformation, [mbOK], 0);
+    MessageDialog(mtInformation, Format(save_rules, [VmName]));
 
     if CheckVmRunning(VmName) > 0 then
     begin
-      if MessageDlg(Format(vm_apply_rules_confirmation, [VmName]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+      if MessageDialog(mtConfirmation, Format(vm_apply_rules_confirmation, [VmName])) = mrYes then
       begin
         PfUnloadRules(VmName, 'pass-in');
         PfUnloadRules(VmName, 'pass-out');
@@ -669,7 +669,7 @@ begin
           StatusBarPacketFilterRules.Font.Color:=clTeal;
           StatusBarPacketFilterRules.SimpleText:=Format(save_rules_reload, [VmName]);
 
-          MessageDlg(save_rules_title, Format(save_rules_reload, [VmName]), mtInformation, [mbOK], 0);
+          MessageDialog(mtInformation, Format(save_rules_reload, [VmName]));
           DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(save_rules_reload ,[VmName]));
         end
         else

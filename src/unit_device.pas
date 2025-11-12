@@ -208,6 +208,7 @@ type
     rdp:Boolean;
     ipv6:Boolean;
     nat:Boolean;
+    pf:Boolean;
   end;
 
 implementation

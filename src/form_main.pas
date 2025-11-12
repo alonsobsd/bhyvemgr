@@ -155,6 +155,7 @@ type
     procedure FillDeviceCategoryList();
     procedure FillDeviceDetailList();
     procedure FillVirtualMachineList();
+    procedure FillVirtualMachine(VmName : String);
     function LoadDeviceSettingsValues(VmName: String):Boolean;
     function LoadGlobalSettingsValues(VmName: String):Boolean;
     function LoadVirtualMachineData(ConfigPath: String):TVirtualMachineClass;
@@ -768,6 +769,38 @@ begin
 end;
 
 {
+  This procedure is used to fill "Virtual machines" treeview with a new virtual
+  machine name and data when a new one is added.
+  Only virtual machine with bhyve_config.conf and vmname.conf configuration
+  files is loaded.
+}
+procedure TFormBhyveManager.FillVirtualMachine(VmName: String);
+var
+  Nodo : TTreeNode;
+begin
+  if FileExists(VmPath+'/'+VmName+'/bhyve_config.conf') and FileExists(VmPath+'/'+VmName+'/'+VmName+'.conf') then
+    begin
+      VirtualMachine:=LoadVirtualMachineData(VmPath+'/'+VmName+'/'+VmName+'.conf');
+
+      if VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type) = Nil then
+        begin
+          Nodo := VirtualMachinesTreeView.Items.Add(Nil, VirtualMachine.system_type);
+          Nodo.ImageIndex:=0;
+          Nodo.SelectedIndex:=0;
+        end;
+
+      if CheckVmRunning(VirtualMachine.name) > 0 then
+        GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name + ' : Running')
+      else
+        GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name);
+
+      GlobalNode.ImageIndex:=VirtualMachine.image;
+      GlobalNode.SelectedIndex:=VirtualMachine.image;
+      GlobalNode.Data:=VirtualMachine;
+    end;
+end;
+
+{
   This procedure is used to delete all content of a TreeView passed as
    parameter.
 }
@@ -989,7 +1022,7 @@ begin
     end;
 
     StatusBarBhyveManager.SimpleText := EmptyStr;
-    MessageDlg('Error message', Message, mtError, [mbOK], 0);
+    MessageDialog(mtError, Message);
 
     DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
 
@@ -1032,9 +1065,8 @@ begin
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText:=Format(copy_status, [total.ToString]);
 
-    ResetTreeView(VirtualMachinesTreeView);
-    VirtualMachinesTreeView.Items.Clear;
-    FillVirtualMachineList();
+    FillVirtualMachine(FormVmCreate.EditVmName.Text);
+    VirtualMachinesTreeView.AlphaSort;
 
     StatusBarBhyveManager.Font.Color:=clTeal;
     StatusBarBhyveManager.SimpleText:=Format(vm_create_status, [FormVmCreate.EditVmName.Text]);
@@ -1367,7 +1399,7 @@ procedure TFormBhyveManager.FormActivate(Sender: TObject);
 begin
   if NewConfig then
   begin
-    MessageDlg(configuration_notice, mtInformation, [mbOk], 0);
+    MessageDialog(mtInformation, configuration_notice);
     SetNewConfig(False);
     FormSettings.Show;
   end;
@@ -1389,14 +1421,14 @@ begin
 
   if FormVmCreate.IsVisible and (FormVmCreate.ProcessPid > 0) then
   begin
-    MessageDlg(check_create_task, mtWarning, [mbOk], 0);
+    MessageDialog(mtInformation, check_create_task);
     CanClose:=False;
     Exit;
   end;
 
   if ProcessPid > 0 then
   begin
-    if MessageDlg(check_create_task_confirmation, mtConfirmation, [mbOk, mbCancel], 0) = mrOK then
+    if MessageDialog(mtConfirmation, check_create_task_confirmation) = mrYes then
     begin
       KillPid(ProcessPid);
       ProcessPid:=-1;
@@ -1425,7 +1457,7 @@ begin
 
   if flag then
   begin
-    if MessageDlg(check_vm_running, mtConfirmation, [mbOk, mbCancel], 0) = mrCancel then
+    if MessageDialog(mtConfirmation, check_vm_running) = mrNo then
       CanClose := False;
   end;
 end;
@@ -2208,7 +2240,7 @@ var
 begin
   if (Assigned(DeviceSettingsTreeView.Selected)) and (DeviceSettingsTreeView.Selected.Level = 1) then
   begin
-    if (MessageDlg(device_remove_title, Format(device_remove_notice, [ExtractVarValue(DeviceSettingsTreeView.Selected.Text)]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    if (MessageDialog(mtConfirmation, Format(device_remove_notice, [ExtractVarValue(DeviceSettingsTreeView.Selected.Text)])) = mrYes) then
     begin
 
       case DeviceSettingsTreeView.Selected.Parent.Text of
@@ -3403,7 +3435,11 @@ begin
       NewVMConfig:=ConfigurationClass.Create(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf');
 
       Uuid:=GenerateUuid();
-      MacAddress:=GenerateMacAddress();
+
+      if FormVmCreate.CheckBoxUseStaticIpv6.Checked then
+        MacAddress:=FormVmCreate.MacAddress
+      else
+        MacAddress:=GenerateMacAddress();
 
       NewBhyveConfig.Values['uuid']:=Uuid;
       NewBhyveConfig.Values['name']:=FormVmCreate.EditVmName.Text;
@@ -3591,10 +3627,26 @@ begin
           if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
           begin
             SeedImageConfig.LoadFromFile(DatadirPath+'templates/network-config');
+
             SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%MACADDRESS%%', MacAddress, [rfReplaceAll]);
             SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP4ADDRESS%%', FormVmCreate.EditIpv4Address.Text , [rfReplaceAll]);
             SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY4%%', FormVmCreate.EditGateway.Text , [rfReplaceAll]);
             SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS4SERVERS%%', FormVmCreate.EditDNS.Text , [rfReplaceAll]);
+
+            if FormVmCreate.CheckBoxUseStaticIpv6.Checked then
+            begin
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DHCP6%%', 'dhcp6: false', [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP6ADDRESS%%', '- '+FormVmCreate.EditIpv4Address.Text+'/64' , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY6%%', 'gateway6: '+FormVmCreate.EditGateway.Text , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS6SERVERS%%', '- '+FormVmCreate.EditDNS.Text , [rfReplaceAll]);
+            end
+            else
+            begin
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DHCP6%%', EmptyStr, [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP6ADDRESS%%', EmptyStr, [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY6%%', EmptyStr, [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS6SERVERS%%', EmptyStr, [rfReplaceAll]);
+            end;
 
             CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config', GetCurrentUserName());
             SeedImageConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config');
@@ -3728,19 +3780,12 @@ begin
       if not (IpAddress = EmptyStr) then
         NewVMConfig.SetOption('general','ipaddress', IpAddress );
 
-      if FormVmCreate.CheckBoxNat.Checked then
-      begin
-        NewVMConfig.SetOption('general','nat', 'True');
-        PfCreateRules(FormVmCreate.EditVmName.Text, 'nat on '+ExternalInterface+' from '+IpAddress+' to any -> '+ExternalIpv4, 'nat');
-      end;
-
       FormVmCreate.Hide;
 
       if not FormVmCreate.RadioButtonDiskFromImage.Checked then
       begin
-        ResetTreeView(VirtualMachinesTreeView);
-        VirtualMachinesTreeView.Items.Clear;
-        FillVirtualMachineList();
+        FillVirtualMachine(FormVmCreate.EditVmName.Text);
+        VirtualMachinesTreeView.AlphaSort;
 
         StatusBarBhyveManager.Font.Color:=clTeal;
         StatusBarBhyveManager.SimpleText:=Format(vm_create_status, [FormVmCreate.EditVmName.Text]);
@@ -3778,6 +3823,8 @@ begin
     FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachine.system_version);
     FormVmInfo.EditVmName.Text:=VirtualMachine.name;
     FormVmInfo.EditVmDescription.Text:=VirtualMachine.description;
+    FormVmInfo.EditVmIpv4Address.Text:=VirtualMachine.ipaddress;
+    FormVmInfo.EditVmIpv6Address.Text:=VirtualMachine.ip6address;
     FormVmInfo.Ip4Address:=VirtualMachine.ipaddress;
 
     if VirtualMachine.rdp = StrToBool('True') then
@@ -3795,17 +3842,26 @@ begin
     else
       FormVmInfo.CheckBoxIpv6.Enabled:=False;
 
-    if (UsePf = 'yes') and not (Trim(VirtualMachine.ipaddress) = EmptyStr) then
+    if (UsePf = 'yes') then
     begin
-      FormVmInfo.CheckBoxPfNat.Enabled:=True;
+      FormVmInfo.CheckBoxNat.Enabled:=True;
+      FormVmInfo.CheckBoxPf.Enabled:=True;
 
       if VirtualMachine.nat = StrToBool('True') then
-        FormVmInfo.CheckBoxPfNat.Checked:=True
+        FormVmInfo.CheckBoxNat.Checked:=True
       else
-        FormVmInfo.CheckBoxPfNat.Checked:=False;
+        FormVmInfo.CheckBoxNat.Checked:=False;
+
+      if VirtualMachine.pf = StrToBool('True') then
+        FormVmInfo.CheckBoxPf.Checked:=True
+      else
+        FormVmInfo.CheckBoxPf.Checked:=False;
     end
     else
-      FormVmInfo.CheckBoxPfNat.Enabled:=False;
+    begin
+      FormVmInfo.CheckBoxNat.Enabled:=False;
+      FormVmInfo.CheckBoxPf.Enabled:=False;
+    end;
   end;
 end;
 
@@ -3835,7 +3891,10 @@ end;
 procedure TFormBhyveManager.SaveVirtualMachineInfoClick(Sender: TObject);
 var
   Configuration : ConfigurationClass;
+  NodoName : String;
 begin
+  NodoName:=EmptyStr;
+
   if FormVmInfo.FormValidate() then
   begin
     Configuration:= ConfigurationClass.Create(VmPath+ '/'+FormVmInfo.EditVmName.Text+'/'+FormVmInfo.EditVmName.Text+'.conf');
@@ -3846,19 +3905,29 @@ begin
     Configuration.SetOption('general','description', FormVmInfo.EditVmDescription.Text);
     Configuration.SetOption('general','rdp', BoolToStr(FormVmInfo.CheckBoxRDP.Checked, 'True', 'False'));
     Configuration.SetOption('general','ipv6', BoolToStr(FormVmInfo.CheckBoxIpv6.Checked, 'True', 'False'));
+    Configuration.SetOption('general','ipaddress', FormVmInfo.EditVmIpv4Address.Text);
 
     if not FormVmInfo.CheckBoxIpv6.Checked then
       Configuration.SetOption('general','ip6address', EmptyStr);
 
-    Configuration.SetOption('general','nat', BoolToStr(FormVmInfo.CheckBoxPfNat.Checked, 'True', 'False'));
-
-    if FormVmInfo.CheckBoxPfNat.Checked then
+    if UseDnsmasq = 'yes' then
     begin
+      if Assigned(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data) and CheckIpvAddress(FormVmInfo.EditVmIpv4Address.Text)  then
+        AddDnsmasqDhcpHostEntry(FormVmInfo.EditVmName.Text, FormVmInfo.EditVmIpv4Address.Text, TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data).mac);
+
+      if Assigned(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data) and CheckIpv6Address(FormVmInfo.EditVmIpv6Address.Text) then
+        AddDnsmasqHostRecordEntry(FormVmInfo.EditVmName.Text, FormVmInfo.EditVmIpv6Address.Text, TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data).mac);
+    end;
+
+    if FormVmInfo.CheckBoxNat.Checked then
+    begin
+      Configuration.SetOption('general','nat', 'True');
+
       if PfCreateRules(FormVmInfo.EditVmName.Text, 'nat on '+ExternalInterface+' from '+FormVmInfo.Ip4Address+' to any -> '+ExternalIpv4, 'nat') then
       begin
         if CheckVmRunning(FormVmInfo.EditVmName.Text) > 0 then
         begin
-          if MessageDlg(Format(vm_apply_rules_confirmation, [FormVmInfo.EditVmName.Text]), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+          if MessageDialog(mtConfirmation, Format(vm_apply_rules_confirmation, [FormVmInfo.EditVmName.Text])) = mrYes then
           begin
             PfLoadRules(FormVmInfo.EditVmName.Text, 'nat');
             PfLoadRules(FormVmInfo.EditVmName.Text, 'rdr');
@@ -3867,20 +3936,48 @@ begin
           end;
         end;
       end;
+    end
+    else
+    begin
+      Configuration.SetOption('general','nat', 'False');
+    end;
+
+    if FormVmInfo.CheckBoxPf.Checked then
+    begin
+      Configuration.SetOption('general','pf', BoolToStr(FormVmInfo.CheckBoxPf.Checked, 'True', 'False'));
     end;
 
     Configuration.Free;
 
-    ResetTreeView(VirtualMachinesTreeView);
-    VirtualMachinesTreeView.Items.Clear;
-    FillVirtualMachineList();
+    if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(FormVmInfo.EditVmName.Text)) then
+      NodoName:=FormVmInfo.EditVmName.Text
+    else if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(FormVmInfo.EditVmName.Text+' : Running')) then
+      NodoName:=FormVmInfo.EditVmName.Text+' : Running';
+
+    if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName)) and (FormVmInfo.ComboBoxVmType.Text = TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).system_type)  then
+    begin
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).system_version:=FormVmInfo.ComboBoxVmVersion.Text;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).system_type:=FormVmInfo.ComboBoxVmType.Text;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).description:=FormVmInfo.EditVmDescription.Text;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).image:=PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]);
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).rdp:=FormVmInfo.CheckBoxRDP.Checked;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).ipv6:=FormVmInfo.CheckBoxIpv6.Checked;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).ipaddress:=FormVmInfo.EditVmIpv4Address.Text;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).ip6address:=FormVmInfo.EditVmIpv6Address.Text;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).nat:=FormVmInfo.CheckBoxNat.Checked;
+      TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).Data).pf:=FormVmInfo.CheckBoxPf.Checked;
+
+      VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).ImageIndex:=PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]);
+      VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).SelectedIndex:=PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]);
+    end
+    else
+    begin
+      ResetTreeView(VirtualMachinesTreeView);
+      VirtualMachinesTreeView.Items.Clear;
+      FillVirtualMachineList();
+    end;
 
     FormVmInfo.Hide;
-  end
-  else
-  begin
-    FormVmInfo.StatusBarVmInfo.Font.Color:=clRed;
-    FormVmInfo.StatusBarVmInfo.SimpleText:=vm_fields_status;
   end;
 end;
 
@@ -3904,6 +4001,7 @@ procedure TFormBhyveManager.SpeedButtonRemoveVmClick(Sender: TObject);
 var
   Status : Boolean;
   VmName : String;
+  ParentNode : String;
 begin
   Status:=False;
 
@@ -3914,7 +4012,7 @@ begin
 
     VmName:=VirtualMachine.name;
 
-    if (MessageDlg(vm_remove_title, Format(vm_remove_notice, [VmName]), mtConfirmation, [mbYes, mbNo], 0) = mrYes) then
+    if (MessageDialog(mtConfirmation, Format(vm_remove_notice, [VmName])) = mrYes) then
     begin
       if UseZfs = 'yes' then
       begin
@@ -3922,7 +4020,7 @@ begin
           Status:=True
         else
         begin
-          if (MessageDlg(vm_remove_title, Format(vm_remove_force, [VmName]), mtWarning, [mbYes, mbNo], 0) = mrYes) then
+          if (MessageDialog(mtWarning, Format(vm_remove_force, [VmName])) = mrYes) then
           begin
             if ZfsDestroy(VmPath.Remove(0,1)+'/'+VirtualMachine.name, True, True) then
               Status:=True;
@@ -3941,17 +4039,22 @@ begin
       if UseDnsmasq = 'yes' then
         RemoveDnsmasqEntry(VmName);
 
+      ParentNode:=VirtualMachinesTreeView.Selected.Parent.Text;
+
       TObject(VirtualMachinesTreeView.Selected.Data).Free;
       VirtualMachinesTreeView.Selected.Data:=Nil;
       VirtualMachinesTreeView.Selected.Delete;
 
-      VirtualMachinesTreeView.Items.Clear;
-      FillVirtualMachineList();
+      if VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Count = 0 then
+      begin
+        VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Data:=Nil;
+        VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Delete;
+      end;
 
       StatusBarBhyveManager.Font.Color:=clTeal;
       StatusBarBhyveManager.SimpleText:=Format(vm_remove_status, [VmName]);
 
-      MessageDlg(vm_remove_title, Format(vm_remove_status, [VmName]), mtInformation, [mbOK], 0);
+      MessageDialog(mtInformation, Format(vm_remove_status, [VmName]));
 
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_remove_status, [VmName]));
     end
@@ -4223,7 +4326,7 @@ begin
         else
           VirtualMachinesPopup.PopupMenu.Items.Items[3].Enabled:=False;
 
-        if TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).nat then
+        if TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).pf then
           VirtualMachinesPopup.PopupMenu.Items.Items[4].Enabled:=True
         else
           VirtualMachinesPopup.PopupMenu.Items.Items[4].Enabled:=False;
@@ -5164,6 +5267,11 @@ begin
       VirtualMachine.nat:=True
     else
       VirtualMachine.nat:=False;
+
+    if (UsePf = 'yes') and (Configuration.GetOption('general','pf') = 'True') then
+      VirtualMachine.pf:=True
+    else
+      VirtualMachine.pf:=False;
   end;
 
   Configuration.Free;

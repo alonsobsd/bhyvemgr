@@ -47,7 +47,6 @@ type
     BitBtnDownload: TBitBtn;
     BitBtnCreateVm: TBitBtn;
     BitBtnSshPaste: TBitBtn;
-    CheckBoxNat: TCheckBox;
     CheckBoxImageUseSudo: TCheckBox;
     CheckBoxImageMinimal: TCheckBox;
     CheckBoxImageFiles: TCheckBox;
@@ -58,14 +57,18 @@ type
     CheckBoxUEFIBootvars: TCheckBox;
     CheckBoxUseMedia: TCheckBox;
     CheckBoxUseStaticIpv4: TCheckBox;
+    CheckBoxUseStaticIpv6: TCheckBox;
     CheckBoxWaitVNC: TCheckBox;
     ComboBoxSystemType: TComboBox;
     ComboBoxSystemVersion: TComboBox;
     ComboBoxVirtualDeviceType: TComboBox;
     ComboBoxVirtualStorageType: TComboBox;
-    EditDNS: TEdit;
+    EditDns: TEdit;
+    EditDnsIpv6: TEdit;
     EditGateway: TEdit;
+    EditGatewayIpv6: TEdit;
     EditIpv4Address: TEdit;
+    EditIpv6Address: TEdit;
     EditUrlImage: TEdit;
     EditUsername: TEdit;
     EditSshPubKey: TEdit;
@@ -85,6 +88,7 @@ type
     GroupBoxNewVirtualDisk: TGroupBox;
     GroupBoxMinimalConfiguration: TGroupBox;
     GroupBoxFileConfig: TGroupBox;
+    GroupBoxStaticIPv6: TGroupBox;
     Label1: TLabel;
     Label10: TLabel;
     Label11: TLabel;
@@ -95,7 +99,10 @@ type
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
+    Label19: TLabel;
     Label2: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
     Label22: TLabel;
     Label27: TLabel;
     Label28: TLabel;
@@ -126,9 +133,11 @@ type
     procedure CheckBoxImageMinimalChange(Sender: TObject);
     procedure CheckBoxImageUseDoasChange(Sender: TObject);
     procedure CheckBoxImageUseSudoChange(Sender: TObject);
+    procedure CheckBoxIpv6AddressChange(Sender: TObject);
     procedure CheckBoxOnlyLocalhostChange(Sender: TObject);
     procedure CheckBoxUseMediaChange(Sender: TObject);
     procedure CheckBoxUseStaticIpv4Change(Sender: TObject);
+    procedure CheckBoxUseStaticIpv6Change(Sender: TObject);
     procedure CheckBoxWaitVNCChange(Sender: TObject);
     procedure ComboBoxSystemTypeChange(Sender: TObject);
     procedure EditVmNameEditingDone(Sender: TObject);
@@ -152,6 +161,7 @@ type
     procedure EndStatus(Status: Integer; AppName : String; AppPid: Integer);
   public
     ProcessPid : Integer;
+    MacAddress : String;
     function FormValidate():Boolean;
   end;
 
@@ -202,11 +212,6 @@ begin
   else
     CheckBoxIpv6Address.Enabled:=False;
 
-  if UsePf = 'yes' then
-    CheckBoxNat.Enabled:=True
-  else
-    CheckBoxNat.Enabled:=False;
-
   {$ifdef CPUAARCH64}
   CheckBoxFramebuffer.Enabled:=False;
   CheckBoxWaitVNC.Enabled:=False;
@@ -252,8 +257,15 @@ begin
   EditIpv4Address.Clear;
   EditGateway.Enabled:=False;
   EditGateway.Clear;
-  EditDNS.Enabled:=False;
-  EditDNS.Clear;
+  EditDns.Enabled:=False;
+  EditDns.Clear;
+
+  EditIpv6Address.Enabled:=False;
+  EditIpv6Address.Clear;
+  EditGatewayIpv6.Enabled:=False;
+  EditGatewayIpv6.Clear;
+  EditDnsIpv6.Enabled:=False;
+  EditDnsIpv6.Clear;
 
   FileNameEditUserData.Clear;
   FileNameEditMetaData.Clear;
@@ -454,6 +466,8 @@ begin
     StatusBarVmCreate.Font.Color:=clRed;
     StatusBarVmCreate.SimpleText:=check_system_type;
 
+    PageControlVmCreate.ActivePage:=TabSheetGeneral;
+
     Result:=False;
     Exit;
   end;
@@ -461,6 +475,8 @@ begin
   begin
     StatusBarVmCreate.Font.Color:=clRed;
     StatusBarVmCreate.SimpleText:=check_system_version;
+
+    PageControlVmCreate.ActivePage:=TabSheetGeneral;
 
     Result:=False;
     Exit;
@@ -473,6 +489,8 @@ begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_device_type;
 
+      PageControlVmCreate.ActivePage:=TabSheetGeneral;
+
       Result:=False;
       Exit;
     end;
@@ -480,6 +498,8 @@ begin
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_storage_type;
+
+      PageControlVmCreate.ActivePage:=TabSheetGeneral;
 
       Result:=False;
       Exit;
@@ -493,6 +513,8 @@ begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=Format(check_disk_size, [GetFileSize(FileNameEditImageFile.FileName ,'G').ToString+'G']);
 
+      PageControlVmCreate.ActivePage:=TabSheetGeneral;
+
       Result:=False;
       Exit;
     end;
@@ -501,6 +523,8 @@ begin
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_image_path;
+
+      PageControlVmCreate.ActivePage:=TabSheetImage;
 
       Result:=False;
       Exit;
@@ -513,6 +537,8 @@ begin
         StatusBarVmCreate.Font.Color:=clRed;
         StatusBarVmCreate.SimpleText:=check_username;
 
+        PageControlVmCreate.ActivePage:=TabSheetImage;
+
         Result:=False;
         Exit;
       end;
@@ -520,6 +546,8 @@ begin
       begin
         StatusBarVmCreate.Font.Color:=clRed;
         StatusBarVmCreate.SimpleText:=check_ssh_key;
+
+        PageControlVmCreate.ActivePage:=TabSheetImage;
 
         Result:=False;
         Exit;
@@ -530,6 +558,8 @@ begin
       begin
         StatusBarVmCreate.Font.Color:=clRed;
         StatusBarVmCreate.SimpleText:=check_template_files;
+
+        PageControlVmCreate.ActivePage:=TabSheetImage;
 
         Result:=False;
         Exit;
@@ -543,6 +573,8 @@ begin
         StatusBarVmCreate.Font.Color:=clRed;
         StatusBarVmCreate.SimpleText:=check_userdata_file;
 
+        PageControlVmCreate.ActivePage:=TabSheetImage;
+
         Result:=False;
         Exit;
       end;
@@ -550,6 +582,8 @@ begin
       begin
         StatusBarVmCreate.Font.Color:=clRed;
         StatusBarVmCreate.SimpleText:=check_metadata_file;
+
+        PageControlVmCreate.ActivePage:=TabSheetImage;
 
         Result:=False;
         Exit;
@@ -562,7 +596,9 @@ begin
     if (Trim(EditIpv4Address.Text) = EmptyStr) or not CheckCidrRange(EditIpv4Address.Text+'/32') then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
-      StatusBarVmCreate.SimpleText:=check_ipv4;
+      StatusBarVmCreate.SimpleText:=check_static_ipv4;
+
+      PageControlVmCreate.ActivePage:=TabSheetImage;
 
       Result:=False;
       Exit;
@@ -572,13 +608,51 @@ begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_gateway;
 
+      PageControlVmCreate.ActivePage:=TabSheetImage;
+
       Result:=False;
       Exit;
     end;
-    if Trim(EditDNS.Text) = EmptyStr then
+    if Trim(EditDns.Text) = EmptyStr then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_dns;
+
+      PageControlVmCreate.ActivePage:=TabSheetImage;
+
+      Result:=False;
+      Exit;
+    end;
+  end;
+
+  if CheckBoxUseStaticIpv6.Checked then
+  begin
+    if (Trim(EditIpv6Address.Text) = EmptyStr) or not CheckIpv6Address(EditIpv6Address.Text) then
+    begin
+      StatusBarVmCreate.Font.Color:=clRed;
+      StatusBarVmCreate.SimpleText:=check_static_ipv6;
+
+      PageControlVmCreate.ActivePage:=TabSheetImage;
+
+      Result:=False;
+      Exit;
+    end;
+    if (Trim(EditGatewayIpv6.Text) = EmptyStr) or not CheckIpv6Address(EditGatewayIpv6.Text) then
+    begin
+      StatusBarVmCreate.Font.Color:=clRed;
+      StatusBarVmCreate.SimpleText:=check_gateway_ipv6;
+
+      PageControlVmCreate.ActivePage:=TabSheetImage;
+
+      Result:=False;
+      Exit;
+    end;
+    if (Trim(EditDnsIpv6.Text) = EmptyStr) or not CheckIpv6Address(EditDnsIpv6.Text) then
+    begin
+      StatusBarVmCreate.Font.Color:=clRed;
+      StatusBarVmCreate.SimpleText:=check_dns_ipv6;
+
+      PageControlVmCreate.ActivePage:=TabSheetImage;
 
       Result:=False;
       Exit;
@@ -591,6 +665,8 @@ begin
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_boot_media;
+
+      PageControlVmCreate.ActivePage:=TabSheetGeneral;
 
       Result:=False;
       Exit;
@@ -625,20 +701,48 @@ begin
   if CheckBoxUseStaticIpv4.Checked then
   begin
     GroupBoxStaticIPv4.Enabled:=True;
+
     EditIpv4Address.Enabled:=True;
     EditGateway.Enabled:=True;
-    EditDNS.Enabled:=True;
+    EditDns.Enabled:=True;
 
     EditIpv4Address.Text:=GetNewIpAddress(Subnet);
     EditGateway.Text:=FirstIpAddress(NetworkAddress(Subnet));
-    EditDNS.Text:=EditGateway.Text;
+    EditDns.Text:=EditGateway.Text;
   end
   else
   begin
     GroupBoxStaticIPv4.Enabled:=False;
+    CheckBoxUseStaticIpv6.Checked:=False;
+
     EditIpv4Address.Enabled:=False;
     EditGateway.Enabled:=False;
-    EditDNS.Enabled:=False;
+    EditDns.Enabled:=False;
+  end;
+end;
+
+procedure TFormVmCreate.CheckBoxUseStaticIpv6Change(Sender: TObject);
+begin
+  if CheckBoxUseStaticIpv6.Checked then
+  begin
+    MacAddress:=GenerateMacAddress();
+
+    CheckBoxUseStaticIpv4.Checked:=True;
+    GroupBoxStaticIPv6.Enabled:=True;
+    EditIpv6Address.Enabled:=True;
+    EditGatewayIpv6.Enabled:=True;
+    EditDnsIpv6.Enabled:=True;
+
+    EditIpv6Address.Text:=GetNewIp6Address(Ipv6Prefix, MacAddress);
+    EditGatewayIpv6.Text:=GetNewIp6Address(Ipv6Prefix, ExtractInterfaceMac(BridgeInterface));
+    EditDnsIpv6.Text:=EditGatewayIpv6.Text;
+  end
+  else
+  begin
+    GroupBoxStaticIPv6.Enabled:=False;
+    EditIpv6Address.Enabled:=False;
+    EditGatewayIpv6.Enabled:=False;
+    EditDnsIpv6.Enabled:=False;
   end;
 end;
 
@@ -757,6 +861,10 @@ begin
   if CheckBoxImageFiles.Checked then
   begin
     CheckBoxUseStaticIpv4.Enabled:=True;
+
+    if CheckBoxIpv6Address.Checked then
+      CheckBoxUseStaticIpv6.Enabled:=True;
+
     CheckBoxImageMinimal.Checked:=False;
     GroupBoxMinimalConfiguration.Enabled:=False;
     GroupBoxFileConfig.Enabled:=True;
@@ -769,6 +877,8 @@ begin
     begin
       CheckBoxUseStaticIpv4.Enabled:=False;
       CheckBoxUseStaticIpv4.Checked:=False;
+      CheckBoxUseStaticIpv6.Enabled:=False;
+      CheckBoxUseStaticIpv6.Checked:=False;
     end;
     GroupBoxFileConfig.Enabled:=False;
     CheckBoxUseMedia.Enabled:=True;
@@ -780,6 +890,10 @@ begin
   if CheckBoxImageMinimal.Checked then
   begin
     CheckBoxUseStaticIpv4.Enabled:=True;
+
+    if CheckBoxIpv6Address.Checked then
+      CheckBoxUseStaticIpv6.Enabled:=True;
+
     CheckBoxImageFiles.Checked:=False;
     GroupBoxMinimalConfiguration.Enabled:=True;
     GroupBoxFileConfig.Enabled:=False;
@@ -792,7 +906,10 @@ begin
     begin
       CheckBoxUseStaticIpv4.Enabled:=False;
       CheckBoxUseStaticIpv4.Checked:=False;
+      CheckBoxUseStaticIpv6.Enabled:=False;
+      CheckBoxUseStaticIpv6.Checked:=False;
     end;
+
     GroupBoxMinimalConfiguration.Enabled:=False;
     CheckBoxUseMedia.Enabled:=True;
   end;
@@ -808,6 +925,14 @@ procedure TFormVmCreate.CheckBoxImageUseSudoChange(Sender: TObject);
 begin
   if CheckBoxImageUseSudo.Checked then
     CheckBoxImageUseDoas.Checked:=False;
+end;
+
+procedure TFormVmCreate.CheckBoxIpv6AddressChange(Sender: TObject);
+begin
+  if CheckBoxIpv6Address.Checked and (CheckBoxImageMinimal.Checked or CheckBoxImageFiles.Checked) then
+    CheckBoxUseStaticIpv6.Enabled:=True
+  else
+    CheckBoxUseStaticIpv6.Enabled:=False;
 end;
 
 procedure TFormVmCreate.CheckBoxWaitVNCChange(Sender: TObject);
@@ -899,7 +1024,7 @@ procedure TFormVmCreate.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   if ProcessPid > 0 then
   begin
-    if MessageDlg(check_create_task_confirmation, mtConfirmation, [mbOk, mbCancel], 0) = mrCancel then
+    if MessageDialog(mtConfirmation, check_create_task_confirmation) = mrNo then
       CanClose := false
     else
     begin

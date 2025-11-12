@@ -1042,11 +1042,6 @@ msgctxt "tformvmcreate.checkboxipv6address.caption"
 msgid "Use IPv6"
 msgstr ""
 
-#: tformvmcreate.checkboxnat.caption
-msgctxt "tformvmcreate.checkboxnat.caption"
-msgid "Use PF/NAT"
-msgstr ""
-
 #: tformvmcreate.checkboxonlylocalhost.caption
 msgctxt "tformvmcreate.checkboxonlylocalhost.caption"
 msgid "Only localhost VNC connection"
@@ -1062,6 +1057,11 @@ msgstr ""
 
 #: tformvmcreate.checkboxusestaticipv4.caption
 msgid "Use static IPv4"
+msgstr ""
+
+#: tformvmcreate.checkboxusestaticipv6.caption
+msgctxt "tformvmcreate.checkboxusestaticipv6.caption"
+msgid "Use static IPv6"
 msgstr ""
 
 #: tformvmcreate.checkboxwaitvnc.caption
@@ -1100,6 +1100,11 @@ msgstr ""
 msgid "Static IPv4 settings"
 msgstr ""
 
+#: tformvmcreate.groupboxstaticipv6.caption
+msgctxt "tformvmcreate.groupboxstaticipv6.caption"
+msgid "Static IPv6 settings"
+msgstr ""
+
 #: tformvmcreate.label1.caption
 msgid "Memory"
 msgstr ""
@@ -1127,6 +1132,7 @@ msgid "IPv4 address"
 msgstr ""
 
 #: tformvmcreate.label15.caption
+msgctxt "tformvmcreate.label15.caption"
 msgid "Gateway"
 msgstr ""
 
@@ -1141,12 +1147,27 @@ msgid "Image"
 msgstr ""
 
 #: tformvmcreate.label18.caption
-msgid "DNS Servers"
+msgctxt "tformvmcreate.label18.caption"
+msgid "DNS Server"
+msgstr ""
+
+#: tformvmcreate.label19.caption
+msgid "IPv6 address"
 msgstr ""
 
 #: tformvmcreate.label2.caption
 msgctxt "tformvmcreate.label2.caption"
 msgid "Size"
+msgstr ""
+
+#: tformvmcreate.label20.caption
+msgctxt "tformvmcreate.label20.caption"
+msgid "Gateway"
+msgstr ""
+
+#: tformvmcreate.label21.caption
+msgctxt "tformvmcreate.label21.caption"
+msgid "DNS Server"
 msgstr ""
 
 #: tformvmcreate.label22.caption
@@ -1238,17 +1259,34 @@ msgctxt "tformvminfo.checkboxipv6.caption"
 msgid "Use IPv6"
 msgstr ""
 
-#: tformvminfo.checkboxpfnat.caption
-msgctxt "tformvminfo.checkboxpfnat.caption"
-msgid "Use PF/NAT"
+#: tformvminfo.checkboxnat.caption
+msgctxt "tformvminfo.checkboxnat.caption"
+msgid "Enable PF NAT"
+msgstr ""
+
+#: tformvminfo.checkboxpf.caption
+msgctxt "tformvminfo.checkboxpf.caption"
+msgid "Enable PF rules"
 msgstr ""
 
 #: tformvminfo.checkboxrdp.caption
 msgid "Works with RDP connection"
 msgstr ""
 
-#: tformvminfo.groupbox1.caption
-msgid "General info"
+#: tformvminfo.editvmipv4address.text
+msgid "EditVmIpv4Address"
+msgstr ""
+
+#: tformvminfo.editvmipv6address.text
+msgid "EditVmIpv6Address"
+msgstr ""
+
+#: tformvminfo.label1.caption
+msgid "IPv4 Address"
+msgstr ""
+
+#: tformvminfo.label2.caption
+msgid "IPv6 Address"
 msgstr ""
 
 #: tformvminfo.label3.caption
@@ -1269,6 +1307,16 @@ msgstr ""
 #: tformvminfo.label6.caption
 msgctxt "tformvminfo.label6.caption"
 msgid "Description"
+msgstr ""
+
+#: tformvminfo.tabsheetvmgeneral.caption
+msgctxt "tformvminfo.tabsheetvmgeneral.caption"
+msgid "General info"
+msgstr ""
+
+#: tformvminfo.tabsheetvmnetworking.caption
+msgctxt "tformvminfo.tabsheetvmnetworking.caption"
+msgid "Networking"
 msgstr ""
 
 #: unit_language.app_error_status
@@ -1335,11 +1383,15 @@ msgid "The virtual disk size can not be less than %s"
 msgstr ""
 
 #: unit_language.check_dns
-msgid "DNS Servers is not valid."
+msgid "DNS Server is not valid."
 msgstr ""
 
 #: unit_language.check_dnsmasq
 msgid "dnsmasq was not found. Please install dns/dnsmasq for fix it"
+msgstr ""
+
+#: unit_language.check_dns_ipv6
+msgid "DNS Server IPv6 is not valid."
 msgstr ""
 
 #: unit_language.check_doas
@@ -1348,6 +1400,10 @@ msgstr ""
 
 #: unit_language.check_gateway
 msgid "Gateway is not valid."
+msgstr ""
+
+#: unit_language.check_gateway_ipv6
+msgid "Gateway IPv6 is not valid."
 msgstr ""
 
 #: unit_language.check_host_range_ports
@@ -1360,10 +1416,6 @@ msgstr ""
 
 #: unit_language.check_inbound_rule
 msgid "Cannot add the same inbound rule twice."
-msgstr ""
-
-#: unit_language.check_ipv4
-msgid "IPv4 address is not valid."
 msgstr ""
 
 #: unit_language.check_ipv6
@@ -1418,6 +1470,15 @@ msgstr ""
 msgid "SSH key can not be empty."
 msgstr ""
 
+#: unit_language.check_static_ipv4
+msgctxt "unit_language.check_static_ipv4"
+msgid "IPv4 address is not valid."
+msgstr ""
+
+#: unit_language.check_static_ipv6
+msgid "IPv6 address is not valid."
+msgstr ""
+
 #: unit_language.check_storage_type
 msgid "You must select a virtual storage type. e.g, image file, etc."
 msgstr ""
@@ -1464,6 +1525,14 @@ msgstr ""
 msgid "%s virtual machine name is not available"
 msgstr ""
 
+#: unit_language.check_vm_ipv4
+msgid "A valid IPv4 address must be defined."
+msgstr ""
+
+#: unit_language.check_vm_ipv6
+msgid "A valid IPv6 address must be defined."
+msgstr ""
+
 #: unit_language.check_vm_name
 msgid "Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]"
 msgstr ""
@@ -1477,6 +1546,14 @@ msgid ""
 "bhyvemgr detects VMs running. You must stop them before of close this app. \n"
 "\n"
 "Do you really want to close?"
+msgstr ""
+
+#: unit_language.check_vm_type
+msgid "A type must be selected."
+msgstr ""
+
+#: unit_language.check_vm_version
+msgid "A version must be selected."
 msgstr ""
 
 #: unit_language.check_vnc
@@ -1494,6 +1571,10 @@ msgstr ""
 
 #: unit_language.configuration_notice
 msgid "A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press \"Save settings button\" if everything is ok."
+msgstr ""
+
+#: unit_language.confirmation_message
+msgid "Confirmation message"
 msgstr ""
 
 #: unit_language.convert_status
@@ -1550,11 +1631,6 @@ msgctxt "unit_language.device_remove_notice"
 msgid "This action will remove all files/resources created by this device. Do you want remove %s device?"
 msgstr ""
 
-#: unit_language.device_remove_title
-msgctxt "unit_language.device_remove_title"
-msgid "Virtual machine devices"
-msgstr ""
-
 #: unit_language.device_status
 #, object-pascal-format
 msgid "%s device can not added/updated."
@@ -1574,13 +1650,18 @@ msgstr ""
 msgid "%0:s: value has been changed to %1:s"
 msgstr ""
 
+#: unit_language.error_message
+msgid "Error message"
+msgstr ""
+
+#: unit_language.error_saving_file
+#, object-pascal-format
+msgid "Error saving data to %s file"
+msgstr ""
+
 #: unit_language.error_status
 #, object-pascal-format
 msgid "%0:s process generated an error: %1:s"
-msgstr ""
-
-#: unit_language.error_title
-msgid "Error message"
 msgstr ""
 
 #: unit_language.exception_status
@@ -1590,6 +1671,10 @@ msgstr ""
 
 #: unit_language.extract_status
 msgid "Extracting..."
+msgstr ""
+
+#: unit_language.information_message
+msgid "Information message"
 msgstr ""
 
 #: unit_language.in_grid_interface
@@ -1743,16 +1828,8 @@ msgstr ""
 msgid "An error occurred trying reload %s PF rules."
 msgstr ""
 
-#: unit_language.save_rules_title
-msgid "Packet Filter rules information"
-msgstr ""
-
 #: unit_language.settings_saved
 msgid "Settings were saved successfully"
-msgstr ""
-
-#: unit_language.settings_saved_title
-msgid "Settings information"
 msgstr ""
 
 #: unit_language.virtual_machine
@@ -1778,10 +1855,6 @@ msgstr ""
 #: unit_language.vm_exit_status
 #, object-pascal-format
 msgid "%s VM exited"
-msgstr ""
-
-#: unit_language.vm_fields_status
-msgid "You must complete all form fields"
 msgstr ""
 
 #: unit_language.vm_halt_status
@@ -1822,10 +1895,6 @@ msgstr ""
 msgid "%s VM data has been removed"
 msgstr ""
 
-#: unit_language.vm_remove_title
-msgid "Remove VM"
-msgstr ""
-
 #: unit_language.vm_start_status
 #, object-pascal-format
 msgid "%s VM have been started"
@@ -1840,5 +1909,9 @@ msgstr ""
 #, object-pascal-format
 msgctxt "unit_language.vm_try_status"
 msgid "Trying create %s virtual machine..."
+msgstr ""
+
+#: unit_language.warning_message
+msgid "Warning message"
 msgstr ""
 

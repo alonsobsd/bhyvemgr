@@ -72,6 +72,7 @@ function DestroyNetworkInterface(IfName: String):Boolean;
 function DestroyVirtualMachine(VmName: String):Boolean;
 function ExtractCidr(Network: String): String;
 function ExtractIpv6Prefix(prefix : String):String;
+function ExtractInterfaceMac(NetworkInterface : String):String;
 function ExtractNetMask(Cidr: Integer): String;
 function ExtractNumberValue(TextLine: String; Suffix: String): String;
 function ExtractPortValue(TextLine: String): String;
@@ -134,7 +135,7 @@ function ZfsDestroy(ZfsPath : String; Recursive : Boolean = True; Force : Boolea
 implementation
 
 uses
-  unit_configuration, unit_global, unit_thread, LazLogger;
+  unit_configuration, unit_component ,unit_global, unit_language, unit_thread, LazLogger;
 
 var
   MyAppThread: AppThread;
@@ -279,6 +280,47 @@ begin;
   Result:=IpAddress;
 end;
 
+function ExtractInterfaceMac(NetworkInterface: String): String;
+var
+  RegexObj: TRegExpr;
+  TmpOutput:String;
+  ifconfig_cmd : String;
+  output : String;
+  parameters : TStringArray;
+  status : Boolean;
+begin
+  Result:=EmptyStr;
+  TmpOutput:=EmptyStr;
+
+  ifconfig_cmd:=IfconfigCmd;
+
+  parameters:=[NetworkInterface, 'ether'];
+
+  if FileExists(ifconfig_cmd) then
+  begin
+    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+
+    if status then
+    begin
+      TmpOutput:=Trim(output);
+
+      RegexObj := TRegExpr.Create;
+      RegexObj.Expression := 'ether\s+(\S+)';
+
+      if RegexObj.Exec(TmpOutput) then
+      begin
+        Result:=RegexObj.Match[1];
+      end;
+
+      RegexObj.Free;
+    end
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetNetworkInterfaceList : '+output);
+    end;
+  end;
+end;
+
 function ExtractNetMask(Cidr: Integer): String;
 var
   i : Integer;
@@ -330,7 +372,7 @@ begin
       FilePath.SaveToFile(ConfigFile);
     end;
   except
-    MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
+    MessageDialog(mtError, Format(error_saving_file, [ConfigFile]));
     Result:=False;
   end;
 
@@ -941,7 +983,7 @@ begin
       FilePath.SaveToFile(ConfigFile);
     end;
   except
-    MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
+    MessageDialog(mtError, Format(error_saving_file, [ConfigFile]));
   end;
 
   FilePath.Free;
@@ -971,7 +1013,7 @@ begin
     end;
 
   except
-    MessageDlg('Error message', 'Error saving data to '+ConfigFile+' file', mtError, [mbOK], 0);
+    MessageDialog(mtError, Format(error_saving_file, [ConfigFile]));
   end;
 
   FilePath.Free;
@@ -2712,7 +2754,6 @@ var
   sparse : String;
   status : Boolean;
   parameters : TStringArray;
-  options : TStringArray;
 begin
   Result:=False;
 
@@ -2722,8 +2763,6 @@ begin
     root_cmd:=DoasCmd;
 
   zfs_cmd:=ZfsCmd;
-
-  options:=ZfsCreateOptions.Split(' ');
 
   if ZvolSparse then
     sparse:='-sV'

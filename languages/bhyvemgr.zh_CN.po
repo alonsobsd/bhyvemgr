@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bhyve 管理器\n"
 "POT-Creation-Date: 2025-09-08\n"
-"PO-Revision-Date: 2025-11-05\n"
+"PO-Revision-Date: 2025-11-11\n"
 "Last-Translator: ykla <yklaxds@gmail.com>\n"
 "Language-Team: ykla <yklaxds@gmail.com>\n"
 "Language: zh_CN\n"
@@ -1053,11 +1053,6 @@ msgctxt "tformvmcreate.checkboxipv6address.caption"
 msgid "Use IPv6"
 msgstr "使用 IPv6"
 
-#: tformvmcreate.checkboxnat.caption
-msgctxt "tformvmcreate.checkboxnat.caption"
-msgid "Use PF/NAT"
-msgstr "使用 PF/NAT"
-
 #: tformvmcreate.checkboxonlylocalhost.caption
 msgctxt "tformvmcreate.checkboxonlylocalhost.caption"
 msgid "Only localhost VNC connection"
@@ -1074,6 +1069,11 @@ msgstr "使用 CD/DVD 介质"
 #: tformvmcreate.checkboxusestaticipv4.caption
 msgid "Use static IPv4"
 msgstr "使用静态 IPv4"
+
+#: tformvmcreate.checkboxusestaticipv6.caption
+msgctxt "tformvmcreate.checkboxusestaticipv6.caption"
+msgid "Use static IPv6"
+msgstr "使用静态 IPv6"
 
 #: tformvmcreate.checkboxwaitvnc.caption
 msgid "Wait for VNC connection for boot"
@@ -1111,6 +1111,11 @@ msgstr "选择镜像"
 msgid "Static IPv4 settings"
 msgstr "静态 IPv4 配置"
 
+#: tformvmcreate.groupboxstaticipv6.caption
+msgctxt "tformvmcreate.groupboxstaticipv6.caption"
+msgid "Static IPv6 settings"
+msgstr "静态 IPv6 配置"
+
 #: tformvmcreate.label1.caption
 msgid "Memory"
 msgstr "内存"
@@ -1138,6 +1143,7 @@ msgid "IPv4 address"
 msgstr "IPv4 地址"
 
 #: tformvmcreate.label15.caption
+msgctxt "tformvmcreate.label15.caption"
 msgid "Gateway"
 msgstr "网关"
 
@@ -1152,13 +1158,28 @@ msgid "Image"
 msgstr "镜像"
 
 #: tformvmcreate.label18.caption
-msgid "DNS Servers"
+msgctxt "tformvmcreate.label18.caption"
+msgid "DNS Server"
 msgstr "DNS 服务器"
+
+#: tformvmcreate.label19.caption
+msgid "IPv6 address"
+msgstr "IPv6 地址"
 
 #: tformvmcreate.label2.caption
 msgctxt "tformvmcreate.label2.caption"
 msgid "Size"
 msgstr "大小"
+
+#: tformvmcreate.label20.caption
+msgctxt "tformvmcreate.label20.caption"
+msgid "Gateway"
+msgstr "网关"
+
+#: tformvmcreate.label21.caption
+msgctxt "tformvmcreate.label21.caption"
+msgid "DNS Server"
+msgstr "DNS 服务器"
 
 #: tformvmcreate.label22.caption
 msgid "Url"
@@ -1249,18 +1270,35 @@ msgctxt "tformvminfo.checkboxipv6.caption"
 msgid "Use IPv6"
 msgstr "使用 IPv6"
 
-#: tformvminfo.checkboxpfnat.caption
-msgctxt "tformvminfo.checkboxpfnat.caption"
-msgid "Use PF/NAT"
-msgstr "使用 PF/NAT"
+#: tformvminfo.checkboxnat.caption
+msgctxt "tformvminfo.checkboxnat.caption"
+msgid "Enable PF NAT"
+msgstr "启用 PF NAT"
+
+#: tformvminfo.checkboxpf.caption
+msgctxt "tformvminfo.checkboxpf.caption"
+msgid "Enable PF rules"
+msgstr "启用 PF 规则"
 
 #: tformvminfo.checkboxrdp.caption
 msgid "Works with RDP connection"
 msgstr "适用于 RDP 连接"
 
-#: tformvminfo.groupbox1.caption
-msgid "General info"
-msgstr "通用信息"
+#: tformvminfo.editvmipv4address.text
+msgid "EditVmIpv4Address"
+msgstr ""
+
+#: tformvminfo.editvmipv6address.text
+msgid "EditVmIpv6Address"
+msgstr ""
+
+#: tformvminfo.label1.caption
+msgid "IPv4 Address"
+msgstr "IPv4 地址"
+
+#: tformvminfo.label2.caption
+msgid "IPv6 Address"
+msgstr "IPv6 地址"
 
 #: tformvminfo.label3.caption
 msgctxt "tformvminfo.label3.caption"
@@ -1281,6 +1319,16 @@ msgstr "名称"
 msgctxt "tformvminfo.label6.caption"
 msgid "Description"
 msgstr "描述"
+
+#: tformvminfo.tabsheetvmgeneral.caption
+msgctxt "tformvminfo.tabsheetvmgeneral.caption"
+msgid "General info"
+msgstr "一般信息"
+
+#: tformvminfo.tabsheetvmnetworking.caption
+msgctxt "tformvminfo.tabsheetvmnetworking.caption"
+msgid "Networking"
+msgstr "联网"
 
 #: unit_language.app_error_status
 #, object-pascal-format
@@ -1349,12 +1397,16 @@ msgid "The virtual disk size can not be less than %s"
 msgstr "虚拟磁盘容量不能小于 %s"
 
 #: unit_language.check_dns
-msgid "DNS Servers is not valid."
+msgid "DNS Server is not valid."
 msgstr "DNS 服务器无效。"
 
 #: unit_language.check_dnsmasq
 msgid "dnsmasq was not found. Please install dns/dnsmasq for fix it"
 msgstr "未找到 dnsmasq。要解决此问题请安装 dns/dnsmasq"
+
+#: unit_language.check_dns_ipv6
+msgid "DNS Server IPv6 is not valid."
+msgstr "DNS 服务器 IPv6 地址无效。"
 
 #: unit_language.check_doas
 msgid "doas was not found. Please install security/doas for fix it"
@@ -1363,6 +1415,10 @@ msgstr "未找到 doas。要解决此问题请安装 security/doas"
 #: unit_language.check_gateway
 msgid "Gateway is not valid."
 msgstr "网关无效。"
+
+#: unit_language.check_gateway_ipv6
+msgid "Gateway IPv6 is not valid."
+msgstr "网关 IPv6 地址无效。"
 
 #: unit_language.check_host_range_ports
 msgid "Host port or range of ports are not valid."
@@ -1375,10 +1431,6 @@ msgstr "云/虚拟机镜像不存在。"
 #: unit_language.check_inbound_rule
 msgid "Cannot add the same inbound rule twice."
 msgstr "不能添加两次相同的入站规则。"
-
-#: unit_language.check_ipv4
-msgid "IPv4 address is not valid."
-msgstr "IPv4 地址无效。"
 
 #: unit_language.check_ipv6
 msgid "A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses."
@@ -1432,6 +1484,15 @@ msgstr "信息来源不完整。"
 msgid "SSH key can not be empty."
 msgstr "SSH 密钥不能为空。"
 
+#: unit_language.check_static_ipv4
+msgctxt "unit_language.check_static_ipv4"
+msgid "IPv4 address is not valid."
+msgstr "IPv4 地址无效。"
+
+#: unit_language.check_static_ipv6
+msgid "IPv6 address is not valid."
+msgstr "IPv6 地址无效。"
+
 #: unit_language.check_storage_type
 msgid "You must select a virtual storage type. e.g, image file, etc."
 msgstr "您必须选择虚拟存储类型，例如镜像文件等。"
@@ -1478,6 +1539,14 @@ msgstr "请输入有效的 URL：仅支持 http://、https:// 和 file://。"
 msgid "%s virtual machine name is not available"
 msgstr "虚拟机名称 %s 不可用"
 
+#: unit_language.check_vm_ipv4
+msgid "A valid IPv4 address must be defined."
+msgstr "必须定义一个有效的 IPv4 地址。"
+
+#: unit_language.check_vm_ipv6
+msgid "A valid IPv6 address must be defined."
+msgstr "必须定义一个有效的 IPv6 地址。"
+
 #: unit_language.check_vm_name
 msgid "Virtual machine name is not valid. Valid characters are [a-z][-_][0-9]"
 msgstr "虚拟机名称无效。有效字符为 [a-z][-_][0-9]。"
@@ -1496,6 +1565,14 @@ msgstr ""
 "\n"
 "您确定要退出吗？"
 
+#: unit_language.check_vm_type
+msgid "A type must be selected."
+msgstr "必须选择一种类型。"
+
+#: unit_language.check_vm_version
+msgid "A version must be selected."
+msgstr "必须选择一个版本。"
+
 #: unit_language.check_vnc
 msgid "vnc support will not available. net-mgmt/virt-viewer is not installed."
 msgstr "VNC 支持将不可用。未安装 net-mgmt/virt-viewer。"
@@ -1512,6 +1589,10 @@ msgstr "bhyve 可能不兼容 %s。"
 #: unit_language.configuration_notice
 msgid "A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press \"Save settings button\" if everything is ok."
 msgstr "已生成配置文件。将打开设置表单，可查看或修改 bhyve 管理器的选项。若一切正常，请点击“保存设置”按钮。"
+
+#: unit_language.confirmation_message
+msgid "Confirmation message"
+msgstr "确认信息"
 
 #: unit_language.convert_status
 msgctxt "unit_language.convert_status"
@@ -1567,11 +1648,6 @@ msgctxt "unit_language.device_remove_notice"
 msgid "This action will remove all files/resources created by this device. Do you want remove %s device?"
 msgstr "该操作将删除该设备创建的所有文件和资源。是否要删除设备 %s？"
 
-#: unit_language.device_remove_title
-msgctxt "unit_language.device_remove_title"
-msgid "Virtual machine devices"
-msgstr "虚拟机设备"
-
 #: unit_language.device_status
 #, object-pascal-format
 msgid "%s device can not added/updated."
@@ -1591,14 +1667,19 @@ msgstr "正在下载……"
 msgid "%0:s: value has been changed to %1:s"
 msgstr "%0:s：值已更改为 %1:s"
 
+#: unit_language.error_message
+msgid "Error message"
+msgstr "错误信息"
+
+#: unit_language.error_saving_file
+#, object-pascal-format
+msgid "Error saving data to %s file"
+msgstr "保存数据到 %s 文件时出错"
+
 #: unit_language.error_status
 #, object-pascal-format
 msgid "%0:s process generated an error: %1:s"
 msgstr "%0:s 进程出错：%1:s"
-
-#: unit_language.error_title
-msgid "Error message"
-msgstr "错误信息"
 
 #: unit_language.exception_status
 #, object-pascal-format
@@ -1608,6 +1689,10 @@ msgstr "发生异常：%s"
 #: unit_language.extract_status
 msgid "Extracting..."
 msgstr "正在提取……"
+
+#: unit_language.information_message
+msgid "Information message"
+msgstr "信息消息"
 
 #: unit_language.in_grid_interface
 msgctxt "unit_language.in_grid_interface"
@@ -1760,17 +1845,9 @@ msgstr "%s PF 规则已成功重新加载"
 msgid "An error occurred trying reload %s PF rules."
 msgstr "尝试重新加载 %s PF 规则时发生错误。"
 
-#: unit_language.save_rules_title
-msgid "Packet Filter rules information"
-msgstr "数据包过滤规则信息"
-
 #: unit_language.settings_saved
 msgid "Settings were saved successfully"
 msgstr "设置已成功保存"
-
-#: unit_language.settings_saved_title
-msgid "Settings information"
-msgstr "设置信息"
 
 #: unit_language.virtual_machine
 msgid "virtual machine"
@@ -1796,10 +1873,6 @@ msgstr "虚拟机 %s 因错误而退出"
 #, object-pascal-format
 msgid "%s VM exited"
 msgstr "虚拟机 %s 已退出"
-
-#: unit_language.vm_fields_status
-msgid "You must complete all form fields"
-msgstr "您必须填写所有表单项"
 
 #: unit_language.vm_halt_status
 #, object-pascal-format
@@ -1842,10 +1915,6 @@ msgstr "是否要删除虚拟机 %s 的数据？"
 msgid "%s VM data has been removed"
 msgstr "虚拟机 %s 的数据已删除"
 
-#: unit_language.vm_remove_title
-msgid "Remove VM"
-msgstr "删除虚拟机"
-
 #: unit_language.vm_start_status
 #, object-pascal-format
 msgid "%s VM have been started"
@@ -1861,4 +1930,8 @@ msgstr "虚拟机 %s 出现 Triple fault"
 msgctxt "unit_language.vm_try_status"
 msgid "Trying create %s virtual machine..."
 msgstr "正在尝试创建虚拟机 %s……"
+
+#: unit_language.warning_message
+msgid "Warning message"
+msgstr "警告信息"
 

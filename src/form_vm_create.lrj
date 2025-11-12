@@ -19,7 +19,6 @@
 {"hash":159931827,"name":"tformvmcreate.checkboxuefibootvars.caption","sourcebytes":[69,110,97,98,108,101,32,85,69,70,73,32,98,111,111,116,118,97,114,115],"value":"Enable UEFI bootvars"},
 {"hash":158655062,"name":"tformvmcreate.checkboxipv6address.caption","sourcebytes":[85,115,101,32,73,80,118,54],"value":"Use IPv6"},
 {"hash":100871669,"name":"tformvmcreate.radiobuttondiskfromimage.caption","sourcebytes":[67,114,101,97,116,101,32,97,32,118,105,114,116,117,97,108,32,100,105,115,107,32,102,114,111,109,32,105,109,97,103,101],"value":"Create a virtual disk from image"},
-{"hash":89066260,"name":"tformvmcreate.checkboxnat.caption","sourcebytes":[85,115,101,32,80,70,47,78,65,84],"value":"Use PF/NAT"},
 {"hash":3377083,"name":"tformvmcreate.groupboxnewvirtualdisk.caption","sourcebytes":[78,101,119,32,118,105,114,116,117,97,108,32,100,105,115,107],"value":"New virtual disk"},
 {"hash":368901,"name":"tformvmcreate.label2.caption","sourcebytes":[83,105,122,101],"value":"Size"},
 {"hash":1202,"name":"tformvmcreate.label5.caption","sourcebytes":[71,66],"value":"GB"},
@@ -36,6 +35,7 @@
 {"hash":246967918,"name":"tformvmcreate.checkboximageminimal.caption","sourcebytes":[85,115,101,32,109,105,110,105,109,97,108,32,99,111,110,102,105,103,117,114,97,116,105,111,110],"value":"Use minimal configuration"},
 {"hash":175256510,"name":"tformvmcreate.checkboximagefiles.caption","sourcebytes":[85,115,101,32,102,105,108,101,115,32,99,111,110,102,105,103,117,114,97,116,105,111,110],"value":"Use files configuration"},
 {"hash":137237412,"name":"tformvmcreate.checkboxusestaticipv4.caption","sourcebytes":[85,115,101,32,115,116,97,116,105,99,32,73,80,118,52],"value":"Use static IPv4"},
+{"hash":137237414,"name":"tformvmcreate.checkboxusestaticipv6.caption","sourcebytes":[85,115,101,32,115,116,97,116,105,99,32,73,80,118,54],"value":"Use static IPv6"},
 {"hash":32459742,"name":"tformvmcreate.groupboxminimalconfiguration.caption","sourcebytes":[77,105,110,105,109,97,108,32,99,111,110,102,105,103,117,114,97,116,105,111,110],"value":"Minimal configuration"},
 {"hash":164185077,"name":"tformvmcreate.label16.caption","sourcebytes":[85,115,101,114,110,97,109,101],"value":"Username"},
 {"hash":142242201,"name":"tformvmcreate.label13.caption","sourcebytes":[83,83,72,32,107,101,121],"value":"SSH key"},
@@ -49,5 +49,9 @@
 {"hash":139031443,"name":"tformvmcreate.groupboxstaticipv4.caption","sourcebytes":[83,116,97,116,105,99,32,73,80,118,52,32,115,101,116,116,105,110,103,115],"value":"Static IPv4 settings"},
 {"hash":55319235,"name":"tformvmcreate.label14.caption","sourcebytes":[73,80,118,52,32,97,100,100,114,101,115,115],"value":"IPv4 address"},
 {"hash":227200457,"name":"tformvmcreate.label15.caption","sourcebytes":[71,97,116,101,119,97,121],"value":"Gateway"},
-{"hash":159447491,"name":"tformvmcreate.label18.caption","sourcebytes":[68,78,83,32,83,101,114,118,101,114,115],"value":"DNS Servers"}
+{"hash":93851538,"name":"tformvmcreate.label18.caption","sourcebytes":[68,78,83,32,83,101,114,118,101,114],"value":"DNS Server"},
+{"hash":139039635,"name":"tformvmcreate.groupboxstaticipv6.caption","sourcebytes":[83,116,97,116,105,99,32,73,80,118,54,32,115,101,116,116,105,110,103,115],"value":"Static IPv6 settings"},
+{"hash":55317699,"name":"tformvmcreate.label19.caption","sourcebytes":[73,80,118,54,32,97,100,100,114,101,115,115],"value":"IPv6 address"},
+{"hash":227200457,"name":"tformvmcreate.label20.caption","sourcebytes":[71,97,116,101,119,97,121],"value":"Gateway"},
+{"hash":93851538,"name":"tformvmcreate.label21.caption","sourcebytes":[68,78,83,32,83,101,114,118,101,114],"value":"DNS Server"}
 ]}

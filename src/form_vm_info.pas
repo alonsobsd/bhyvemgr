@@ -44,19 +44,26 @@ type
 
   TFormVmInfo = class(TForm)
     BitBtnSave: TBitBtn;
-    CheckBoxPfNat: TCheckBox;
+    CheckBoxPf: TCheckBox;
     CheckBoxIpv6: TCheckBox;
+    CheckBoxNat: TCheckBox;
     CheckBoxRDP: TCheckBox;
     ComboBoxVmType: TComboBox;
     ComboBoxVmVersion: TComboBox;
-    EditVmName: TEdit;
+    EditVmIpv4Address: TEdit;
+    EditVmIpv6Address: TEdit;
     EditVmDescription: TEdit;
-    GroupBox1: TGroupBox;
+    EditVmName: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    PageControlVmInfo: TPageControl;
     StatusBarVmInfo: TStatusBar;
+    TabSheetVmGeneral: TTabSheet;
+    TabSheetVmNetworking: TTabSheet;
     procedure ComboBoxVmTypeChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -76,7 +83,7 @@ implementation
 { TFormVmInfo }
 
 uses
-  unit_component;
+  unit_component, unit_util, unit_language;
 
 procedure TFormVmInfo.ComboBoxVmTypeChange(Sender: TObject);
 begin
@@ -86,6 +93,11 @@ end;
 
 procedure TFormVmInfo.FormShow(Sender: TObject);
 begin
+  PageControlVmInfo.ActivePage:=TabSheetVmGeneral;
+
+  StatusBarVmInfo.Font.Color:=clTeal;
+  StatusBarVmInfo.SimpleText:=EmptyStr;
+
   ComboBoxVmType.Clear;
   FillComboSystemType(ComboBoxVmType);
 
@@ -96,12 +108,59 @@ function TFormVmInfo.FormValidate(): Boolean;
 begin
   Result:=True;
 
+  StatusBarVmInfo.Font.Color:=clTeal;
+  StatusBarVmInfo.SimpleText:=EmptyStr;
+
   if (ComboBoxVmType.ItemIndex=-1) then
-    Result:=False
-  else if (ComboBoxVmVersion.ItemIndex=-1) then
-    Result:=False
-  else if Trim(EditVmDescription.Text) = EmptyStr then
+  begin
+    StatusBarVmInfo.Font.Color:=clRed;
+    StatusBarVmInfo.SimpleText:=check_vm_type;
+
+    PageControlVmInfo.ActivePage:=TabSheetVmGeneral;
+
     Result:=False;
+    Exit;
+  end
+  else if (ComboBoxVmVersion.ItemIndex=-1) then
+  begin
+    StatusBarVmInfo.Font.Color:=clRed;
+    StatusBarVmInfo.SimpleText:=check_vm_version;
+
+    PageControlVmInfo.ActivePage:=TabSheetVmGeneral;
+
+    Result:=False;
+    Exit;
+  end
+  else if (CheckBoxIpv6.Checked) and not (CheckIpv6Address(EditVmIpv6Address.Text)) then
+  begin
+    StatusBarVmInfo.Font.Color:=clRed;
+    StatusBarVmInfo.SimpleText:=check_vm_ipv6;
+
+    PageControlVmInfo.ActivePage:=TabSheetVmNetworking;
+
+    Result:=False;
+    Exit;
+  end
+  else if (CheckBoxNat.Checked) and not (CheckIpvAddress(EditVmIpv4Address.Text)) then
+  begin
+    StatusBarVmInfo.Font.Color:=clRed;
+    StatusBarVmInfo.SimpleText:=check_vm_ipv4;
+
+    PageControlVmInfo.ActivePage:=TabSheetVmNetworking;
+
+    Result:=False;
+    Exit;
+  end
+  else if (CheckBoxPf.Checked) and not (CheckIpvAddress(EditVmIpv4Address.Text)) then
+  begin
+    StatusBarVmInfo.Font.Color:=clRed;
+    StatusBarVmInfo.SimpleText:=check_vm_ipv4;
+
+    PageControlVmInfo.ActivePage:=TabSheetVmNetworking;
+
+    Result:=False;
+    Exit;
+  end;
 end;
 
 end.

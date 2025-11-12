@@ -185,6 +185,9 @@ begin
        or (ComboBoxZpool.ItemIndex = -1) then
     begin
       StatusBarBhyveSettings.SimpleText:= check_zfs;
+
+      PageControlSettings.ActivePage:=TabSheetGeneral;
+
       Result:=False;
       Exit;
     end
@@ -195,6 +198,9 @@ begin
     if not FileExists(DnsmasqBinPath) then
     begin
       StatusBarBhyveSettings.SimpleText:=check_dnsmasq;
+
+      PageControlSettings.ActivePage:=TabSheetGeneral;
+
       Result:=False;
       Exit;
     end;
@@ -205,6 +211,9 @@ begin
     if (Trim(EditIpv6Prefix.Text) = EmptyStr) or not (CheckIpv6Address(EditIpv6Prefix.Text)) then
     begin
       StatusBarBhyveSettings.SimpleText:=check_ipv6;
+
+      PageControlSettings.ActivePage:=TabSheetGeneral;
+
       Result:=False;
       Exit;
     end;
@@ -216,6 +225,7 @@ begin
     begin
       StatusBarBhyveSettings.SimpleText:=check_pf;
       Result:=False;
+
       Exit;
     end;
   end;
@@ -225,6 +235,9 @@ begin
     if not FileExists(FileNameEditSudo.FileName) or not (ExtractFileName(FileNameEditSudo.FileName) = 'sudo') then
     begin
       StatusBarBhyveSettings.SimpleText:=check_sudo;
+
+      PageControlSettings.ActivePage:=TabSheetPaths;
+
       Result:=False;
       Exit;
     end;
@@ -234,6 +247,9 @@ begin
     if not FileExists(FileNameEditDoas.FileName) or not (ExtractFileName(FileNameEditDoas.FileName) = 'doas') then
     begin
       StatusBarBhyveSettings.SimpleText:=check_doas;
+
+      PageControlSettings.ActivePage:=TabSheetPaths;
+
       Result:=False;
       Exit;
     end;
@@ -245,12 +261,18 @@ begin
     if not FileExists(FileNameEditSwtpm.FileName) or not (ExtractFileName(FileNameEditSwtpm.FileName) = 'swtpm') then
     begin
       StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['swtpm']);
+
+      PageControlSettings.ActivePage:=TabSheetPaths;
+
       Result:=False;
       Exit;
     end
     else if not FileExists(FileNameEditSwtpmIoctl.FileName) or not (ExtractFileName(FileNameEditSwtpmIoctl.FileName) = 'swtpm_ioctl') then
     begin
       StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['swtpm_ioctl']);
+
+      PageControlSettings.ActivePage:=TabSheetPaths;
+
       Result:=False;
       Exit;
     end;
@@ -260,30 +282,45 @@ begin
   if ComboBoxBridgeInterface.ItemIndex = -1 then
   begin
     StatusBarBhyveSettings.SimpleText:=check_bridge;
+
+    PageControlSettings.ActivePage:=TabSheetNetwork;
+
     Result:=False;
     Exit;
   end
   else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
   begin
     StatusBarBhyveSettings.SimpleText:=check_subnet;
+
+    PageControlSettings.ActivePage:=TabSheetNetwork;
+
     Result:=False;
     Exit;
   end
-  else if (ComboBoxInterface.ItemIndex = -1) or (ComboBoxIp4.ItemIndex = -1) then
+  else if (CheckBoxUsePF.Checked and ((ComboBoxInterface.ItemIndex = -1) or (ComboBoxIp4.ItemIndex = -1))) then
   begin
     StatusBarBhyveSettings.SimpleText:=check_nat;
+
+    PageControlSettings.ActivePage:=TabSheetNetwork;
+
     Result:=False;
     Exit;
   end
   else if not FileExists(FileNameEditBhyve.FileName) or not (ExtractFileName(FileNameEditBhyve.FileName) = 'bhyve') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['bhyve']);
+
+    PageControlSettings.ActivePage:=TabSheetPaths;
+
     Result:=False;
     Exit;
   end
   else if not FileExists(FileNameEditBhyvectl.FileName) or not (ExtractFileName(FileNameEditBhyvectl.FileName) = 'bhyvectl') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['bhyvectl']);
+
+    PageControlSettings.ActivePage:=TabSheetPaths;
+
     Result:=False;
     Exit;
   end
@@ -291,6 +328,9 @@ begin
   else if not FileExists(FileNameEditBhyveload.FileName) or not (ExtractFileName(FileNameEditBhyveload.FileName) = 'bhyveload') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['bhyveload']);
+
+    PageControlSettings.ActivePage:=TabSheetPaths;
+
     Result:=False;
     Exit;
   end
@@ -298,6 +338,9 @@ begin
   else if not FileExists(FileNameEditVncviewer.FileName) or not (ExtractFileName(FileNameEditVncviewer.FileName) = 'remote-viewer') then
   begin
     StatusBarBhyveSettings.SimpleText:=check_vnc;
+
+    PageControlSettings.ActivePage:=TabSheetPaths;
+
     Result:=False;
     Exit;
   end
@@ -581,7 +624,7 @@ begin
     else
     begin
       ConfigFile.SetOption('general', 'use_pf', 'no');
-      SetUsePf('yes');
+      SetUsePf('no');
       SetExternalInterface(EmptyStr);
       SetExternalIpv4(EmptyStr);
       SetExternalIpv6(EmptyStr);
@@ -632,7 +675,7 @@ begin
     StatusBarBhyveSettings.SimpleText:=EmptyStr;
 
     DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+ debugln_bhyve_settings_saved);
-    MessageDlg(settings_saved_title, settings_saved, mtInformation, [mbOK], 0);
+    MessageDialog(mtInformation, settings_saved);
 
     SetNewConfig(False);
   end;
@@ -687,15 +730,12 @@ begin
   begin
     EditSubnet.Enabled:=True;
     CheckBoxUseIpv6.Enabled:=True;
-    CheckBoxUsePF.Enabled:=True;
   end
   else
   begin
     EditSubnet.Enabled:=True;
     CheckBoxUseIpv6.Enabled:=False;
     CheckBoxUseIpv6.Checked:=False;
-    CheckBoxUsePF.Enabled:=False;
-    CheckBoxUsePF.Checked:=False;
   end;
 end;
 
