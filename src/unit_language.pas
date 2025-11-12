@@ -145,6 +145,7 @@ resourcestring
   check_vm_version = 'A version must be selected.';
   check_vm_ipv4 = 'A valid IPv4 address must be defined.';
   check_vm_ipv6 = 'A valid IPv6 address must be defined.';
+  vm_apply_nat_confirmation = 'Do you want to apply nat rule to the running virtual machine %s?';
   { form_passthru_device strings }
   ppt_devices_status = 'ppt devices were not detected';
   { form_packet_filter_rules strings }

@@ -1857,6 +1857,11 @@ msgstr "设置已成功保存"
 msgid "virtual machine"
 msgstr "虚拟机"
 
+#: unit_language.vm_apply_nat_confirmation
+#, object-pascal-format
+msgid "Do you want to apply nat rule to the running virtual machine %s?"
+msgstr "是否要将 NAT 规则应用于正在运行的虚拟机 %s？"
+
 #: unit_language.vm_apply_rules_confirmation
 #, object-pascal-format
 msgid "Do you want to apply these rules to the running virtual machine %s?"

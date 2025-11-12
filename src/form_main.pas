@@ -893,6 +893,10 @@ begin
     if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
     begin
       PfUnloadRules(VmName, 'nat');
+    end;
+
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
+    begin
       PfUnloadRules(VmName, 'rdr');
       PfUnloadRules(VmName, 'pass-in');
       PfUnloadRules(VmName, 'pass-out');
@@ -918,6 +922,10 @@ begin
     if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
     begin
       PfloadRules(VmName, 'nat');
+    end;
+
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
+    begin
       PfloadRules(VmName, 'rdr');
       PfloadRules(VmName, 'pass-in');
       PfloadRules(VmName, 'pass-out');
@@ -971,6 +979,10 @@ begin
     if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
     begin
       PfUnloadRules(VmName, 'nat');
+    end;
+
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
+    begin
       PfUnloadRules(VmName, 'rdr');
       PfUnloadRules(VmName, 'pass-in');
       PfUnloadRules(VmName, 'pass-out');
@@ -1016,6 +1028,10 @@ begin
     if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
     begin
       PfUnloadRules(VmName, 'nat');
+    end;
+
+    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
+    begin
       PfUnloadRules(VmName, 'rdr');
       PfUnloadRules(VmName, 'pass-in');
       PfUnloadRules(VmName, 'pass-out');
@@ -3934,13 +3950,8 @@ begin
       begin
         if CheckVmRunning(FormVmInfo.EditVmName.Text) > 0 then
         begin
-          if MessageDialog(mtConfirmation, Format(vm_apply_rules_confirmation, [FormVmInfo.EditVmName.Text])) = mrYes then
-          begin
+          if MessageDialog(mtConfirmation, Format(vm_apply_nat_confirmation, [FormVmInfo.EditVmName.Text])) = mrYes then
             PfLoadRules(FormVmInfo.EditVmName.Text, 'nat');
-            PfLoadRules(FormVmInfo.EditVmName.Text, 'rdr');
-            PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-in');
-            PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-out');
-          end;
         end;
       end;
     end
@@ -3951,8 +3962,23 @@ begin
 
     if FormVmInfo.CheckBoxPf.Checked then
     begin
-      Configuration.SetOption('general','pf', BoolToStr(FormVmInfo.CheckBoxPf.Checked, 'True', 'False'));
-    end;
+      Configuration.SetOption('general','pf', 'True');
+
+      if (CheckVmRunning(FormVmInfo.EditVmName.Text) > 0) and
+         ((FileExists(VmPath+'/'+FormVmInfo.EditVmName.Text+'/pf/rdr.rules')) or
+         (FileExists(VmPath+'/'+FormVmInfo.EditVmName.Text+'/pf/pass-in.rules')) or
+         (FileExists(VmPath+'/'+FormVmInfo.EditVmName.Text+'/pf/pass-out.rules'))) then
+      begin
+        if MessageDialog(mtConfirmation, Format(vm_apply_rules_confirmation, [FormVmInfo.EditVmName.Text])) = mrYes then
+        begin
+          PfLoadRules(FormVmInfo.EditVmName.Text, 'rdr');
+          PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-in');
+          PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-out');
+        end;
+      end;
+    end
+    else
+      Configuration.SetOption('general','pf', 'False');
 
     Configuration.Free;
 
@@ -4136,6 +4162,19 @@ begin
         if i=0 then
         begin
           AttachDeviceToBridge(BridgeInterface, NetworkDevice.backend, VirtualMachine.name);
+
+          if VirtualMachine.nat then
+          begin
+            PfLoadRules(VirtualMachine.name, 'nat');
+          end;
+
+          if VirtualMachine.pf then
+          begin
+            PfLoadRules(VirtualMachine.name, 'rdr');
+            PfLoadRules(VirtualMachine.name, 'pass-in');
+            PfLoadRules(VirtualMachine.name, 'pass-out');
+          end;
+
           if UseDnsmasq = 'yes' then
           begin
             VmConfig:=ConfigurationClass.Create(VmPath+'/'+VirtualMachine.name+'/'+VirtualMachine.name+'.conf');
@@ -4158,14 +4197,6 @@ begin
               VmConfig.SetOption('general','ip6address', Ip6Address );
               AddDnsmasqHostRecordEntry(VirtualMachine.name, Ip6Address, NetworkDevice.mac);
               RestartService('dnsmasq');
-            end;
-
-            if VirtualMachine.nat then
-            begin
-              PfLoadRules(VirtualMachine.name, 'nat');
-              PfLoadRules(VirtualMachine.name, 'rdr');
-              PfLoadRules(VirtualMachine.name, 'pass-in');
-              PfLoadRules(VirtualMachine.name, 'pass-out');
             end;
 
             VmConfig.Free;
