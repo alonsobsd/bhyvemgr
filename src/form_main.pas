@@ -3636,9 +3636,9 @@ begin
             if FormVmCreate.CheckBoxUseStaticIpv6.Checked then
             begin
               SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DHCP6%%', 'dhcp6: false', [rfReplaceAll]);
-              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP6ADDRESS%%', '- '+FormVmCreate.EditIpv4Address.Text+'/64' , [rfReplaceAll]);
-              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY6%%', 'gateway6: '+FormVmCreate.EditGateway.Text , [rfReplaceAll]);
-              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS6SERVERS%%', '- '+FormVmCreate.EditDNS.Text , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP6ADDRESS%%', '- '+FormVmCreate.EditIpv6Address.Text+'/64' , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY6%%', 'gateway6: '+FormVmCreate.EditGatewayIpv6.Text , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS6SERVERS%%', '- '+FormVmCreate.EditDnsIpv6.Text , [rfReplaceAll]);
             end
             else
             begin
@@ -3694,6 +3694,13 @@ begin
               SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP4ADDRESS%%', FormVmCreate.EditIpv4Address.Text , [rfReplaceAll]);
               SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY4%%', FormVmCreate.EditGateway.Text , [rfReplaceAll]);
               SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS4SERVERS%%', FormVmCreate.EditDNS.Text , [rfReplaceAll]);
+            end;
+
+            if FormVmCreate.CheckBoxUseStaticIpv6.Checked then
+            begin
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%IP6ADDRESS%%', FormVmCreate.EditIpv6Address.Text, [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%GATEWAY6%%', FormVmCreate.EditGatewayIpv6.Text , [rfReplaceAll]);
+              SeedImageConfig.Text:=StringReplace(SeedImageConfig.Text, '%%DNS6SERVERS%%', FormVmCreate.EditDnsIpv6.Text , [rfReplaceAll]);
             end;
 
             CreateFile(FormVmCreate.EditVmFolderPath.Text+'/cloud-data/network-config', GetCurrentUserName());

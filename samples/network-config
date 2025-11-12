@@ -4,8 +4,13 @@ ethernets:
     match:
       macaddress: %%MACADDRESS%%
     dhcp4: false
+    dhcp6: false
     addresses:
       - %%IP4ADDRESS%%/24
+      - %%IP6ADDRESS%%/64
     gateway4: %%GATEWAY4%%
+    gateway6: %%GATEWAY6%%
     nameservers:
-      addresses: [%%DNS4SERVERS%%]
+      addresses:
+        - %%DNS4SERVERS%%
+        - %%DNS6SERVERS%%
