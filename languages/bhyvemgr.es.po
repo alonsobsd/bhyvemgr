@@ -1424,6 +1424,10 @@ msgstr "Gateway IPv6 no es válido"
 msgid "Host port or range of ports are not valid."
 msgstr "Puerto de host o rango de puertos no válidos."
 
+#: unit_language.check_image_minimal
+msgid "Static IPv4 settings must be configured because bhyvemgr could not find an IPv4 address to use."
+msgstr "Es necesario configurar una dirección IPv4 estática porque bhyvemgr no pudo encontrar una dirección IPv4 para usar."
+
 #: unit_language.check_image_path
 msgid "The Cloud/VM image does not exist."
 msgstr "La imagen Cloud/VM no existe"

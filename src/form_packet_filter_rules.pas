@@ -764,6 +764,7 @@ begin
   FillComboPacketFilterHostType(ComboBoxOutHostType);
   ComboBoxOutInterface.Clear;
   FillComboExternalInterfaceList(ComboBoxOutInterface, 'bridge');
+  ComboBoxOutInterface.ItemIndex:=ComboBoxOutInterface.Items.IndexOf(BridgeInterface);
 
   ComboBoxInAf.Clear;
   FillComboPacketFilterAf(ComboBoxInAf);
@@ -773,6 +774,7 @@ begin
   FillComboPacketFilterHostType(ComboBoxInSourceType);
   ComboBoxInInterface.Clear;
   FillComboExternalInterfaceList(ComboBoxInInterface, 'bridge');
+  ComboBoxInInterface.ItemIndex:=ComboBoxInInterface.Items.IndexOf(BridgeInterface);
 
   ComboBoxRdrAf.Clear;
   FillComboPacketFilterAf(ComboBoxRdrAf);

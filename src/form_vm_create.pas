@@ -532,6 +532,18 @@ begin
 
     if CheckBoxImageMinimal.Checked then
     begin
+      if not (UseDnsmasq = 'yes') and not (CheckBoxUseStaticIpv4.Checked) then
+      begin
+        StatusBarVmCreate.Font.Color:=clRed;
+        StatusBarVmCreate.SimpleText:=check_image_minimal;
+
+        PageControlVmCreate.ActivePage:=TabSheetImage;
+
+        CheckBoxUseStaticIpv4.Checked:=True;
+
+        Result:=False;
+        Exit;
+      end;
       if not CheckUserName(EditUsername.Text) and (Trim(EditUsername.Text) = EmptyStr)  then
       begin
         StatusBarVmCreate.Font.Color:=clRed;

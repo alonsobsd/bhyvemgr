@@ -128,6 +128,7 @@ resourcestring
   check_userdata_file = 'user-data file does not exist.';
   check_metadata_file = 'meta-data file does not exist.';
   check_valid_url = 'Enter a valid URL: only http://, https://, or file:// are supported.';
+  check_image_minimal = 'Static IPv4 settings must be configured because bhyvemgr could not find an IPv4 address to use.';
   check_static_ipv4 = 'IPv4 address is not valid.';
   check_static_ipv6 = 'IPv6 address is not valid.';
   check_gateway = 'Gateway is not valid.';

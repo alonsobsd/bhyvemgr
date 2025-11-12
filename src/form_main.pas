@@ -3930,7 +3930,7 @@ begin
     begin
       Configuration.SetOption('general','nat', 'True');
 
-      if PfCreateRules(FormVmInfo.EditVmName.Text, 'nat on '+ExternalInterface+' from '+FormVmInfo.Ip4Address+' to any -> '+ExternalIpv4, 'nat') then
+      if PfCreateRules(FormVmInfo.EditVmName.Text, 'nat on '+ExternalInterface+' from '+FormVmInfo.EditVmIpv4Address.Text +' to any -> '+ExternalIpv4, 'nat') then
       begin
         if CheckVmRunning(FormVmInfo.EditVmName.Text) > 0 then
         begin
