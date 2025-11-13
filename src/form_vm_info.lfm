@@ -159,6 +159,7 @@ object FormVmInfo: TFormVmInfo
         Width = 76
         Caption = 'Use IPv6'
         TabOrder = 0
+        OnChange = CheckBoxIpv6Change
       end
       object CheckBoxNat: TCheckBox
         Left = 120

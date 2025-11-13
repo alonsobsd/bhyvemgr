@@ -15,7 +15,7 @@
 {"hash":100545587,"name":"tformsettings.label29.caption","sourcebytes":[88,102,114,101,101,114,100,112,32,97,114,103,115],"value":"Xfreerdp args"},
 {"hash":150943859,"name":"tformsettings.editrdpargs.text","sourcebytes":[69,100,105,116,82,100,112,65,114,103,115],"value":"EditRdpArgs"},
 {"hash":68082153,"name":"tformsettings.checkboxusesystray.caption","sourcebytes":[69,110,97,98,108,101,32,115,121,115,116,114,97,121,32,105,99,111,110,32,40,110,101,101,100,32,114,101,115,116,97,114,116,41],"value":"Enable systray icon (need restart)"},
-{"hash":44454484,"name":"tformsettings.checkboxuseipv6.caption","sourcebytes":[85,115,101,32,100,110,115,109,97,115,113,32,102,111,114,32,73,80,118,54,32,115,117,112,112,111,114,116],"value":"Use dnsmasq for IPv6 support"},
+{"hash":237324180,"name":"tformsettings.checkboxuseipv6.caption","sourcebytes":[85,115,101,32,73,80,118,54,32,115,117,112,112,111,114,116],"value":"Use IPv6 support"},
 {"hash":5537027,"name":"tformsettings.label34.caption","sourcebytes":[67,108,111,117,100,47,86,77,32,105,109,97,103,101,115],"value":"Cloud/VM images"},
 {"hash":97289636,"name":"tformsettings.checkboxusepf.caption","sourcebytes":[85,115,101,32,80,70,47,78,65,84,32,115,117,112,112,111,114,116],"value":"Use PF/NAT support"},
 {"hash":47677379,"name":"tformsettings.tabsheetnetwork.caption","sourcebytes":[78,101,116,119,111,114,107,32,115,101,116,116,105,110,103,115],"value":"Network settings"},

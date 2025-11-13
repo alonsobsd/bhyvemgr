@@ -606,12 +606,14 @@ var
   OutboundRules : String;
   RedirectRules : String;
   flagRule : String;
+  flagReload : Boolean;
   IpAddress : String;
   ExternalIpAddress : String;
 begin
   InboundRules:=EmptyStr;
   OutboundRules:=EmptyStr;
   RedirectRules:=EmptyStr;
+  flagReload:=True;
 
   for i:=1 to StringGridInRules.RowCount-1 do
   begin
@@ -660,11 +662,28 @@ begin
     begin
       if MessageDialog(mtConfirmation, Format(vm_apply_rules_confirmation, [VmName])) = mrYes then
       begin
-        PfUnloadRules(VmName, 'pass-in');
-        PfUnloadRules(VmName, 'pass-out');
-        PfUnloadRules(VmName, 'rdr');
+        if StringGridInRules.RowCount > 1 then
+        begin
+          PfUnloadRules(VmName, 'pass-in');
+          if not PfLoadRules(VmName, 'pass-in') then
+            flagReload:=False;
+        end;
 
-        if PfLoadRules(VmName, 'pass-in') and PfLoadRules(VmName, 'pass-out') and PfLoadRules(VmName, 'rdr') then
+        if StringGridOutRules.RowCount > 1 then
+        begin
+          PfUnloadRules(VmName, 'pass-out');
+          if not PfLoadRules(VmName, 'pass-out') then
+            flagReload:=False;
+        end;
+
+        if StringGridRdrRules.RowCount > 1 then
+        begin
+          PfUnloadRules(VmName, 'rdr');
+          if not PfLoadRules(VmName, 'rdr') then
+            flagReload:=False;
+        end;
+
+        if flagReload then
         begin
           StatusBarPacketFilterRules.Font.Color:=clTeal;
           StatusBarPacketFilterRules.SimpleText:=Format(save_rules_reload, [VmName]);

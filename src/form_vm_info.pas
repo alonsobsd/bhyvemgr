@@ -64,12 +64,14 @@ type
     StatusBarVmInfo: TStatusBar;
     TabSheetVmGeneral: TTabSheet;
     TabSheetVmNetworking: TTabSheet;
+    procedure CheckBoxIpv6Change(Sender: TObject);
     procedure ComboBoxVmTypeChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
 
   public
     Ip4Address : String;
+    MacAddress : String;
     function FormValidate():Boolean;
   end;
 
@@ -83,12 +85,21 @@ implementation
 { TFormVmInfo }
 
 uses
-  unit_component, unit_util, unit_language;
+  unit_component, unit_util, unit_language, unit_global;
 
 procedure TFormVmInfo.ComboBoxVmTypeChange(Sender: TObject);
 begin
   ComboBoxVmVersion.Clear;
   FillComboSystemVersion(ComboBoxVmVersion, ComboBoxVmType.Text);
+end;
+
+procedure TFormVmInfo.CheckBoxIpv6Change(Sender: TObject);
+begin
+  if CheckBoxIpv6.Checked then
+  begin
+    if not (MacAddress = EmptyStr) then
+      EditVmIpv6Address.Text:=GetNewIp6Address(Ipv6Prefix, MacAddress);
+  end;
 end;
 
 procedure TFormVmInfo.FormShow(Sender: TObject);

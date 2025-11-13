@@ -564,7 +564,7 @@ msgid "Use dnsmasq for DHCP/DNS support"
 msgstr ""
 
 #: tformsettings.checkboxuseipv6.caption
-msgid "Use dnsmasq for IPv6 support"
+msgid "Use IPv6 support"
 msgstr ""
 
 #: tformsettings.checkboxusepf.caption

@@ -121,7 +121,6 @@ type
     procedure BitBtnMacAddressClick(Sender: TObject);
     procedure BitBtnSaveSettingsClick(Sender: TObject);
     procedure CheckBoxUsePFChange(Sender: TObject);
-    procedure CheckBoxUseDnsmasqChange(Sender: TObject);
     procedure CheckBoxUseIpv6Change(Sender: TObject);
     procedure CheckBoxUseZfsChange(Sender: TObject);
     procedure ComboBoxInterfaceChange(Sender: TObject);
@@ -724,21 +723,6 @@ begin
   end;
 end;
 
-procedure TFormSettings.CheckBoxUseDnsmasqChange(Sender: TObject);
-begin
-  if CheckBoxUseDnsmasq.Checked then
-  begin
-    EditSubnet.Enabled:=True;
-    CheckBoxUseIpv6.Enabled:=True;
-  end
-  else
-  begin
-    EditSubnet.Enabled:=True;
-    CheckBoxUseIpv6.Enabled:=False;
-    CheckBoxUseIpv6.Checked:=False;
-  end;
-end;
-
 procedure TFormSettings.CheckBoxUseIpv6Change(Sender: TObject);
 begin
   if CheckBoxUseIpv6.Checked then
@@ -781,14 +765,11 @@ begin
   begin
     CheckBoxUseDnsmasq.Checked:=True;
     EditSubnet.Enabled:=True;
-    CheckBoxUseIpv6.Enabled:=True;
   end
   else
   begin
     CheckBoxUseDnsmasq.Checked:=False;
     EditSubnet.Enabled:=True;
-    CheckBoxUseIpv6.Checked:=False;
-    CheckBoxUseIpv6.Enabled:=False;
   end;
 
   if UsePf = 'yes' then
@@ -820,7 +801,7 @@ begin
   else
     CheckBoxUseSystray.Checked:=False;
 
-  if (UseIpv6 = 'yes') and (UseDnsmasq = 'yes') then
+  if (UseIpv6 = 'yes') then
   begin
     BitBtnCalculateIpv6.Enabled:=True;
     CheckBoxUseIpv6.Checked:=True;

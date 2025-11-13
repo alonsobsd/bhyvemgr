@@ -766,6 +766,8 @@ begin
   end;
 
   Directories.Free;
+
+  VirtualMachinesTreeView.AlphaSort;
 end;
 
 {
@@ -3779,6 +3781,10 @@ begin
       if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
         IpAddress:=FormVmCreate.EditIpv4Address.Text;
 
+      if (UseIpv6 = 'yes') and FormVmCreate.CheckBoxIpv6Address.Checked and
+         (FormVmCreate.CheckBoxUseStaticIpv6.Checked) then
+        Ip6Address:=FormVmCreate.EditIpv6Address.Text;
+
       if UseDnsmasq = 'yes' then
       begin
         if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
@@ -3792,8 +3798,6 @@ begin
         if (UseIpv6 = 'yes') and (FormVmCreate.CheckBoxIpv6Address.Checked) then
         begin
           Ip6Address:=GetNewIp6Address(GetIpv6Prefix, MacAddress);
-          NewVMConfig.SetOption('general','ip6address', Ip6Address );
-          NewVMConfig.SetOption('general','ipv6', 'True');
           AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, Ip6Address, MacAddress);
         end;
 
@@ -3802,6 +3806,12 @@ begin
 
       if not (IpAddress = EmptyStr) then
         NewVMConfig.SetOption('general','ipaddress', IpAddress );
+
+      if not (Ip6Address = EmptyStr) then
+      begin
+        NewVMConfig.SetOption('general','ip6address', Ip6Address );
+        NewVMConfig.SetOption('general','ipv6', 'True');
+      end;
 
       FormVmCreate.Hide;
 
@@ -3850,6 +3860,11 @@ begin
     FormVmInfo.EditVmIpv6Address.Text:=VirtualMachine.ip6address;
     FormVmInfo.Ip4Address:=VirtualMachine.ipaddress;
 
+    if Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data) then
+      FormVmInfo.MacAddress:=TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data).mac
+    else
+      FormVmInfo.MacAddress:=EmptyStr;
+
     if VirtualMachine.rdp = StrToBool('True') then
       FormVmInfo.CheckBoxRDP.Checked:=True
     else
@@ -3857,13 +3872,18 @@ begin
 
     if UseIpv6 = 'yes' then
     begin
+      FormVmInfo.CheckBoxIpv6.Enabled:=True;
+
       if VirtualMachine.ipv6 = StrToBool('True') then
         FormVmInfo.CheckBoxIpv6.Checked:=True
       else
         FormVmInfo.CheckBoxIpv6.Checked:=False;
     end
     else
+    begin
       FormVmInfo.CheckBoxIpv6.Enabled:=False;
+      FormVmInfo.CheckBoxIpv6.Checked:=False;
+    end;
 
     if (UsePf = 'yes') then
     begin
@@ -5280,36 +5300,32 @@ begin
   VirtualMachine.system_type:=Configuration.GetOption('general','type');
   VirtualMachine.system_version:=Configuration.GetOption('general','version');
   VirtualMachine.image:=StrToInt(Configuration.GetOption('general','image'));
+  VirtualMachine.ipaddress:=Configuration.GetOption('general','ipaddress');
 
   if Configuration.GetOption('general','rdp') = 'True' then
     VirtualMachine.rdp:=True
   else
     VirtualMachine.rdp:=False;
 
-  if UseDnsmasq = 'yes' then
+  if (UsePf = 'yes') and (Configuration.GetOption('general','nat') = 'True') then
+    VirtualMachine.nat:=True
+  else
+    VirtualMachine.nat:=False;
+
+  if (UsePf = 'yes') and (Configuration.GetOption('general','pf') = 'True') then
+    VirtualMachine.pf:=True
+  else
+    VirtualMachine.pf:=False;
+
+  if (UseIpv6 = 'yes') and (Configuration.GetOption('general','ipv6') = 'True') then
   begin
-    VirtualMachine.ipaddress:=Configuration.GetOption('general','ipaddress');
-
-    if (UseIpv6 = 'yes') and (Configuration.GetOption('general','ipv6') = 'True') then
-    begin
-      VirtualMachine.ip6address:=Configuration.GetOption('general','ip6address');
-      VirtualMachine.ipv6:=True;
-    end
-    else
-    begin
-      VirtualMachine.ipv6:=False;
-      VirtualMachine.ip6address:=EmptyStr;
-    end;
-
-    if (UsePf = 'yes') and (Configuration.GetOption('general','nat') = 'True') then
-      VirtualMachine.nat:=True
-    else
-      VirtualMachine.nat:=False;
-
-    if (UsePf = 'yes') and (Configuration.GetOption('general','pf') = 'True') then
-      VirtualMachine.pf:=True
-    else
-      VirtualMachine.pf:=False;
+    VirtualMachine.ip6address:=Configuration.GetOption('general','ip6address');
+    VirtualMachine.ipv6:=True;
+  end
+  else
+  begin
+    VirtualMachine.ipv6:=False;
+    VirtualMachine.ip6address:=EmptyStr;
   end;
 
   Configuration.Free;

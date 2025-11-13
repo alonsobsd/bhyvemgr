@@ -87,7 +87,6 @@ object FormSettings: TFormSettings
         Width = 245
         Caption = 'Use dnsmasq for DHCP/DNS support'
         TabOrder = 2
-        OnChange = CheckBoxUseDnsmasqChange
       end
       object CheckBoxUseZfs: TCheckBox
         Left = 264
@@ -151,8 +150,8 @@ object FormSettings: TFormSettings
         Left = 536
         Height = 22
         Top = 24
-        Width = 205
-        Caption = 'Use dnsmasq for IPv6 support'
+        Width = 127
+        Caption = 'Use IPv6 support'
         TabOrder = 4
         OnChange = CheckBoxUseIpv6Change
       end
