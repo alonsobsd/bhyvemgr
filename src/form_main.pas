@@ -3955,11 +3955,11 @@ begin
 
     if UseDnsmasq = 'yes' then
     begin
-      if Assigned(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data) and CheckIpvAddress(FormVmInfo.EditVmIpv4Address.Text)  then
-        AddDnsmasqDhcpHostEntry(FormVmInfo.EditVmName.Text, FormVmInfo.EditVmIpv4Address.Text, TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data).mac);
+      if Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data) and CheckIpvAddress(FormVmInfo.EditVmIpv4Address.Text)  then
+        AddDnsmasqDhcpHostEntry(FormVmInfo.EditVmName.Text, FormVmInfo.EditVmIpv4Address.Text, TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data).mac);
 
-      if Assigned(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data) and CheckIpv6Address(FormVmInfo.EditVmIpv6Address.Text) then
-        AddDnsmasqHostRecordEntry(FormVmInfo.EditVmName.Text, FormVmInfo.EditVmIpv6Address.Text, TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[0].Data).mac);
+      if Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data) and CheckIpv6Address(FormVmInfo.EditVmIpv6Address.Text) then
+        AddDnsmasqHostRecordEntry(FormVmInfo.EditVmName.Text, FormVmInfo.EditVmIpv6Address.Text, TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data).mac);
     end;
 
     if FormVmInfo.CheckBoxNat.Checked then

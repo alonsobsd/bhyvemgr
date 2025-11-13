@@ -9,7 +9,7 @@ object FormBhyveManager: TFormBhyveManager
   ClientWidth = 820
   Menu = MainMenu1
   Position = poDesktopCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.4.0.0'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
