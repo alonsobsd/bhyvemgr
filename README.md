@@ -1,7 +1,7 @@
 # Bhyvemgr
 Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It needs a bunch of tools mostly installed on base system and some installed from ports/packages. Currently it supports amd64 and aarch64. The main goal is to be a desktop user application to easily and quickly setup and run virtual machines on the FreeBSD host.
 
-<img width="832" height="698" alt="image" src="https://github.com/user-attachments/assets/d12befc1-6055-44d5-ace6-6b39dc2b2fc0" />
+<img width="832" height="698" alt="image" src="https://github.com/user-attachments/assets/08a90ae3-23b6-4519-87c9-0d5bb3e1aad1" />
 
 # Features
 - virtual machines management
@@ -28,7 +28,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 
 # Bhyvemgr dependencies
 ## From base system
-bhyve, bhyvectl, bhyveload, chown, chmod, fetch, file, ifconfig, install, kill, kldload, kldstat, makefs, pciconf, pgrep, rm, service, sysctl, truncate, xz, zfs and zpool
+bhyve, bhyvectl, bhyveload, chown, chmod, fetch, file, ifconfig, install, kill, kldload, kldstat, makefs, pciconf, pfctl, pgrep, rm, service, sysctl, truncate, xz, zfs and zpool
 ## From ports/packages
 bhyve-firmware (sysutils/bhyve-firmware), doas (security/doas), qemu-tools (emulatorsd/qemu@tools), remote-viewer (net-mgmt/virt-viewer), swtpm (sysutils/swtpm), sudo (security/sudo), and xfreerdp3 (net/freerdp3)
 
@@ -53,7 +53,7 @@ For sudo, if the user is part of the wheel group
 ```sh
 %wheel ALL=(ALL) NOPASSWD: /usr/sbin/bhyve -k *, /usr/sbin/bhyvectl --vm=* destroy,
 /usr/sbin/chmod 750 /zroot/bhyvemgr, /bin/chown acm: /zroot/bhyvemgr, /sbin/ifconfig bhyve0 addm *,
-/usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
+/usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /sbin/pfctl, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
 /usr/sbin/service dnsmasq restart, /sbin/zfs create * zroot/bhyvemgr/*, /sbin/zfs destroy * zroot/bhyvemgr/*,
 /sbin/zfs set volsize=* zroot/bhyvemgr/*
 ```
@@ -67,6 +67,7 @@ permit nopass :wheel as root cmd ifconfig
 permit nopass :wheel as root cmd install
 permit nopass :wheel as root cmd kill
 permit nopass :wheel as root cmd kldload
+permit nopass :wheel as root cmd pfctl
 permit nopass :wheel as root cmd pgrep
 permit nopass :wheel as root cmd rm
 permit nopass :wheel as root cmd service
@@ -76,9 +77,9 @@ permit nopass :wheel as root cmd zfs
 # Run bhyvemgr for the first time
 When bhyvemgr starts in the first time, this will create a initial config file. It is mandatory to review, modify (if it is necessary) and press **Save settings** button from of **Settings form** the first time
 
-![image](https://github.com/user-attachments/assets/35b0ea78-8449-4c08-bc13-c09977e0c30a)
+<img width="512" height="189" alt="image" src="https://github.com/user-attachments/assets/f8c526bf-1036-4a7f-ae98-52cfa95ae10b" />
 
-<img width="811" height="564" alt="image" src="https://github.com/user-attachments/assets/eb3463e3-3cc4-4ffa-a453-f4113a2d42b0" />
+<img width="811" height="564" alt="image" src="https://github.com/user-attachments/assets/beac6634-d779-4177-8689-773e076ea1e3" />
 
 # Demo
 
