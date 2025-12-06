@@ -51,14 +51,14 @@ Otherwise, if you panic, use the following:
 
 For sudo, if the user is part of the wheel group
 ```sh
-%wheel ALL=(ALL) NOPASSWD: /usr/sbin/bhyve -k *, /usr/sbin/bhyvectl --vm=* destroy,
-/usr/sbin/chmod 750 /zroot/bhyvemgr, /bin/chown acm: /zroot/bhyvemgr, /sbin/ifconfig bhyve0 addm *,
-/usr/sbin/install -d *, /bin/kill -SIGTERM *, /sbin/kldload, /sbin/pfctl, /usr/bin/pgrep, /bin/rm -R /zroot/bhyvemgr/*,
-/usr/sbin/service dnsmasq restart, /sbin/zfs create * zroot/bhyvemgr/*, /sbin/zfs destroy * zroot/bhyvemgr/*,
-/sbin/zfs set volsize=* zroot/bhyvemgr/*
+%wheel ALL=(ALL:ALL) ALL
+%wheel ALL=(ALL:ALL) NOPASSWD: /usr/sbin/bhyve, /usr/sbin/bhyvectl, /bin/chmod, /usr/sbin/chown, /sbin/ifconfig, \
+                        /usr/sbin/install, /bin/kill, /sbin/kldload, /sbin/pfctl, /usr/bin/pgrep, /bin/rm, \
+                        /usr/sbin/service, /sbin/zfs
 ```
 For doas, if the user is part of the wheel group
 ```sh
+permit keepenv :wheel
 permit keepenv nopass :wheel as root cmd bhyve
 permit keepenv nopass :wheel as root cmd bhyvectl
 permit keepenv nopass :wheel as root cmd chmod
@@ -72,7 +72,6 @@ permit keepenv nopass :wheel as root cmd pgrep
 permit keepenv nopass :wheel as root cmd rm
 permit keepenv nopass :wheel as root cmd service
 permit keepenv nopass :wheel as root cmd zfs
-permit keepenv :wheel
 ```
 
 # Run bhyvemgr for the first time
