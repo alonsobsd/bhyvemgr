@@ -59,19 +59,20 @@ For sudo, if the user is part of the wheel group
 ```
 For doas, if the user is part of the wheel group
 ```sh
-permit nopass :wheel as root cmd bhyve
-permit nopass :wheel as root cmd bhyvectl
-permit nopass :wheel as root cmd chmod
-permit nopass :wheel as root cmd chown
-permit nopass :wheel as root cmd ifconfig
-permit nopass :wheel as root cmd install
-permit nopass :wheel as root cmd kill
-permit nopass :wheel as root cmd kldload
-permit nopass :wheel as root cmd pfctl
-permit nopass :wheel as root cmd pgrep
-permit nopass :wheel as root cmd rm
-permit nopass :wheel as root cmd service
-permit nopass :wheel as root cmd zfs
+permit keepenv nopass :wheel as root cmd bhyve
+permit keepenv nopass :wheel as root cmd bhyvectl
+permit keepenv nopass :wheel as root cmd chmod
+permit keepenv nopass :wheel as root cmd chown
+permit keepenv nopass :wheel as root cmd ifconfig
+permit keepenv nopass :wheel as root cmd install
+permit keepenv nopass :wheel as root cmd kill
+permit keepenv nopass :wheel as root cmd kldload
+permit keepenv nopass :wheel as root cmd pfctl
+permit keepenv nopass :wheel as root cmd pgrep
+permit keepenv nopass :wheel as root cmd rm
+permit keepenv nopass :wheel as root cmd service
+permit keepenv nopass :wheel as root cmd zfs
+permit keepenv :wheel
 ```
 
 # Run bhyvemgr for the first time
