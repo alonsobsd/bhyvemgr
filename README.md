@@ -53,7 +53,7 @@ For sudo, if the user is part of the wheel group
 ```sh
 %wheel ALL=(ALL:ALL) ALL
 %wheel ALL=(ALL:ALL) NOPASSWD: /usr/sbin/bhyve, /usr/sbin/bhyvectl, /bin/chmod, /usr/sbin/chown, /sbin/ifconfig, \
-                        /usr/sbin/install, /bin/kill, /sbin/kldload, /sbin/pfctl, /usr/bin/pgrep, /bin/rm, \
+                        /usr/bin/install, /bin/kill, /sbin/kldload, /sbin/pfctl, /usr/bin/pgrep, /bin/rm, \
                         /usr/sbin/service, /sbin/zfs
 ```
 For doas, if the user is part of the wheel group
@@ -64,7 +64,7 @@ permit keepenv nopass :wheel as root cmd /usr/sbin/bhyvectl
 permit keepenv nopass :wheel as root cmd /bin/chmod
 permit keepenv nopass :wheel as root cmd /usr/sbin/chown
 permit keepenv nopass :wheel as root cmd /sbin/ifconfig
-permit keepenv nopass :wheel as root cmd /usr/sbin/install
+permit keepenv nopass :wheel as root cmd /usr/bin/install
 permit keepenv nopass :wheel as root cmd /bin/kill
 permit keepenv nopass :wheel as root cmd /sbin/kldload
 permit keepenv nopass :wheel as root cmd /sbin/pfctl
