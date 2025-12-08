@@ -22,7 +22,7 @@ jobs:
       id: test
       uses: vmactions/freebsd-vm@v1.2.9
       with:
-        release: "15.0"
+        release: "14.3"
         usesh: true
         prepare: |
           mkdir -p /usr/local/etc/pkg/repos
