@@ -218,12 +218,6 @@ begin
   FormBhyveManager.BorderStyle:=bsSizeable;
   {$endif}
 
-  DebugLogger.UseStdOut:= False;
-  DebugLogger.CloseLogFileBetweenWrites:= true;
-  DebugLogger.LogName:= GetUserDir + '.config/bhyvemgr/bhyvemgr.log';
-
-  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_bhyve_started);
-
   FormSettings:= TFormSettings.Create(FormBhyveManager);
   FormAbout:= TFormAbout.Create(FormBhyveManager);
   FormChangeValue:= TFormChangeValue.Create(FormBhyveManager);
@@ -3419,6 +3413,7 @@ begin
 
       NewBhyveConfig:=TStringList.Create;
       SeedImageConfig:=TStringList.Create;
+      NewVMConfig:=Nil;
 
       IpAddress:=EmptyStr;
       Ip6Address:=EmptyStr;
@@ -3827,7 +3822,7 @@ begin
       end;
     finally
       if Assigned(NewVMConfig) then
-        NewVMConfig. Free;
+        NewVMConfig.Free;
       NewBhyveConfig.Free;
       SeedImageConfig.Free;
     end;

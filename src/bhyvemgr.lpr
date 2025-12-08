@@ -43,14 +43,16 @@ uses
   DefaultTranslator,
   LCLTranslator,
   Translations,
-  Forms, UniqueInstanceRaw, lazcontrols, form_main, unit_configuration, unit_device
+  Forms, UniqueInstanceRaw, lazcontrols, SysUtils, LazLogger, Dialogs,
   { you can add units after this }
-  ,SysUtils, form_vm_create, form_change_value, unit_global, unit_component,
-  unit_util, unit_thread, form_audio_device, form_display_device,
-  form_hostbridge_device, form_lpc_device, form_network_device,
-  form_storage_device, form_about, form_settings, Dialogs,
+  unit_configuration, unit_device, unit_global,
+  unit_component, unit_util, unit_thread, unit_language,
+  form_main, form_vm_create, form_change_value, form_audio_device,
+  form_display_device, form_hostbridge_device, form_lpc_device,
+  form_network_device, form_storage_device, form_about, form_settings,
   form_share_folder_device, form_console_device, form_passthru_device,
-  form_input_device, form_rdp_connection, form_vm_info, unit_language, form_packet_filter_rules;
+  form_input_device, form_rdp_connection, form_vm_info,
+  form_packet_filter_rules;
 
 {$R *.res}
 var
@@ -59,6 +61,12 @@ var
 begin
   if not InstanceRunning('bhyvemgr') then
   begin
+    DebugLogger.UseStdOut:= False;
+    DebugLogger.CloseLogFileBetweenWrites:= true;
+    DebugLogger.LogName:= GetUserDir + '.config/bhyvemgr/bhyvemgr.log';
+
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_bhyve_started);
+
     Configuration:= ConfigurationClass.Create(GetUserDir + '.config/bhyvemgr/config.conf');
     Configuration.GeneralConfig();
 

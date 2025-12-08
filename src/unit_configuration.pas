@@ -256,7 +256,7 @@ begin
     ConfigFile.WriteString('remote-tools','xfreerdp_cmd', '/usr/local/bin/xfreerdp3');
 
   if ConfigFile.ReadString('remote-tools','xfreerdp_args', EmptyStr) = EmptyStr then
-    ConfigFile.WriteString('remote-tools','xfreerdp_args', '/cert:tofu /sound:sys:oss /network:lan /bpp:32 /gfx:rfx:on /log-level:off');
+    ConfigFile.WriteString('remote-tools','xfreerdp_args', '/cert:tofu /sound:sys:oss /network:lan /bpp:32 /gfx:rfx:on /log-level:ERROR');
 
   if ConfigFile.ReadString('user-tools','doas_cmd', EmptyStr) = EmptyStr then
     ConfigFile.WriteString('user-tools','doas_cmd', '/usr/local/bin/doas');

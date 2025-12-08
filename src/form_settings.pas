@@ -567,7 +567,7 @@ begin
       ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
 
       if not DirectoryExists(DnsmasqDirectory) then
-        CreateDirectory(DnsmasqDirectory, 'root');
+        CreateDirectory(DnsmasqDirectory, 'root', '770');
 
       SetUseDnsmasq('yes');
       SetBridgeInterface(ComboBoxBridgeInterface.Text);

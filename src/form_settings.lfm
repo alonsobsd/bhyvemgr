@@ -9,7 +9,7 @@ object FormSettings: TFormSettings
   ClientWidth = 799
   Position = poDesktopCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.4.0.0'
   OnClose = FormClose
   OnShow = FormShow
   object PageControlSettings: TPageControl
@@ -28,7 +28,7 @@ object FormSettings: TFormSettings
         Left = 16
         Height = 22
         Top = 48
-        Width = 174
+        Width = 178
         Caption = 'Use sudo instead of doas'
         TabOrder = 1
       end
@@ -45,7 +45,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 16
-          Width = 34
+          Width = 35
           Caption = 'Zpool'
         end
         object ComboBoxZpool: TComboBox
@@ -68,7 +68,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 48
-          Width = 106
+          Width = 109
           Caption = 'Zfs create options'
         end
         object EditZfsCreateOptions: TEdit
@@ -84,7 +84,7 @@ object FormSettings: TFormSettings
         Left = 264
         Height = 22
         Top = 24
-        Width = 245
+        Width = 249
         Caption = 'Use dnsmasq for DHCP/DNS support'
         TabOrder = 2
       end
@@ -92,7 +92,7 @@ object FormSettings: TFormSettings
         Left = 264
         Height = 22
         Top = 48
-        Width = 210
+        Width = 216
         Caption = 'Use ZFS support if it is available'
         TabOrder = 3
         OnChange = CheckBoxUseZfsChange
@@ -101,7 +101,7 @@ object FormSettings: TFormSettings
         Left = 16
         Height = 18
         Top = 320
-        Width = 77
+        Width = 78
         Caption = 'VM directory'
       end
       object EditVmPathSetting: TEdit
@@ -126,7 +126,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 16
-          Width = 81
+          Width = 83
           Caption = 'Xfreerdp args'
         end
         object EditRdpArgs: TEdit
@@ -142,7 +142,7 @@ object FormSettings: TFormSettings
         Left = 16
         Height = 22
         Top = 24
-        Width = 222
+        Width = 227
         Caption = 'Enable systray icon (need restart)'
         TabOrder = 0
       end
@@ -150,7 +150,7 @@ object FormSettings: TFormSettings
         Left = 536
         Height = 22
         Top = 24
-        Width = 127
+        Width = 129
         Caption = 'Use IPv6 support'
         TabOrder = 4
         OnChange = CheckBoxUseIpv6Change
@@ -159,7 +159,7 @@ object FormSettings: TFormSettings
         Left = 16
         Height = 18
         Top = 352
-        Width = 106
+        Width = 108
         Caption = 'Cloud/VM images'
       end
       object DirectoryEditImagesPath: TDirectoryEdit
@@ -180,7 +180,7 @@ object FormSettings: TFormSettings
         Left = 536
         Height = 22
         Top = 48
-        Width = 145
+        Width = 146
         Caption = 'Use PF/NAT support'
         TabOrder = 5
         OnChange = CheckBoxUsePFChange
@@ -203,7 +203,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 16
-          Width = 94
+          Width = 98
           Caption = 'Bridge interface'
         end
         object EditSubnet: TEdit
@@ -219,14 +219,14 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 48
-          Width = 43
+          Width = 44
           Caption = 'Subnet'
         end
         object LabelNetmask: TLabel
           Left = 256
           Height = 18
           Top = 48
-          Width = 86
+          Width = 88
           Caption = 'LabelNetmask'
           Color = clTeal
           Font.Color = clTeal
@@ -245,14 +245,14 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 80
-          Width = 64
+          Width = 65
           Caption = 'IPv6 prefix'
         end
         object Label12: TLabel
           Left = 288
           Height = 18
           Top = 80
-          Width = 20
+          Width = 21
           Caption = '/64'
           Color = clTeal
           Font.Color = clTeal
@@ -272,7 +272,7 @@ object FormSettings: TFormSettings
           Left = 376
           Height = 18
           Top = 16
-          Width = 70
+          Width = 72
           Caption = 'Bridge MAC'
         end
         object EditBridgeIpv6: TEdit
@@ -289,7 +289,7 @@ object FormSettings: TFormSettings
           Left = 376
           Height = 18
           Top = 48
-          Width = 68
+          Width = 71
           Caption = 'Bridge IPv6'
         end
         object BitBtnCalculateIpv6: TBitBtn
@@ -1492,21 +1492,21 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 16
-          Width = 104
+          Width = 108
           Caption = 'External interface'
         end
         object Label30: TLabel
           Left = 16
           Height = 18
           Top = 48
-          Width = 79
+          Width = 81
           Caption = 'External IPv4'
         end
         object Label35: TLabel
           Left = 16
           Height = 18
           Top = 80
-          Width = 78
+          Width = 80
           Caption = 'External IPv6'
         end
         object ComboBoxInterface: TComboBox
@@ -1544,7 +1544,7 @@ object FormSettings: TFormSettings
           Left = 432
           Height = 18
           Top = 80
-          Width = 52
+          Width = 53
           Caption = 'Optional'
           Color = clTeal
           Font.Color = clTeal
@@ -1629,7 +1629,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 80
-          Width = 63
+          Width = 64
           Caption = 'bhyveload'
         end
       end
@@ -1646,7 +1646,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 18
-          Width = 64
+          Width = 66
           Caption = 'vnc viewer'
         end
         object FileNameEditVncviewer: TFileNameEdit
@@ -1668,7 +1668,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 50
-          Width = 86
+          Width = 89
           Caption = 'xfreerdp client'
         end
         object FileNameEditXfreerdp: TFileNameEdit
@@ -1700,7 +1700,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 17
-          Width = 41
+          Width = 42
           Caption = 'swtpm'
         end
         object FileNameEditSwtpm: TFileNameEdit
@@ -1722,7 +1722,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 49
-          Width = 72
+          Width = 73
           Caption = 'swtpm_ioctl'
         end
         object FileNameEditSwtpmIoctl: TFileNameEdit
@@ -1754,7 +1754,7 @@ object FormSettings: TFormSettings
           Left = 24
           Height = 18
           Top = 16
-          Width = 62
+          Width = 64
           Caption = 'qemu-img'
         end
         object FileNameEditQemuImg: TFileNameEdit
@@ -1786,7 +1786,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 31
-          Width = 30
+          Width = 31
           Caption = 'sudo'
         end
         object FileNameEditSudo: TFileNameEdit
@@ -1808,7 +1808,7 @@ object FormSettings: TFormSettings
           Left = 16
           Height = 18
           Top = 63
-          Width = 29
+          Width = 30
           Caption = 'doas'
         end
         object FileNameEditDoas: TFileNameEdit

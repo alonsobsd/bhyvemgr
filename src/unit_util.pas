@@ -407,7 +407,7 @@ begin
 
   rules_path:=VmPath+'/'+VmName+'/pf/'+RulesType+'.rules';
 
-  parameters:=[pfctl_cmd, '-a', anchor, '-f', rules_path];
+  parameters:=['-n', pfctl_cmd, '-a', anchor, '-f', rules_path];
 
   if FileExists(pfctl_cmd) and FileExists(rules_path) then
   begin
@@ -466,7 +466,7 @@ begin
       end;
   end;
 
-  parameters:=[pfctl_cmd, '-a', anchor, '-F', flush_type];
+  parameters:=['-n', pfctl_cmd, '-a', anchor, '-F', flush_type];
 
   if FileExists(pfctl_cmd) then
   begin
@@ -945,7 +945,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[ifconfig_cmd, BridgeName, 'addm', DeviceName];
+  parameters:=['-n', ifconfig_cmd, BridgeName, 'addm', DeviceName];
 
   if FileExists(ifconfig_cmd) and FileExists(root_cmd) then
   begin
@@ -1336,7 +1336,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[chown_cmd, GetCurrentUserName()+':', Path];
+  parameters:=['-n', chown_cmd, GetCurrentUserName()+':', Path];
 
   if FileExists(chown_cmd) and FileExists(root_cmd) then
   begin
@@ -1367,7 +1367,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[chmod_cmd, '750', Path];
+  parameters:=['-n', chmod_cmd, '750', Path];
 
   if FileExists(chmod_cmd) and FileExists(root_cmd) then
   begin
@@ -1409,7 +1409,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[install_cmd, '-d', '-m', DirMode, '-o', UserName, DirectoryName];
+  parameters:=['-n', install_cmd, '-d', '-m', DirMode, '-o', UserName, DirectoryName];
 
   if FileExists(install_cmd) and FileExists(root_cmd) then
   begin
@@ -1460,7 +1460,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[ifconfig_cmd, DeviceName, 'create', 'descr', '"'+VmName+' VM"'];
+  parameters:=['-n', ifconfig_cmd, DeviceName, 'create', 'descr', '"'+VmName+' VM"'];
 
   if FileExists(ifconfig_cmd) and FileExists(root_cmd) then
   begin
@@ -1544,7 +1544,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[ifconfig_cmd, IfName, 'destroy'];
+  parameters:=['-n', ifconfig_cmd, IfName, 'destroy'];
 
   if FileExists(ifconfig_cmd) then
   begin
@@ -1575,7 +1575,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[bhyvectl_cmd, '--vm='+VmName, '--destroy'];
+  parameters:=['-n', bhyvectl_cmd, '--vm='+VmName, '--destroy'];
 
   if FileExists(bhyvectl_cmd) and FileExists(root_cmd) then
   begin
@@ -2210,7 +2210,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[pgrep_cmd, '-fo', Pattern];
+  parameters:=['-n', pgrep_cmd, '-fo', Pattern];
 
   if (FileExists(pgrep_cmd) and FileExists(root_cmd)) then
   begin
@@ -2378,7 +2378,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[kill_cmd, Signal, Pid.ToString];
+  parameters:=['-n', kill_cmd, Signal, Pid.ToString];
 
   if FileExists(kill_cmd) then
   begin
@@ -2407,11 +2407,11 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[kldload_cmd, Module];
+  parameters:=['-n', kldload_cmd, Module];
 
   if (FileExists(kldload_cmd)) and (FileExists(root_cmd)) and not (CheckKernelModule(Module)) then
   begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
 
     if status then
       Result:=status
@@ -2482,7 +2482,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[rm_cmd];
+  parameters:=['-n', rm_cmd];
 
   if Recursive then
     parameters:=parameters + ['-R'];
@@ -2541,7 +2541,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[ServiceCmd, Service, 'restart'];
+  parameters:=['-n', ServiceCmd, Service, 'restart'];
 
   if (FileExists(service_cmd)) and (FileExists(root_cmd)) then
   begin
@@ -2627,7 +2627,7 @@ begin
 
   options:=ZfsCreateOptions.Split(' ');
 
-  parameters:=[zfs_cmd, 'create']+ options;
+  parameters:=['-n', zfs_cmd, 'create']+ options;
   parameters:=parameters+[zfspath];
 
   if FileExists(root_cmd) and FileExists(zfs_cmd) and not DirectoryExists('/'+ZfsPath) then
@@ -2692,7 +2692,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[zfs_cmd, 'set', ZfsProperty+'='+ZfsValue, ZfsPath];
+  parameters:=['-n', zfs_cmd, 'set', ZfsProperty+'='+ZfsValue, ZfsPath];
 
   if FileExists(zfs_cmd) then
   begin
@@ -2723,7 +2723,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=[zfs_cmd, 'destroy'];
+  parameters:=['-n', zfs_cmd, 'destroy'];
 
   if Recursive then
     parameters:=parameters + ['-r'];
@@ -2769,7 +2769,7 @@ begin
   else
     sparse:='-V';
 
-  parameters:=[zfs_cmd,'create', sparse, ZvolSize, '-o','volmode=dev'];
+  parameters:=['-n', zfs_cmd,'create', sparse, ZvolSize, '-o','volmode=dev'];
   parameters:=parameters+[ZfsPath];
 
   if FileExists(root_cmd) and FileExists(zfs_cmd) then

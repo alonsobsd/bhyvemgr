@@ -104,14 +104,14 @@ object FormBhyveManager: TFormBhyveManager
     Left = 16
     Height = 18
     Top = 502
-    Width = 74
+    Width = 75
     Caption = 'System type'
   end
   object Label2: TLabel
     Left = 16
     Height = 18
     Top = 534
-    Width = 45
+    Width = 46
     Caption = 'Version'
   end
   object EditSystemType: TEdit
@@ -134,7 +134,7 @@ object FormBhyveManager: TFormBhyveManager
     Left = 16
     Height = 18
     Top = 568
-    Width = 68
+    Width = 70
     Caption = 'Description'
   end
   object EditDescription: TEdit

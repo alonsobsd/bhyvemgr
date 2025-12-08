@@ -105,7 +105,7 @@ type
 implementation
 
 uses
-  unit_global, unit_language, unit_component, process;
+  unit_global, unit_language, unit_component, process, LazLogger;
 
 { VmThread }
 
@@ -231,13 +231,15 @@ end;
 procedure AppThread.Execute;
 var
   AppProcess: TProcess;
+  AppProcessOutput: TStringList;
   I: Integer;
 begin
   AppProcess := TProcess.Create(nil);
+  AppProcessOutput:= TStringList.Create;
 
   try
     AppProcess.InheritHandles := False;
-    AppProcess.Options := [poWaitOnExit];
+    AppProcess.Options := [poWaitOnExit, poUsePipes];
     AppProcess.ShowWindow := swoShow;
     for I := 1 to GetEnvironmentVariableCount do
       AppProcess.Environment.Add(GetEnvironmentString(I));
@@ -251,13 +253,17 @@ begin
     try
       AppProcess.Execute;
       ExitStatus:=AppProcess.ExitStatus;
+      AppProcessOutput.LoadFromStream(AppProcess.Stderr);
 
-      if (ExitStatus = -1) then
+      if (ExitStatus = 0) then
       begin
         AppResult:=True;
+        AppProcess.Terminate(1);
       end
       else
       begin
+        AppResult:=False;
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : AppThread : '+AppName+' : '+sLineBreak+AppProcessOutput.Text);
         AppProcess.Terminate(1);
       end;
 
@@ -270,6 +276,7 @@ begin
       end;
     end;
   finally
+    AppProcessOutput.Free;
     AppProcess.Free;
   end;
 end;
