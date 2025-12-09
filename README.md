@@ -68,7 +68,7 @@ permit keepenv nopass :wheel as root cmd /usr/bin/install
 permit keepenv nopass :wheel as root cmd /bin/kill
 permit keepenv nopass :wheel as root cmd /sbin/kldload
 permit keepenv nopass :wheel as root cmd /sbin/pfctl
-permit keepenv nopass :wheel as root cmd /usr/sbin/pgrep
+permit keepenv nopass :wheel as root cmd /usr/bin/pgrep
 permit keepenv nopass :wheel as root cmd /bin/rm
 permit keepenv nopass :wheel as root cmd /usr/sbin/service
 permit keepenv nopass :wheel as root cmd /sbin/zfs
