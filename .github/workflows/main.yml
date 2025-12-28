@@ -28,6 +28,7 @@ jobs:
           sed -i "" -e 's|quarterly|latest|g' /etc/pkg/FreeBSD.conf        
           export IGNORE_OSVERSION=yes
           pkg update -f
+          pkg install -y pcre2
           pkg install -y lazarus-qt6
 
         run: |
