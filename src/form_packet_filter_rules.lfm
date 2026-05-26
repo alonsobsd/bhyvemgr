@@ -9,7 +9,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
   ClientWidth = 777
   Position = poDesktopCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object PageControlPacketFilter: TPageControl
     Left = 8
     Height = 392
@@ -35,7 +35,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 48
-          Width = 15
+          Width = 16
           Caption = 'AF'
         end
         object Label7: TLabel
@@ -72,7 +72,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 18
-          Width = 53
+          Width = 56
           Caption = 'Interface'
         end
         object ComboBoxInInterface: TComboBox
@@ -226,7 +226,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 48
-          Width = 15
+          Width = 16
           Caption = 'AF'
         end
         object Label3: TLabel
@@ -263,7 +263,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 18
-          Width = 53
+          Width = 56
           Caption = 'Interface'
         end
         object ComboBoxOutInterface: TComboBox
@@ -417,7 +417,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 32
-          Width = 15
+          Width = 16
           Caption = 'AF'
         end
         object ComboBoxRdrAf: TComboBox

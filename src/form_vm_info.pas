@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,7 @@ type
     CheckBoxIpv6: TCheckBox;
     CheckBoxNat: TCheckBox;
     CheckBoxRDP: TCheckBox;
+    ComboBoxNatInterface: TComboBox;
     ComboBoxVmType: TComboBox;
     ComboBoxVmVersion: TComboBox;
     EditVmIpv4Address: TEdit;
@@ -56,6 +57,7 @@ type
     EditVmName: TEdit;
     Label1: TLabel;
     Label2: TLabel;
+    Label26: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
@@ -97,7 +99,7 @@ procedure TFormVmInfo.CheckBoxIpv6Change(Sender: TObject);
 begin
   if CheckBoxIpv6.Checked then
   begin
-    if not (MacAddress = EmptyStr) then
+    if not (MacAddress.IsEmpty) then
       EditVmIpv6Address.Text:=GetNewIp6Address(Ipv6Prefix, MacAddress);
   end;
 end;
@@ -110,7 +112,12 @@ begin
   StatusBarVmInfo.SimpleText:=EmptyStr;
 
   ComboBoxVmType.Clear;
+  ComboBoxNatInterface.Clear;
+
+  FillComboExternalInterfaceList(ComboBoxNatInterface, 'ether');
   FillComboSystemType(ComboBoxVmType);
+
+  ComboBoxNatInterface.ItemIndex:=ComboBoxNatInterface.Items.IndexOf(ExternalInterface);
 
   ComboBoxVmType.SetFocus;
 end;

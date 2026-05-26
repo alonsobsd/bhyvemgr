@@ -1,3 +1,33 @@
+{ BSD 3-Clause License
+
+Copyright (c) 2025-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+}
+
 unit form_packet_filter_rules;
 
 {$mode ObjFPC}{$H+}
@@ -608,7 +638,6 @@ var
   flagRule : String;
   flagReload : Boolean;
   IpAddress : String;
-  ExternalIpAddress : String;
 begin
   InboundRules:=EmptyStr;
   OutboundRules:=EmptyStr;
@@ -626,7 +655,7 @@ begin
     if StringGridInRules.Cells[1,i] = 'inet6' then
       IpAddress:=VmIp6Adress;
 
-    InboundRules:=InboundRules+'pass out on '+StringGridInRules.Cells[0,i]+' '+StringGridInRules.Cells[1,i]+' proto '+StringGridInRules.Cells[2,i]+' from '+StringGridInRules.Cells[3,i]+' to '+IpAddress+' port '+StringGridInRules.Cells[4,i]+flagRule+sLineBreak;
+    InboundRules:=InboundRules+Format('pass out on %s %s proto %s from %s to %s port %s', [StringGridInRules.Cells[0,i], StringGridInRules.Cells[1,i], StringGridInRules.Cells[2,i], StringGridInRules.Cells[3,i], IpAddress, StringGridInRules.Cells[4,i]])+flagRule+sLineBreak;
   end;
 
   for i:=1 to StringGridOutRules.RowCount-1 do
@@ -640,15 +669,13 @@ begin
     if StringGridOutRules.Cells[1,i] = 'inet6' then
       IpAddress:=VmIp6Adress;
 
-    OutboundRules:=OutboundRules+'pass in on '+StringGridOutRules.Cells[0,i]+' '+StringGridOutRules.Cells[1,i]+' proto '+StringGridOutRules.Cells[2,i]+' from '+IpAddress+' to '+StringGridOutRules.Cells[3,i]+' port '+StringGridOutRules.Cells[4,i]+flagRule+sLineBreak;
+    OutboundRules:=OutboundRules+Format('pass in on %s %s proto %s from %s to %s port %s', [StringGridOutRules.Cells[0,i], StringGridOutRules.Cells[1,i], StringGridOutRules.Cells[2,i], IpAddress, StringGridOutRules.Cells[3,i], StringGridOutRules.Cells[4,i]])+flagRule+sLineBreak;
   end;
 
   for i:=1 to StringGridRdrRules.RowCount-1 do
   begin
     IpAddress:=VmIp4Adress;
-    ExternalIpAddress:=ExternalIpv4;
-
-    RedirectRules:=RedirectRules+'rdr pass on '+ExternalInterface+' '+StringGridRdrRules.Cells[0,i]+' proto '+StringGridRdrRules.Cells[1,i]+' from '+StringGridRdrRules.Cells[2,i]+' to '+ExternalIpAddress+' port '+StringGridRdrRules.Cells[3,i]+' -> '+IpAddress+' port '+StringGridRdrRules.Cells[4,i]+sLineBreak;
+    RedirectRules:=RedirectRules+Format('rdr pass on %s %s proto %s from %s to (%s) port %s -> %s port %s', [ExternalInterface, StringGridRdrRules.Cells[0,i], StringGridRdrRules.Cells[1,i], StringGridRdrRules.Cells[2,i], ExternalInterface, StringGridRdrRules.Cells[3,i], IpAddress, StringGridRdrRules.Cells[4,i]])+sLineBreak;
   end;
 
   if PfCreateRules(VmName, InboundRules, 'pass-in') and PfCreateRules(VmName, OutboundRules, 'pass-out') and PfCreateRules(VmName, RedirectRules, 'rdr') then

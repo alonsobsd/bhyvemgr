@@ -645,7 +645,7 @@ msgid "/usr/local/bin/swtpm_ioctl"
 msgstr ""
 
 #: tformsettings.filenameeditvncviewer.text
-msgid "/usr/local/bin/remote-viewer"
+msgid "/usr/local/bin/vncviewer"
 msgstr ""
 
 #: tformsettings.filenameeditxfreerdp.text
@@ -1287,6 +1287,10 @@ msgstr ""
 
 #: tformvminfo.label2.caption
 msgid "IPv6 Address"
+msgstr ""
+
+#: tformvminfo.label26.caption
+msgid "NAT Interface"
 msgstr ""
 
 #: tformvminfo.label3.caption

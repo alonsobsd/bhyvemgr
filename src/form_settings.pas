@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -207,7 +207,7 @@ begin
 
   if CheckBoxUseIpv6.Checked then
   begin
-    if (Trim(EditIpv6Prefix.Text) = EmptyStr) or not (CheckIpv6Address(EditIpv6Prefix.Text)) then
+    if (Trim(EditIpv6Prefix.Text).IsEmpty) or not (CheckIpv6Address(EditIpv6Prefix.Text)) then
     begin
       StatusBarBhyveSettings.SimpleText:=check_ipv6;
 
@@ -287,7 +287,7 @@ begin
     Result:=False;
     Exit;
   end
-  else if (Trim(EditSubnet.Text) = EmptyStr) or not (CheckCidrRange(EditSubnet.Text)) then
+  else if (Trim(EditSubnet.Text).IsEmpty) or not (CheckCidrRange(EditSubnet.Text)) then
   begin
     StatusBarBhyveSettings.SimpleText:=check_subnet;
 
@@ -334,7 +334,7 @@ begin
     Exit;
   end
   {$endif}
-  else if not FileExists(FileNameEditVncviewer.FileName) or not (ExtractFileName(FileNameEditVncviewer.FileName) = 'remote-viewer') then
+  else if not FileExists(FileNameEditVncviewer.FileName) or not (ExtractFileName(FileNameEditVncviewer.FileName) = 'vncviewer') then
   begin
     StatusBarBhyveSettings.SimpleText:=check_vnc;
 
@@ -709,7 +709,7 @@ end;
 
 procedure TFormSettings.BitBtnCalculateIpv6Click(Sender: TObject);
 begin
-  if not (EditIpv6Prefix.Text = EmptyStr) and not (EditBridgeMac.Text = EmptyStr) and
+  if not Trim(EditIpv6Prefix.Text).IsEmpty and not Trim(EditBridgeMac.Text).IsEmpty and
      (CheckMacAddress(EditBridgeMac.Text)) and (CheckIpv6Address(EditIpv6Prefix.Text)) then
   begin
     EditBridgeIpv6.Text:=GetNewIp6Address(EditIpv6Prefix.Text, EditBridgeMac.Text);
@@ -734,7 +734,7 @@ begin
     EditBridgeIpv6.Enabled:=True;
     EditBridgeIpv6.Clear;
 
-    if EditIpv6Prefix.Text = EmptyStr then
+    if Trim(EditIpv6Prefix.Text).IsEmpty then
       EditIpv6Prefix.Text:=GenerateIpv6Preffix();
   end
   else

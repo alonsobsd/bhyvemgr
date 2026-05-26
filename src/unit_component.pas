@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -486,6 +486,12 @@ begin
   { Index 24 }
   Image.Picture.LoadFromFile(DatadirPath+'images/systems/zorinos.png');
   SystemList.Add(Image.Picture.Bitmap, nil);
+  { Index 25 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/systems/artix.png');
+  SystemList.Add(Image.Picture.Bitmap, nil);
+  { Index 26 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/systems/devuan.png');
+  SystemList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;
 end;
@@ -727,14 +733,13 @@ begin
   'BSD':
     begin
       combo.AddItem('DragonFlyBSD 6.x', TObject(3));
-      combo.AddItem('FreeBSD 13.x', TObject(6));
       combo.AddItem('FreeBSD 14.x', TObject(6));
       combo.AddItem('FreeBSD 15.x', TObject(6));
       combo.AddItem('FreeBSD 16.x', TObject(6));
-      combo.AddItem('GhostBSD 25.x', TObject(13));
+      combo.AddItem('GhostBSD 26.x', TObject(13));
       combo.AddItem('NomadBSD 14.x', TObject(14));
-      combo.AddItem('NetBSD 9.x', TObject(7));
       combo.AddItem('NetBSD 10.x', TObject(7));
+      combo.AddItem('NetBSD 11.x', TObject(7));
       combo.AddItem('OpenBSD 7.x', TObject(8));
       combo.AddItem('Other', TObject(9));
     end;
@@ -744,30 +749,34 @@ begin
       combo.AddItem('Almalinux 9.x', TObject(15));
       combo.AddItem('Almalinux 10.x', TObject(15));
       combo.AddItem('Alpinelinux 3.x', TObject(16));
-      combo.AddItem('Arch Linux 2025.x', TObject(1));
-      combo.AddItem('CachyOS 25x', TObject(23));
+      combo.AddItem('Arch Linux 2026x', TObject(1));
+      combo.AddItem('Artix 2026x', TObject(25));
+      combo.AddItem('CachyOS 26x', TObject(23));
       combo.AddItem('Debian 13.x', TObject(2));
-      combo.AddItem('EndeavourOS 2025.x', TObject(17));
-      combo.AddItem('Fedora 42.x', TObject(4));
-      combo.AddItem('Kali Linux 2025.x', TObject(18));
+      combo.AddItem('Devuan 6.x', TObject(26));
+      combo.AddItem('EndeavourOS 2026.x', TObject(17));
+      combo.AddItem('Fedora 44.x', TObject(4));
+      combo.AddItem('Kali Linux 2026.x', TObject(18));
       combo.AddItem('Linux Mint 22.x', TObject(22));
-      combo.AddItem('Manjaro 25.x', TObject(19));
-      combo.AddItem('Parrot 6.x', TObject(20));
-      combo.AddItem('Pop! OS 22.x', TObject(21));
+      combo.AddItem('Manjaro 26.x', TObject(19));
+      combo.AddItem('Parrot 7.x', TObject(20));
+      combo.AddItem('Pop! OS 24.x', TObject(21));
       combo.AddItem('Rockylinux 8.x', TObject(10));
       combo.AddItem('Rockylinux 9.x', TObject(10));
       combo.AddItem('Rockylinux 10.x', TObject(10));
       combo.AddItem('Ubuntu 24.x', TObject(11));
-      combo.AddItem('Ubuntu 25.x', TObject(11));
-      combo.AddItem('Zorin OS 17.x', TObject(24));
+      combo.AddItem('Ubuntu 26.x', TObject(11));
+      combo.AddItem('Zorin OS 18.x', TObject(24));
       combo.AddItem('Other', TObject(5));
     end;
   'Windows':
     begin
       combo.AddItem('Windows 10.x', TObject(12));
       combo.AddItem('Windows 11.x', TObject(12));
+      combo.AddItem('Windows Server 2016', TObject(12));
       combo.AddItem('Windows Server 2019', TObject(12));
       combo.AddItem('Windows Server 2022', TObject(12));
+      combo.AddItem('Windows Server 2025', TObject(12));
       combo.AddItem('Other', TObject(9));
     end;
   'Other':

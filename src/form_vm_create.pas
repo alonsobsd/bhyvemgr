@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -544,7 +544,7 @@ begin
         Result:=False;
         Exit;
       end;
-      if not CheckUserName(EditUsername.Text) and (Trim(EditUsername.Text) = EmptyStr)  then
+      if not CheckUserName(EditUsername.Text) and (Trim(EditUsername.Text).IsEmpty)  then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
         StatusBarVmCreate.SimpleText:=check_username;
@@ -554,7 +554,7 @@ begin
         Result:=False;
         Exit;
       end;
-      if (Trim(EditSshPubKey.Text) = EmptyStr)  then
+      if Trim(EditSshPubKey.Text).IsEmpty then
       begin
         StatusBarVmCreate.Font.Color:=clRed;
         StatusBarVmCreate.SimpleText:=check_ssh_key;
@@ -605,7 +605,7 @@ begin
 
   if CheckBoxUseStaticIpv4.Checked then
   begin
-    if (Trim(EditIpv4Address.Text) = EmptyStr) or not CheckCidrRange(EditIpv4Address.Text+'/32') then
+    if (Trim(EditIpv4Address.Text).IsEmpty) or not CheckCidrRange(EditIpv4Address.Text+'/32') then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_static_ipv4;
@@ -615,7 +615,7 @@ begin
       Result:=False;
       Exit;
     end;
-    if (Trim(EditGateway.Text) = EmptyStr) or not CheckCidrRange(EditGateway.Text+'/32') then
+    if (Trim(EditGateway.Text).IsEmpty) or not CheckCidrRange(EditGateway.Text+'/32') then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_gateway;
@@ -625,7 +625,7 @@ begin
       Result:=False;
       Exit;
     end;
-    if Trim(EditDns.Text) = EmptyStr then
+    if Trim(EditDns.Text).IsEmpty then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_dns;
@@ -639,7 +639,7 @@ begin
 
   if CheckBoxUseStaticIpv6.Checked then
   begin
-    if (Trim(EditIpv6Address.Text) = EmptyStr) or not CheckIpv6Address(EditIpv6Address.Text) then
+    if (Trim(EditIpv6Address.Text).IsEmpty) or not CheckIpv6Address(EditIpv6Address.Text) then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_static_ipv6;
@@ -649,7 +649,7 @@ begin
       Result:=False;
       Exit;
     end;
-    if (Trim(EditGatewayIpv6.Text) = EmptyStr) or not CheckIpv6Address(EditGatewayIpv6.Text) then
+    if (Trim(EditGatewayIpv6.Text).IsEmpty) or not CheckIpv6Address(EditGatewayIpv6.Text) then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_gateway_ipv6;
@@ -659,7 +659,7 @@ begin
       Result:=False;
       Exit;
     end;
-    if (Trim(EditDnsIpv6.Text) = EmptyStr) or not CheckIpv6Address(EditDnsIpv6.Text) then
+    if (Trim(EditDnsIpv6.Text).IsEmpty) or not CheckIpv6Address(EditDnsIpv6.Text) then
     begin
       StatusBarVmCreate.Font.Color:=clRed;
       StatusBarVmCreate.SimpleText:=check_dns_ipv6;

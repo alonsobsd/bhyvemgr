@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -212,7 +212,7 @@ begin
 
   AppVmName:=VmName;
   AppVmPath:=VmPath;
-  AppParams:=[BhyveCmd, '-k', VmPath+'/'+VmName+'/bhyve_config.conf'];
+  AppParams:=[BhyveCmd, '-k', Format('%s/%s/bhyve_config.conf', [VmPath, VmName])];
 
   if FileExists(AppName) and FileExists(BhyveCmd) then
   begin

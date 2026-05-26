@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -97,8 +97,8 @@ begin
   Result:=True;
 
   if ComboBoxResolution.ItemIndex=-1 then  Result:=False
-  else if (Trim(EditUsername.Text) = EmptyStr) then  Result:=False
-  else if (Trim(EditPassword.Text) = EmptyStr) then  Result:=False;
+  else if (Trim(EditUsername.Text).IsEmpty) then  Result:=False
+  else if (Trim(EditPassword.Text).IsEmpty) then  Result:=False;
 end;
 
 procedure TFormRdpConnection.LoadDefaultValues();
@@ -108,7 +108,7 @@ begin
   ComboBoxResolution.Clear;
   FillComboResolution(ComboBoxResolution);
 
-  if FormUserName = EmptyStr then
+  if Trim(FormUserName).IsEmpty then
   begin
     ComboBoxResolution.ItemIndex:=ComboBoxResolution.Items.IndexOf('1024x768');
   end

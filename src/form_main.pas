@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -424,7 +424,7 @@ end;
 }
 procedure TFormBhyveManager.FillGlobalCategoryDetailList();
 begin
-  // Remove when bhyve will updated on FreeBSD 13.x and 14.x
+  // Remove this condition once bhyve is updated on FreeBSD 14.x
   { System }
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
@@ -500,7 +500,7 @@ begin
   GlobalSettingDefaultValueList.Values['chassis.asset_tag'] := 'None';
   GlobalSettingDefaultValueList.Values['chassis.sku'] := 'None';
 
-  // Remove when bhyve will updated on FreeBSD 13.x and 14.x
+  // Remove this condition once bhyve is updated on FreeBSD 14.x
   { System }
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
@@ -573,7 +573,7 @@ begin
   GlobalSettingTypeList.Values['x86.vmexit_on_pause'] := 'Boolean';
   {$endif}
 
-  // Remove when bhyve will updated on FreeBSD 13.x and 14.x
+  // Remove this condition once bhyve is updated on FreeBSD 14.x
   { System }
   if GetOsreldate.ToInt64 >= 1500023 then
   begin
@@ -915,6 +915,14 @@ begin
     MyVmThread.OnExitStatus := @VirtualMachineShowStatus;
     MyVmThread.Start;
 
+    Sleep(100);
+
+    if FileExists(VmPath+'/'+VmName+'/vnc.sock') then
+    begin
+      Chmod(VmPath+'/'+VmName+'/vnc.sock');
+      Chown(VmPath+'/'+VmName+'/vnc.sock', GetCurrentUserName());
+    end;
+
     if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
     begin
       PfloadRules(VmName, 'nat');
@@ -953,6 +961,7 @@ begin
 
     DestroyVirtualMachine(VmName);
     RemoveDirectory(VmName+'/vtcon', True);
+    RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
 
     if GetOsreldate.ToInt64 >= 1403000 then
     begin
@@ -1012,6 +1021,7 @@ begin
       end;
       DestroyVirtualMachine(VmName);
       RemoveDirectory(VmName+'/vtcon', True);
+      RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
 
       if GetOsreldate.ToInt64 >= 1403000 then
       begin
@@ -1038,7 +1048,7 @@ begin
 
     DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
 
-    if ErrorMessage <> EmptyStr then
+    if not ErrorMessage.IsEmpty then
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : '+ErrorMessage);
 
     MyVmThread.Terminate;
@@ -1355,7 +1365,7 @@ begin
   else if (FormChangeValue.SettingType = 'bootvars') then
   begin
     {$ifdef CPUAMD64}
-    if not (FormChangeValue.ComboBoxValue.Text = EmptyStr) then
+    if not Trim(FormChangeValue.ComboBoxValue.Text).IsEmpty then
     begin
       GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text;
       if not FileExists(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text) then
@@ -1924,12 +1934,21 @@ begin
 
             FormDisplayDevice.BitBtnSave.OnClick:=@SaveDisplayDevice;
             FormDisplayDevice.FormStyle:=fsSystemStayOnTop;
-            FormDisplayDevice.HostPort:=ExtractPortValue(DisplayDevice.tcp);
+
+            if ExtractPortValue(DisplayDevice.tcp).Contains('vnc.sock') then
+              FormDisplayDevice.HostPort:=GetNewVncPortNumber()
+            else
+              FormDisplayDevice.HostPort:=ExtractPortValue(DisplayDevice.tcp);
+
             FormDisplayDevice.FormAction:='Update';
             FormDisplayDevice.LoadDefaultValues();
-            FormDisplayDevice.ComboBoxHost.ItemIndex:=FormDisplayDevice.ComboBoxHost.Items.IndexOf(DisplayDevice.tcp);
 
-            if DisplayDevice.wait <> EmptyStr then
+            if ExtractPortValue(DisplayDevice.tcp).Contains('vnc.sock') then
+              FormDisplayDevice.ComboBoxHost.ItemIndex:=FormDisplayDevice.ComboBoxHost.Items.IndexOf('unix:vnc.sock')
+            else
+              FormDisplayDevice.ComboBoxHost.ItemIndex:=FormDisplayDevice.ComboBoxHost.Items.IndexOf(DisplayDevice.tcp);
+
+            if not Trim(DisplayDevice.wait).IsEmpty then
               FormDisplayDevice.CheckBoxWaitVnc.Checked:=StrToBool(DisplayDevice.wait)
             else
               FormDisplayDevice.CheckBoxWaitVnc.Checked:=False;
@@ -1937,9 +1956,9 @@ begin
             if DisplayDevice.tcp.Contains('0.0.0.0') or DisplayDevice.tcp.Contains('[::]')  then
               FormDisplayDevice.CheckBoxOnlyLocalhost.Checked:=False;
 
-            if DisplayDevice.vga <> EmptyStr then FormDisplayDevice.ComboBoxVga.ItemIndex:=FormDisplayDevice.ComboBoxVga.Items.IndexOf(DisplayDevice.vga);
+            if not (Trim(DisplayDevice.vga).IsEmpty) then FormDisplayDevice.ComboBoxVga.ItemIndex:=FormDisplayDevice.ComboBoxVga.Items.IndexOf(DisplayDevice.vga);
             if (DisplayDevice.w > 0) and (DisplayDevice.h > 0) then FormDisplayDevice.ComboBoxResolution.ItemIndex:=FormDisplayDevice.ComboBoxResolution.Items.IndexOf(DisplayDevice.w.ToString+'x'+DisplayDevice.h.ToString);
-            if trim(DisplayDevice.pass) <> EmptyStr then
+            if not Trim(DisplayDevice.pass).IsEmpty then
             begin
               FormDisplayDevice.CheckBoxUsePassword.Checked:=True;
               FormDisplayDevice.EditPassword.Text:=DisplayDevice.pass;
@@ -1990,7 +2009,7 @@ begin
             FormLpcDevice.CheckBoxCom1.Checked:=False;
 
 
-            { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+            { Remove this condition once bhyve is updated on FreeBSD 14.x }
             if GetOsreldate.ToInt64 < 1500023 then
             begin
               FormLpcDevice.ComboBoxBootrom.ItemIndex:=FormLpcDevice.ComboBoxBootrom.Items.IndexOf(ExtractFileName(LPCDevice.bootrom));
@@ -2004,7 +2023,7 @@ begin
               FormLpcDevice.ComboBoxBootvars.ItemIndex:=FormLpcDevice.ComboBoxBootvars.Items.IndexOf(ExtractFileName(GlobalSettingsTreeView.Items.TopLvlItems[0].Items[1].Text));
             end;
 
-            if LPCDevice.com1 <> EmptyStr then
+            if not LPCDevice.com1.IsEmpty then
             begin
               if (GetOsreldate.ToInt64 > 1500023) then
               begin
@@ -2047,19 +2066,19 @@ begin
               end;
             end;
 
-            if LPCDevice.com2 <> EmptyStr then
+            if not LPCDevice.com2.IsEmpty then
             begin
               FormLpcDevice.ComboBoxCom2.ItemIndex:=FormLpcDevice.ComboBoxCom2.Items.IndexOf(LPCDevice.com2);
               FormLpcDevice.CheckBoxCom2.Checked:=True;
             end;
 
-            if LPCDevice.com3 <> EmptyStr then
+            if not LPCDevice.com3.IsEmpty then
             begin
               FormLpcDevice.ComboBoxCom3.ItemIndex:=FormLpcDevice.ComboBoxCom3.Items.IndexOf(LPCDevice.com3);
               FormLpcDevice.CheckBoxCom3.Checked:=True;
             end;
 
-            if LPCDevice.com4 <> EmptyStr then
+            if not LPCDevice.com4.IsEmpty then
             begin
               FormLpcDevice.ComboBoxCom4.ItemIndex:=FormLpcDevice.ComboBoxCom4.Items.IndexOf(LPCDevice.com4);
               FormLpcDevice.CheckBoxCom4.Checked:=True;
@@ -2102,7 +2121,7 @@ begin
             FormPassthruDevice.EditDescripcion.Text:=GetPciDeviceDescripcion(PassthruDevice.pptdev);
             FormPassthruDevice.FormAction:='Update';
 
-            if (PassthruDevice.rom <> EmptyStr) then FormPassthruDevice.FileNameEditRom.Text:=PassthruDevice.rom;
+            if not (PassthruDevice.rom.IsEmpty) then FormPassthruDevice.FileNameEditRom.Text:=PassthruDevice.rom;
 
             FormPassthruDevice.Show;
           end;
@@ -2192,7 +2211,7 @@ begin
                     if (StorageNvmeDevice.ioslots <> 8) and (StorageNvmeDevice.ioslots <> 0) then FormStorageDevice.EditNvmeIoslots.Text:=StorageNvmeDevice.ioslots.ToString;
                     FormStorageDevice.EditNvmeSectsz.Text:=StorageNvmeDevice.sectsz.ToString;
                     FormStorageDevice.EditNvmeEui64.Text:=StorageNvmeDevice.eui64.ToString;
-                    if (StorageNvmeDevice.dsm <> 'auto') and (StorageNvmeDevice.dsm <> EmptyStr) then FormStorageDevice.ComboBoxNvmeDsm.ItemIndex:=FormStorageDevice.ComboBoxNvmeDsm.Items.IndexOf(StorageNvmeDevice.dsm);
+                    if (StorageNvmeDevice.dsm <> 'auto') and not (StorageNvmeDevice.dsm.IsEmpty) then FormStorageDevice.ComboBoxNvmeDsm.ItemIndex:=FormStorageDevice.ComboBoxNvmeDsm.Items.IndexOf(StorageNvmeDevice.dsm);
                     if StorageNvmeDevice.ram > 0 then
                     begin
                       FormStorageDevice.CheckBoxNvmUseRam.Checked:=True;
@@ -2385,7 +2404,7 @@ begin
   if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1)
      and (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).rdp = True) then
   begin
-    if (FormRdpConnection.FormAction = EmptyStr) then
+    if Trim(FormRdpConnection.FormAction).IsEmpty then
     begin
       FormRdpConnection.Caption:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+' VM';
       FormRdpConnection.BitBtnConnect.OnClick:=@RemoteDesktopProtocolVm;
@@ -2528,12 +2547,17 @@ begin
    PciSlot:='0.29.0';
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:='fbuf';
-   TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.ComboBoxHost.Text;
+
+   if Trim(FormDisplayDevice.ComboBoxHost.Text).Contains('unix') then
+     TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:='unix:'+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/vnc.sock'
+   else
+     TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.ComboBoxHost.Text;
+
    if FormDisplayDevice.CheckBoxWaitVnc.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.wait']:='true';
    TmpDevicesStringList.Values['pci.'+PciSlot+'.w']:=ExtractDelimited(1,FormDisplayDevice.ComboBoxResolution.Text,['x']);
    TmpDevicesStringList.Values['pci.'+PciSlot+'.h']:=ExtractDelimited(2,FormDisplayDevice.ComboBoxResolution.Text,['x']);
    TmpDevicesStringList.Values['pci.'+PciSlot+'.vga']:=FormDisplayDevice.ComboBoxVga.Text;
-   if (FormDisplayDevice.CheckBoxUsePassword.Checked and (trim(FormDisplayDevice.EditPassword.Text) <> EmptyStr)) then TmpDevicesStringList.Values['pci.'+PciSlot+'.password']:=FormDisplayDevice.EditPassword.Text;
+   if (FormDisplayDevice.CheckBoxUsePassword.Checked and not (Trim(FormDisplayDevice.EditPassword.Text).IsEmpty)) then TmpDevicesStringList.Values['pci.'+PciSlot+'.password']:=FormDisplayDevice.EditPassword.Text;
 
    DisplayDevice:=FillDetailDisplayDevice(TmpDevicesStringList.Text, PciSlot, 'fbuf');
 
@@ -2552,13 +2576,17 @@ begin
  begin
    PciSlot:=DisplayDevice.pci;
 
-   TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.ComboBoxHost.Text;
+   if Trim(FormDisplayDevice.ComboBoxHost.Text).Contains('unix') then
+     TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:='unix:'+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/vnc.sock'
+   else
+     TmpDevicesStringList.Values['pci.'+PciSlot+'.tcp']:=FormDisplayDevice.ComboBoxHost.Text;
+
    TmpDevicesStringList.Values['pci.'+PciSlot+'.wait']:=BoolToStr(FormDisplayDevice.CheckBoxWaitVnc.Checked, 'true', 'false');
    TmpDevicesStringList.Values['pci.'+PciSlot+'.w']:=ExtractDelimited(1,FormDisplayDevice.ComboBoxResolution.Text,['x']);
    TmpDevicesStringList.Values['pci.'+PciSlot+'.h']:=ExtractDelimited(2,FormDisplayDevice.ComboBoxResolution.Text,['x']);
    TmpDevicesStringList.Values['pci.'+PciSlot+'.vga']:=FormDisplayDevice.ComboBoxVga.Text;
 
-   if FormDisplayDevice.EditPassword.Text = EmptyStr then
+   if Trim(FormDisplayDevice.EditPassword.Text).IsEmpty then
    begin
      if TmpDevicesStringList.IndexOfName('pci.'+PciSlot+'.password') <> -1 then
        TmpDevicesStringList.Delete(TmpDevicesStringList.IndexOfName('pci.'+PciSlot+'.password'));
@@ -2568,8 +2596,12 @@ begin
      TmpDevicesStringList.Values['pci.'+PciSlot+'.password']:=FormDisplayDevice.EditPassword.Text;
    end;
 
-   DisplayDevice.tcp:=FormDisplayDevice.ComboBoxHost.Text;
-   DisplayDevice.port:=StrToInt(ExtractPortValue(FormDisplayDevice.ComboBoxHost.Text));
+   if Trim(FormDisplayDevice.ComboBoxHost.Text).Contains('unix') then
+     DisplayDevice.tcp:='unix:'+VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/vnc.sock'
+   else
+     DisplayDevice.tcp:=FormDisplayDevice.ComboBoxHost.Text;
+
+   DisplayDevice.port:=ExtractPortValue(FormDisplayDevice.ComboBoxHost.Text);
    DisplayDevice.wait:=BoolToStr(FormDisplayDevice.CheckBoxWaitVnc.Checked, 'true', 'false');
    DisplayDevice.w:=ExtractDelimited(1,FormDisplayDevice.ComboBoxResolution.Text,['x']).ToInteger;
    DisplayDevice.h:=ExtractDelimited(2,FormDisplayDevice.ComboBoxResolution.Text,['x']).ToInteger;
@@ -2693,12 +2725,12 @@ begin
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:='lpc';
 
-   { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+   { Remove this condition once bhyve is updated on FreeBSD 14.x }
    if GetOsreldate.ToInt64 < 1500023 then
    begin
      {$ifdef CPUAMD64}
      TmpDevicesStringList.Values['lpc.bootrom']:= BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
-     if FormLpcDevice.ComboBoxBootvars.Text <> EmptyStr then
+     if Trim(FormLpcDevice.ComboBoxBootvars.Text).IsEmpty then
      begin
        TmpDevicesStringList.Values['lpc.bootvars']:= VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text;
 
@@ -2741,7 +2773,7 @@ begin
    if GetOsreldate.ToInt64 < 1500023 then
    begin
      {$ifdef CPUAMD64}
-     if FormLpcDevice.ComboBoxBootvars.Text = EmptyStr then
+     if Trim(FormLpcDevice.ComboBoxBootvars.Text).IsEmpty then
      begin
        if TmpDevicesStringList.IndexOfName('lpc.bootvars') <> -1 then
          TmpDevicesStringList.Delete(TmpDevicesStringList.IndexOfName('lpc.bootvars'));
@@ -2899,7 +2931,7 @@ begin
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:='passthru';
    TmpDevicesStringList.Values['pci.'+PciSlot+'.pptdev']:=FormPassthruDevice.ComboBoxDevice.Text;
-   if FormPassthruDevice.FileNameEditRom.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.rom']:=FormPassthruDevice.FileNameEditRom.FileName;
+   if not Trim(FormPassthruDevice.FileNameEditRom.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.rom']:=FormPassthruDevice.FileNameEditRom.FileName;
 
    PassthruDevice:=FillDetailPassthruDevice(TmpDevicesStringList.Text, PciSlot, 'passthru');
 
@@ -2920,7 +2952,7 @@ begin
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.pptdev']:=FormPassthruDevice.ComboBoxDevice.Text;
 
-   if FormPassthruDevice.FileNameEditRom.Text = EmptyStr then
+   if Trim(FormPassthruDevice.FileNameEditRom.Text).IsEmpty then
    begin
      if TmpDevicesStringList.IndexOfName('pci.'+PciSlot+'.rom') <> -1 then
        TmpDevicesStringList.Delete(TmpDevicesStringList.IndexOfName('pci.'+PciSlot+'.rom'));
@@ -3030,7 +3062,7 @@ begin
             TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.path']:=FormStorageDevice.FileNameEditStoragePath.FileName;
             TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.type']:='cd';
 
-            if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
+            if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
             if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nocache']:='true';
             if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nodelete']:='true';
             if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.sync']:='true';
@@ -3061,14 +3093,14 @@ begin
             TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.path']:=StoragePath;
             TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.type']:='hd';
 
-            if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
+            if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
             if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nocache']:='true';
             if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nodelete']:='true';
             if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.sync']:='true';
             if FormStorageDevice.CheckBoxReadOnly.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ro']:='true';
-            if FormStorageDevice.EditAhciSectorSize.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.sectorsize']:=FormStorageDevice.EditAhciSectorSize.Text;
+            if not Trim(FormStorageDevice.EditAhciSectorSize.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.sectorsize']:=FormStorageDevice.EditAhciSectorSize.Text;
             if FormStorageDevice.EditAhciRev.Text <> '001' then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.rev']:=FormStorageDevice.EditAhciRev.Text;
-            if FormStorageDevice.EditAhciModel.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.model']:=FormStorageDevice.EditAhciModel.Text;
+            if not Trim(FormStorageDevice.EditAhciModel.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.model']:=FormStorageDevice.EditAhciModel.Text;
             if FormStorageDevice.ComboBoxAhciNmrr.Text <> '0' then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nmrr']:=FormStorageDevice.ComboBoxAhciNmrr.Text;
 
             StorageAhciDevice:=FillDetailStorageAhciDevice(TmpDevicesStringList.Text, PciSlot, 'ahci', 0);
@@ -3105,16 +3137,16 @@ begin
             TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormStorageDevice.ComboBoxStorageDevice.Text;
             TmpDevicesStringList.Values['pci.'+PciSlot+'.path']:=FormStorageDevice.FileNameEditStoragePath.FileName;
 
-            if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
+            if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
             if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nocache']:='true';
             if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nodelete']:='true';
             if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.sync']:='true';
             if FormStorageDevice.CheckBoxReadOnly.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.ro']:='true';
             if FormStorageDevice.EditNvmeMaxq.Text <> '16' then TmpDevicesStringList.Values['pci.'+PciSlot+'.maxq']:=FormStorageDevice.EditNvmeMaxq.Text;
-            if FormStorageDevice.EditNvmeEui64.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.eui64']:=FormStorageDevice.EditNvmeEui64.Text;
+            if not Trim(FormStorageDevice.EditNvmeEui64.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.eui64']:=FormStorageDevice.EditNvmeEui64.Text;
             if FormStorageDevice.EditNvmeIoslots.Text <> '8' then TmpDevicesStringList.Values['pci.'+PciSlot+'.ioslots']:=FormStorageDevice.EditNvmeIoslots.Text;
             if FormStorageDevice.EditNvmeQsz.Text <> '2058' then TmpDevicesStringList.Values['pci.'+PciSlot+'.qsz']:=FormStorageDevice.EditNvmeQsz.Text;
-            if FormStorageDevice.EditNvmeSectsz.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.sectsz']:=FormStorageDevice.EditNvmeSectsz.Text;
+            if not Trim(FormStorageDevice.EditNvmeSectsz.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.sectsz']:=FormStorageDevice.EditNvmeSectsz.Text;
             if FormStorageDevice.ComboBoxNvmeDsm.Text <> 'auto' then TmpDevicesStringList.Values['pci.'+PciSlot+'.dsm']:=FormStorageDevice.ComboBoxNvmeDsm.Text;
 
             StorageNvmeDevice:=FillDetailStorageNvmeDevice(TmpDevicesStringList.Text, PciSlot, FormStorageDevice.ComboBoxStorageDevice.Text);
@@ -3159,7 +3191,7 @@ begin
             TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormStorageDevice.ComboBoxStorageDevice.Text;
             TmpDevicesStringList.Values['pci.'+PciSlot+'.path']:=FormStorageDevice.FileNameEditStoragePath.FileName;
 
-            if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
+            if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
             if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nocache']:='true';
             if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nodelete']:='true';
             if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.sync']:='true';
@@ -3214,7 +3246,7 @@ begin
 
                 StorageAhciDevice.path:=FormStorageDevice.FileNameEditStoragePath.FileName;
 
-                if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
+                if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
                 if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nocache']:='true';
                 if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nodelete']:='true';
                 if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.sync']:='true';
@@ -3256,14 +3288,14 @@ begin
                   StorageAhciDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
                 end;
 
-                if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
+                if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ser']:=FormStorageDevice.EditSer.Text;
                 if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nocache']:='true';
                 if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nodelete']:='true';
                 if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.sync']:='true';
                 if FormStorageDevice.CheckBoxReadOnly.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.ro']:='true';
                 if FormStorageDevice.EditAhciSectorSize.Text <> '16' then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.sectorsize']:=FormStorageDevice.EditAhciSectorSize.Text;
                 if FormStorageDevice.EditAhciRev.Text <> '001' then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.rev']:=FormStorageDevice.EditAhciRev.Text;
-                if FormStorageDevice.EditAhciModel.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.model']:=FormStorageDevice.EditAhciModel.Text;
+                if not Trim (FormStorageDevice.EditAhciModel.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.model']:=FormStorageDevice.EditAhciModel.Text;
                 if FormStorageDevice.ComboBoxAhciNmrr.Text <> '0' then TmpDevicesStringList.Values['pci.'+PciSlot+'.port.0.nmrr']:=FormStorageDevice.ComboBoxAhciNmrr.Text;
 
                 if StorageAhciDevice.ser <> FormStorageDevice.EditSer.Text then StorageAhciDevice.ser:=FormStorageDevice.EditSer.Text;
@@ -3305,16 +3337,16 @@ begin
                   StorageNvmeDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
                 end;
 
-                if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
+                if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
                 if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nocache']:='true';
                 if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nodelete']:='true';
                 if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.sync']:='true';
                 if FormStorageDevice.CheckBoxReadOnly.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.ro']:='true';
                 if FormStorageDevice.EditNvmeMaxq.Text <> '16' then TmpDevicesStringList.Values['pci.'+PciSlot+'.maxq']:=FormStorageDevice.EditNvmeMaxq.Text;
-                if FormStorageDevice.EditNvmeEui64.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.eui64']:=FormStorageDevice.EditNvmeEui64.Text;
+                if not Trim(FormStorageDevice.EditNvmeEui64.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.eui64']:=FormStorageDevice.EditNvmeEui64.Text;
                 if FormStorageDevice.EditNvmeIoslots.Text <> '8' then TmpDevicesStringList.Values['pci.'+PciSlot+'.ioslots']:=FormStorageDevice.EditNvmeIoslots.Text;
                 if FormStorageDevice.EditNvmeQsz.Text <> '2058' then TmpDevicesStringList.Values['pci.'+PciSlot+'.qsz']:=FormStorageDevice.EditNvmeQsz.Text;
-                if FormStorageDevice.EditNvmeSectsz.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.sectsz']:=FormStorageDevice.EditNvmeSectsz.Text;
+                if not Trim(FormStorageDevice.EditNvmeSectsz.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.sectsz']:=FormStorageDevice.EditNvmeSectsz.Text;
                 if FormStorageDevice.ComboBoxNvmeDsm.Text <> 'auto' then TmpDevicesStringList.Values['pci.'+PciSlot+'.dsm']:=FormStorageDevice.ComboBoxNvmeDsm.Text;
 
                 if StorageNvmeDevice.ser <> FormStorageDevice.EditSer.Text then StorageNvmeDevice.ser:=FormStorageDevice.EditSer.Text;
@@ -3358,7 +3390,7 @@ begin
                   StorageVirtioBlkDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
                 end;
 
-                if FormStorageDevice.EditSer.Text <> EmptyStr then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
+                if not Trim(FormStorageDevice.EditSer.Text).IsEmpty then TmpDevicesStringList.Values['pci.'+PciSlot+'.ser']:=FormStorageDevice.EditSer.Text;
                 if FormStorageDevice.CheckBoxNoCache.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nocache']:='true';
                 if FormStorageDevice.CheckBoxNoDelete.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.nodelete']:='true';
                 if FormStorageDevice.CheckBoxSync.Checked then TmpDevicesStringList.Values['pci.'+PciSlot+'.sync']:='true';
@@ -3423,7 +3455,7 @@ begin
       begin
         if not DirectoryExists(VmPath) then
         begin
-          if not (CreateDirectory(VmPath, GetCurrentUserName())) or not (ZfsCreateDataset(VmPath.Remove(0,1))) then
+          if not (ZfsCreateDataset(VmPath.Remove(0,1))) then
           begin
             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_dataset_status, [FormVmCreate.EditVmName.Text, VmPath]));
             Exit;
@@ -3467,7 +3499,7 @@ begin
       NewBhyveConfig.Values['x86.strictmsr']:='false';
       {$endif CPUAMD64}
 
-      { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+      { Remove this condition once bhyve is updated on FreeBSD 14.x }
       if GetOsreldate.ToInt64 >= 1500023 then
       begin
         {$ifdef CPUAMD64}
@@ -3799,10 +3831,10 @@ begin
         RestartService('dnsmasq');
       end;
 
-      if not (IpAddress = EmptyStr) then
+      if not (IpAddress.IsEmpty) then
         NewVMConfig.SetOption('general','ipaddress', IpAddress );
 
-      if not (Ip6Address = EmptyStr) then
+      if not (Ip6Address.IsEmpty) then
       begin
         NewVMConfig.SetOption('general','ip6address', Ip6Address );
         NewVMConfig.SetOption('general','ipv6', 'True');
@@ -3961,7 +3993,7 @@ begin
     begin
       Configuration.SetOption('general','nat', 'True');
 
-      if PfCreateRules(FormVmInfo.EditVmName.Text, 'nat on '+ExternalInterface+' from '+FormVmInfo.EditVmIpv4Address.Text +' to any -> '+ExternalIpv4, 'nat') then
+      if PfCreateRules(FormVmInfo.EditVmName.Text, Format('nat on %s from %s to any -> (%s)', [FormVmInfo.ComboBoxNatInterface.Text, FormVmInfo.EditVmIpv4Address.Text, FormVmInfo.ComboBoxNatInterface.Text]) , 'nat') then
       begin
         if CheckVmRunning(FormVmInfo.EditVmName.Text) > 0 then
         begin
@@ -4136,7 +4168,7 @@ begin
     CreateDirectory(VmPath+'/'+VirtualMachine.name+'/vtcon', GetCurrentUserName());
   end;
 
-  { Remove this condition when bhyve will be updated on FreeBSD 13.x and 14.x }
+  { Remove this condition once bhyve is updated on FreeBSD 14.x }
   if GetOsreldate.ToInt64 >= 1403000 then
   begin
     if (CheckTpmSocketRunning(VirtualMachine.name) = -1) and (Assigned(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM')))
@@ -4164,6 +4196,12 @@ begin
       SpeedButtonVncVm.Enabled:=True
     else
       SpeedButtonVncVm.Enabled:=False;
+
+    if FileExists(VmPath+'/'+VirtualMachine.name+'/vnc.sock') then
+    begin
+      Chmod(VmPath+'/'+VirtualMachine.name+'/vnc.sock');
+      Chown(VmPath+'/'+VirtualMachine.name+'/vnc.sock', GetCurrentUserName());
+    end;
 
     if Assigned(DeviceSettingsTreeView.Items.FindNodeWithText('Network')) then
     begin
@@ -4197,7 +4235,7 @@ begin
             IpAddress:=VmConfig.GetOption('general', 'ipaddress', '');
             Ip6Address:=VmConfig.GetOption('general', 'ip6address', '');
 
-            if IpAddress = EmptyStr then
+            if (IpAddress.IsEmpty) then
             begin
               IpAddress:=GetNewIpAddress(GetSubnet);
               VmConfig.SetOption('general','ipaddress', IpAddress );
@@ -4206,7 +4244,7 @@ begin
             end;
 
             if (UseIpv6 = 'yes') and (Virtualmachine.ipv6 = True) and
-               ((Ip6Address = EmptyStr) or not (Ip6Address = GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac))) then
+               ((Ip6Address.IsEmpty) or not (Ip6Address = GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac))) then
             begin
               Ip6Address:=GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac );
               VmConfig.SetOption('general','ip6address', Ip6Address );
@@ -4554,7 +4592,7 @@ begin
           'tcp':
             begin
               DisplayDevice.tcp := RegexObj.Match[2];
-              DisplayDevice.port := StrToInt(ExtractPortValue(RegexObj.Match[2]));
+              DisplayDevice.port := ExtractPortValue(RegexObj.Match[2]);
             end;
           'w': DisplayDevice.w := StrToInt(RegexObj.Match[2]);
           'h': DisplayDevice.h := StrToInt(RegexObj.Match[2]);
@@ -4649,7 +4687,7 @@ begin
   begin
     repeat
       case RegexObj.Match[1] of
-          { Remove bootrom and bootvars from LPC when bhyve will updated on FreeBSD 13.x and 14.x }
+          { Remove bootrom and bootvars from LPC when bhyve is updated on FreeBSD 14.x }
           'bootrom': if GetOsreldate.ToInt64 < 1500023 then LPCDevice.bootrom := RegexObj.Match[2];
           'bootvars': if GetOsreldate.ToInt64 < 1500023 then LPCDevice.bootvars := RegexObj.Match[2];
           'com1.path': LPCDevice.com1 := RegexObj.Match[2];
@@ -5016,7 +5054,7 @@ begin
       RegexObj.Expression := '^lpc.*|^pci.*';
       if RegexObj.Exec(sl[i]) then
       begin
-        { Remove when bhyve will updated on FreeBSD 13.x and 14.x }
+        { Remove this condition once bhyve is updated on FreeBSD 14.x }
         if (GetOsreldate.ToInt64 >= 1500023) then
         begin
           if not (sl[i].Contains('lpc.bootrom')) then

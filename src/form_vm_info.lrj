@@ -14,5 +14,6 @@
 {"hash":55317731,"name":"tformvminfo.label2.caption","sourcebytes":[73,80,118,54,32,65,100,100,114,101,115,115],"value":"IPv6 Address"},
 {"hash":180372915,"name":"tformvminfo.editvmipv4address.text","sourcebytes":[69,100,105,116,86,109,73,112,118,52,65,100,100,114,101,115,115],"value":"EditVmIpv4Address"},
 {"hash":180372883,"name":"tformvminfo.editvmipv6address.text","sourcebytes":[69,100,105,116,86,109,73,112,118,54,65,100,100,114,101,115,115],"value":"EditVmIpv6Address"},
-{"hash":267099075,"name":"tformvminfo.checkboxpf.caption","sourcebytes":[69,110,97,98,108,101,32,80,70,32,114,117,108,101,115],"value":"Enable PF rules"}
+{"hash":267099075,"name":"tformvminfo.checkboxpf.caption","sourcebytes":[69,110,97,98,108,101,32,80,70,32,114,117,108,101,115],"value":"Enable PF rules"},
+{"hash":145659797,"name":"tformvminfo.label26.caption","sourcebytes":[78,65,84,32,73,110,116,101,114,102,97,99,101],"value":"NAT Interface"}
 ]}

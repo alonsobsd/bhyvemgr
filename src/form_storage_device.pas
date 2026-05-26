@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -211,7 +211,7 @@ begin
 
   if ComboBoxStorageDevice.ItemIndex = -1 then Result:=False
   else if ComboBoxStorageType.ItemIndex = -1 then Result:=False
-  else if FileNameEditStoragePath.Text = EmptyStr then Result:=False
+  else if Trim(FileNameEditStoragePath.Text).IsEmpty then Result:=False
   else if SpinEditExDiskSize.Value = 0 then Result:=False
   else if SpinEditExDiskSize.Value < DiskSize then Result:=False
   else if CheckBoxNvmUseRam.Checked and (SpinEditExNvmeRam.Value = 0) then Result:=False;

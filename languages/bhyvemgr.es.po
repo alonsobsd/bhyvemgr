@@ -656,7 +656,7 @@ msgid "/usr/local/bin/swtpm_ioctl"
 msgstr ""
 
 #: tformsettings.filenameeditvncviewer.text
-msgid "/usr/local/bin/remote-viewer"
+msgid "/usr/local/bin/vncviewer"
 msgstr ""
 
 #: tformsettings.filenameeditxfreerdp.text
@@ -1300,6 +1300,10 @@ msgstr "Dirección IPv4"
 msgid "IPv6 Address"
 msgstr "Dirección IPv6"
 
+#: tformvminfo.label26.caption
+msgid "NAT Interface"
+msgstr "Interfaz NAT"
+
 #: tformvminfo.label3.caption
 msgctxt "tformvminfo.label3.caption"
 msgid "Type"
@@ -1580,7 +1584,7 @@ msgstr "Una versión debe ser seleccionada."
 
 #: unit_language.check_vnc
 msgid "vnc support will not available. net-mgmt/virt-viewer is not installed."
-msgstr "soporte vnc no estará disponible. net-mgmt/virt-viewer no está instalado."
+msgstr "soporte vnc no estará disponible. net/tigervnc-viewer no está instalado."
 
 #: unit_language.check_zfs
 msgid "Support for zfs/zpool is not available"

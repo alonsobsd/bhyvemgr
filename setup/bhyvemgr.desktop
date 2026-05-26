@@ -9,6 +9,5 @@ Exec=bhyvemgr %F
 Terminal=false
 Type=Application
 StartupNotify=true
-MimeType=text/plain;
 Categories=System
 Icon=bhyvemgr

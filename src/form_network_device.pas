@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -82,7 +82,7 @@ begin
 
   if ComboBoxDevice.ItemIndex=-1 then Result:=False
   else if not CheckNetworkDeviceName(Trim(EditBackend.Text)) then Result:=False
-  else if Trim(EditMac.Text) = EmptyStr then Result:=False
+  else if Trim(EditMac.Text).IsEmpty then Result:=False
   else if SpinEditExMtu.Value = 0 then Result:=False
 end;
 

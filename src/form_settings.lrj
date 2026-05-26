@@ -46,7 +46,7 @@
 {"hash":13393012,"name":"tformsettings.label4.caption","sourcebytes":[98,104,121,118,101,108,111,97,100],"value":"bhyveload"},
 {"hash":73005251,"name":"tformsettings.groupboxremotetoolpaths.caption","sourcebytes":[82,101,109,111,116,101,32,116,111,111,108,32,112,97,116,104,115],"value":"Remote tool paths"},
 {"hash":130554258,"name":"tformsettings.label22.caption","sourcebytes":[118,110,99,32,118,105,101,119,101,114],"value":"vnc viewer"},
-{"hash":5599506,"name":"tformsettings.filenameeditvncviewer.text","sourcebytes":[47,117,115,114,47,108,111,99,97,108,47,98,105,110,47,114,101,109,111,116,101,45,118,105,101,119,101,114],"value":"/usr/local/bin/remote-viewer"},
+{"hash":1670322,"name":"tformsettings.filenameeditvncviewer.text","sourcebytes":[47,117,115,114,47,108,111,99,97,108,47,98,105,110,47,118,110,99,118,105,101,119,101,114],"value":"/usr/local/bin/vncviewer"},
 {"hash":238948260,"name":"tformsettings.label23.caption","sourcebytes":[120,102,114,101,101,114,100,112,32,99,108,105,101,110,116],"value":"xfreerdp client"},
 {"hash":40516051,"name":"tformsettings.filenameeditxfreerdp.text","sourcebytes":[47,117,115,114,47,108,111,99,97,108,47,98,105,110,47,120,102,114,101,101,114,100,112,51],"value":"/usr/local/bin/xfreerdp3"},
 {"hash":142906899,"name":"tformsettings.groupboxswtpmtoolpaths.caption","sourcebytes":[83,119,116,112,109,32,116,111,111,108,32,112,97,116,104,115],"value":"Swtpm tool paths"},

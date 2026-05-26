@@ -8,7 +8,7 @@ object FormDisplayDevice: TFormDisplayDevice
   ClientHeight = 329
   ClientWidth = 343
   Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 256
@@ -31,14 +31,14 @@ object FormDisplayDevice: TFormDisplayDevice
       Left = 11
       Height = 18
       Top = 160
-      Width = 64
+      Width = 65
       Caption = 'Resolution'
     end
     object CheckBoxWaitVnc: TCheckBox
       Left = 11
       Height = 22
       Top = 32
-      Width = 170
+      Width = 173
       Caption = 'Wait for VNC connection'
       TabOrder = 1
     end
@@ -46,7 +46,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Left = 11
       Height = 18
       Top = 192
-      Width = 58
+      Width = 59
       Caption = 'Password'
     end
     object EditPassword: TEdit
@@ -78,7 +78,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Left = 11
       Height = 22
       Top = 56
-      Width = 108
+      Width = 110
       Caption = 'Use password'
       TabOrder = 2
       OnChange = CheckBoxUsePasswordChange
@@ -87,7 +87,7 @@ object FormDisplayDevice: TFormDisplayDevice
       Left = 11
       Height = 22
       Top = 8
-      Width = 208
+      Width = 211
       Caption = 'Only localhost VNC connection'
       TabOrder = 0
       OnChange = CheckBoxOnlyLocalhostChange

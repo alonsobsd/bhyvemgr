@@ -1,6 +1,6 @@
 { BSD 3-Clause License
 
-Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>
+Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -39,98 +39,98 @@ interface
 uses
   Classes, SysUtils, Dialogs, FileUtil, Math, md5, process, RegExpr, Users, BaseUnix, StrUtils;
 
-function AttachDeviceToBridge(BridgeName: String; DeviceName: String; VmName : String):Boolean;
-function AddDnsmasqDhcpHostEntry(VmName: String; IpAddress: String; MacAddreess : String):Boolean;
-function AddDnsmasqHostRecordEntry(VmName: String; Ip6Address: String; MacAddreess : String):Boolean;
+function AttachDeviceToBridge(const BridgeName: String; const DeviceName: String; const VmName : String):Boolean;
+function AddDnsmasqDhcpHostEntry(const VmName: String; const IpAddress: String; const MacAddreess : String):Boolean;
+function AddDnsmasqHostRecordEntry(const VmName: String; const Ip6Address: String; const MacAddreess : String):Boolean;
 function CheckBhyveSupport():Boolean;
 function CheckCidrRange(Subnet: String):Boolean;
 function CheckFileExtension(ImageName: String): String;
 function CheckFileType(ImageName: String): String;
 function CheckKernelModule(Module: String):Boolean;
-function CheckIpv6Address(Address: String):Boolean;
-function CheckIpvAddress(Address: String):Boolean;
-function CheckMacAddress(Mac: String):Boolean;
-function CheckNetworkDeviceName(Name: String):Boolean;
+function CheckIpv6Address(const Address: String):Boolean;
+function CheckIpvAddress(const Address: String):Boolean;
+function CheckMacAddress(const Mac: String):Boolean;
+function CheckNetworkDeviceName(const Name: String):Boolean;
 function CheckNetworkPort(Port: String):Boolean;
-function CheckSysctl(Name: String):String;
-function CheckUrl(Url: String):Boolean;
-function CheckUserName(Name: String):Boolean;
-function CheckVmName(Name: String):Boolean;
-function CheckVmRunning(Name: String):Integer;
-function CheckTpmSocketRunning(Name: String):Integer;
-function CheckZfsDataset(Dataset: String): Boolean;
+function CheckSysctl(const Name: String):String;
+function CheckUrl(const Url: String):Boolean;
+function CheckUserName(const Name: String):Boolean;
+function CheckVmName(const Name: String):Boolean;
+function CheckVmRunning(const Name: String):Integer;
+function CheckTpmSocketRunning(const Name: String):Integer;
+function CheckZfsDataset(const Dataset: String): Boolean;
 function CheckZfsSupport():Boolean;
-function ChmodDir(Path: String):Boolean;
-function ChownDir(Path: String):Boolean;
+function Chmod(const Path: String; Mode : String = '750'):Boolean;
+function Chown(const Path: String; const Username : String):Boolean;
 function ConvertFileSize(Size: Int64; SizeUnit: String): Int64;
-function CreateDirectory(DirectoryName: String; UserName : String; DirMode : String = '700'):Boolean;
-function CreateFile(FileName: String; UserName : String; FileMode : String = '600'):Boolean;
-function CreateNetworkDevice(DeviceName: String; VmName : String; Mtu : String = '1500'):Boolean;
-function CreateSeedIso(SourceDirectory: String; DestinationSeedFile : String):Boolean;
-function CreateTpmSocket(Path: String):Boolean;
-function DestroyNetworkInterface(IfName: String):Boolean;
-function DestroyVirtualMachine(VmName: String):Boolean;
-function ExtractCidr(Network: String): String;
-function ExtractIpv6Prefix(prefix : String):String;
-function ExtractInterfaceMac(NetworkInterface : String):String;
+function CreateDirectory(const DirectoryName: String; const UserName : String; DirMode : String = '700'):Boolean;
+function CreateFile(const FileName: String; const UserName : String; FileMode : String = '600'):Boolean;
+function CreateNetworkDevice(const DeviceName: String; const VmName : String; Mtu : String = '1500'):Boolean;
+function CreateSeedIso(const SourceDirectory: String; const DestinationSeedFile : String):Boolean;
+function CreateTpmSocket(const Path: String):Boolean;
+function DestroyNetworkInterface(const IfName: String):Boolean;
+function DestroyVirtualMachine(const VmName: String):Boolean;
+function ExtractCidr(const Network: String): String;
+function ExtractIpv6Prefix(const prefix : String):String;
+function ExtractInterfaceMac(const NetworkInterface : String):String;
 function ExtractNetMask(Cidr: Integer): String;
 function ExtractNumberValue(TextLine: String; Suffix: String): String;
 function ExtractPortValue(TextLine: String): String;
 function ExtractVarName(TextLine: String): String;
 function ExtractVarValue(TextLine: String): String;
-function FirstIpAddress(Network: String): String;
+function FirstIpAddress(const Network: String): String;
 function GenerateIpv6Preffix():String;
-function GenerateIpv6Suffix(mac : String):String;
+function GenerateIpv6Suffix(const mac : String):String;
 function GenerateMacAddress(): String;
 function GenerateUuid(): String;
 function GetCurrentUserName(): String;
-function GetFileSize(FilePath : String; SizeUnit : String = 'B'): Int64;
-function GetEventDeviceList(Path : String; Pattern : String):String;
-function GetExtractSize(FilePath: String; FileType: String): Int64;
+function GetFileSize(const FilePath : String; SizeUnit : String = 'B'): Int64;
+function GetEventDeviceList(const Path : String; Pattern : String):String;
+function GetExtractSize(const FilePath: String; FileType: String): Int64;
 function GetNetworkInterfaceList(NetworkInterfaceType : String): String;
-function GetNetworkIp4List(NetworkInterface : String): String;
-function GetNetworkIp6List(NetworkInterface : String): String;
-function GetNewConsoleName(VmName : String): String;
-function GetNewIpAddress(Subnet : String): String;
-function GetNewIp6Address(prefix : String; mac : String): String;
-function GetNewPciSlotNumber(VmName : String): String;
-function GetNewPciSlotNumber(StringList : TStringList): String;
-function GetNewPciSlotNumber(StringList : TStringList; StartSlot : Integer): String;
-function GetNewAhciPortNumber(BusNumber : String; VmName : String): String;
+function GetNetworkIp4List(const NetworkInterface : String): String;
+function GetNetworkIp6List(const NetworkInterface : String): String;
+function GetNewConsoleName(const VmName : String): String;
+function GetNewIpAddress(const Subnet : String): String;
+function GetNewIp6Address(const prefix : String; mac : String): String;
+function GetNewPciSlotNumber(const VmName : String): String;
+function GetNewPciSlotNumber(const StringList : TStringList): String;
+function GetNewPciSlotNumber(const StringList : TStringList; StartSlot : Integer): String;
+function GetNewAhciPortNumber(const BusNumber : String; const VmName : String): String;
 function GetNewComPortNumber(): String;
 function GetNewNetworkName(BackendType : String): String;
-function GetNewNetworkName(CurrentVmName : String; CurrentVmConfig : TStringList; BackendType : String; StartValue : Integer): String;
-function GetNewStorageName(DiskPath : String; IsZvol: Boolean): String;
-function GetNewVmName(VmName : String): Boolean;
+function GetNewNetworkName(const CurrentVmName : String; const CurrentVmConfig : TStringList; BackendType : String; StartValue : Integer): String;
+function GetNewStorageName(const DiskPath : String; IsZvol: Boolean): String;
+function GetNewVmName(const VmName : String): Boolean;
 function GetNewVncPortNumber(): String;
-function GetPciDeviceDescripcion(Device : String):String;
-function GetPciDeviceList(Device : String):String;
-function GetPidValue(Pattern : String): Integer;
-function GetRemoteSize(Url : String): Int64;
+function GetPciDeviceDescripcion(const Device : String):String;
+function GetPciDeviceList(const Device : String):String;
+function GetPidValue(const Pattern : String): Integer;
+function GetRemoteSize(const Url : String): Int64;
 function GetServicePortList(Protocol : String):TStringList;
-function GetStorageSize(StoragePath : String): String;
-function GetStorageType(StoragePath : String): String;
+function GetStorageSize(const StoragePath : String): String;
+function GetStorageType(const StoragePath : String): String;
 function GetZpoolList():String;
-function InstallFile(SourceFileName: String; DestinationFileName : String; UserName : String; FileMode : String = '600'):Boolean;
+function InstallFile(const SourceFileName: String; const DestinationFileName : String; const UserName : String; FileMode : String = '600'):Boolean;
 function KillPid(Pid : Integer; Signal : String = '-TERM'): Boolean;
-function LoadKernelModule(Module : String):Boolean;
-function PfCreateRules(VmName : String; VmRules: String; RulesType : String):Boolean;
-function PfLoadRules(VmName : String; RulesType : String):Boolean;
-function PfUnloadRules(VmName : String; RulesType : String):Boolean;
-function NetworkAddress(Subnet : String):String;
-function RdpConnect(VmName : String; Username : String; Password : String; Width : String; Height : String):Boolean;
-function RemoveDirectory(Directory: String; Recursive : Boolean):Boolean;
-function RemoveFile(Path: String):Boolean;
-function RemoveDnsmasqEntry(VmName: String):Boolean;
-function RestartService(Service : String):Boolean;
+function LoadKernelModule(const Module : String):Boolean;
+function PfCreateRules(const VmName : String; const VmRules: String; const RulesType : String):Boolean;
+function PfLoadRules(const VmName : String; const RulesType : String):Boolean;
+function PfUnloadRules(const VmName : String; const RulesType : String):Boolean;
+function NetworkAddress(const Subnet : String):String;
+function RdpConnect(const VmName : String; const Username : String; const Password : String; Width : String; Height : String):Boolean;
+function RemoveDirectory(const Directory: String; Recursive : Boolean):Boolean;
+function RemoveFile(const Path: String):Boolean;
+function RemoveDnsmasqEntry(const VmName: String):Boolean;
+function RestartService(const Service : String):Boolean;
 function StopVirtualMachine(Pid : Integer):Boolean;
-function TruncateImage(ImagePath : String; ImageSize : String):Boolean;
+function TruncateImage(const ImagePath : String; ImageSize : String):Boolean;
 function VncConnect(VmHost : String; VmName : String):Boolean;
-function ZfsCreateDataset(ZfsPath : String):Boolean;
-function ZfsCreateZvol(ZfsPath : String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
-function ZfsGetPropertyValue(ZfsPath : String; ZfsProperty : String; ZfsField : String):String;
-function ZfsSetPropertyValue(ZfsPath : String; ZfsProperty : String; ZfsValue : String):String;
-function ZfsDestroy(ZfsPath : String; Recursive : Boolean = True; Force : Boolean = False):Boolean;
+function ZfsCreateDataset(const ZfsPath : String):Boolean;
+function ZfsCreateZvol(const ZfsPath : String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
+function ZfsGetPropertyValue(const ZfsPath : String; ZfsProperty : String; ZfsField : String):String;
+function ZfsSetPropertyValue(const ZfsPath : String; ZfsProperty : String; ZfsValue : String):String;
+function ZfsDestroy(const ZfsPath : String; Recursive : Boolean = True; Force : Boolean = False):Boolean;
 
 implementation
 
@@ -141,7 +141,7 @@ var
   MyAppThread: AppThread;
 
 { Private IPv4 functions }
-function ExtractCidr(Network: String): String;
+function ExtractCidr(const Network: String): String;
 var
   TmpArray : TStringArray;
 begin
@@ -280,7 +280,7 @@ begin;
   Result:=IpAddress;
 end;
 
-function ExtractInterfaceMac(NetworkInterface: String): String;
+function ExtractInterfaceMac(const NetworkInterface: String): String;
 var
   RegexObj: TRegExpr;
   TmpOutput:String;
@@ -339,7 +339,7 @@ begin
   Result:=DecimalToIP(Netmask);
 end;
 
-function PfCreateRules(VmName: String; VmRules: String; RulesType: String): Boolean;
+function PfCreateRules(const VmName: String; const VmRules: String; const RulesType: String): Boolean;
 var
   FilePath : TStringList;
   DirePath : String;
@@ -349,37 +349,39 @@ begin
 
   FilePath:=TStringList.Create;
 
-  DirePath:=VmPath+'/'+VmName+'/pf';
-  ConfigFile:=DirePath+'/'+RulesType+'.rules';
-
-  if not DirectoryExists(DirePath) then
-    CreateDirectory(DirePath, GetCurrentUserName(), '750');
-
   try
-    FilePath.Text:=VmRules;
+    DirePath:=VmPath+'/'+VmName+'/pf';
+    ConfigFile:=DirePath+'/'+RulesType+'.rules';
 
-    if FilePath.Count = 0 then
-    begin
-      if FileExists(ConfigFile) then
+    if not DirectoryExists(DirePath) then
+      CreateDirectory(DirePath, GetCurrentUserName(), '750');
+
+    try
+      FilePath.Text:=VmRules;
+
+      if FilePath.Count = 0 then
       begin
-        RemoveFile(ConfigFile);
+        if FileExists(ConfigFile) then
+        begin
+          RemoveFile(ConfigFile);
+        end;
+      end
+      else
+      begin
+        if not FileExists(ConfigFile) then
+          CreateFile(ConfigFile, GetCurrentUserName(), '660');
+        FilePath.SaveToFile(ConfigFile);
       end;
-    end
-    else
-    begin
-      if not FileExists(ConfigFile) then
-        CreateFile(ConfigFile, GetCurrentUserName(), '660');
-      FilePath.SaveToFile(ConfigFile);
+    except
+      MessageDialog(mtError, Format(error_saving_file, [ConfigFile]));
+      Result:=False;
     end;
-  except
-    MessageDialog(mtError, Format(error_saving_file, [ConfigFile]));
-    Result:=False;
+  finally
+    FilePath.Free;
   end;
-
-  FilePath.Free;
 end;
 
-function PfLoadRules(VmName: String; RulesType: String): Boolean;
+function PfLoadRules(const VmName: String; const RulesType: String): Boolean;
 var
   root_cmd : String;
   pfctl_cmd : String;
@@ -422,7 +424,7 @@ begin
   end;
 end;
 
-function PfUnloadRules(VmName: String; RulesType: String): Boolean;
+function PfUnloadRules(const VmName: String; const RulesType: String): Boolean;
 var
   root_cmd : String;
   pfctl_cmd : String;
@@ -481,12 +483,12 @@ begin
   end;
 end;
 
-function NetworkAddress(Subnet : String):String;
+function NetworkAddress(const Subnet : String):String;
 begin
   Result:=DecimalToIP(IpToDecimal(ExtractIP(Subnet), ExtractCidr(Subnet).ToInteger));
 end;
 
-function FirstIpAddress(Network: String): String;
+function FirstIpAddress(const Network: String): String;
 var
   NetworkArray : TStringArray;
   Oct : Integer;
@@ -542,7 +544,7 @@ begin
     Result:=True;
 end;
 
-function GetNewIpAddress(Subnet : String): String;
+function GetNewIpAddress(const Subnet : String): String;
 var
   i : Integer;
   ConfigurationFile : ConfigurationClass;
@@ -571,7 +573,7 @@ begin
 
         IpAddress:=ConfigurationFile.GetOption('general', 'ipaddress', '');
 
-        if (IpAddress <> EmptyStr) and (CheckValidIpAddress(IpAddress, GetSubnet)) then
+        if not (IpAddress.IsEmpty) and (CheckValidIpAddress(IpAddress, GetSubnet)) then
           IpAddressValueList.Add(IpAddress);
 
         ConfigurationFile.Free;
@@ -622,7 +624,7 @@ begin
 end;
 
 { Private IPv6 functions }
-function ExtractIpv6Prefix(prefix: String): String;
+function ExtractIpv6Prefix(const prefix: String): String;
 var
   tmpPrefix : TStringArray;
   finalPrefix : TStringArray;
@@ -631,10 +633,10 @@ begin
 
   finalPrefix:=[tmpPrefix[0],tmpPrefix[1],tmpPrefix[2],tmpPrefix[3]];
 
-  if finalPrefix[0] = EmptyStr then finalPrefix[0] := '0';
-  if finalPrefix[1] = EmptyStr then finalPrefix[1] := '0';
-  if finalPrefix[2] = EmptyStr then finalPrefix[2] := '0';
-  if finalPrefix[3] = EmptyStr then finalPrefix[3] := '0';
+  if finalPrefix[0].IsEmpty then finalPrefix[0] := '0';
+  if finalPrefix[1].IsEmpty then finalPrefix[1] := '0';
+  if finalPrefix[2].IsEmpty then finalPrefix[2] := '0';
+  if finalPrefix[3].IsEmpty then finalPrefix[3] := '0';
 
   Result:= String.Join(':', finalPrefix);
 end;
@@ -648,7 +650,7 @@ begin
   Result:=Copy(tmpPreffix, 1, 4) +':'+ Copy(tmpPreffix, 5, 4)+':'+ Copy(tmpPreffix, 9, 4)+':0001::';
 end;
 
-function GenerateIpv6Suffix(mac: String): String;
+function GenerateIpv6Suffix(const mac: String): String;
 var
   tmpMac : TStringArray;
   finalMac : TStringArray;
@@ -664,12 +666,12 @@ begin
   Result:= suffix;
 end;
 
-function GetNewIp6Address(prefix : String; mac : String): String;
+function GetNewIp6Address(const prefix : String; mac : String): String;
 begin
   Result:= ExtractIpv6Prefix(prefix)+':'+GenerateIpv6Suffix(mac);
 end;
 
-function GetPatternValueFromStringList(Pattern: String;  StartValue : Integer; StringList: TStringList
+function GetPatternValueFromStringList(const Pattern: String;  StartValue : Integer; const StringList: TStringList
   ): String;
 var
   TmpList : TStringList;
@@ -725,7 +727,7 @@ begin
   Result:=PatternValue;
 end;
 
-function GetPatternValueFromAllConfigFiles(Pattern: String; StartValue : Integer): String;
+function GetPatternValueFromAllConfigFiles(const Pattern: String; StartValue : Integer): String;
 var
   Directories : TStringList;
   VirtualMachineConfigFile : TStringList;
@@ -792,8 +794,8 @@ begin
   Result:=PatternValue;
 end;
 
-function GetPatternValueFromAllConfigFiles(Pattern: String;
-  CurrentVmName: String; CurrentVmConfig: TStringList; StartValue: Integer
+function GetPatternValueFromAllConfigFiles(const Pattern: String;
+  const CurrentVmName: String; const CurrentVmConfig: TStringList; StartValue: Integer
   ): String;
 var
   Directories : TStringList;
@@ -868,7 +870,7 @@ begin
   Result:=PatternValue;
 end;
 
-function GetPatternValueFromConfigFile(Pattern: String; VmName: String
+function GetPatternValueFromConfigFile(const Pattern: String; const VmName: String
   ): String;
 var
   VirtualMachineConfigFile : TStringList;
@@ -928,8 +930,8 @@ begin
 end;
 
 { Public functions }
-function AttachDeviceToBridge(BridgeName: String; DeviceName: String;
-  VmName: String): Boolean;
+function AttachDeviceToBridge(const BridgeName: String; const DeviceName: String;
+  const VmName: String): Boolean;
 var
   root_cmd : String;
   ifconfig_cmd : String;
@@ -960,7 +962,7 @@ begin
   end;
 end;
 
-function AddDnsmasqDhcpHostEntry(VmName: String; IpAddress: String; MacAddreess: String
+function AddDnsmasqDhcpHostEntry(const VmName: String; const IpAddress: String; const MacAddreess: String
   ): Boolean;
 var
   FilePath : TStringList;
@@ -989,8 +991,8 @@ begin
   FilePath.Free;
 end;
 
-function AddDnsmasqHostRecordEntry(VmName: String; Ip6Address: String;
-  MacAddreess: String): Boolean;
+function AddDnsmasqHostRecordEntry(const VmName: String; const Ip6Address: String;
+  const MacAddreess: String): Boolean;
 var
   FilePath : TStringList;
   ConfigFile : String;
@@ -1108,7 +1110,7 @@ begin
   end;
 end;
 
-function CheckIpv6Address(Address: String): Boolean;
+function CheckIpv6Address(const Address: String): Boolean;
 var
   RegText: TRegExpr;
 begin
@@ -1124,7 +1126,7 @@ begin
   RegText.Free
 end;
 
-function CheckIpvAddress(Address: String): Boolean;
+function CheckIpvAddress(const Address: String): Boolean;
 var
   RegText: TRegExpr;
 begin
@@ -1140,7 +1142,7 @@ begin
   RegText.Free
 end;
 
-function CheckMacAddress(Mac: String): Boolean;
+function CheckMacAddress(const Mac: String): Boolean;
 var
   RegText: TRegExpr;
 begin
@@ -1156,7 +1158,7 @@ begin
   RegText.Free
 end;
 
-function CheckNetworkDeviceName(Name: String): Boolean;
+function CheckNetworkDeviceName(const Name: String): Boolean;
 var
   RegText: TRegExpr;
 begin
@@ -1188,7 +1190,7 @@ begin
   RegText.Free
 end;
 
-function CheckSysctl(Name: String): String;
+function CheckSysctl(const Name: String): String;
 var
   sysctl_cmd : String;
   output : String;
@@ -1209,7 +1211,7 @@ begin
   end;
 end;
 
-function CheckUrl(Url: String): Boolean;
+function CheckUrl(const Url: String): Boolean;
 var
   RegText: TRegExpr;
 begin
@@ -1225,7 +1227,7 @@ begin
   RegText.Free
 end;
 
-function CheckUserName(Name: String): Boolean;
+function CheckUserName(const Name: String): Boolean;
 var
   RegText: TRegExpr;
 begin
@@ -1241,7 +1243,7 @@ begin
   RegText.Free
 end;
 
-function CheckVmName(Name: String): Boolean;
+function CheckVmName(const Name: String): Boolean;
 var
   RegText: TRegExpr;
 begin
@@ -1258,37 +1260,37 @@ begin
   RegText.Free
 end;
 
-function CheckVmRunning(Name: String): Integer;
+function CheckVmRunning(const Name: String): Integer;
 var
   PidNumber : Integer;
 begin
   Result:=-1;
 
-  PidNumber:=GetPidValue('^'+BhyveCmd+' -k '+VmPath+'/'+Name+'/bhyve_config.conf');
+  PidNumber:=GetPidValue(Format('^%s -k %s/%s/bhyve_config.conf', [BhyveCmd, VmPath, Name]));
 
   if PidNumber > 0 then
     Result:=PidNumber
   else
   begin
-    PidNumber:= GetPidValue('^bhyve: '+Name+'$');
+    PidNumber:= GetPidValue(Format('^bhyve: %s$', [Name]));
     if PidNumber  > 0 then
       Result:=PidNumber;
   end;
 end;
 
-function CheckTpmSocketRunning(Name: String): Integer;
+function CheckTpmSocketRunning(const Name: String): Integer;
 var
   PidNumber : Integer;
 begin
   Result:=-1;
 
-  PidNumber:=GetPidValue(VmPath+'/'+Name+'/tpm/swtpm.sock');
+  PidNumber:=GetPidValue(Format('%s/%s/tpm/swtpm.sock', [VmPath, Name]));
 
   if PidNumber > 0 then
     Result:=PidNumber
 end;
 
-function CheckZfsDataset(Dataset: String): Boolean;
+function CheckZfsDataset(const Dataset: String): Boolean;
 var
   zfs_cmd : String;
   output : String;
@@ -1320,7 +1322,7 @@ begin
 
 end;
 
-function ChownDir(Path: String): Boolean;
+function Chown(const Path: String; const UserName : String): Boolean;
 var
   root_cmd : String;
   chown_cmd : String;
@@ -1336,7 +1338,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=['-n', chown_cmd, GetCurrentUserName()+':', Path];
+  parameters:=['-n', chown_cmd, UserName+':', Path];
 
   if FileExists(chown_cmd) and FileExists(root_cmd) then
   begin
@@ -1351,7 +1353,7 @@ begin
   end;
 end;
 
-function ChmodDir(Path: String): Boolean;
+function Chmod(const Path: String; Mode : String = '750'): Boolean;
 var
   root_cmd : String;
   chmod_cmd : String;
@@ -1367,7 +1369,7 @@ begin
   if UseSudo = 'no' then
     root_cmd:=DoasCmd;
 
-  parameters:=['-n', chmod_cmd, '750', Path];
+  parameters:=['-n', chmod_cmd, Mode, Path];
 
   if FileExists(chmod_cmd) and FileExists(root_cmd) then
   begin
@@ -1393,7 +1395,7 @@ begin
   end;
 end;
 
-function CreateDirectory(DirectoryName: String; UserName: String; DirMode : String = '700'): Boolean;
+function CreateDirectory(const DirectoryName: String; const UserName: String; DirMode : String = '700'): Boolean;
 var
   root_cmd : String;
   install_cmd : String;
@@ -1422,7 +1424,7 @@ begin
   end;
 end;
 
-function CreateFile(FileName: String; UserName: String; FileMode : String = '600'): Boolean;
+function CreateFile(const FileName: String; const UserName: String; FileMode : String = '600'): Boolean;
 var
   install_cmd : String;
   output : String;
@@ -1443,7 +1445,7 @@ begin
   end;
 end;
 
-function CreateNetworkDevice(DeviceName: String; VmName: String; Mtu: String
+function CreateNetworkDevice(const DeviceName: String; const VmName: String; Mtu: String
   ): Boolean;
 var
   root_cmd : String;
@@ -1475,7 +1477,7 @@ begin
   end;
 end;
 
-function CreateSeedIso(SourceDirectory: String; DestinationSeedFile: String
+function CreateSeedIso(const SourceDirectory: String; const DestinationSeedFile: String
   ): Boolean;
 var
   makefs_cmd : String;
@@ -1500,7 +1502,7 @@ begin
   end;
 end;
 
-function CreateTpmSocket(Path: String): Boolean;
+function CreateTpmSocket(const Path: String): Boolean;
 var
   swtpm_cmd : String;
   output : String;
@@ -1528,7 +1530,7 @@ begin
   end;
 end;
 
-function DestroyNetworkInterface(IfName: String): Boolean;
+function DestroyNetworkInterface(const IfName: String): Boolean;
 var
   root_cmd : String;
   ifconfig_cmd : String;
@@ -1559,7 +1561,7 @@ begin
   end;
 end;
 
-function DestroyVirtualMachine(VmName: String): Boolean;
+function DestroyVirtualMachine(const VmName: String): Boolean;
 var
   root_cmd : String;
   bhyvectl_cmd : String;
@@ -1682,7 +1684,7 @@ begin
   Result:=GetUserName(fpgetuid);
 end;
 
-function GetEventDeviceList(Path: String; Pattern: String): String;
+function GetEventDeviceList(const Path: String; Pattern: String): String;
 var
   TmpDeviceList : TStringList;
 begin
@@ -1693,7 +1695,7 @@ begin
   TmpDeviceList.Free;
 end;
 
-function GetExtractSize(FilePath: String; FileType: String): Int64;
+function GetExtractSize(const FilePath: String; FileType: String): Int64;
 var
   app_cmd : String;
   output : String;
@@ -1797,7 +1799,7 @@ begin
   NetworkList.free;
 end;
 
-function GetNetworkIp4List(NetworkInterface: String): String;
+function GetNetworkIp4List(const NetworkInterface: String): String;
 var
   InetList : TStringList;
   RegexObj: TRegExpr;
@@ -1845,7 +1847,7 @@ begin
   InetList.free;
 end;
 
-function GetNetworkIp6List(NetworkInterface: String): String;
+function GetNetworkIp6List(const NetworkInterface: String): String;
 var
   InetList : TStringList;
   RegexObj: TRegExpr;
@@ -1893,7 +1895,7 @@ begin
   InetList.free;
 end;
 
-function GetNewConsoleName(VmName : String): String;
+function GetNewConsoleName(const VmName : String): String;
 var
   VtconName : String;
 begin
@@ -1920,7 +1922,7 @@ begin
   Result := NetworkName;
 end;
 
-function GetNewNetworkName(CurrentVmName : String; CurrentVmConfig: TStringList; BackendType: String;
+function GetNewNetworkName(const CurrentVmName : String; const CurrentVmConfig: TStringList; BackendType: String;
   StartValue: Integer): String;
 var
   NetworkName : String;
@@ -1930,7 +1932,7 @@ begin
   Result := NetworkName;
 end;
 
-function GetNewStorageName(DiskPath: String; IsZvol: Boolean): String;
+function GetNewStorageName(const DiskPath: String; IsZvol: Boolean): String;
 var
   c:Integer;
   flag:Boolean;
@@ -1966,7 +1968,7 @@ begin
   Result:=DiskName;
 end;
 
-function GetFileSize(FilePath: String; SizeUnit : String = 'B'): Int64;
+function GetFileSize(const FilePath: String; SizeUnit : String = 'B'): Int64;
 var
   FileInfo : stat;
   FileSize : Int64;
@@ -1981,7 +1983,7 @@ begin
   Result:=ConvertFileSize(FileSize, SizeUnit);
 end;
 
-function GetNewPciSlotNumber(VmName: String): String;
+function GetNewPciSlotNumber(const VmName: String): String;
 var
   PciSlotNumber : String;
 begin
@@ -1990,7 +1992,7 @@ begin
   Result := PciSlotNumber;
 end;
 
-function GetNewPciSlotNumber(StringList: TStringList): String;
+function GetNewPciSlotNumber(const StringList: TStringList): String;
 var
   PciSlotNumber : String;
 begin
@@ -1999,7 +2001,7 @@ begin
   Result := PciSlotNumber;
 end;
 
-function GetNewPciSlotNumber(StringList: TStringList; StartSlot: Integer
+function GetNewPciSlotNumber(const StringList: TStringList; StartSlot: Integer
   ): String;
 var
   TmpList : TStringList;
@@ -2062,7 +2064,7 @@ begin
   Result:=PciSlotNumber;
 end;
 
-function GetNewAhciPortNumber(BusNumber : String; VmName: String): String;
+function GetNewAhciPortNumber(const BusNumber : String; const VmName: String): String;
 var
   PortNumber : String;
 begin
@@ -2071,7 +2073,7 @@ begin
   Result := PortNumber;
 end;
 
-function GetNewVmName(VmName: String): Boolean;
+function GetNewVmName(const VmName: String): Boolean;
 var
   i : Integer;
   Directories : TStringList;
@@ -2102,7 +2104,7 @@ begin
   Result := PortNumber;
 end;
 
-function GetPciDeviceDescripcion(Device: String): String;
+function GetPciDeviceDescripcion(const Device: String): String;
 var
   PciDescripcion : String;
   RegexObj: TRegExpr;
@@ -2146,7 +2148,7 @@ begin
   RegexObj.Free;
 end;
 
-function GetPciDeviceList(Device: String): String;
+function GetPciDeviceList(const Device: String): String;
 var
   PciList : TStringList;
   RegexObj: TRegExpr;
@@ -2194,7 +2196,7 @@ begin
   PciList.free;
 end;
 
-function GetPidValue(Pattern: String): Integer;
+function GetPidValue(const Pattern: String): Integer;
 var
   pgrep_cmd : String;
   root_cmd : String;
@@ -2220,13 +2222,13 @@ begin
       Result:=Trim(output).ToInt64
     else
     begin
-      if not (output = EmptyStr) then
+      if not (output.IsEmpty) then
         DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetPidValue : '+output);
     end;
   end;
 end;
 
-function GetRemoteSize(Url: String): Int64;
+function GetRemoteSize(const Url: String): Int64;
 var
   fetch_cmd : String;
   output : String;
@@ -2247,7 +2249,7 @@ begin
       Result:=StrToInt64(trim(output))
     else
     begin
-      if not (output = EmptyStr) then
+      if not (output.IsEmpty) then
         DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetRemoteSize : '+Url+' : '+output);
     end;
   end;
@@ -2283,7 +2285,7 @@ begin
   Result:=ServiceList;
 end;
 
-function GetStorageSize(StoragePath: String): String;
+function GetStorageSize(const StoragePath: String): String;
 begin
   Result:='0G';
 
@@ -2297,7 +2299,7 @@ begin
   end;
 end;
 
-function GetStorageType(StoragePath: String): String;
+function GetStorageType(const StoragePath: String): String;
 begin
   Result:=EmptyStr;
 
@@ -2340,8 +2342,8 @@ begin
   end;
 end;
 
-function InstallFile(SourceFileName: String; DestinationFileName: String;
-  UserName: String; FileMode: String = '600'): Boolean;
+function InstallFile(const SourceFileName: String; const DestinationFileName: String;
+  const UserName: String; FileMode: String = '600'): Boolean;
 var
   install_cmd : String;
   output : String;
@@ -2391,7 +2393,7 @@ begin
   end;
 end;
 
-function LoadKernelModule(Module: String): Boolean;
+function LoadKernelModule(const Module: String): Boolean;
 var
   kldload_cmd : String;
   root_cmd : String;
@@ -2422,7 +2424,7 @@ begin
   end;
 end;
 
-function RdpConnect(VmName: String; Username: String; Password: String;
+function RdpConnect(const VmName: String; const Username: String; const Password: String;
   Width: String; Height: String): Boolean;
 var
   xfreerdp_cmd : String;
@@ -2466,7 +2468,7 @@ begin
   xfreerdp_args_list.Free;
 end;
 
-function RemoveDirectory(Directory: String; Recursive: Boolean): Boolean;
+function RemoveDirectory(const Directory: String; Recursive: Boolean): Boolean;
 var
   rm_cmd : String;
   root_cmd : String;
@@ -2502,7 +2504,7 @@ begin
   end;
 end;
 
-function RemoveFile(Path: String): Boolean;
+function RemoveFile(const Path: String): Boolean;
 begin
   Result:=False;
 
@@ -2510,7 +2512,7 @@ begin
     Result:=True;
 end;
 
-function RemoveDnsmasqEntry(VmName: String): Boolean;
+function RemoveDnsmasqEntry(const VmName: String): Boolean;
 var
   Path : String;
 begin
@@ -2525,7 +2527,7 @@ begin
   end;
 end;
 
-function RestartService(Service: String): Boolean;
+function RestartService(const Service: String): Boolean;
 var
   service_cmd : String;
   root_cmd : String;
@@ -2564,7 +2566,7 @@ begin
   Result:=KillPid(Pid, '-SIGTERM');
 end;
 
-function TruncateImage(ImagePath: String; ImageSize: String): Boolean;
+function TruncateImage(const ImagePath: String; ImageSize: String): Boolean;
 var
   truncate_cmd : String;
   output : String;
@@ -2601,14 +2603,17 @@ begin
 
   if FileExists(vnc_cmd) then
   begin
-    MyAppThread := AppThread.Create(vnc_cmd, ['-t', 'bhyve - '+VmName, 'vnc://'+VmHost]);
+    if VmHost.StartsWith('unix:') then
+      VmHost:=StringReplace(VmHost, 'unix:', EmptyStr, [rfReplaceAll]);
+
+    MyAppThread := AppThread.Create(vnc_cmd, [VmHost]);
     MyAppThread.Start;
   end
   else
     Result:=False;
 end;
 
-function ZfsCreateDataset(ZfsPath: String): Boolean;
+function ZfsCreateDataset(const ZfsPath: String): Boolean;
 var
   root_cmd : String;
   zfs_cmd : String;
@@ -2636,8 +2641,8 @@ begin
 
     if status then
     begin
-      ChmodDir('/'+ZfsPath);
-      ChownDir('/'+ZfsPath);
+      Chmod('/'+ZfsPath);
+      Chown('/'+ZfsPath, GetCurrentUserName());
 
       Result:=status
     end
@@ -2648,7 +2653,7 @@ begin
   end;
 end;
 
-function ZfsGetPropertyValue(ZfsPath: String; ZfsProperty: String;
+function ZfsGetPropertyValue(const ZfsPath: String; ZfsProperty: String;
   ZfsField: String): String;
 var
   zfs_cmd : String;
@@ -2675,7 +2680,7 @@ begin
   end;
 end;
 
-function ZfsSetPropertyValue(ZfsPath: String; ZfsProperty: String;
+function ZfsSetPropertyValue(const ZfsPath: String; ZfsProperty: String;
   ZfsValue: String): String;
 var
   zfs_cmd : String;
@@ -2707,7 +2712,7 @@ begin
   end;
 end;
 
-function ZfsDestroy(ZfsPath: String; Recursive: Boolean = True; Force: Boolean = False): Boolean;
+function ZfsDestroy(const ZfsPath: String; Recursive: Boolean = True; Force: Boolean = False): Boolean;
 var
   root_cmd : String;
   zfs_cmd : String;
@@ -2746,7 +2751,7 @@ begin
   end;
 end;
 
-function ZfsCreateZvol(ZfsPath: String; ZvolSize : String; ZvolSparse : Boolean = False): Boolean;
+function ZfsCreateZvol(const ZfsPath: String; ZvolSize : String; ZvolSparse : Boolean = False): Boolean;
 var
   zfs_cmd : String;
   root_cmd : String;
