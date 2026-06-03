@@ -9,7 +9,7 @@ object FormAbout: TFormAbout
   ClientWidth = 415
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   OnShow = FormShow
   object Image1: TImage
     Left = 24
@@ -256,7 +256,7 @@ object FormAbout: TFormAbout
     Left = 16
     Height = 18
     Top = 104
-    Width = 95
+    Width = 97
     Caption = 'Bhyve Manager'
     Color = clHighlight
     Font.Color = clHighlight
@@ -274,7 +274,7 @@ object FormAbout: TFormAbout
     Lines.Strings = (
       'This program is under BSD 3-Clause License'
       ''
-      'Copyright (c) 2024-2025, Alonso Cárdenas <acardenas@bsd-peru.org>'
+      'Copyright (c) 2024-2026, Alonso Cárdenas <acardenas@bsd-peru.org>'
       ''
       'Uniqueinstance component is under modified LGPL License'
       ''

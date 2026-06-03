@@ -126,7 +126,7 @@ function RestartService(const Service : String):Boolean;
 function StopVirtualMachine(Pid : Integer):Boolean;
 function TruncateImage(const ImagePath : String; ImageSize : String):Boolean;
 function VncConnect(VmHost : String; VmName : String):Boolean;
-function ZfsCreateDataset(const ZfsPath : String):Boolean;
+function ZfsCreateDataset(const ZfsPath : String; const WithMountpoint : Boolean = False):Boolean;
 function ZfsCreateZvol(const ZfsPath : String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
 function ZfsGetPropertyValue(const ZfsPath : String; ZfsProperty : String; ZfsField : String):String;
 function ZfsSetPropertyValue(const ZfsPath : String; ZfsProperty : String; ZfsValue : String):String;
@@ -1760,6 +1760,7 @@ var
 begin
   Result:=EmptyStr;
   TmpOutput:=EmptyStr;
+  parameters:=[];
 
   NetworkList:=TStringList.Create();
 
@@ -2455,7 +2456,7 @@ begin
     CreateFile(xfreerdp_args_file, GetCurrentUserName(), '600');
 
   xfreerdp_args_list.SaveToFile(xfreerdp_args_file);
-  parameters:=['/args-from:'+xfreerdp_args_file];
+  parameters:=['/args-from:file:'+xfreerdp_args_file];
 
   if FileExists(xfreerdp_cmd) then
   begin
@@ -2613,7 +2614,7 @@ begin
     Result:=False;
 end;
 
-function ZfsCreateDataset(const ZfsPath: String): Boolean;
+function ZfsCreateDataset(const ZfsPath: String; const WithMountpoint : Boolean = False): Boolean;
 var
   root_cmd : String;
   zfs_cmd : String;
@@ -2631,6 +2632,9 @@ begin
     root_cmd:=DoasCmd;
 
   options:=ZfsCreateOptions.Split(' ');
+
+  if WithMountpoint then
+    options:=options + ['-o','mountpoint=', '/'+ZfsPath];
 
   parameters:=['-n', zfs_cmd, 'create']+ options;
   parameters:=parameters+[zfspath];

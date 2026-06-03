@@ -213,7 +213,7 @@ begin
   else if ComboBoxStorageType.ItemIndex = -1 then Result:=False
   else if Trim(FileNameEditStoragePath.Text).IsEmpty then Result:=False
   else if SpinEditExDiskSize.Value = 0 then Result:=False
-  else if SpinEditExDiskSize.Value < DiskSize then Result:=False
+  else if not (ComboBoxStorageDevice.Text = 'ahci-cd') and (SpinEditExDiskSize.Value < DiskSize) then Result:=False
   else if CheckBoxNvmUseRam.Checked and (SpinEditExNvmeRam.Value = 0) then Result:=False;
 end;
 

@@ -1019,6 +1019,7 @@ begin
             NetworkDeviceList.Delete(i);
         end;
       end;
+
       DestroyVirtualMachine(VmName);
       RemoveDirectory(VmName+'/vtcon', True);
       RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
@@ -3455,7 +3456,7 @@ begin
       begin
         if not DirectoryExists(VmPath) then
         begin
-          if not (ZfsCreateDataset(VmPath.Remove(0,1))) then
+          if not (ZfsCreateDataset(VmPath.Remove(0,1), True)) then
           begin
             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_dataset_status, [FormVmCreate.EditVmName.Text, VmPath]));
             Exit;
@@ -4197,12 +4198,6 @@ begin
     else
       SpeedButtonVncVm.Enabled:=False;
 
-    if FileExists(VmPath+'/'+VirtualMachine.name+'/vnc.sock') then
-    begin
-      Chmod(VmPath+'/'+VirtualMachine.name+'/vnc.sock');
-      Chown(VmPath+'/'+VirtualMachine.name+'/vnc.sock', GetCurrentUserName());
-    end;
-
     if Assigned(DeviceSettingsTreeView.Items.FindNodeWithText('Network')) then
     begin
       for i:=0 to DeviceSettingsTreeView.Items.FindNodeWithText('Network').Count-1 do
@@ -4254,6 +4249,12 @@ begin
 
             VmConfig.Free;
           end;
+        end;
+
+        if FileExists(VmPath+'/'+VirtualMachine.name+'/vnc.sock') then
+        begin
+          Chmod(VmPath+'/'+VirtualMachine.name+'/vnc.sock');
+          Chown(VmPath+'/'+VirtualMachine.name+'/vnc.sock', GetCurrentUserName());
         end;
 
         NetworkDeviceList.Values[NetworkDevice.backend]:=VirtualMachine.name;
