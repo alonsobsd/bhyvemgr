@@ -2634,10 +2634,10 @@ begin
   options:=ZfsCreateOptions.Split(' ');
 
   if WithMountpoint then
-    options:=options + ['-o','mountpoint=', '/'+ZfsPath];
+    options:=options+['-o','mountpoint=/'+ZfsPath];
 
   parameters:=['-n', zfs_cmd, 'create']+ options;
-  parameters:=parameters+[zfspath];
+  parameters:=parameters+[ZfsPath];
 
   if FileExists(root_cmd) and FileExists(zfs_cmd) and not DirectoryExists('/'+ZfsPath) then
   begin
