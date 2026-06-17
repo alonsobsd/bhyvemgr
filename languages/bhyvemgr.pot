@@ -17,6 +17,11 @@ msgstr ""
 msgid "LabelVersion"
 msgstr ""
 
+#: tformaudiodevice.bitbtnclose.caption
+msgctxt "tformaudiodevice.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tformaudiodevice.bitbtnsave.caption
 msgctxt "tformaudiodevice.bitbtnsave.caption"
 msgid "Save"
@@ -149,6 +154,11 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
+#: tformconsoledevice.bitbtnclose.caption
+msgctxt "tformconsoledevice.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tformconsoledevice.bitbtnsave.caption
 msgctxt "tformconsoledevice.bitbtnsave.caption"
 msgid "Save"
@@ -176,6 +186,11 @@ msgstr ""
 #: tformconsoledevice.label6.caption
 msgctxt "tformconsoledevice.label6.caption"
 msgid "Path"
+msgstr ""
+
+#: tformdisplaydevice.bitbtnclose.caption
+msgctxt "tformdisplaydevice.bitbtnclose.caption"
+msgid "Close"
 msgstr ""
 
 #: tformdisplaydevice.bitbtnsave.caption
@@ -223,6 +238,11 @@ msgstr ""
 msgid "Host"
 msgstr ""
 
+#: tformhostbridgedevice.bitbtnclose.caption
+msgctxt "tformhostbridgedevice.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tformhostbridgedevice.bitbtnsave.caption
 msgctxt "tformhostbridgedevice.bitbtnsave.caption"
 msgid "Save"
@@ -246,6 +266,11 @@ msgctxt "tformhostbridgedevice.label1.caption"
 msgid "Device"
 msgstr ""
 
+#: tforminputdevice.bitbtnclose.caption
+msgctxt "tforminputdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tforminputdevice.bitbtnsave.caption
 msgctxt "tforminputdevice.bitbtnsave.caption"
 msgid "Save"
@@ -263,6 +288,11 @@ msgstr ""
 #: tforminputdevice.label1.caption
 msgctxt "tforminputdevice.label1.caption"
 msgid "Path"
+msgstr ""
+
+#: tformlpcdevice.bitbtnclose.caption
+msgctxt "tformlpcdevice.bitbtnclose.caption"
+msgid "Close"
 msgstr ""
 
 #: tformlpcdevice.bitbtnsave.caption
@@ -311,6 +341,11 @@ msgstr ""
 msgid "Fwcfg"
 msgstr ""
 
+#: tformnetworkdevice.bitbtnclose.caption
+msgctxt "tformnetworkdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tformnetworkdevice.bitbtnsave.caption
 msgctxt "tformnetworkdevice.bitbtnsave.caption"
 msgid "Save"
@@ -343,6 +378,7 @@ msgid "Mtu"
 msgstr ""
 
 #: tformpacketfilterrules.bitbtnclose.caption
+msgctxt "tformpacketfilterrules.bitbtnclose.caption"
 msgid "Close"
 msgstr ""
 
@@ -488,6 +524,11 @@ msgctxt "tformpacketfilterrules.tabsheetredirect.caption"
 msgid "Redirect"
 msgstr ""
 
+#: tformpassthrudevice.bitbtnclose.caption
+msgctxt "tformpassthrudevice.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tformpassthrudevice.bitbtnsave.caption
 msgctxt "tformpassthrudevice.bitbtnsave.caption"
 msgid "Save"
@@ -514,6 +555,11 @@ msgstr ""
 
 #: tformpassthrudevice.label6.caption
 msgid "Rom"
+msgstr ""
+
+#: tformrdpconnection.bitbtnclose.caption
+msgctxt "tformrdpconnection.bitbtnclose.caption"
+msgid "Close"
 msgstr ""
 
 #: tformrdpconnection.bitbtnconnect.caption
@@ -809,6 +855,11 @@ msgctxt "tformsettings.tabsheetpaths.caption"
 msgid "Path settings"
 msgstr ""
 
+#: tformsharefolderdevice.bitbtnclose.caption
+msgctxt "tformsharefolderdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tformsharefolderdevice.bitbtnsave.caption
 msgctxt "tformsharefolderdevice.bitbtnsave.caption"
 msgid "Save"
@@ -839,6 +890,11 @@ msgstr ""
 #: tformsharefolderdevice.label6.caption
 msgctxt "tformsharefolderdevice.label6.caption"
 msgid "Path"
+msgstr ""
+
+#: tformstoragedevice.bitbtnclose.caption
+msgctxt "tformstoragedevice.bitbtnclose.caption"
+msgid "Close"
 msgstr ""
 
 #: tformstoragedevice.bitbtnsave.caption
@@ -1005,6 +1061,11 @@ msgstr ""
 msgid "Sectsz"
 msgstr ""
 
+#: tformvmcreate.bitbtnclose.caption
+msgctxt "tformvmcreate.bitbtnclose.caption"
+msgid "Close"
+msgstr ""
+
 #: tformvmcreate.bitbtncreatevm.caption
 msgid "Create Virtual Machine"
 msgstr ""
@@ -1068,14 +1129,6 @@ msgstr ""
 msgid "Wait for VNC connection for boot"
 msgstr ""
 
-#: tformvmcreate.groupbox1.caption
-msgid "Name and operating system"
-msgstr ""
-
-#: tformvmcreate.groupbox2.caption
-msgid "Initial configuration"
-msgstr ""
-
 #: tformvmcreate.groupboxdownloadimage.caption
 msgid "Download image"
 msgstr ""
@@ -1084,12 +1137,22 @@ msgstr ""
 msgid "Files configuration"
 msgstr ""
 
+#: tformvmcreate.groupboxinitial.caption
+msgctxt "tformvmcreate.groupboxinitial.caption"
+msgid "Initial configuration"
+msgstr ""
+
 #: tformvmcreate.groupboxminimalconfiguration.caption
 msgid "Minimal configuration"
 msgstr ""
 
 #: tformvmcreate.groupboxnewvirtualdisk.caption
 msgid "New virtual disk"
+msgstr ""
+
+#: tformvmcreate.groupboxos.caption
+msgctxt "tformvmcreate.groupboxos.caption"
+msgid "Name and operating system"
 msgstr ""
 
 #: tformvmcreate.groupboxselectimage.caption
@@ -1243,6 +1306,11 @@ msgstr ""
 #: tformvmcreate.tabsheetimage.caption
 msgctxt "tformvmcreate.tabsheetimage.caption"
 msgid "Image"
+msgstr ""
+
+#: tformvminfo.bitbtnclose.caption
+msgctxt "tformvminfo.bitbtnclose.caption"
+msgid "Close"
 msgstr ""
 
 #: tformvminfo.bitbtnsave.caption

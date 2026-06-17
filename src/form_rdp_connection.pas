@@ -44,6 +44,7 @@ type
 
   TFormRdpConnection = class(TForm)
     BitBtnConnect: TBitBtn;
+    BitBtnClose: TBitBtn;
     ComboBoxResolution: TComboBox;
     EditUsername: TEdit;
     EditPassword: TEdit;
@@ -52,6 +53,7 @@ type
     Label4: TLabel;
     Label6: TLabel;
     StatusBarDisplayDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -90,6 +92,11 @@ end;
 procedure TFormRdpConnection.FormDeactivate(Sender: TObject);
 begin
   FormAction:=EmptyStr;
+end;
+
+procedure TFormRdpConnection.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 function TFormRdpConnection.FormValidate(): Boolean;

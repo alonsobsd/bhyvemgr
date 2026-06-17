@@ -44,6 +44,7 @@ type
 
   TFormNetworkDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     ComboBoxDevice: TComboBox;
     EditBackend: TEdit;
     EditMac: TEdit;
@@ -54,6 +55,7 @@ type
     Label4: TLabel;
     SpinEditExMtu: TSpinEditEx;
     StatusBarNetworkDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
   public
@@ -84,6 +86,11 @@ begin
   else if not CheckNetworkDeviceName(Trim(EditBackend.Text)) then Result:=False
   else if Trim(EditMac.Text).IsEmpty then Result:=False
   else if SpinEditExMtu.Value = 0 then Result:=False
+end;
+
+procedure TFormNetworkDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFormNetworkDevice.FillComboDevice(Combo: TComboBox);

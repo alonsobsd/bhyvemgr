@@ -4,5 +4,6 @@
 {"hash":145417188,"name":"tformrdpconnection.label4.caption","sourcebytes":[80,97,115,115,119,111,114,100],"value":"Password"},
 {"hash":164185077,"name":"tformrdpconnection.label6.caption","sourcebytes":[85,115,101,114,110,97,109,101],"value":"Username"},
 {"hash":104408318,"name":"tformrdpconnection.label1.caption","sourcebytes":[82,101,115,111,108,117,116,105,111,110],"value":"Resolution"},
-{"hash":174410724,"name":"tformrdpconnection.bitbtnconnect.caption","sourcebytes":[67,111,110,110,101,99,116],"value":"Connect"}
+{"hash":174410724,"name":"tformrdpconnection.bitbtnconnect.caption","sourcebytes":[67,111,110,110,101,99,116],"value":"Connect"},
+{"hash":4863637,"name":"tformrdpconnection.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

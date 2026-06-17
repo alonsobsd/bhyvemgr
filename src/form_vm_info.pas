@@ -44,6 +44,7 @@ type
 
   TFormVmInfo = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     CheckBoxPf: TCheckBox;
     CheckBoxIpv6: TCheckBox;
     CheckBoxNat: TCheckBox;

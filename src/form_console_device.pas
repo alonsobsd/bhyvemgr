@@ -44,6 +44,7 @@ type
 
   TFormConsoleDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     ComboBoxDevice: TComboBox;
     EditPath: TEdit;
     EditName: TEdit;
@@ -52,6 +53,7 @@ type
     Label5: TLabel;
     Label6: TLabel;
     StatusBarConsoleDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
   public
@@ -73,6 +75,11 @@ uses
   unit_global;
 
 { TFormConsoleDevice }
+
+procedure TFormConsoleDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
+end;
 
 procedure TFormConsoleDevice.FillComboDevice(Combo: TComboBox);
 begin

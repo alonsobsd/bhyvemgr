@@ -7,7 +7,7 @@ object FormInputDevice: TFormInputDevice
   ClientHeight = 156
   ClientWidth = 348
   Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 80
@@ -35,12 +35,11 @@ object FormInputDevice: TFormInputDevice
     end
   end
   object BitBtnSave: TBitBtn
-    Left = 120
+    Left = 72
     Height = 30
     Top = 96
     Width = 96
     Caption = 'Save'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -87,5 +86,17 @@ object FormInputDevice: TFormInputDevice
     Top = 133
     Width = 348
     Panels = <>
+  end
+  object BitBtnClose: TBitBtn
+    Left = 176
+    Height = 30
+    Top = 96
+    Width = 96
+    Caption = 'Close'
+    Kind = bkClose
+    Layout = blGlyphRight
+    ModalResult = 11
+    TabOrder = 2
+    OnClick = BitBtnCloseClick
   end
 end

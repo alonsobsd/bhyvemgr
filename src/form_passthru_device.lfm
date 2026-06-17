@@ -8,7 +8,7 @@ object FormPassthruDevice: TFormPassthruDevice
   ClientHeight = 218
   ClientWidth = 521
   Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 144
@@ -19,7 +19,7 @@ object FormPassthruDevice: TFormPassthruDevice
     ClientWidth = 500
     TabOrder = 0
     object ComboBoxDevice: TComboBox
-      Left = 88
+      Left = 104
       Height = 32
       Top = 8
       Width = 152
@@ -43,10 +43,10 @@ object FormPassthruDevice: TFormPassthruDevice
       Caption = 'Description'
     end
     object EditDescripcion: TEdit
-      Left = 88
+      Left = 104
       Height = 32
       Top = 40
-      Width = 400
+      Width = 384
       ReadOnly = True
       TabOrder = 1
     end
@@ -58,10 +58,10 @@ object FormPassthruDevice: TFormPassthruDevice
       Caption = 'Rom'
     end
     object FileNameEditRom: TFileNameEdit
-      Left = 88
+      Left = 104
       Height = 32
       Top = 72
-      Width = 399
+      Width = 383
       InitialDir = '~/'
       FilterIndex = 0
       HideDirectories = False
@@ -73,12 +73,11 @@ object FormPassthruDevice: TFormPassthruDevice
     end
   end
   object BitBtnSave: TBitBtn
-    Left = 216
+    Left = 160
     Height = 30
     Top = 160
     Width = 96
     Caption = 'Save'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -125,5 +124,17 @@ object FormPassthruDevice: TFormPassthruDevice
     Top = 195
     Width = 521
     Panels = <>
+  end
+  object BitBtnClose: TBitBtn
+    Left = 264
+    Height = 30
+    Top = 160
+    Width = 96
+    Caption = 'Close'
+    Kind = bkClose
+    Layout = blGlyphRight
+    ModalResult = 11
+    TabOrder = 2
+    OnClick = BitBtnCloseClick
   end
 end

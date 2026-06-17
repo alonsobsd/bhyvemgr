@@ -28,6 +28,11 @@ msgstr ""
 msgid "LabelVersion"
 msgstr ""
 
+#: tformaudiodevice.bitbtnclose.caption
+msgctxt "tformaudiodevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tformaudiodevice.bitbtnsave.caption
 msgctxt "tformaudiodevice.bitbtnsave.caption"
 msgid "Save"
@@ -160,6 +165,11 @@ msgstr ""
 msgid "Value"
 msgstr "Valor"
 
+#: tformconsoledevice.bitbtnclose.caption
+msgctxt "tformconsoledevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tformconsoledevice.bitbtnsave.caption
 msgctxt "tformconsoledevice.bitbtnsave.caption"
 msgid "Save"
@@ -188,6 +198,11 @@ msgstr "Nombre"
 msgctxt "tformconsoledevice.label6.caption"
 msgid "Path"
 msgstr "Ruta"
+
+#: tformdisplaydevice.bitbtnclose.caption
+msgctxt "tformdisplaydevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
 
 #: tformdisplaydevice.bitbtnsave.caption
 msgctxt "tformdisplaydevice.bitbtnsave.caption"
@@ -234,6 +249,11 @@ msgstr "Vga"
 msgid "Host"
 msgstr "Host"
 
+#: tformhostbridgedevice.bitbtnclose.caption
+msgctxt "tformhostbridgedevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tformhostbridgedevice.bitbtnsave.caption
 msgctxt "tformhostbridgedevice.bitbtnsave.caption"
 msgid "Save"
@@ -257,6 +277,11 @@ msgctxt "tformhostbridgedevice.label1.caption"
 msgid "Device"
 msgstr "Dispositivo"
 
+#: tforminputdevice.bitbtnclose.caption
+msgctxt "tforminputdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tforminputdevice.bitbtnsave.caption
 msgctxt "tforminputdevice.bitbtnsave.caption"
 msgid "Save"
@@ -275,6 +300,11 @@ msgstr "Configuración general"
 msgctxt "tforminputdevice.label1.caption"
 msgid "Path"
 msgstr "Ruta"
+
+#: tformlpcdevice.bitbtnclose.caption
+msgctxt "tformlpcdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
 
 #: tformlpcdevice.bitbtnsave.caption
 msgctxt "tformlpcdevice.bitbtnsave.caption"
@@ -322,6 +352,11 @@ msgstr ""
 msgid "Fwcfg"
 msgstr ""
 
+#: tformnetworkdevice.bitbtnclose.caption
+msgctxt "tformnetworkdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tformnetworkdevice.bitbtnsave.caption
 msgctxt "tformnetworkdevice.bitbtnsave.caption"
 msgid "Save"
@@ -354,6 +389,7 @@ msgid "Mtu"
 msgstr ""
 
 #: tformpacketfilterrules.bitbtnclose.caption
+msgctxt "tformpacketfilterrules.bitbtnclose.caption"
 msgid "Close"
 msgstr "Cerrar"
 
@@ -499,6 +535,11 @@ msgctxt "tformpacketfilterrules.tabsheetredirect.caption"
 msgid "Redirect"
 msgstr "Redirección"
 
+#: tformpassthrudevice.bitbtnclose.caption
+msgctxt "tformpassthrudevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tformpassthrudevice.bitbtnsave.caption
 msgctxt "tformpassthrudevice.bitbtnsave.caption"
 msgid "Save"
@@ -526,6 +567,11 @@ msgstr "Descripción"
 #: tformpassthrudevice.label6.caption
 msgid "Rom"
 msgstr ""
+
+#: tformrdpconnection.bitbtnclose.caption
+msgctxt "tformrdpconnection.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
 
 #: tformrdpconnection.bitbtnconnect.caption
 msgid "Connect"
@@ -820,6 +866,11 @@ msgctxt "tformsettings.tabsheetpaths.caption"
 msgid "Path settings"
 msgstr "Configuración de rutas"
 
+#: tformsharefolderdevice.bitbtnclose.caption
+msgctxt "tformsharefolderdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tformsharefolderdevice.bitbtnsave.caption
 msgctxt "tformsharefolderdevice.bitbtnsave.caption"
 msgid "Save"
@@ -851,6 +902,11 @@ msgstr ""
 msgctxt "tformsharefolderdevice.label6.caption"
 msgid "Path"
 msgstr "Ruta"
+
+#: tformstoragedevice.bitbtnclose.caption
+msgctxt "tformstoragedevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
 
 #: tformstoragedevice.bitbtnsave.caption
 msgctxt "tformstoragedevice.bitbtnsave.caption"
@@ -1016,6 +1072,11 @@ msgstr ""
 msgid "Sectsz"
 msgstr ""
 
+#: tformvmcreate.bitbtnclose.caption
+msgctxt "tformvmcreate.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
 #: tformvmcreate.bitbtncreatevm.caption
 msgid "Create Virtual Machine"
 msgstr "Crear máquina virtual"
@@ -1079,14 +1140,6 @@ msgstr "Usar IPv6 estática"
 msgid "Wait for VNC connection for boot"
 msgstr "Esperar por una conexión VNC para iniciar"
 
-#: tformvmcreate.groupbox1.caption
-msgid "Name and operating system"
-msgstr "Nombre y sistema operativo"
-
-#: tformvmcreate.groupbox2.caption
-msgid "Initial configuration"
-msgstr "Configuración inicial"
-
 #: tformvmcreate.groupboxdownloadimage.caption
 msgid "Download image"
 msgstr "Descargar imagen"
@@ -1095,6 +1148,11 @@ msgstr "Descargar imagen"
 msgid "Files configuration"
 msgstr "Configuración desde archivos"
 
+#: tformvmcreate.groupboxinitial.caption
+msgctxt "tformvmcreate.groupboxinitial.caption"
+msgid "Initial configuration"
+msgstr "Configuración inicial"
+
 #: tformvmcreate.groupboxminimalconfiguration.caption
 msgid "Minimal configuration"
 msgstr "Configuración mínima"
@@ -1102,6 +1160,11 @@ msgstr "Configuración mínima"
 #: tformvmcreate.groupboxnewvirtualdisk.caption
 msgid "New virtual disk"
 msgstr "Nuevo disco virtual"
+
+#: tformvmcreate.groupboxos.caption
+msgctxt "tformvmcreate.groupboxos.caption"
+msgid "Name and operating system"
+msgstr "Nombre y sistema operativo"
 
 #: tformvmcreate.groupboxselectimage.caption
 msgid "Select image"
@@ -1255,6 +1318,11 @@ msgstr ""
 msgctxt "tformvmcreate.tabsheetimage.caption"
 msgid "Image"
 msgstr "Imagen"
+
+#: tformvminfo.bitbtnclose.caption
+msgctxt "tformvminfo.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
 
 #: tformvminfo.bitbtnsave.caption
 msgctxt "tformvminfo.bitbtnsave.caption"

@@ -5,5 +5,6 @@
 {"hash":142220292,"name":"tformnetworkdevice.label10.caption","sourcebytes":[66,97,99,107,101,110,100],"value":"Backend"},
 {"hash":21363,"name":"tformnetworkdevice.label13.caption","sourcebytes":[77,97,99],"value":"Mac"},
 {"hash":21685,"name":"tformnetworkdevice.label4.caption","sourcebytes":[77,116,117],"value":"Mtu"},
-{"hash":366789,"name":"tformnetworkdevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+{"hash":366789,"name":"tformnetworkdevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":4863637,"name":"tformnetworkdevice.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

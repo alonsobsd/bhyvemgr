@@ -44,12 +44,14 @@ type
 
   TFormAudioDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     EditPlayDevice: TEdit;
     EditRecDevice: TEdit;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
     StatusBarAudioDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
   private
   public
     FormAction : String;
@@ -68,6 +70,11 @@ uses
   unit_global;
 
 { TFormAudioDevice }
+
+procedure TFormAudioDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
+end;
 
 function TFormAudioDevice.FormValidate(): Boolean;
 begin

@@ -44,10 +44,12 @@ type
 
   TFormInputDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     ComboBoxInputDevice: TComboBox;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     StatusBarInputDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
   public
@@ -67,6 +69,11 @@ uses
   unit_global, unit_util;
 
 { TFormInputDevice }
+
+procedure TFormInputDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
+end;
 
 procedure TFormInputDevice.FillComboDevice(Combo: TComboBox);
 var

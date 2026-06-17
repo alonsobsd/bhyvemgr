@@ -43,6 +43,7 @@ type
   { TFormVmCreate }
 
   TFormVmCreate = class(TForm)
+    BitBtnClose: TBitBtn;
     BitBtnDownloadPaste: TBitBtn;
     BitBtnDownload: TBitBtn;
     BitBtnCreateVm: TBitBtn;
@@ -80,8 +81,8 @@ type
     FileNameEditUserData: TFileNameEdit;
     FileNameEditMetaData: TFileNameEdit;
     FileNameEditNetworkConfig: TFileNameEdit;
-    GroupBox1: TGroupBox;
-    GroupBox2: TGroupBox;
+    GroupBoxOs: TGroupBox;
+    GroupBoxInitial: TGroupBox;
     GroupBoxStaticIPv4: TGroupBox;
     GroupBoxDownloadImage: TGroupBox;
     GroupBoxSelectImage: TGroupBox;
@@ -125,6 +126,7 @@ type
     StatusBarVmCreate: TStatusBar;
     TabSheetGeneral: TTabSheet;
     TabSheetImage: TTabSheet;
+    procedure BitBtnCloseClick(Sender: TObject);
     procedure BitBtnDownloadClick(Sender: TObject);
     procedure BitBtnDownloadPasteClick(Sender: TObject);
     procedure BitBtnSshPasteClick(Sender: TObject);
@@ -155,6 +157,7 @@ type
     procedure RadioButtonNotDiskChange(Sender: TObject);
     procedure RadioButtonNotDiskClick(Sender: TObject);
   private
+    CloseButton : Boolean;
     MyAppThread: AppProgressBarThread;
     function ConvertFileToRaw(ImageFile : String):Boolean;
     procedure ShowStatus(Status: Integer; AppPid: Integer);
@@ -180,6 +183,7 @@ uses
 
 procedure TFormVmCreate.FormShow(Sender: TObject);
 begin
+  CloseButton:=False;
   ProcessPid:=-1;
 
   PageControlVmCreate.ActivePage:=TabSheetGeneral;
@@ -858,6 +862,13 @@ begin
   end;
 end;
 
+procedure TFormVmCreate.BitBtnCloseClick(Sender: TObject);
+begin
+  CloseButton:=True;
+
+  Close;
+end;
+
 procedure TFormVmCreate.BitBtnDownloadPasteClick(Sender: TObject);
 begin
   EditUrlImage.Text:=TrimRight(TrimLeft(Clipboard.AsText));
@@ -957,11 +968,15 @@ end;
 
 procedure TFormVmCreate.EditVmNameEditingDone(Sender: TObject);
 begin
+  if not Trim(EditVmName.Text).IsEmpty then
     EditVmFolderPath.Text:= VmPath + '/' + EditVmName.Text
 end;
 
 procedure TFormVmCreate.EditVmNameExit(Sender: TObject);
 begin
+  if ActiveControl = BitBtnClose then
+    Exit;
+
   if not CheckVmName(EditVmName.Text) then
   begin
     PageControlVmCreate.ActivePageIndex:=0;

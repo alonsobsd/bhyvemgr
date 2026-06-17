@@ -4,5 +4,6 @@
 {"hash":78434197,"name":"tformpassthrudevice.label1.caption","sourcebytes":[68,101,118,105,99,101],"value":"Device"},
 {"hash":156067838,"name":"tformpassthrudevice.label4.caption","sourcebytes":[68,101,115,99,114,105,112,116,105,111,110],"value":"Description"},
 {"hash":22877,"name":"tformpassthrudevice.label6.caption","sourcebytes":[82,111,109],"value":"Rom"},
-{"hash":366789,"name":"tformpassthrudevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+{"hash":366789,"name":"tformpassthrudevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":4863637,"name":"tformpassthrudevice.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

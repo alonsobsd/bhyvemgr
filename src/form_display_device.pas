@@ -43,6 +43,7 @@ type
   { TFormDisplayDevice }
 
   TFormDisplayDevice = class(TForm)
+    BitBtnClose: TBitBtn;
     BitBtnSave: TBitBtn;
     CheckBoxOnlyLocalhost: TCheckBox;
     CheckBoxWaitVnc: TCheckBox;
@@ -57,6 +58,7 @@ type
     Label5: TLabel;
     Label6: TLabel;
     StatusBarDisplayDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
     procedure CheckBoxOnlyLocalhostChange(Sender: TObject);
     procedure CheckBoxUsePasswordChange(Sender: TObject);
   private
@@ -86,6 +88,11 @@ begin
     ComboBoxHost.ItemIndex:=ComboBoxHost.Items.IndexOf('127.0.0.1:'+HostPort)
   else
     ComboBoxHost.ItemIndex:=ComboBoxHost.Items.IndexOf('0.0.0.0:'+HostPort);
+end;
+
+procedure TFormDisplayDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close
 end;
 
 procedure TFormDisplayDevice.CheckBoxUsePasswordChange(Sender: TObject);

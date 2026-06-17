@@ -37,5 +37,6 @@
 {"hash":26407466,"name":"tformstoragedevice.editnvmesectsz.text","sourcebytes":[69,100,105,116,78,118,109,101,83,101,99,116,115,122],"value":"EditNvmeSectsz"},
 {"hash":137111812,"name":"tformstoragedevice.editnvmeeui64.text","sourcebytes":[69,100,105,116,78,118,109,101,69,117,105,54,52],"value":"EditNvmeEui64"},
 {"hash":429231,"name":"tformstoragedevice.comboboxnvmedsm.text","sourcebytes":[97,117,116,111],"value":"auto"},
-{"hash":366789,"name":"tformstoragedevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+{"hash":366789,"name":"tformstoragedevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":4863637,"name":"tformstoragedevice.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

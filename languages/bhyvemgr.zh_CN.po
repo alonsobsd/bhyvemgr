@@ -28,6 +28,11 @@ msgstr "架构标签"
 msgid "LabelVersion"
 msgstr "版本标签"
 
+#: tformaudiodevice.bitbtnclose.caption
+msgctxt "tformaudiodevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tformaudiodevice.bitbtnsave.caption
 msgctxt "tformaudiodevice.bitbtnsave.caption"
 msgid "Save"
@@ -160,6 +165,11 @@ msgstr "下拉框值"
 msgid "Value"
 msgstr "值"
 
+#: tformconsoledevice.bitbtnclose.caption
+msgctxt "tformconsoledevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tformconsoledevice.bitbtnsave.caption
 msgctxt "tformconsoledevice.bitbtnsave.caption"
 msgid "Save"
@@ -188,6 +198,12 @@ msgstr "名称"
 msgctxt "tformconsoledevice.label6.caption"
 msgid "Path"
 msgstr "路径"
+
+#: tformdisplaydevice.bitbtnclose.caption
+#, fuzzy
+msgctxt "tformdisplaydevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
 
 #: tformdisplaydevice.bitbtnsave.caption
 msgctxt "tformdisplaydevice.bitbtnsave.caption"
@@ -234,6 +250,11 @@ msgstr "VGA"
 msgid "Host"
 msgstr "主机"
 
+#: tformhostbridgedevice.bitbtnclose.caption
+msgctxt "tformhostbridgedevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tformhostbridgedevice.bitbtnsave.caption
 msgctxt "tformhostbridgedevice.bitbtnsave.caption"
 msgid "Save"
@@ -257,6 +278,11 @@ msgctxt "tformhostbridgedevice.label1.caption"
 msgid "Device"
 msgstr "设备"
 
+#: tforminputdevice.bitbtnclose.caption
+msgctxt "tforminputdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tforminputdevice.bitbtnsave.caption
 msgctxt "tforminputdevice.bitbtnsave.caption"
 msgid "Save"
@@ -275,6 +301,11 @@ msgstr "通用设置"
 msgctxt "tforminputdevice.label1.caption"
 msgid "Path"
 msgstr "路径"
+
+#: tformlpcdevice.bitbtnclose.caption
+msgctxt "tformlpcdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
 
 #: tformlpcdevice.bitbtnsave.caption
 msgctxt "tformlpcdevice.bitbtnsave.caption"
@@ -322,6 +353,11 @@ msgstr "Com4"
 msgid "Fwcfg"
 msgstr ""
 
+#: tformnetworkdevice.bitbtnclose.caption
+msgctxt "tformnetworkdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tformnetworkdevice.bitbtnsave.caption
 msgctxt "tformnetworkdevice.bitbtnsave.caption"
 msgid "Save"
@@ -354,6 +390,7 @@ msgid "Mtu"
 msgstr "MTU"
 
 #: tformpacketfilterrules.bitbtnclose.caption
+msgctxt "tformpacketfilterrules.bitbtnclose.caption"
 msgid "Close"
 msgstr "关闭"
 
@@ -499,6 +536,11 @@ msgctxt "tformpacketfilterrules.tabsheetredirect.caption"
 msgid "Redirect"
 msgstr "重定向"
 
+#: tformpassthrudevice.bitbtnclose.caption
+msgctxt "tformpassthrudevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tformpassthrudevice.bitbtnsave.caption
 msgctxt "tformpassthrudevice.bitbtnsave.caption"
 msgid "Save"
@@ -526,6 +568,11 @@ msgstr "描述"
 #: tformpassthrudevice.label6.caption
 msgid "Rom"
 msgstr "ROM"
+
+#: tformrdpconnection.bitbtnclose.caption
+msgctxt "tformrdpconnection.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
 
 #: tformrdpconnection.bitbtnconnect.caption
 msgid "Connect"
@@ -820,6 +867,11 @@ msgctxt "tformsettings.tabsheetpaths.caption"
 msgid "Path settings"
 msgstr "路径设置"
 
+#: tformsharefolderdevice.bitbtnclose.caption
+msgctxt "tformsharefolderdevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tformsharefolderdevice.bitbtnsave.caption
 msgctxt "tformsharefolderdevice.bitbtnsave.caption"
 msgid "Save"
@@ -851,6 +903,11 @@ msgstr "共享名称"
 msgctxt "tformsharefolderdevice.label6.caption"
 msgid "Path"
 msgstr "路径"
+
+#: tformstoragedevice.bitbtnclose.caption
+msgctxt "tformstoragedevice.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
 
 #: tformstoragedevice.bitbtnsave.caption
 msgctxt "tformstoragedevice.bitbtnsave.caption"
@@ -1016,6 +1073,11 @@ msgstr "IO 槽"
 msgid "Sectsz"
 msgstr "扇区大小"
 
+#: tformvmcreate.bitbtnclose.caption
+msgctxt "tformvmcreate.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
 #: tformvmcreate.bitbtncreatevm.caption
 msgid "Create Virtual Machine"
 msgstr "创建虚拟机"
@@ -1079,14 +1141,6 @@ msgstr "使用静态 IPv6"
 msgid "Wait for VNC connection for boot"
 msgstr "等待 VNC 连接后再启动"
 
-#: tformvmcreate.groupbox1.caption
-msgid "Name and operating system"
-msgstr "名称和操作系统"
-
-#: tformvmcreate.groupbox2.caption
-msgid "Initial configuration"
-msgstr "初始化配置"
-
 #: tformvmcreate.groupboxdownloadimage.caption
 msgid "Download image"
 msgstr "下载镜像"
@@ -1095,6 +1149,11 @@ msgstr "下载镜像"
 msgid "Files configuration"
 msgstr "文件配置"
 
+#: tformvmcreate.groupboxinitial.caption
+msgctxt "tformvmcreate.groupboxinitial.caption"
+msgid "Initial configuration"
+msgstr "初始化配置"
+
 #: tformvmcreate.groupboxminimalconfiguration.caption
 msgid "Minimal configuration"
 msgstr "最简配置"
@@ -1102,6 +1161,11 @@ msgstr "最简配置"
 #: tformvmcreate.groupboxnewvirtualdisk.caption
 msgid "New virtual disk"
 msgstr "创建虚拟磁盘"
+
+#: tformvmcreate.groupboxos.caption
+msgctxt "tformvmcreate.groupboxos.caption"
+msgid "Name and operating system"
+msgstr "名称和操作系统"
 
 #: tformvmcreate.groupboxselectimage.caption
 msgid "Select image"
@@ -1255,6 +1319,11 @@ msgstr "通用"
 msgctxt "tformvmcreate.tabsheetimage.caption"
 msgid "Image"
 msgstr "镜像"
+
+#: tformvminfo.bitbtnclose.caption
+msgctxt "tformvminfo.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
 
 #: tformvminfo.bitbtnsave.caption
 msgctxt "tformvminfo.bitbtnsave.caption"

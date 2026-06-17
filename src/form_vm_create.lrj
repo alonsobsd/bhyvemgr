@@ -2,13 +2,13 @@
 {"hash":148564997,"name":"tformvmcreate.caption","sourcebytes":[66,104,121,118,101,32,77,97,110,97,103,101,114,32,45,32,67,114,101,97,116,101,32,118,105,114,116,117,97,108,32,109,97,99,104,105,110,101],"value":"Bhyve Manager - Create virtual machine"},
 {"hash":39937093,"name":"tformvmcreate.bitbtncreatevm.caption","sourcebytes":[67,114,101,97,116,101,32,86,105,114,116,117,97,108,32,77,97,99,104,105,110,101],"value":"Create Virtual Machine"},
 {"hash":231000124,"name":"tformvmcreate.tabsheetgeneral.caption","sourcebytes":[71,101,110,101,114,97,108],"value":"General"},
-{"hash":266100445,"name":"tformvmcreate.groupbox1.caption","sourcebytes":[78,97,109,101,32,97,110,100,32,111,112,101,114,97,116,105,110,103,32,115,121,115,116,101,109],"value":"Name and operating system"},
+{"hash":266100445,"name":"tformvmcreate.groupboxos.caption","sourcebytes":[78,97,109,101,32,97,110,100,32,111,112,101,114,97,116,105,110,103,32,115,121,115,116,101,109],"value":"Name and operating system"},
 {"hash":214540302,"name":"tformvmcreate.label8.caption","sourcebytes":[86,101,114,115,105,111,110],"value":"Version"},
 {"hash":376933,"name":"tformvmcreate.label7.caption","sourcebytes":[84,121,112,101],"value":"Type"},
 {"hash":81144514,"name":"tformvmcreate.label6.caption","sourcebytes":[70,111,108,100,101,114],"value":"Folder"},
 {"hash":346165,"name":"tformvmcreate.label3.caption","sourcebytes":[78,97,109,101],"value":"Name"},
 {"hash":156067838,"name":"tformvmcreate.label12.caption","sourcebytes":[68,101,115,99,114,105,112,116,105,111,110],"value":"Description"},
-{"hash":126046094,"name":"tformvmcreate.groupbox2.caption","sourcebytes":[73,110,105,116,105,97,108,32,99,111,110,102,105,103,117,114,97,116,105,111,110],"value":"Initial configuration"},
+{"hash":126046094,"name":"tformvmcreate.groupboxinitial.caption","sourcebytes":[73,110,105,116,105,97,108,32,99,111,110,102,105,103,117,114,97,116,105,111,110],"value":"Initial configuration"},
 {"hash":87836313,"name":"tformvmcreate.label1.caption","sourcebytes":[77,101,109,111,114,121],"value":"Memory"},
 {"hash":1298,"name":"tformvmcreate.label4.caption","sourcebytes":[77,66],"value":"MB"},
 {"hash":102458907,"name":"tformvmcreate.radiobuttonnotdisk.caption","sourcebytes":[68,111,32,110,111,116,32,97,100,100,32,118,105,114,116,117,97,108,32,100,105,115,107],"value":"Do not add virtual disk"},
@@ -53,5 +53,6 @@
 {"hash":139039635,"name":"tformvmcreate.groupboxstaticipv6.caption","sourcebytes":[83,116,97,116,105,99,32,73,80,118,54,32,115,101,116,116,105,110,103,115],"value":"Static IPv6 settings"},
 {"hash":55317699,"name":"tformvmcreate.label19.caption","sourcebytes":[73,80,118,54,32,97,100,100,114,101,115,115],"value":"IPv6 address"},
 {"hash":227200457,"name":"tformvmcreate.label20.caption","sourcebytes":[71,97,116,101,119,97,121],"value":"Gateway"},
-{"hash":93851538,"name":"tformvmcreate.label21.caption","sourcebytes":[68,78,83,32,83,101,114,118,101,114],"value":"DNS Server"}
+{"hash":93851538,"name":"tformvmcreate.label21.caption","sourcebytes":[68,78,83,32,83,101,114,118,101,114],"value":"DNS Server"},
+{"hash":4863637,"name":"tformvmcreate.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

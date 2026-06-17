@@ -5,5 +5,6 @@
 {"hash":22707,"name":"tformaudiodevice.label2.caption","sourcebytes":[82,101,99],"value":"Rec"},
 {"hash":111524261,"name":"tformaudiodevice.editplaydevice.text","sourcebytes":[69,100,105,116,80,108,97,121,68,101,118,105,99,101],"value":"EditPlayDevice"},
 {"hash":203183973,"name":"tformaudiodevice.editrecdevice.text","sourcebytes":[69,100,105,116,82,101,99,68,101,118,105,99,101],"value":"EditRecDevice"},
-{"hash":366789,"name":"tformaudiodevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+{"hash":366789,"name":"tformaudiodevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":4863637,"name":"tformaudiodevice.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

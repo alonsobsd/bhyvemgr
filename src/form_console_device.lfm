@@ -8,7 +8,7 @@ object FormConsoleDevice: TFormConsoleDevice
   ClientHeight = 220
   ClientWidth = 345
   Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 144
@@ -19,59 +19,58 @@ object FormConsoleDevice: TFormConsoleDevice
     ClientWidth = 324
     TabOrder = 0
     object Label3: TLabel
-      Left = 8
+      Left = 16
       Height = 18
       Top = 16
       Width = 39
       Caption = 'Device'
     end
     object ComboBoxDevice: TComboBox
-      Left = 85
+      Left = 96
       Height = 32
       Top = 8
-      Width = 224
+      Width = 213
       ItemHeight = 30
       ReadOnly = True
       TabOrder = 0
     end
     object Label5: TLabel
-      Left = 9
+      Left = 16
       Height = 18
       Top = 48
       Width = 36
       Caption = 'Name'
     end
     object EditName: TEdit
-      Left = 85
+      Left = 96
       Height = 32
       Top = 40
-      Width = 224
+      Width = 213
       ReadOnly = True
       TabOrder = 1
     end
     object Label6: TLabel
-      Left = 9
+      Left = 16
       Height = 18
       Top = 76
       Width = 28
       Caption = 'Path'
     end
     object EditPath: TEdit
-      Left = 85
+      Left = 96
       Height = 32
       Top = 72
-      Width = 224
+      Width = 213
       ReadOnly = True
       TabOrder = 2
     end
   end
   object BitBtnSave: TBitBtn
-    Left = 120
+    Left = 72
     Height = 30
     Top = 160
     Width = 96
     Caption = 'Save'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -118,5 +117,17 @@ object FormConsoleDevice: TFormConsoleDevice
     Top = 197
     Width = 345
     Panels = <>
+  end
+  object BitBtnClose: TBitBtn
+    Left = 176
+    Height = 30
+    Top = 160
+    Width = 96
+    Caption = 'Close'
+    Kind = bkClose
+    Layout = blGlyphRight
+    ModalResult = 11
+    TabOrder = 2
+    OnClick = BitBtnCloseClick
   end
 end

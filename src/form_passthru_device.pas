@@ -44,6 +44,7 @@ type
 
   TFormPassthruDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     ComboBoxDevice: TComboBox;
     EditDescripcion: TEdit;
     FileNameEditRom: TFileNameEdit;
@@ -52,6 +53,7 @@ type
     Label4: TLabel;
     Label6: TLabel;
     StatusBarPassthruDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
     procedure ComboBoxDeviceChange(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
@@ -79,6 +81,11 @@ begin
   begin
     EditDescripcion.Text:=GetPciDeviceDescripcion(ComboBoxDevice.Text);
   end;
+end;
+
+procedure TFormPassthruDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFormPassthruDevice.FillComboDevice(Combo: TComboBox);

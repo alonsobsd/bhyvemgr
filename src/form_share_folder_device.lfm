@@ -8,7 +8,7 @@ object FormShareFolderDevice: TFormShareFolderDevice
   ClientHeight = 253
   ClientWidth = 344
   Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 176
@@ -26,10 +26,10 @@ object FormShareFolderDevice: TFormShareFolderDevice
       Caption = 'Device'
     end
     object ComboBoxDevice: TComboBox
-      Left = 88
+      Left = 104
       Height = 32
       Top = 40
-      Width = 224
+      Width = 208
       ItemHeight = 30
       ReadOnly = True
       TabOrder = 1
@@ -50,17 +50,17 @@ object FormShareFolderDevice: TFormShareFolderDevice
       TabOrder = 0
     end
     object EditSharename: TEdit
-      Left = 88
+      Left = 104
       Height = 32
       Top = 72
-      Width = 224
+      Width = 208
       TabOrder = 2
     end
     object DirectoryEditPath: TDirectoryEdit
-      Left = 88
+      Left = 104
       Height = 32
       Top = 104
-      Width = 224
+      Width = 208
       RootDir = '~/'
       ShowHidden = False
       ButtonWidth = 23
@@ -78,12 +78,11 @@ object FormShareFolderDevice: TFormShareFolderDevice
     end
   end
   object BitBtnSave: TBitBtn
-    Left = 128
+    Left = 72
     Height = 30
     Top = 192
     Width = 96
     Caption = 'Save'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -130,5 +129,16 @@ object FormShareFolderDevice: TFormShareFolderDevice
     Top = 230
     Width = 344
     Panels = <>
+  end
+  object BitBtnClose: TBitBtn
+    Left = 176
+    Height = 30
+    Top = 192
+    Width = 96
+    Caption = 'Close'
+    Kind = bkClose
+    Layout = blGlyphRight
+    ModalResult = 11
+    TabOrder = 2
   end
 end

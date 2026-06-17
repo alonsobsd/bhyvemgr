@@ -35,7 +35,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 48
-          Width = 16
+          Width = 15
           Caption = 'AF'
         end
         object Label7: TLabel
@@ -72,7 +72,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 18
-          Width = 56
+          Width = 53
           Caption = 'Interface'
         end
         object ComboBoxInInterface: TComboBox
@@ -226,7 +226,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 48
-          Width = 16
+          Width = 15
           Caption = 'AF'
         end
         object Label3: TLabel
@@ -263,7 +263,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 18
-          Width = 56
+          Width = 53
           Caption = 'Interface'
         end
         object ComboBoxOutInterface: TComboBox
@@ -417,7 +417,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
           Left = 16
           Height = 18
           Top = 32
-          Width = 16
+          Width = 15
           Caption = 'AF'
         end
         object ComboBoxRdrAf: TComboBox
@@ -639,7 +639,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
       0000000000000000000000000000000000000000000000000000
     }
     ModalResult = 1
-    TabOrder = 2
+    TabOrder = 1
     OnClick = BitBtnSaveRulesClick
   end
   object BitBtnClose: TBitBtn
@@ -647,11 +647,10 @@ object FormPacketFilterRules: TFormPacketFilterRules
     Height = 30
     Top = 408
     Width = 256
-    Cancel = True
     Caption = 'Close'
-    Kind = bkCancel
-    ModalResult = 2
-    TabOrder = 3
+    Kind = bkClose
+    ModalResult = 11
+    TabOrder = 2
     OnClick = BitBtnCloseClick
   end
 end

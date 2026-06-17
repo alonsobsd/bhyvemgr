@@ -44,6 +44,7 @@ type
 
   TFormShareFolderDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     CheckBoxReadOnly: TCheckBox;
     ComboBoxDevice: TComboBox;
     DirectoryEditPath: TDirectoryEdit;

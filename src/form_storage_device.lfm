@@ -19,20 +19,20 @@ object FormStorageDevice: TFormStorageDevice
     ClientWidth = 571
     TabOrder = 0
     object ComboBoxStorageDevice: TComboBox
-      Left = 80
+      Left = 88
       Height = 32
       Top = 8
-      Width = 232
+      Width = 216
       ItemHeight = 30
       ReadOnly = True
       TabOrder = 0
       OnChange = ComboBoxStorageDeviceChange
     end
     object ComboBoxStorageType: TComboBox
-      Left = 80
+      Left = 88
       Height = 32
       Top = 40
-      Width = 232
+      Width = 216
       ItemHeight = 30
       ReadOnly = True
       TabOrder = 1
@@ -42,7 +42,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 11
       Height = 18
       Top = 16
-      Width = 48
+      Width = 47
       Caption = 'Storage'
     end
     object Label2: TLabel
@@ -56,7 +56,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 11
       Height = 22
       Top = 144
-      Width = 79
+      Width = 77
       Caption = 'no cache'
       TabOrder = 5
     end
@@ -64,7 +64,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 104
       Height = 22
       Top = 144
-      Width = 82
+      Width = 80
       Caption = 'no delete'
       TabOrder = 6
     end
@@ -72,7 +72,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 200
       Height = 22
       Top = 144
-      Width = 52
+      Width = 51
       Caption = 'sync'
       TabOrder = 7
     end
@@ -80,7 +80,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 264
       Height = 22
       Top = 144
-      Width = 82
+      Width = 81
       Caption = 'read-only'
       TabOrder = 8
     end
@@ -88,14 +88,14 @@ object FormStorageDevice: TFormStorageDevice
       Left = 11
       Height = 18
       Top = 112
-      Width = 21
+      Width = 20
       Caption = 'Ser'
     end
     object EditSer: TEdit
-      Left = 80
+      Left = 89
       Height = 32
       Top = 104
-      Width = 232
+      Width = 226
       MaxLength = 20
       TabOrder = 4
       Text = 'EditSer'
@@ -108,10 +108,10 @@ object FormStorageDevice: TFormStorageDevice
       Caption = 'Path'
     end
     object FileNameEditStoragePath: TFileNameEdit
-      Left = 81
+      Left = 89
       Height = 32
       Top = 72
-      Width = 480
+      Width = 472
       InitialDir = '~/'
       FilterIndex = 0
       HideDirectories = False
@@ -126,7 +126,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 376
       Height = 18
       Top = 48
-      Width = 24
+      Width = 23
       Caption = 'Size'
     end
     object SpinEditExDiskSize: TSpinEditEx
@@ -147,7 +147,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 544
       Height = 18
       Top = 48
-      Width = 18
+      Width = 17
       Caption = 'GB'
     end
   end
@@ -165,14 +165,14 @@ object FormStorageDevice: TFormStorageDevice
       Left = 408
       Height = 18
       Top = 16
-      Width = 34
+      Width = 33
       Caption = 'Nmrr'
     end
     object Label4: TLabel
       Left = 12
       Height = 18
       Top = 16
-      Width = 62
+      Width = 60
       Caption = 'Sectorsize'
     end
     object Label11: TLabel
@@ -195,14 +195,14 @@ object FormStorageDevice: TFormStorageDevice
       Left = 12
       Height = 18
       Top = 48
-      Width = 39
+      Width = 38
       Caption = 'Model'
     end
     object EditAhciModel: TEdit
-      Left = 80
+      Left = 96
       Height = 32
       Top = 40
-      Width = 287
+      Width = 272
       MaxLength = 40
       TabOrder = 3
       Text = 'EditAhciModel'
@@ -218,7 +218,7 @@ object FormStorageDevice: TFormStorageDevice
       Text = '0'
     end
     object EditAhciSectorSize: TEdit
-      Left = 81
+      Left = 96
       Height = 32
       Top = 8
       Width = 103
@@ -261,49 +261,49 @@ object FormStorageDevice: TFormStorageDevice
       Left = 205
       Height = 18
       Top = 40
-      Width = 23
+      Width = 22
       Caption = 'Qsz'
     end
     object Label8: TLabel
       Left = 396
       Height = 18
       Top = 36
-      Width = 41
+      Width = 40
       Caption = 'Ioslots'
     end
     object Label9: TLabel
       Left = 16
       Height = 18
       Top = 72
-      Width = 38
+      Width = 37
       Caption = 'Sectsz'
     end
     object Label13: TLabel
       Left = 205
       Height = 18
       Top = 72
-      Width = 35
+      Width = 33
       Caption = 'Eui64'
     end
     object Label14: TLabel
       Left = 396
       Height = 18
       Top = 68
-      Width = 28
+      Width = 27
       Caption = 'Dsm'
     end
     object Label15: TLabel
       Left = 204
       Height = 18
       Top = 102
-      Width = 21
+      Width = 20
       Caption = 'MB'
     end
     object CheckBoxNvmUseRam: TCheckBox
       Left = 12
       Height = 22
       Top = 8
-      Width = 74
+      Width = 72
       Caption = 'use ram'
       TabOrder = 0
       OnChange = CheckBoxNvmUseRamChange
@@ -312,7 +312,7 @@ object FormStorageDevice: TFormStorageDevice
       Left = 18
       Height = 18
       Top = 104
-      Width = 28
+      Width = 27
       Caption = 'Ram'
     end
     object EditNvmeMaxq: TEdit
@@ -377,12 +377,11 @@ object FormStorageDevice: TFormStorageDevice
     end
   end
   object BitBtnSave: TBitBtn
-    Left = 240
+    Left = 168
     Height = 30
     Top = 512
     Width = 112
     Caption = 'Save'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -429,5 +428,17 @@ object FormStorageDevice: TFormStorageDevice
     Top = 553
     Width = 593
     Panels = <>
+  end
+  object BitBtnClose: TBitBtn
+    Left = 288
+    Height = 30
+    Top = 512
+    Width = 112
+    Caption = 'Close'
+    Kind = bkClose
+    Layout = blGlyphRight
+    ModalResult = 11
+    TabOrder = 4
+    OnClick = BitBtnCloseClick
   end
 end

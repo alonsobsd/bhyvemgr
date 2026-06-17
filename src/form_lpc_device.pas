@@ -44,6 +44,7 @@ type
 
   TFormLpcDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     CheckBoxPcDebug: TCheckBox;
     CheckBoxCom1: TCheckBox;
     CheckBoxCom2: TCheckBox;
@@ -65,6 +66,7 @@ type
     Label6: TLabel;
     Label7: TLabel;
     StatusBarLpcDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
     procedure CheckBoxCom1Change(Sender: TObject);
     procedure CheckBoxCom2Change(Sender: TObject);
     procedure CheckBoxCom3Change(Sender: TObject);
@@ -96,6 +98,11 @@ begin
     ComboBoxCom1.Enabled:=True
   else
     ComboBoxCom1.Enabled:=False;
+end;
+
+procedure TFormLpcDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFormLpcDevice.CheckBoxCom2Change(Sender: TObject);

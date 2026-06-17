@@ -4,5 +4,6 @@
 {"hash":78434197,"name":"tformconsoledevice.label3.caption","sourcebytes":[68,101,118,105,99,101],"value":"Device"},
 {"hash":346165,"name":"tformconsoledevice.label5.caption","sourcebytes":[78,97,109,101],"value":"Name"},
 {"hash":354472,"name":"tformconsoledevice.label6.caption","sourcebytes":[80,97,116,104],"value":"Path"},
-{"hash":366789,"name":"tformconsoledevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+{"hash":366789,"name":"tformconsoledevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":4863637,"name":"tformconsoledevice.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

@@ -1,7 +1,7 @@
 object FormBhyveManager: TFormBhyveManager
-  Left = 500
+  Left = 775
   Height = 619
-  Top = 207
+  Top = 306
   Width = 820
   BorderStyle = bsSingle
   Caption = 'Bhyve Manager - FreeBSD'
@@ -21,7 +21,7 @@ object FormBhyveManager: TFormBhyveManager
     Top = 64
     Width = 384
     Caption = 'Virtual machines'
-    ClientHeight = 395
+    ClientHeight = 393
     ClientWidth = 380
     TabOrder = 1
     object VirtualMachinesTreeView: TTreeView
@@ -94,29 +94,29 @@ object FormBhyveManager: TFormBhyveManager
   end
   object StatusBarBhyveManager: TStatusBar
     Left = 0
-    Height = 23
-    Top = 596
+    Height = 25
+    Top = 594
     Width = 820
     BorderWidth = 1
     Panels = <>
   end
   object Label1: TLabel
     Left = 16
-    Height = 18
+    Height = 20
     Top = 502
-    Width = 75
+    Width = 84
     Caption = 'System type'
   end
   object Label2: TLabel
     Left = 16
-    Height = 18
+    Height = 20
     Top = 534
-    Width = 46
+    Width = 52
     Caption = 'Version'
   end
   object EditSystemType: TEdit
     Left = 136
-    Height = 32
+    Height = 34
     Top = 496
     Width = 144
     ReadOnly = True
@@ -124,7 +124,7 @@ object FormBhyveManager: TFormBhyveManager
   end
   object EditSystemVersion: TEdit
     Left = 136
-    Height = 32
+    Height = 34
     Top = 528
     Width = 248
     ReadOnly = True
@@ -132,14 +132,14 @@ object FormBhyveManager: TFormBhyveManager
   end
   object Label4: TLabel
     Left = 16
-    Height = 18
+    Height = 20
     Top = 568
-    Width = 70
+    Width = 79
     Caption = 'Description'
   end
   object EditDescription: TEdit
     Left = 136
-    Height = 32
+    Height = 34
     Top = 560
     Width = 408
     ReadOnly = True
@@ -987,10 +987,10 @@ object FormBhyveManager: TFormBhyveManager
   end
   object ComboBoxLanguage: TComboBox
     Left = 736
-    Height = 32
+    Height = 34
     Top = 16
     Width = 72
-    ItemHeight = 24
+    ItemHeight = 26
     Style = csDropDownList
     TabOrder = 0
     OnChange = ComboBoxLanguageChange
@@ -1028,8 +1028,8 @@ object FormBhyveManager: TFormBhyveManager
     }
   end
   object MainMenu1: TMainMenu
-    Left = 784
-    Top = 504
+    Left = 752
+    Top = 552
     object MenuItem5: TMenuItem
       Caption = '&File'
       object MenuItemExit: TMenuItem

@@ -44,6 +44,7 @@ type
 
   TFormStorageDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     CheckBoxNoCache: TCheckBox;
     CheckBoxNoDelete: TCheckBox;
     CheckBoxSync: TCheckBox;
@@ -87,6 +88,7 @@ type
     SpinEditExDiskSize: TSpinEditEx;
     SpinEditExNvmeRam: TSpinEditEx;
     StatusBarStorageDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
     procedure CheckBoxNvmUseRamChange(Sender: TObject);
     procedure ComboBoxStorageDeviceChange(Sender: TObject);
     procedure ComboBoxStorageTypeChange(Sender: TObject);
@@ -171,6 +173,11 @@ begin
   end
   else
     SpinEditExNvmeRam.Enabled:=False;
+end;
+
+procedure TFormStorageDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
 end;
 
 procedure TFormStorageDevice.ComboBoxStorageTypeChange(Sender: TObject);

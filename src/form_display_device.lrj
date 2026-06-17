@@ -8,5 +8,6 @@
 {"hash":224637412,"name":"tformdisplaydevice.checkboxusepassword.caption","sourcebytes":[85,115,101,32,112,97,115,115,119,111,114,100],"value":"Use password"},
 {"hash":201714254,"name":"tformdisplaydevice.checkboxonlylocalhost.caption","sourcebytes":[79,110,108,121,32,108,111,99,97,108,104,111,115,116,32,86,78,67,32,99,111,110,110,101,99,116,105,111,110],"value":"Only localhost VNC connection"},
 {"hash":325284,"name":"tformdisplaydevice.label6.caption","sourcebytes":[72,111,115,116],"value":"Host"},
-{"hash":366789,"name":"tformdisplaydevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"}
+{"hash":366789,"name":"tformdisplaydevice.bitbtnsave.caption","sourcebytes":[83,97,118,101],"value":"Save"},
+{"hash":4863637,"name":"tformdisplaydevice.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
 ]}

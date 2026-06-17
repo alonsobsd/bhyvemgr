@@ -8,7 +8,7 @@ object FormNetworkDevice: TFormNetworkDevice
   ClientHeight = 272
   ClientWidth = 337
   Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 192
@@ -19,7 +19,7 @@ object FormNetworkDevice: TFormNetworkDevice
     ClientWidth = 316
     TabOrder = 0
     object ComboBoxDevice: TComboBox
-      Left = 80
+      Left = 96
       Height = 32
       Top = 8
       Width = 112
@@ -42,7 +42,7 @@ object FormNetworkDevice: TFormNetworkDevice
       Caption = 'Backend'
     end
     object EditBackend: TEdit
-      Left = 80
+      Left = 96
       Height = 32
       Top = 40
       Width = 112
@@ -57,10 +57,10 @@ object FormNetworkDevice: TFormNetworkDevice
       Caption = 'Mac'
     end
     object EditMac: TEdit
-      Left = 80
+      Left = 96
       Height = 32
       Top = 72
-      Width = 224
+      Width = 200
       MaxLength = 20
       ReadOnly = True
       TabOrder = 2
@@ -73,7 +73,7 @@ object FormNetworkDevice: TFormNetworkDevice
       Caption = 'Mtu'
     end
     object SpinEditExMtu: TSpinEditEx
-      Left = 80
+      Left = 96
       Height = 32
       Top = 104
       Width = 103
@@ -85,12 +85,11 @@ object FormNetworkDevice: TFormNetworkDevice
     end
   end
   object BitBtnSave: TBitBtn
-    Left = 120
+    Left = 64
     Height = 30
     Top = 208
     Width = 96
     Caption = 'Save'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -137,5 +136,17 @@ object FormNetworkDevice: TFormNetworkDevice
     Top = 249
     Width = 337
     Panels = <>
+  end
+  object BitBtnClose: TBitBtn
+    Left = 168
+    Height = 30
+    Top = 208
+    Width = 96
+    Caption = 'Close'
+    Kind = bkClose
+    Layout = blGlyphRight
+    ModalResult = 11
+    TabOrder = 2
+    OnClick = BitBtnCloseClick
   end
 end

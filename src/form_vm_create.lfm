@@ -13,7 +13,7 @@ object FormVmCreate: TFormVmCreate
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   object BitBtnCreateVm: TBitBtn
-    Left = 200
+    Left = 16
     Height = 35
     Top = 664
     Width = 344
@@ -70,14 +70,14 @@ object FormVmCreate: TFormVmCreate
     Height = 642
     Top = 16
     Width = 712
-    ActivePage = TabSheetImage
-    TabIndex = 1
+    ActivePage = TabSheetGeneral
+    TabIndex = 0
     TabOrder = 0
     object TabSheetGeneral: TTabSheet
       Caption = 'General'
       ClientHeight = 607
       ClientWidth = 706
-      object GroupBox1: TGroupBox
+      object GroupBoxOs: TGroupBox
         Left = 8
         Height = 176
         Top = 8
@@ -129,35 +129,35 @@ object FormVmCreate: TFormVmCreate
           Left = 368
           Height = 18
           Top = 80
-          Width = 46
+          Width = 45
           Caption = 'Version'
         end
         object Label7: TLabel
-          Left = 32
+          Left = 16
           Height = 18
           Top = 76
           Width = 29
           Caption = 'Type'
         end
         object Label6: TLabel
-          Left = 32
+          Left = 16
           Height = 18
           Top = 48
-          Width = 40
+          Width = 39
           Caption = 'Folder'
         end
         object Label3: TLabel
-          Left = 32
+          Left = 16
           Height = 18
           Top = 11
-          Width = 37
+          Width = 36
           Caption = 'Name'
         end
         object Label12: TLabel
-          Left = 32
+          Left = 16
           Height = 18
           Top = 112
-          Width = 70
+          Width = 68
           Caption = 'Description'
         end
         object EditVmDescription: TEdit
@@ -169,7 +169,7 @@ object FormVmCreate: TFormVmCreate
           TabOrder = 4
         end
       end
-      object GroupBox2: TGroupBox
+      object GroupBoxInitial: TGroupBox
         Left = 8
         Height = 168
         Top = 192
@@ -179,34 +179,34 @@ object FormVmCreate: TFormVmCreate
         ClientWidth = 684
         TabOrder = 1
         object Label1: TLabel
-          Left = 32
+          Left = 16
           Height = 18
           Top = 14
-          Width = 52
+          Width = 51
           Caption = 'Memory'
         end
         object Label4: TLabel
           Left = 216
           Height = 18
           Top = 16
-          Width = 21
+          Width = 20
           Caption = 'MB'
         end
         object RadioButtonNotDisk: TRadioButton
-          Left = 32
+          Left = 16
           Height = 22
           Top = 56
-          Width = 162
+          Width = 159
           Caption = 'Do not add virtual disk'
           TabOrder = 1
           OnChange = RadioButtonNotDiskChange
           OnClick = RadioButtonNotDiskClick
         end
         object RadioButtonNewDisk: TRadioButton
-          Left = 32
+          Left = 16
           Height = 22
           Top = 80
-          Width = 215
+          Width = 209
           Caption = 'Create and use new virtual disk'
           Checked = True
           TabOrder = 2
@@ -218,7 +218,7 @@ object FormVmCreate: TFormVmCreate
           Left = 344
           Height = 22
           Top = 32
-          Width = 226
+          Width = 222
           Caption = 'Wait for VNC connection for boot'
           Checked = True
           State = cbChecked
@@ -229,7 +229,7 @@ object FormVmCreate: TFormVmCreate
           Left = 344
           Height = 22
           Top = 8
-          Width = 144
+          Width = 140
           Caption = 'Enable framebuffer'
           Checked = True
           State = cbChecked
@@ -237,7 +237,7 @@ object FormVmCreate: TFormVmCreate
           OnChange = CheckBoxFramebufferChange
         end
         object SpinEditExMemory: TSpinEditEx
-          Left = 107
+          Left = 91
           Height = 32
           Top = 8
           Width = 103
@@ -255,7 +255,7 @@ object FormVmCreate: TFormVmCreate
           Left = 344
           Height = 22
           Top = 58
-          Width = 211
+          Width = 208
           Caption = 'Only localhost VNC connection'
           Checked = True
           State = cbChecked
@@ -266,7 +266,7 @@ object FormVmCreate: TFormVmCreate
           Left = 344
           Height = 22
           Top = 80
-          Width = 154
+          Width = 152
           Caption = 'Enable UEFI bootvars'
           Checked = True
           State = cbChecked
@@ -276,16 +276,16 @@ object FormVmCreate: TFormVmCreate
           Left = 344
           Height = 22
           Top = 104
-          Width = 77
+          Width = 76
           Caption = 'Use IPv6'
           TabOrder = 8
           OnChange = CheckBoxIpv6AddressChange
         end
         object RadioButtonDiskFromImage: TRadioButton
-          Left = 32
+          Left = 16
           Height = 22
           Top = 104
-          Width = 219
+          Width = 213
           Caption = 'Create a virtual disk from image'
           TabOrder = 3
           OnClick = RadioButtonDiskFromImageClick
@@ -305,25 +305,25 @@ object FormVmCreate: TFormVmCreate
           Left = 384
           Height = 18
           Top = 32
-          Width = 24
+          Width = 23
           Caption = 'Size'
         end
         object Label5: TLabel
           Left = 552
           Height = 18
           Top = 32
-          Width = 18
+          Width = 17
           Caption = 'GB'
         end
         object Label9: TLabel
-          Left = 32
+          Left = 24
           Height = 18
           Top = 16
           Width = 29
           Caption = 'Type'
         end
         object ComboBoxVirtualDeviceType: TComboBox
-          Left = 96
+          Left = 88
           Height = 32
           Top = 8
           Width = 180
@@ -332,14 +332,14 @@ object FormVmCreate: TFormVmCreate
           TabOrder = 0
         end
         object Label11: TLabel
-          Left = 32
+          Left = 24
           Height = 18
           Top = 48
-          Width = 48
+          Width = 47
           Caption = 'Storage'
         end
         object ComboBoxVirtualStorageType: TComboBox
-          Left = 96
+          Left = 88
           Height = 32
           Top = 42
           Width = 180
@@ -366,7 +366,7 @@ object FormVmCreate: TFormVmCreate
         Left = 53
         Height = 22
         Top = 512
-        Width = 152
+        Width = 148
         Caption = 'Use a CD/DVD media'
         TabOrder = 3
         OnChange = CheckBoxUseMediaChange
@@ -375,7 +375,7 @@ object FormVmCreate: TFormVmCreate
         Left = 53
         Height = 18
         Top = 544
-        Width = 78
+        Width = 75
         Caption = 'Select media'
       end
       object FileNameEditBootMedia: TFileNameEdit
@@ -420,7 +420,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 16
-          Width = 19
+          Width = 18
           Caption = 'Url'
         end
         object BitBtnDownload: TBitBtn
@@ -1612,7 +1612,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 16
-          Width = 40
+          Width = 38
           Caption = 'Image'
         end
         object FileNameEditImageFile: TFileNameEdit
@@ -1635,7 +1635,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 22
           Top = 48
-          Width = 186
+          Width = 183
           Caption = 'Use minimal configuration'
           TabOrder = 1
           OnChange = CheckBoxImageMinimalChange
@@ -1644,7 +1644,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 22
           Top = 72
-          Width = 161
+          Width = 159
           Caption = 'Use files configuration'
           TabOrder = 2
           OnChange = CheckBoxImageFilesChange
@@ -1653,7 +1653,7 @@ object FormVmCreate: TFormVmCreate
           Left = 336
           Height = 22
           Top = 48
-          Width = 114
+          Width = 112
           Caption = 'Use static IPv4'
           Enabled = False
           TabOrder = 3
@@ -1663,7 +1663,7 @@ object FormVmCreate: TFormVmCreate
           Left = 336
           Height = 22
           Top = 72
-          Width = 113
+          Width = 111
           Caption = 'Use static IPv6'
           Enabled = False
           TabOrder = 4
@@ -1684,11 +1684,11 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 48
-          Width = 64
+          Width = 62
           Caption = 'Username'
         end
         object EditUsername: TEdit
-          Left = 96
+          Left = 112
           Height = 32
           Top = 40
           Width = 152
@@ -1696,7 +1696,7 @@ object FormVmCreate: TFormVmCreate
           TabOrder = 1
         end
         object EditSshPubKey: TEdit
-          Left = 96
+          Left = 112
           Height = 32
           Top = 72
           Width = 181
@@ -1713,7 +1713,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 22
           Top = 8
-          Width = 81
+          Width = 80
           Caption = 'Use sudo'
           TabOrder = 0
           OnChange = CheckBoxImageUseSudoChange
@@ -2886,7 +2886,7 @@ object FormVmCreate: TFormVmCreate
           Left = 120
           Height = 22
           Top = 8
-          Width = 80
+          Width = 79
           Caption = 'Use doas'
           TabOrder = 4
           OnChange = CheckBoxImageUseDoasChange
@@ -2903,24 +2903,24 @@ object FormVmCreate: TFormVmCreate
         Enabled = False
         TabOrder = 4
         object Label27: TLabel
-          Left = 32
+          Left = 24
           Height = 18
           Top = 18
-          Width = 60
+          Width = 58
           Caption = 'User data'
         end
         object Label28: TLabel
-          Left = 32
+          Left = 24
           Height = 18
           Top = 50
-          Width = 62
+          Width = 61
           Caption = 'Meta data'
         end
         object Label29: TLabel
-          Left = 32
+          Left = 24
           Height = 18
           Top = 82
-          Width = 94
+          Width = 93
           Caption = 'Network config'
         end
         object FileNameEditUserData: TFileNameEdit
@@ -2981,7 +2981,7 @@ object FormVmCreate: TFormVmCreate
         Left = 48
         Height = 18
         Top = 144
-        Width = 39
+        Width = 38
         Caption = 'Status'
         Font.Color = clTeal
         ParentFont = False
@@ -3001,7 +3001,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 16
-          Width = 78
+          Width = 76
           Caption = 'IPv4 address'
         end
         object EditIpv4Address: TEdit
@@ -3015,7 +3015,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 48
-          Width = 53
+          Width = 52
           Caption = 'Gateway'
         end
         object EditGateway: TEdit
@@ -3029,7 +3029,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 80
-          Width = 70
+          Width = 68
           Caption = 'DNS Server'
         end
         object EditDns: TEdit
@@ -3054,7 +3054,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 16
-          Width = 78
+          Width = 76
           Caption = 'IPv6 address'
         end
         object EditIpv6Address: TEdit
@@ -3068,7 +3068,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 48
-          Width = 53
+          Width = 52
           Caption = 'Gateway'
         end
         object EditGatewayIpv6: TEdit
@@ -3082,7 +3082,7 @@ object FormVmCreate: TFormVmCreate
           Left = 24
           Height = 18
           Top = 80
-          Width = 70
+          Width = 68
           Caption = 'DNS Server'
         end
         object EditDnsIpv6: TEdit
@@ -3094,5 +3094,17 @@ object FormVmCreate: TFormVmCreate
         end
       end
     end
+  end
+  object BitBtnClose: TBitBtn
+    Left = 368
+    Height = 35
+    Top = 664
+    Width = 344
+    Caption = 'Close'
+    Kind = bkClose
+    ModalResult = 11
+    ImageWidth = 16
+    TabOrder = 2
+    OnClick = BitBtnCloseClick
   end
 end

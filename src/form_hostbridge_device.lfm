@@ -8,7 +8,7 @@ object FormHostbridgeDevice: TFormHostbridgeDevice
   ClientHeight = 156
   ClientWidth = 349
   Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.6.0.0'
   object GroupBox1: TGroupBox
     Left = 8
     Height = 80
@@ -19,10 +19,10 @@ object FormHostbridgeDevice: TFormHostbridgeDevice
     ClientWidth = 332
     TabOrder = 0
     object ComboBoxHostbridgeDevice: TComboBox
-      Left = 88
+      Left = 104
       Height = 32
       Top = 8
-      Width = 224
+      Width = 216
       ItemHeight = 30
       ReadOnly = True
       TabOrder = 0
@@ -37,12 +37,11 @@ object FormHostbridgeDevice: TFormHostbridgeDevice
     end
   end
   object BitBtnSave: TBitBtn
-    Left = 120
+    Left = 72
     Height = 30
     Top = 96
     Width = 96
     Caption = 'Save'
-    Default = True
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000000000000000000000000000000000000000000000000
@@ -89,5 +88,17 @@ object FormHostbridgeDevice: TFormHostbridgeDevice
     Top = 133
     Width = 349
     Panels = <>
+  end
+  object BitBtnClose: TBitBtn
+    Left = 176
+    Height = 30
+    Top = 96
+    Width = 96
+    Caption = 'Close'
+    Kind = bkClose
+    Layout = blGlyphRight
+    ModalResult = 11
+    TabOrder = 2
+    OnClick = BitBtnCloseClick
   end
 end

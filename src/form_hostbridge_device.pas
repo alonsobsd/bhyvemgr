@@ -44,10 +44,12 @@ type
 
   TFormHostbridgeDevice = class(TForm)
     BitBtnSave: TBitBtn;
+    BitBtnClose: TBitBtn;
     ComboBoxHostbridgeDevice: TComboBox;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     StatusBarHostbridgeDevice: TStatusBar;
+    procedure BitBtnCloseClick(Sender: TObject);
   private
     procedure FillComboDevice(Combo: TComboBox);
   public
@@ -67,6 +69,11 @@ uses
   unit_global;
 
 { TFormHostbridgeDevice }
+
+procedure TFormHostbridgeDevice.BitBtnCloseClick(Sender: TObject);
+begin
+  Close;
+end;
 
 procedure TFormHostbridgeDevice.FillComboDevice(Combo: TComboBox);
 begin
