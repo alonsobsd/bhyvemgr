@@ -22,7 +22,7 @@ jobs:
       id: test
       uses: vmactions/freebsd-vm@v1.4.6
       with:
-        release: "15.1"
+        release: "15.0"
         usesh: true
         prepare: |
           sed -i "" -e 's|quarterly|latest|g' /etc/pkg/FreeBSD.conf        
