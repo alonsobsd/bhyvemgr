@@ -7,7 +7,7 @@ set -e
 # release - compile in release mode
 
 # Set lazarus version, lazbuild patch and lazarus installation path
-export lazarusver=4.6
+export lazarusver=4.8
 export lazbuild=/usr/local/bin/lazbuild
 export lazarusdir=/usr/local/share/lazarus-$lazarusver
 
