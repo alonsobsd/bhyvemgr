@@ -39,13 +39,13 @@ interface
 uses
   Classes, SysUtils, Dialogs, FileUtil, Math, md5, process, RegExpr, Users, BaseUnix, StrUtils;
 
-function AttachDeviceToBridge(const BridgeName: String; const DeviceName: String; const VmName : String):Boolean;
 function AddDnsmasqDhcpHostEntry(const VmName: String; const IpAddress: String; const MacAddreess : String):Boolean;
 function AddDnsmasqHostRecordEntry(const VmName: String; const Ip6Address: String; const MacAddreess : String):Boolean;
 function CheckBhyveSupport():Boolean;
 function CheckCidrRange(Subnet: String):Boolean;
 function CheckFileExtension(ImageName: String): String;
 function CheckFileType(ImageName: String): String;
+function CheckFileWriteAccess(FileName: String): Boolean;
 function CheckKernelModule(Module: String):Boolean;
 function CheckIpv6Address(const Address: String):Boolean;
 function CheckIpvAddress(const Address: String):Boolean;
@@ -60,16 +60,10 @@ function CheckVmRunning(const Name: String):Integer;
 function CheckTpmSocketRunning(const Name: String):Integer;
 function CheckZfsDataset(const Dataset: String): Boolean;
 function CheckZfsSupport():Boolean;
-function Chmod(const Path: String; Mode : String = '750'):Boolean;
-function Chown(const Path: String; const Username : String):Boolean;
 function ConvertFileSize(Size: Int64; SizeUnit: String): Int64;
-function CreateDirectory(const DirectoryName: String; const UserName : String; DirMode : String = '700'):Boolean;
 function CreateFile(const FileName: String; const UserName : String; FileMode : String = '600'):Boolean;
-function CreateNetworkDevice(const DeviceName: String; const VmName : String; Mtu : String = '1500'):Boolean;
 function CreateSeedIso(const SourceDirectory: String; const DestinationSeedFile : String):Boolean;
 function CreateTpmSocket(const Path: String):Boolean;
-function DestroyNetworkInterface(const IfName: String):Boolean;
-function DestroyVirtualMachine(const VmName: String):Boolean;
 function ExtractCidr(const Network: String): String;
 function ExtractIpv6Prefix(const prefix : String):String;
 function ExtractInterfaceMac(const NetworkInterface : String):String;
@@ -105,37 +99,27 @@ function GetNewVmName(const VmName : String): Boolean;
 function GetNewVncPortNumber(): String;
 function GetPciDeviceDescripcion(const Device : String):String;
 function GetPciDeviceList(const Device : String):String;
-function GetPidValue(const Pattern : String): Integer;
 function GetRemoteSize(const Url : String): Int64;
 function GetServicePortList(Protocol : String):TStringList;
 function GetStorageSize(const StoragePath : String): String;
 function GetStorageType(const StoragePath : String): String;
+function GetVmNetworkInterfaceList(VmName : String): String;
 function GetZpoolList():String;
 function InstallFile(const SourceFileName: String; const DestinationFileName : String; const UserName : String; FileMode : String = '600'):Boolean;
-function KillPid(Pid : Integer; Signal : String = '-TERM'): Boolean;
-function LoadKernelModule(const Module : String):Boolean;
 function PfCreateRules(const VmName : String; const VmRules: String; const RulesType : String):Boolean;
-function PfLoadRules(const VmName : String; const RulesType : String):Boolean;
-function PfUnloadRules(const VmName : String; const RulesType : String):Boolean;
 function NetworkAddress(const Subnet : String):String;
 function RdpConnect(const VmName : String; const Username : String; const Password : String; Width : String; Height : String):Boolean;
-function RemoveDirectory(const Directory: String; Recursive : Boolean):Boolean;
 function RemoveFile(const Path: String):Boolean;
 function RemoveDnsmasqEntry(const VmName: String):Boolean;
-function RestartService(const Service : String):Boolean;
 function StopVirtualMachine(Pid : Integer):Boolean;
 function TruncateImage(const ImagePath : String; ImageSize : String):Boolean;
 function VncConnect(VmHost : String; VmName : String):Boolean;
-function ZfsCreateDataset(const ZfsPath : String; const WithMountpoint : Boolean = False):Boolean;
-function ZfsCreateZvol(const ZfsPath : String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
 function ZfsGetPropertyValue(const ZfsPath : String; ZfsProperty : String; ZfsField : String):String;
-function ZfsSetPropertyValue(const ZfsPath : String; ZfsProperty : String; ZfsValue : String):String;
-function ZfsDestroy(const ZfsPath : String; Recursive : Boolean = True; Force : Boolean = False):Boolean;
 
 implementation
 
 uses
-  unit_configuration, unit_component ,unit_global, unit_language, unit_thread, LazLogger;
+  unit_configuration, unit_component ,unit_global, unit_language, unit_thread, unit_helper_client, LazLogger;
 
 var
   MyAppThread: AppThread;
@@ -284,7 +268,6 @@ function ExtractInterfaceMac(const NetworkInterface: String): String;
 var
   RegexObj: TRegExpr;
   TmpOutput:String;
-  ifconfig_cmd : String;
   output : String;
   parameters : TStringArray;
   status : Boolean;
@@ -292,13 +275,11 @@ begin
   Result:=EmptyStr;
   TmpOutput:=EmptyStr;
 
-  ifconfig_cmd:=IfconfigCmd;
-
   parameters:=[NetworkInterface, 'ether'];
 
-  if FileExists(ifconfig_cmd) then
+  if FileExists(IFCONFIG_CMD) then
   begin
-    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(IFCONFIG_CMD, parameters, output, [poStderrToOutPut, poUsePipes]);
 
     if status then
     begin
@@ -353,8 +334,8 @@ begin
     DirePath:=VmPath+'/'+VmName+'/pf';
     ConfigFile:=DirePath+'/'+RulesType+'.rules';
 
-    if not DirectoryExists(DirePath) then
-      CreateDirectory(DirePath, GetCurrentUserName(), '750');
+    if not DirectoryExists(VmPath+'/'+DirePath) then
+      CreateDirectoryHelper(DirePath, GetCurrentUserName(), '750');
 
     try
       FilePath.Text:=VmRules;
@@ -378,108 +359,6 @@ begin
     end;
   finally
     FilePath.Free;
-  end;
-end;
-
-function PfLoadRules(const VmName: String; const RulesType: String): Boolean;
-var
-  root_cmd : String;
-  pfctl_cmd : String;
-  output : String;
-  anchor : String;
-  rules_path : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-  anchor:=EmptyStr;
-
-  root_cmd:=SudoCmd;
-  pfctl_cmd:=PfctlCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  case RulesType of
-    'nat':anchor:=PfNatAnchor+'/'+VmName;
-    'rdr':anchor:=PfRdrAnchor+'/'+VmName;
-    'pass-in':anchor:=PfPassInAnchor+'/'+VmName;
-    'pass-out':anchor:=PfPassOutAnchor+'/'+VmName;
-  end;
-
-  rules_path:=VmPath+'/'+VmName+'/pf/'+RulesType+'.rules';
-
-  parameters:=['-n', pfctl_cmd, '-a', anchor, '-f', rules_path];
-
-  if FileExists(pfctl_cmd) and FileExists(rules_path) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : PfLoadRules : '+ RulesType+' : '+output);
-    end;
-  end;
-end;
-
-function PfUnloadRules(const VmName: String; const RulesType: String): Boolean;
-var
-  root_cmd : String;
-  pfctl_cmd : String;
-  output : String;
-  anchor : String;
-  flush_type : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  anchor:=EmptyStr;
-  flush_type:=EmptyStr;
-
-  root_cmd:=SudoCmd;
-  pfctl_cmd:=PfctlCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  case RulesType of
-    'nat':
-      begin
-        anchor:=PfNatAnchor+'/'+VmName;
-        flush_type:='nat';
-      end;
-    'rdr':
-      begin
-        anchor:=PfRdrAnchor+'/'+VmName;
-        flush_type:='nat';
-      end;
-    'pass-in':
-      begin
-        anchor:=PfPassInAnchor+'/'+VmName;
-        flush_type:='rules';
-      end;
-    'pass-out':
-      begin
-        anchor:=PfPassOutAnchor+'/'+VmName;
-        flush_type:='rules';
-      end;
-  end;
-
-  parameters:=['-n', pfctl_cmd, '-a', anchor, '-F', flush_type];
-
-  if FileExists(pfctl_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : PfUnLoadRules : '+ RulesType+' : '+output);
-    end;
   end;
 end;
 
@@ -930,38 +809,6 @@ begin
 end;
 
 { Public functions }
-function AttachDeviceToBridge(const BridgeName: String; const DeviceName: String;
-  const VmName: String): Boolean;
-var
-  root_cmd : String;
-  ifconfig_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  ifconfig_cmd:=IfconfigCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', ifconfig_cmd, BridgeName, 'addm', DeviceName];
-
-  if FileExists(ifconfig_cmd) and FileExists(root_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : AttachDeviceToBridge : '+ DeviceName+' : '+output);
-    end;
-  end;
-end;
-
 function AddDnsmasqDhcpHostEntry(const VmName: String; const IpAddress: String; const MacAddreess: String
   ): Boolean;
 var
@@ -971,7 +818,7 @@ begin
   Result:=False;
 
   FilePath:=TStringList.Create;
-  ConfigFile:=DnsmasqDirectory+'/'+VmName+'.conf';
+  ConfigFile:=DNSMASQDIRECTORY_PATH+'/'+VmName+'.conf';
 
   if not FileExists(ConfigFile) then
     CreateFile(ConfigFile, GetCurrentUserName(), '660');
@@ -1000,7 +847,7 @@ begin
   Result:=False;
 
   FilePath:=TStringList.Create;
-  ConfigFile:=DnsmasqDirectory+'/'+VmName+'.conf';
+  ConfigFile:=DNSMASQDIRECTORY_PATH+'/'+VmName+'.conf';
 
   if not FileExists(ConfigFile) then
     CreateFile(ConfigFile, GetCurrentUserName(), '660');
@@ -1063,20 +910,17 @@ end;
 
 function CheckFileType(ImageName: String): String;
 var
-  file_cmd : String;
   output : String;
   status : Boolean;
   parameters : TStringArray;
 begin
   Result:='unknown';
 
-  file_cmd:=FileCmd;
+ parameters:=['-b', ImageName];
 
-  parameters:=['-b', ImageName];
-
-  if FileExists(file_cmd) then
+  if FileExists(FILE_CMD) then
   begin
-    status:=RunCommand(file_cmd, parameters, output, [poStderrToOutPut]);
+    status:=RunCommand(FILE_CMD, parameters, output, [poStderrToOutPut]);
 
     if status then
       Result:=LowerCase(trim(output.Split(' ')[0]))
@@ -1085,19 +929,31 @@ begin
   end;
 end;
 
+function CheckFileWriteAccess(FileName: String): Boolean;
+var
+  F: TextFile;
+begin
+  try
+    AssignFile(F, FileName);
+    Rewrite(F);
+    CloseFile(F);
+    DeleteFile(FileName);
+    Result:=True;
+  except
+    Result:=False;
+  end;
+end;
+
 function CheckKernelModule(Module: String): Boolean;
 var
-  kldstat_cmd : String;
   output : String;
   status : Boolean;
 begin
   Result:=False;
 
-  kldstat_cmd:=KldstatCmd;
-
   if FileExists(kldstat_cmd) then
   begin
-    status:=RunCommand(kldstat_cmd, ['-q', '-m', module], output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(KLDSTAT_CMD, ['-q', '-m', module], output, [poStderrToOutPut, poUsePipes]);
 
     if status then
     begin
@@ -1192,17 +1048,14 @@ end;
 
 function CheckSysctl(const Name: String): String;
 var
-  sysctl_cmd : String;
   output : String;
   status : Boolean;
 begin
   Result:=EmptyStr;
 
-  sysctl_cmd:=SysctlCmd;
-
-  if FileExists(sysctl_cmd) then
+  if FileExists(SYSCTL_CMD) then
   begin
-    status:=RunCommand(sysctl_cmd, ['-n',Name], output, [poStderrToOutPut]);
+    status:=RunCommand(SYSCTL_CMD, ['-n',Name], output, [poStderrToOutPut]);
 
     if status then
       Result:=output
@@ -1249,8 +1102,7 @@ var
 begin
   Result:=False;
 
-  RegText := TRegExpr.Create('^[a-z0-9_-]{0,229}$');
-//  RegText := TRegExpr.Create('^[a-z0-9][.a-z0-9_-]{0,229}[a-z0-9]$');
+  RegText := TRegExpr.Create('^[a-z0-9]{1,64}$');
 
   if RegText.Exec(Name) then
   begin
@@ -1266,13 +1118,14 @@ var
 begin
   Result:=-1;
 
-  PidNumber:=GetPidValue(Format('^%s -k %s/%s/bhyve_config.conf', [BhyveCmd, VmPath, Name]));
+  PidNumber:= GetPIDValueHelper(Format('^bhyve: %s$', [Name]));
 
   if PidNumber > 0 then
     Result:=PidNumber
   else
   begin
-    PidNumber:= GetPidValue(Format('^bhyve: %s$', [Name]));
+    PidNumber:=GetPIDValueHelper(Format('^%s -k %s/%s/bhyve_config.conf', [BhyveCmd, VmPath, Name]));
+
     if PidNumber  > 0 then
       Result:=PidNumber;
   end;
@@ -1284,7 +1137,7 @@ var
 begin
   Result:=-1;
 
-  PidNumber:=GetPidValue(Format('%s/%s/tpm/swtpm.sock', [VmPath, Name]));
+  PidNumber:=GetPIDValueHelper(Format('%s/%s/tpm/swtpm.sock', [VmPath, Name]));
 
   if PidNumber > 0 then
     Result:=PidNumber
@@ -1292,17 +1145,14 @@ end;
 
 function CheckZfsDataset(const Dataset: String): Boolean;
 var
-  zfs_cmd : String;
   output : String;
   status : Boolean;
 begin
   Result:=False;
 
-  zfs_cmd:=ZfsCmd;
-
-  if FileExists(zfs_cmd) then
+  if FileExists(ZFS_CMD) then
   begin
-    status:=RunCommand(zfs_cmd, ['list','-H','-o','name', Dataset], output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(ZFS_CMD, ['list','-H','-o','name', Dataset], output, [poStderrToOutPut, poUsePipes]);
 
     if status then
       Result:=status
@@ -1322,68 +1172,6 @@ begin
 
 end;
 
-function Chown(const Path: String; const UserName : String): Boolean;
-var
-  root_cmd : String;
-  chown_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  chown_cmd:=ChownCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', chown_cmd, UserName+':', Path];
-
-  if FileExists(chown_cmd) and FileExists(root_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ChownDir : '+ Path+' : '+output);
-    end;
-  end;
-end;
-
-function Chmod(const Path: String; Mode : String = '750'): Boolean;
-var
-  root_cmd : String;
-  chmod_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  chmod_cmd:=ChmodCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', chmod_cmd, Mode, Path];
-
-  if FileExists(chmod_cmd) and FileExists(root_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ChmodDir : '+ Path+' : '+output);
-    end;
-  end;
-end;
-
 function ConvertFileSize(Size: Int64; SizeUnit: String): Int64;
 begin
   case SizeUnit of
@@ -1395,48 +1183,16 @@ begin
   end;
 end;
 
-function CreateDirectory(const DirectoryName: String; const UserName: String; DirMode : String = '700'): Boolean;
-var
-  root_cmd : String;
-  install_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  install_cmd:=InstallCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', install_cmd, '-d', '-m', DirMode, '-o', UserName, DirectoryName];
-
-  if FileExists(install_cmd) and FileExists(root_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CreateDirectory : '+ DirectoryName+' : '+output);
-  end;
-end;
-
 function CreateFile(const FileName: String; const UserName: String; FileMode : String = '600'): Boolean;
 var
-  install_cmd : String;
   output : String;
   status : Boolean;
 begin
   Result:=False;
 
-  install_cmd:=InstallCmd;
-
-  if FileExists(install_cmd) then
+  if FileExists(INSTALL_CMD) then
   begin
-    status:=RunCommand(install_cmd, ['-m', FileMode, '-o', UserName, '/dev/null', FileName], output, [poStderrToOutPut]);
+    status:=RunCommand(INSTALL_CMD, ['-m', FileMode, '-o', UserName, '/dev/null', FileName], output, [poStderrToOutPut]);
 
     if status then
       Result:=status
@@ -1445,55 +1201,20 @@ begin
   end;
 end;
 
-function CreateNetworkDevice(const DeviceName: String; const VmName: String; Mtu: String
-  ): Boolean;
-var
-  root_cmd : String;
-  ifconfig_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  ifconfig_cmd:=IfconfigCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', ifconfig_cmd, DeviceName, 'create', 'descr', '"'+VmName+' VM"'];
-
-  if FileExists(ifconfig_cmd) and FileExists(root_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : CreateNetworkDevice : '+ DeviceName+' : '+output);
-    end;
-  end;
-end;
-
 function CreateSeedIso(const SourceDirectory: String; const DestinationSeedFile: String
   ): Boolean;
 var
-  makefs_cmd : String;
   output : String;
   status : Boolean;
   parameters : TStringArray;
 begin
   Result:=False;
 
-  makefs_cmd:=MakefsCmd;
-
   parameters:=['-t', 'cd9660', '-o', 'R,L=cidata', DestinationSeedFile, SourceDirectory];
 
-  if FileExists(makefs_cmd) then
+  if FileExists(MAKEFS_CMD) then
   begin
-    status:=RunCommand(makefs_cmd, parameters, output, [poStderrToOutPut]);
+    status:=RunCommand(MAKEFS_CMD, parameters, output, [poStderrToOutPut]);
 
     if status then
       Result:=status
@@ -1526,68 +1247,6 @@ begin
     else
     begin
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : CreateTpmSocket : '+ Path+' : '+output);
-    end;
-  end;
-end;
-
-function DestroyNetworkInterface(const IfName: String): Boolean;
-var
-  root_cmd : String;
-  ifconfig_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  ifconfig_cmd:=IfconfigCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', ifconfig_cmd, IfName, 'destroy'];
-
-  if FileExists(ifconfig_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : DestroyNetworkInterface : '+ IfName+' : '+output);
-    end;
-  end;
-end;
-
-function DestroyVirtualMachine(const VmName: String): Boolean;
-var
-  root_cmd : String;
-  bhyvectl_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  bhyvectl_cmd:=BhyvectlCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', bhyvectl_cmd, '--vm='+VmName, '--destroy'];
-
-  if FileExists(bhyvectl_cmd) and FileExists(root_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : DestroyVirtualMachine : '+VmName+' : '+output);
     end;
   end;
 end;
@@ -1724,7 +1383,7 @@ begin
       end;
     'xz':
       begin
-        app_cmd:=XzCmd;
+        app_cmd:=XZ_CMD;
         parameters:=['--robot', '-l', FilePath];
         RegText.Expression:='totals\s\d+\s\d+\s\d+\s+(\d+)\s';
       end;
@@ -1753,7 +1412,6 @@ var
   NetworkList : TStringList;
   RegexObj: TRegExpr;
   TmpOutput:String;
-  ifconfig_cmd : String;
   output : String;
   parameters : TStringArray;
   status : Boolean;
@@ -1764,16 +1422,14 @@ begin
 
   NetworkList:=TStringList.Create();
 
-  ifconfig_cmd:=IfconfigCmd;
-
   if NetworkInterfaceType = 'ether' then
     parameters:=['-l', '-u', 'ether']
   else if NetworkInterfaceType = 'bridge' then
     parameters:=['-l', '-u', '-g', 'bridge' ];
 
-  if FileExists(ifconfig_cmd) then
+  if FileExists(IFCONFIG_CMD) then
   begin
-    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(IFCONFIG_CMD, parameters, output, [poStderrToOutPut, poUsePipes]);
 
     if status then
       TmpOutput:=Trim(output)
@@ -1805,7 +1461,6 @@ var
   InetList : TStringList;
   RegexObj: TRegExpr;
   TmpOutput:String;
-  ifconfig_cmd : String;
   output : String;
   parameters : TStringArray;
   status : Boolean;
@@ -1815,13 +1470,11 @@ begin
 
   InetList:=TStringList.Create();
 
-  ifconfig_cmd:=IfconfigCmd;
-
   parameters:=[NetworkInterface];
 
-  if FileExists(ifconfig_cmd) then
+  if FileExists(IFCONFIG_CMD) then
   begin
-    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(IFCONFIG_CMD, parameters, output, [poStderrToOutPut, poUsePipes]);
 
     if status then
       TmpOutput:=Trim(output)
@@ -1853,7 +1506,6 @@ var
   InetList : TStringList;
   RegexObj: TRegExpr;
   TmpOutput:String;
-  ifconfig_cmd : String;
   output : String;
   parameters : TStringArray;
   status : Boolean;
@@ -1863,13 +1515,11 @@ begin
 
   InetList:=TStringList.Create();
 
-  ifconfig_cmd:=IfconfigCmd;
-
   parameters:=[NetworkInterface];
 
-  if FileExists(ifconfig_cmd) then
+  if FileExists(IFCONFIG_CMD) then
   begin
-    status:=RunCommand(ifconfig_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(IFCONFIG_CMD, parameters, output, [poStderrToOutPut, poUsePipes]);
 
     if status then
       TmpOutput:=Trim(output)
@@ -2110,7 +1760,6 @@ var
   PciDescripcion : String;
   RegexObj: TRegExpr;
   TmpOutput:String;
-  pciconf_cmd : String;
   output : String;
   parameters : TStringArray;
   status : Boolean;
@@ -2119,13 +1768,11 @@ begin
   TmpOutput:=EmptyStr;
   PciDescripcion:=EmptyStr;
 
-  pciconf_cmd:=PciconfCmd;
-
   parameters:=['-lv', Device];
 
-  if FileExists(pciconf_cmd) then
+  if FileExists(PCICONF_CMD) then
   begin
-    status:=RunCommand(pciconf_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(PCICONF_CMD, parameters, output, [poStderrToOutPut, poUsePipes]);
 
     if status then
       TmpOutput:=output
@@ -2154,7 +1801,6 @@ var
   PciList : TStringList;
   RegexObj: TRegExpr;
   TmpOutput:String;
-  pciconf_cmd : String;
   output : String;
   parameters : TStringArray;
   status : Boolean;
@@ -2164,13 +1810,11 @@ begin
 
   PciList:=TStringList.Create();
 
-  pciconf_cmd:=PciconfCmd;
-
   parameters:=['-l'];
 
-  if FileExists(pciconf_cmd) then
+  if FileExists(PCICONF_CMD) then
   begin
-    status:=RunCommand(pciconf_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
+    status:=RunCommand(PCICONF_CMD, parameters, output, [poStderrToOutPut, poUsePipes]);
 
     if status then
       TmpOutput:=Trim(output)
@@ -2197,54 +1841,19 @@ begin
   PciList.free;
 end;
 
-function GetPidValue(const Pattern: String): Integer;
-var
-  pgrep_cmd : String;
-  root_cmd : String;
-  output : String;
-  parameters : TStringArray;
-  status : Boolean;
-begin
-  Result:=-1;
-
-  root_cmd:=SudoCmd;
-  pgrep_cmd:=PgrepCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', pgrep_cmd, '-fo', Pattern];
-
-  if (FileExists(pgrep_cmd) and FileExists(root_cmd)) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
-
-    if status then
-      Result:=Trim(output).ToInt64
-    else
-    begin
-      if not (output.IsEmpty) then
-        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetPidValue : '+output);
-    end;
-  end;
-end;
-
 function GetRemoteSize(const Url: String): Int64;
 var
-  fetch_cmd : String;
   output : String;
   status : Boolean;
   parameters : TStringArray;
 begin
   Result:=0;
 
-  fetch_cmd:=FetchCmd;
-
   parameters:=['-T','3','-s', Url];
 
-  if FileExists(fetch_cmd) then
+  if FileExists(FETCH_CMD) then
   begin
-    status:=RunCommand(fetch_cmd, parameters, output, [poStderrToOutPut]);
+    status:=RunCommand(FETCH_CMD, parameters, output, [poStderrToOutPut]);
 
     if status then
       Result:=StrToInt64(trim(output))
@@ -2265,7 +1874,7 @@ begin
   TmpOutput:=EmptyStr;
 
   ServiceList:=TStringList.Create();
-  ServiceList.LoadFromFile(ServicesFilePath);
+  ServiceList.LoadFromFile(SERVICES_FILE);
 
   TmpOutput:=ServiceList.Text;
   ServiceList.Clear;
@@ -2317,22 +1926,50 @@ begin
   end;
 end;
 
+function GetVmNetworkInterfaceList(VmName: String): String;
+var
+  NetworkList : TStringList;
+  RegexObj: TRegExpr;
+  TmpOutput:String;
+begin
+  TmpOutput:=EmptyStr;
+
+  NetworkList:=TStringList.Create();
+  NetworkList.LoadFromFile(VmPath+'/'+VmName+'/bhyve_config.conf');
+
+  TmpOutput:=NetworkList.Text;
+  NetworkList.Clear;
+
+  RegexObj := TRegExpr.Create;
+  RegexObj.Expression := 'pci\W\d+\W\d+\S\d+\Sbackend=(tap\d+|vmnet\d+)';
+
+  if RegexObj.Exec(TmpOutput) then
+  begin
+    repeat
+      NetworkList.Add(RegexObj.Match[1]);
+    until not RegexObj.ExecNext;
+  end;
+
+  RegexObj.Free;
+
+  Result:=NetworkList.Text;
+
+  NetworkList.Free;
+end;
+
 function GetZpoolList(): String;
 var
-  zpool_cmd : String;
   output : String;
   status : Boolean;
   parameters : TStringArray;
 begin
   Result:=EmptyStr;
 
-  zpool_cmd:=ZpoolCmd;
-
   parameters:=['list','-H', '-o', 'name'];
 
-  if FileExists(zpool_cmd) then
+  if FileExists(ZPOOL_CMD) then
   begin
-    status:=RunCommand(zpool_cmd, parameters, output, [poStderrToOutPut]);
+    status:=RunCommand(ZPOOL_CMD, parameters, output, [poStderrToOutPut]);
 
     if status then
       Result:=output
@@ -2346,82 +1983,19 @@ end;
 function InstallFile(const SourceFileName: String; const DestinationFileName: String;
   const UserName: String; FileMode: String = '600'): Boolean;
 var
-  install_cmd : String;
   output : String;
   status : Boolean;
 begin
   Result:=False;
 
-  install_cmd:=InstallCmd;
-
-  if FileExists(install_cmd) then
+  if FileExists(INSTALL_CMD) then
   begin
-    status:=RunCommand(install_cmd, ['-m', FileMode, '-o', UserName, SourceFileName, DestinationFileName], output, [poStderrToOutPut]);
+    status:=RunCommand(INSTALL_CMD, ['-m', FileMode, '-o', UserName, SourceFileName, DestinationFileName], output, [poStderrToOutPut]);
 
     if status then
       Result:=status
     else
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : Installfile : '+ SourceFileName+' : '+output);
-  end;
-end;
-
-function KillPid(Pid: Integer; Signal : String = '-TERM'): Boolean;
-var
-  root_cmd : String;
-  kill_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  kill_cmd:=KillCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', kill_cmd, Signal, Pid.ToString];
-
-  if FileExists(kill_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut, poUsePipes]);
-
-    if status then
-      Result:=status
-    else
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : KillPid : '+InttoStr(Pid)+' : '+output);
-  end;
-end;
-
-function LoadKernelModule(const Module: String): Boolean;
-var
-  kldload_cmd : String;
-  root_cmd : String;
-  output : String;
-  parameters : TStringArray;
-  status : Boolean;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  kldload_cmd:=KldloadCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', kldload_cmd, Module];
-
-  if (FileExists(kldload_cmd)) and (FileExists(root_cmd)) and not (CheckKernelModule(Module)) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : LoadKernelModule : '+Module+' : '+output);
-    end;
   end;
 end;
 
@@ -2469,42 +2043,6 @@ begin
   xfreerdp_args_list.Free;
 end;
 
-function RemoveDirectory(const Directory: String; Recursive: Boolean): Boolean;
-var
-  rm_cmd : String;
-  root_cmd : String;
-  output : String;
-  parameters : TStringArray;
-  status : Boolean;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  rm_cmd:=RmCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', rm_cmd];
-
-  if Recursive then
-    parameters:=parameters + ['-R'];
-
-  parameters:=parameters + [VmPath+'/'+Directory];
-
-  if (FileExists(rm_cmd)) and (FileExists(root_cmd) and DirectoryExists(VmPath+'/'+Directory)) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RemoveDirectory : '+Directory+' : '+output);
-    end;
-  end;
-end;
-
 function RemoveFile(const Path: String): Boolean;
 begin
   Result:=False;
@@ -2519,71 +2057,34 @@ var
 begin
   Result:=False;
 
-  Path:=DnsmasqDirectory+'/'+VmName+'.conf';
+  Path:=DNSMASQDIRECTORY_PATH+'/'+VmName+'.conf';
 
   if FpUnlink(Path) = 0 then
   begin
-    RestartService('dnsmasq');
+    RestartServiceHelper('dnsmasq');
     Result:=True;
-  end;
-end;
-
-function RestartService(const Service: String): Boolean;
-var
-  service_cmd : String;
-  root_cmd : String;
-  output : String;
-  parameters : TStringArray;
-  status : Boolean;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  service_cmd:=ServiceCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', ServiceCmd, Service, 'restart'];
-
-  if (FileExists(service_cmd)) and (FileExists(root_cmd)) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartService : '+Service+' : OK');
-      Result:=status
-    end
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : RestartService : '+Service+' : '+output);
-    end;
   end;
 end;
 
 function StopVirtualMachine(Pid: Integer): Boolean;
 begin
-  Result:=KillPid(Pid, '-SIGTERM');
+  Result:=KillPidHelper(Pid, '-SIGTERM');
 end;
 
 function TruncateImage(const ImagePath: String; ImageSize: String): Boolean;
 var
-  truncate_cmd : String;
   output : String;
   status : Boolean;
   parameters : TStringArray;
 begin
   Result:=False;
 
-  truncate_cmd:=TruncateCmd;
-
   parameters:=['-s', ImageSize];
   parameters:=parameters+[ImagePath];
 
-  if FileExists(truncate_cmd) then
+  if FileExists(TRUNCATE_CMD) then
   begin
-    status:=RunCommand(truncate_cmd, parameters, output, [poStderrToOutPut]);
+    status:=RunCommand(TRUNCATE_CMD, parameters, output, [poStderrToOutPut]);
 
     if status then
       Result:=status
@@ -2614,182 +2115,26 @@ begin
     Result:=False;
 end;
 
-function ZfsCreateDataset(const ZfsPath: String; const WithMountpoint : Boolean = False): Boolean;
-var
-  root_cmd : String;
-  zfs_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-  options : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  zfs_cmd:=ZfsCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  options:=ZfsCreateOptions.Split(' ');
-
-  if WithMountpoint then
-    options:=options+['-o','mountpoint=/'+ZfsPath];
-
-  parameters:=['-n', zfs_cmd, 'create']+ options;
-  parameters:=parameters+[ZfsPath];
-
-  if FileExists(root_cmd) and FileExists(zfs_cmd) and not DirectoryExists('/'+ZfsPath) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-    begin
-      Chmod('/'+ZfsPath);
-      Chown('/'+ZfsPath, GetCurrentUserName());
-
-      Result:=status
-    end
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateDataset : '+  ZfsPath+' : '+output);
-    end;
-  end;
-end;
-
 function ZfsGetPropertyValue(const ZfsPath: String; ZfsProperty: String;
   ZfsField: String): String;
 var
-  zfs_cmd : String;
   output : String;
   status : Boolean;
   parameters : TStringArray;
 begin
   Result:=EmptyStr;
 
-  zfs_cmd:=ZfsCmd;
-
   parameters:=['get','-H', '-o', ZfsField, ZfsProperty, ZfsPath];
 
-  if FileExists(zfs_cmd) then
+  if FileExists(ZFS_CMD) then
   begin
-    status:=RunCommand(zfs_cmd, parameters, output, [poStderrToOutPut]);
+    status:=RunCommand(ZFS_CMD, parameters, output, [poStderrToOutPut]);
 
     if status then
       Result:=Trim(output)
     else
     begin
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsGetPropertyValue : '+ ZfsField+' : '+ ZfsProperty+' : '+ ZfsPath+' : '+output);
-    end;
-  end;
-end;
-
-function ZfsSetPropertyValue(const ZfsPath: String; ZfsProperty: String;
-  ZfsValue: String): String;
-var
-  zfs_cmd : String;
-  root_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=EmptyStr;
-
-  root_cmd:=SudoCmd;
-  zfs_cmd:=ZfsCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', zfs_cmd, 'set', ZfsProperty+'='+ZfsValue, ZfsPath];
-
-  if FileExists(zfs_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=Trim(output)
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsSetPropertyValue : '+ ZfsProperty+'='+ZfsValue+' : '+ZfsPath+' : '+output);
-    end;
-  end;
-end;
-
-function ZfsDestroy(const ZfsPath: String; Recursive: Boolean = True; Force: Boolean = False): Boolean;
-var
-  root_cmd : String;
-  zfs_cmd : String;
-  output : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-  zfs_cmd:=ZfsCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  parameters:=['-n', zfs_cmd, 'destroy'];
-
-  if Recursive then
-    parameters:=parameters + ['-r'];
-
-  if Force then
-    parameters:=parameters + ['-f'];
-
-  parameters:=parameters + [ZfsPath];
-
-  if FileExists(zfs_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsDestroy : '+ ZfsPath+' : '+output);
-    end;
-  end;
-end;
-
-function ZfsCreateZvol(const ZfsPath: String; ZvolSize : String; ZvolSparse : Boolean = False): Boolean;
-var
-  zfs_cmd : String;
-  root_cmd : String;
-  output : String;
-  sparse : String;
-  status : Boolean;
-  parameters : TStringArray;
-begin
-  Result:=False;
-
-  root_cmd:=SudoCmd;
-
-  if UseSudo = 'no' then
-    root_cmd:=DoasCmd;
-
-  zfs_cmd:=ZfsCmd;
-
-  if ZvolSparse then
-    sparse:='-sV'
-  else
-    sparse:='-V';
-
-  parameters:=['-n', zfs_cmd,'create', sparse, ZvolSize, '-o','volmode=dev'];
-  parameters:=parameters+[ZfsPath];
-
-  if FileExists(root_cmd) and FileExists(zfs_cmd) then
-  begin
-    status:=RunCommand(root_cmd, parameters, output, [poStderrToOutPut]);
-
-    if status then
-      Result:=status
-    else
-    begin
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateZvol : '+ ZfsPath+' : '+output);
     end;
   end;
 end;

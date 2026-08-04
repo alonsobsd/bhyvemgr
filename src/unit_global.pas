@@ -44,8 +44,6 @@ function GetNewConfig:Boolean;
 procedure SetNewConfig(const Value:Boolean);
 function GetUseDnsmasq:string;
 procedure SetUseDnsmasq(const Value:string);
-function GetUseSudo:string;
-procedure SetUseSudo(const Value:string);
 function GetUseZfs:string;
 procedure SetUseZfs(const Value:string);
 function GetVmPath:string;
@@ -67,11 +65,6 @@ function GetBhyvectlCmd:string;
 procedure SetBhyvectlCmd(const Value:string);
 function GetBhyveloadCmd:string;
 procedure SetBhyveloadCmd(const Value:string);
-{ User tools section }
-function GetDoasCmd:string;
-procedure SetDoasCmd(const Value:string);
-function GetSudoCmd:string;
-procedure SetSudoCmd(const Value:string);
 { Network section }
 function GetBridgeInterface:string;
 procedure SetBridgeInterface(const Value:string);
@@ -93,54 +86,12 @@ procedure SetXfreerdpCmd(const Value:string);
 function GetXfreerdpArgs:string;
 procedure SetXfreerdpArgs(const Value:string);
 { Other tools section }
-function GetChownCmd:string;
-procedure SetChownCmd(const Value:string);
-function GetChmodCmd:string;
-procedure SetChmodCmd(const Value:string);
-function GetCpCmd:string;
-procedure SetCpCmd(const Value:string);
-function GetFetchCmd:string;
-procedure SetFetchCmd(const Value:string);
-function GetFileCmd:string;
-procedure SetFileCmd(const Value:string);
-function GetIfconfigCmd:string;
-procedure SetIfconfigCmd(const Value:string);
-function GetInstallCmd:string;
-procedure SetInstallCmd(const Value:string);
-function GetKillCmd:string;
-procedure SetKillCmd(const Value:string);
-function GetKldloadCmd:string;
-procedure SetKldloadCmd(const Value:string);
-function GetKldstatCmd:string;
-procedure SetKldstatCmd(const Value:string);
-function GetMakefsCmd:string;
-procedure SetMakefsCmd(const value:string);
-function GetPciconfCmd:string;
-procedure SetPciconfCmd(const value:string);
-function GetPfctlCmd:string;
-procedure SetPfctlCmd(const value:string);
-function GetPgrepCmd:string;
-procedure SetPgrepCmd(const value:string);
 function GetQemuImgCmd:string;
 procedure SetQemuImgCmd(const value:string);
-function GetRmCmd:string;
-procedure SetRmCmd(const Value:string);
-function GetServiceCmd:string;
-procedure SetServiceCmd(const Value:string);
-function GetSysctlCmd:string;
-procedure SetSysctlCmd(const Value:string);
 function GetSwtpmCmd:string;
 procedure SetSwtpmCmd(const Value:string);
 function GetSwtpmIoctlCmd:string;
 procedure SetSwtpmIoctlCmd(const Value:string);
-function GetTruncateCmd:string;
-procedure SetTruncateCmd(const Value:string);
-function GetXzCmd:string;
-procedure SetXzCmd(const Value:string);
-function GetZfsCmd:string;
-procedure SetZfsCmd(const Value:string);
-function GetZpoolCmd:string;
-procedure SetZpoolCmd(const Value:string);
 { Zfs section }
 function GetZfsZpool:string;
 procedure SetZfsZpool(const Value:string);
@@ -151,7 +102,6 @@ procedure SetZfsCreateOptions(const value:string);
 property Osreldate:string read GetOsreldate write SetOsreldate;
 property NewConfig:boolean read GetNewConfig write SetNewConfig;
 property UseDnsmasq:string read GetUseDnsmasq write SetUseDnsmasq;
-property UseSudo:string read GetUseSudo write SetUseSudo;
 property UseZfs:string read GetUseZfs write SetUseZfs;
 property VmPath:string read GetVmPath write SetVmPath;
 property CloudVmImagesPath:string read GetCloudVmImagesPath write SetCloudVmImagesPath;
@@ -170,38 +120,14 @@ property Ipv6Prefix:string read GetIpv6Prefix write SetIpv6Prefix;
 property ExternalInterface:string read GetExternalInterface write SetExternalInterface;
 property ExternalIpv4:string read GetExternalIpv4 write SetExternalIpv4;
 property ExternalIpv6:string read GetExternalIpv6 write SetExternalIpv6;
-{ User tools section }
-property DoasCmd:string read GetDoasCmd write SetDoasCmd;
-property SudoCmd:string read GetSudoCmd write SetSudoCmd;
 { Remote tools section }
 property VncviewerCmd:string read GetVncviewerCmd write SetVncviewerCmd;
 property XfreerdpCmd:string read GetXfreerdpCmd write SetXfreerdpCmd;
 property XfreerdpArgs:string read GetXfreerdpArgs write SetXfreerdpArgs;
 { Other tools section }
-property ChownCmd:string read GetChownCmd write SetChownCmd;
-property ChmodCmd:string read GetChmodCmd write SetChmodCmd;
-property CpCmd:string read GetCpCmd write SetCpCmd;
-property FetchCmd:string read GetFetchCmd write SetFetchCmd;
-property FileCmd:string read GetFileCmd write SetFileCmd;
-property IfconfigCmd:string read GetIfconfigCmd write SetIfconfigCmd;
-property InstallCmd:string read GetInstallCmd write SetInstallCmd;
-property KillCmd:string read GetKillCmd write SetKillCmd;
-property KldloadCmd:string read GetKldloadCmd write SetKldloadCmd;
-property KldstatCmd:string read GetKldstatCmd write SetKldstatCmd;
-property MakefsCmd:string read GetMakefsCmd write SetMakefsCmd;
-property PciconfCmd:string read GetPciconfCmd write SetPciconfCmd;
-property PfctlCmd:string read GetPfctlCmd write SetPfctlCmd;
-property PgrepCmd:string read GetPgrepCmd write SetPgrepCmd;
 property QemuImgCmd:string read GetQemuImgCmd write SetQemuImgCmd;
-property RmCmd:string read GetRmCmd write SetRmCmd;
-property ServiceCmd:string read GetServiceCmd write SetServiceCmd;
-property SysctlCmd:string read GetSysctlCmd write SetSysctlCmd;
 property SwtpmCmd:string read GetSwtpmCmd write SetSwtpmCmd;
 property SwtpmIoctlCmd:string read GetSwtpmIoctlCmd write SetSwtpmIoctlCmd;
-property TruncateCmd:string read GetTruncateCmd write SetTruncateCmd;
-property XzCmd:string read GetXzCmd write SetXzCmd;
-property ZfsCmd:string read GetZfsCmd write SetZfsCmd;
-property ZpoolCmd:string read GetZpoolCmd write SetZpoolCmd;
 { Zfs section }
 property ZfsZpool:string read GetZfsZpool write SetZfsZpool;
 property ZfsCreateOptions:string read GetZfsCreateOptions write SetZfsCreateOptions;
@@ -213,17 +139,44 @@ const
   {$ELSE}
   DatadirPath = '/usr/local/share/bhyvemgr/';
   {$ENDIF}
-
-  BootRomUefiPath = '/usr/local/share/uefi-firmware';
-  BootRomUbootPath = '/usr/local/share/u-boot/u-boot-bhyve-arm64';
-  KeyBoardLayoutPath = '/usr/share/bhyve/kbdlayout';
-  DnsmasqDirectory = '/usr/local/etc/dnsmasq.d/bhyvemgr';
-  DnsmasqBinPath = '/usr/local/sbin/dnsmasq';
-  ServicesFilePath = '/etc/services';
-  PfNatAnchor = 'bhyvemgr-nat';
-  PfRdrAnchor = 'bhyvemgr-rdr';
-  PfPassInAnchor = 'bhyvemgr-in';
-  PfPassOutAnchor = 'bhyvemgr-out';
+  { Program paths }
+  CHMOD_CMD = '/bin/chmod';
+  CHOWN_CMD = '/usr/sbin/chown';
+  CP_CMD = '/bin/cp';
+  FETCH_CMD = '/usr/bin/fetch';
+  FILE_CMD = '/usr/bin/file';
+  IFCONFIG_CMD = '/sbin/ifconfig';
+  INSTALL_CMD = '/usr/bin/install';
+  KILL_CMD = '/bin/kill';
+  KLDLOAD_CMD = '/sbin/kldload';
+  KLDSTAT_CMD = '/sbin/kldstat';
+  MAKEFS_CMD = '/usr/sbin/makefs';
+  MDO_CMD = '/usr/bin/mdo';
+  PCICONF_CMD = '/usr/sbin/pciconf';
+  PFCTL_CMD = '/sbin/pfctl';
+  PGREP_CMD = '/usr/bin/pgrep';
+  RM_CMD = '/bin/rm';
+  SERVICE_CMD = '/usr/sbin/service';
+  SYSCTL_CMD = '/sbin/sysctl';
+  TRUNCATE_CMD = '/usr/bin/truncate';
+  XZ_CMD = '/usr/bin/xz';
+  ZFS_CMD = '/sbin/zfs';
+  ZPOOL_CMD = '/sbin/zpool';
+  { bhyve and bhyvemgrd configuration files }
+  BHYVEMGRD_SOCKET = '/var/run/bhyvemgrd/bhyvemgrd.sock';
+  BHYVEMGRD_CONFIG_FILE = '/usr/local/etc/bhyvemgrd/daemon.conf';
+  BHYVEMGR_CONFIG_FILE = '.config/bhyvemgr/gui.conf';
+  COMMON_CONFIG_FILE = '/usr/local/etc/bhyvemgrd/common.conf';
+  { bhyve log file }
+  BHYVEMGR_LOG_FILE = '.config/bhyvemgr/bhyvemgr.log';
+  { Firmware paths }
+  BOOTROMUEFI_PATH = '/usr/local/share/uefi-firmware';
+  BOOTROMUBOOT_PATH= '/usr/local/share/u-boot/u-boot-bhyve-arm64';
+  { Keyboard layouts path }
+  KEYBOARDLAYOUT_PATH = '/usr/share/bhyve/kbdlayout';
+  DNSMASQDIRECTORY_PATH = '/usr/local/etc/dnsmasq.d/bhyvemgr';
+  DNSMASQBIN_CMD = '/usr/local/sbin/dnsmasq';
+  SERVICES_FILE = '/etc/services';
 
   TrayIconNotifytimeout = 3000;
   FirstVncPortNumber = 5900;
@@ -236,7 +189,6 @@ var
   OsreldateVar: String;
   NewConfigVar: Boolean;
   UseDnsmasqVar: String;
-  UseSudoVar: String;
   UseZfsVar: String;
   VmPathVar: String;
   CloudVmImagesPathVar: String;
@@ -247,8 +199,6 @@ var
   BhyveCmdVar: String;
   BhyvectlCmdVar: String;
   BhyveloadCmdVar: String;
-  DoasCmdVar: String;
-  SudoCmdVar: String;
   VncviewerCmdVar: String;
   XfreerdpCmdVar: String;
   XfreerdpArgsVar: String;
@@ -258,30 +208,9 @@ var
   ExternalInterfaceVar: String;
   ExternalIpv4Var: String;
   ExternalIpv6Var: String;
-  ChownCmdVar: String;
-  ChmodCmdVar: String;
-  CpCmdVar: String;
-  FetchCmdVar: String;
-  FileCmdVar: String;
-  IfconfigCmdVar: String;
-  InstallCmdVar: String;
-  KillCmdVar: String;
-  KldloadCmdVar: String;
-  KldstatCmdVar: String;
-  MakefsCmdVar: String;
-  PciconfCmdVar: String;
-  PfctlCmdVar: String;
-  PgrepCmdVar: String;
   QemuImgCmdVar: String;
-  RmCmdVar: String;
-  ServiceCmdVar: String;
-  SysctlCmdVar: String;
   SwtpmCmdVar: String;
   SwtpmIoctlCmdVar: String;
-  TruncateCmdVar: String;
-  XzCmdVar: String;
-  ZfsCmdVar: String;
-  ZpoolCmdVar: String;
   ZfsEnableVar: String;
   ZfsZpoolVar: String;
   ZfsCreateOptionsVar: String;
@@ -304,16 +233,6 @@ end;
 procedure SetUseDnsmasq(const Value: string);
 begin
   UseDnsmasqVar := Value;
-end;
-
-function GetUseSudo: string;
-begin
-  Result := UseSudoVar;
-end;
-
-procedure SetUseSudo(const Value: string);
-begin
-  UseSudoVar := Value;
 end;
 
 function GetUseZfs: string;
@@ -426,26 +345,6 @@ begin
   BhyveloadCmdVar := Value;
 end;
 
-function GetDoasCmd: string;
-begin
-  Result := DoasCmdVar;
-end;
-
-procedure SetDoasCmd(const Value: string);
-begin
-  DoasCmdVar := Value;
-end;
-
-function GetSudoCmd: string;
-begin
-  Result := SudoCmdVar;
-end;
-
-procedure SetSudoCmd(const Value: string);
-begin
-  SudoCmdVar := Value;
-end;
-
 function GetBridgeInterface: string;
 begin
   Result := BridgeInterfaceVar;
@@ -536,146 +435,6 @@ begin
   XfreerdpArgsVar := Value;
 end;
 
-function GetChownCmd: string;
-begin
-  Result := ChownCmdVar;
-end;
-
-procedure SetChownCmd(const Value: string);
-begin
-  ChownCmdVar := Value;
-end;
-
-function GetCpCmd: string;
-begin
-  Result := CpCmdVar;
-end;
-
-procedure SetCpCmd(const Value: string);
-begin
-  CpCmdVar := Value;
-end;
-
-function GetChmodCmd: string;
-begin
-  Result := ChmodCmdVar;
-end;
-
-procedure SetChmodCmd(const Value: string);
-begin
-  ChmodCmdVar := Value;
-end;
-
-function GetFetchCmd: string;
-begin
-  Result := FetchCmdVar;
-end;
-
-procedure SetFetchCmd(const Value: string);
-begin
-  FetchCmdVar := Value;
-end;
-
-function GetFileCmd: string;
-begin
-  Result := FileCmdVar;
-end;
-
-procedure SetFileCmd(const Value: string);
-begin
-  FileCmdVar := Value;
-end;
-
-function GetIfconfigCmd: string;
-begin
-  Result := IfconfigCmdVar;
-end;
-
-procedure SetIfconfigCmd(const Value: string);
-begin
-  IfconfigCmdVar := Value;
-end;
-
-function GetInstallCmd: string;
-begin
-  Result := InstallCmdVar;
-end;
-
-procedure SetInstallCmd(const Value: string);
-begin
-  InstallCmdVar := Value;
-end;
-
-function GetKillCmd: string;
-begin
-  Result := KillCmdVar;
-end;
-
-procedure SetKillCmd(const Value: string);
-begin
-  KillCmdVar := Value;
-end;
-
-function GetKldloadCmd: string;
-begin
-  Result := KldloadCmdVar;
-end;
-
-procedure SetKldloadCmd(const Value: string);
-begin
-  KldloadCmdVar := Value;
-end;
-
-function GetKldstatCmd: string;
-begin
-  Result := KldstatCmdVar;
-end;
-
-procedure SetKldstatCmd(const Value: string);
-begin
-  KldstatCmdVar := Value;
-end;
-
-function GetMakefsCmd: string;
-begin
-  Result := MakefsCmdVar;
-end;
-
-procedure SetMakefsCmd(const value: string);
-begin
-  MakefsCmdVar := Value;
-end;
-
-function GetPciconfCmd: string;
-begin
-  Result := PciconfCmdVar;
-end;
-
-procedure SetPciconfCmd(const value: string);
-begin
-  PciconfCmdVar := Value;
-end;
-
-function GetPfctlCmd: string;
-begin
-  Result := PfctlCmdVar;
-end;
-
-procedure SetPfctlCmd(const value: string);
-begin
-  PfctlCmdVar := Value;
-end;
-
-function GetPgrepCmd: string;
-begin
-  Result := PgrepCmdVar;
-end;
-
-procedure SetPgrepCmd(const value: string);
-begin
-  PgrepCmdVar := Value;
-end;
-
 function GetQemuImgCmd: string;
 begin
   Result := QemuImgCmdVar;
@@ -684,36 +443,6 @@ end;
 procedure SetQemuImgCmd(const value: string);
 begin
   QemuImgCmdVar := Value;
-end;
-
-function GetRmCmd: string;
-begin
-  Result := RmCmdVar;
-end;
-
-procedure SetRmCmd(const Value: string);
-begin
-  RmCmdVar := Value;
-end;
-
-function GetServiceCmd: string;
-begin
-  Result := ServiceCmdVar;
-end;
-
-procedure SetServiceCmd(const Value: string);
-begin
-  ServiceCmdVar := Value;
-end;
-
-function GetSysctlCmd: string;
-begin
-  Result := SysctlCmdVar;
-end;
-
-procedure SetSysctlCmd(const Value: string);
-begin
-  SysctlCmdVar := Value;
 end;
 
 function GetSwtpmCmd: string;
@@ -734,46 +463,6 @@ end;
 procedure SetSwtpmIoctlCmd(const Value: string);
 begin
   SwtpmIoctlCmdVar := Value;
-end;
-
-function GetTruncateCmd: string;
-begin
-  Result := TruncateCmdVar;
-end;
-
-procedure SetTruncateCmd(const Value: string);
-begin
-  TruncateCmdVar := Value;
-end;
-
-function GetXzCmd: string;
-begin
-  Result := XzCmdVar;
-end;
-
-procedure SetXzCmd(const Value: string);
-begin
-  XzCmdVar := Value;
-end;
-
-function GetZfsCmd: string;
-begin
-  Result := ZfsCmdVar;
-end;
-
-procedure SetZfsCmd(const Value: string);
-begin
-  ZfsCmdVar := Value;
-end;
-
-function GetZpoolCmd: string;
-begin
-  Result := ZpoolCmdVar;
-end;
-
-procedure SetZpoolCmd(const Value: string);
-begin
-  ZpoolCmdVar := Value;
 end;
 
 function GetZfsEnable: string;

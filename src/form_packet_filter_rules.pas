@@ -154,7 +154,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_component, unit_global, unit_util, unit_language ,RegExpr, LazLogger;
+  unit_component, unit_global, unit_util, unit_helper_client, unit_language ,RegExpr, LazLogger;
 
 { TFormPacketFilterRules }
 
@@ -691,22 +691,22 @@ begin
       begin
         if StringGridInRules.RowCount > 1 then
         begin
-          PfUnloadRules(VmName, 'pass-in');
-          if not PfLoadRules(VmName, 'pass-in') then
+          PfUnloadRulesHelper(VmName, 'pass-in');
+          if not PfLoadRulesHelper(VmName, 'pass-in') then
             flagReload:=False;
         end;
 
         if StringGridOutRules.RowCount > 1 then
         begin
-          PfUnloadRules(VmName, 'pass-out');
-          if not PfLoadRules(VmName, 'pass-out') then
+          PfUnloadRulesHelper(VmName, 'pass-out');
+          if not PfLoadRulesHelper(VmName, 'pass-out') then
             flagReload:=False;
         end;
 
         if StringGridRdrRules.RowCount > 1 then
         begin
-          PfUnloadRules(VmName, 'rdr');
-          if not PfLoadRules(VmName, 'rdr') then
+          PfUnloadRulesHelper(VmName, 'rdr');
+          if not PfLoadRulesHelper(VmName, 'rdr') then
             flagReload:=False;
         end;
 

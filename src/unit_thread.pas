@@ -38,30 +38,8 @@ uses
   Classes, Dialogs, SysUtils;
 
 type
-  TExitStatusEvent = procedure(Status: Integer; Message : String; VmName : String; ErrorMessage : String) of Object;
   TShowStatusEvent = procedure(Status: Integer; AppPid: Integer) of Object;
   TEndStatusEvent = procedure(Status: Integer; AppName : String; AppPid: Integer) of Object;
-
-  { VmThread }
-
-  VmThread = class(TThread)
-  private
-    AppName : string;
-    AppVmName : string;
-    AppVmPath : string;
-    AppResult : String;
-    AppParams: TStringArray;
-    ErrorMessage : String;
-    ExitMessage : String;
-    ExitStatus : Integer;
-    FOnExitStatus: TExitStatusEvent;
-    procedure ShowStatus;
-  protected
-    procedure Execute; override;
-  public
-    constructor Create(VmName : String);
-    property OnExitStatus: TExitStatusEvent read FOnExitStatus write FOnExitStatus;
-  end;
 
   { AppThread }
 
@@ -70,7 +48,6 @@ type
     AppName : string;
     AppResult : Boolean;
     AppParams: TStringArray;
-    ErrorMessage : String;
     ExitMessage : String;
     ExitStatus : Integer;
     procedure ShowAppStatus;
@@ -106,120 +83,6 @@ implementation
 
 uses
   unit_global, unit_language, unit_component, process, LazLogger;
-
-{ VmThread }
-
-procedure VmThread.ShowStatus;
-begin
-  if Assigned(FOnExitStatus) then
-  begin
-    FOnExitStatus(ExitStatus, ExitMessage, AppVmName, ErrorMessage);
-  end;
-end;
-
-procedure VmThread.Execute;
-var
-  AppProcess: TProcess;
-  I: Integer;
-  AppProcessOutput: TStringList;
-begin
-  AppProcess := TProcess.Create(nil);
-  AppProcessOutput:= TStringList.Create;
-
-  AppProcess.InheritHandles := False;
-  AppProcess.Options := [poWaitOnExit, poUsePipes];
-  AppProcess.ShowWindow := swoShow;
-  for I := 1 to GetEnvironmentVariableCount do
-    AppProcess.Environment.Add(GetEnvironmentString(I));
-  AppProcess.Executable:= AppName;
-
-  for I:=0 to Length(AppParams)-1 do
-  begin
-    AppProcess.Parameters.Add(AppParams[I]);
-  end;
-
-  try
-    try
-      AppProcess.Execute;
-
-      ExitStatus:=AppProcess.ExitStatus;
-      AppProcessOutput.LoadFromStream(AppProcess.Stderr);
-
-      if (ExitStatus = -1) then
-      begin
-        AppResult:='True';
-      end
-      else
-      begin
-        if ExitStatus = 0 then
-        begin
-          ExitMessage:=Format(vm_reboot_status, [AppVmName]);
-          Synchronize(@Showstatus);
-        end
-        else if ExitStatus = 1 then
-        begin
-          ExitMessage:=Format(vm_poweroff_status, [AppVmName]);
-          Synchronize(@Showstatus);
-        end
-        else if ExitStatus = 2 then
-        begin
-          ExitMessage:=Format(vm_halt_status, [AppVmName]);
-          Synchronize(@Showstatus);
-        end
-        else if ExitStatus = 3 then
-        begin
-          ErrorMessage:=AppProcessOutput.Text;
-          ExitMessage:=Format(vm_triplefault_status, [AppVmName]);
-          Synchronize(@Showstatus);
-        end
-        else if ExitStatus = 4 then
-        begin
-          ErrorMessage:=AppProcessOutput.Text;
-          ExitMessage:=Format(vm_exiterror_status, [AppVmName]);
-          Synchronize(@Showstatus);
-        end
-        else
-        begin
-          ExitStatus:=6;
-          ErrorMessage:=AppProcessOutput.Text;
-          ExitMessage:=Format(vm_exit_status, [AppVmName]);
-          Synchronize(@Showstatus);
-        end;
-
-        AppProcess.Terminate(1);
-      end
-    except
-      on E: Exception do
-      begin
-        ExitStatus:=5;
-        ErrorMessage:=AppProcessOutput.Text;
-        ExitMessage:=Format(exception_status, [E.Message]);
-        Synchronize(@Showstatus);
-      end;
-    end;
-  finally
-    AppProcessOutput.Free;
-    AppProcess.Free;
-  end;
-end;
-
-constructor VmThread.Create(VmName : String);
-begin
-  if UseSudo = 'no' then
-    AppName:=DoasCmd
-  else
-    AppName:=SudoCmd;
-
-  AppVmName:=VmName;
-  AppVmPath:=VmPath;
-  AppParams:=[BhyveCmd, '-k', Format('%s/%s/bhyve_config.conf', [VmPath, VmName])];
-
-  if FileExists(AppName) and FileExists(BhyveCmd) then
-  begin
-    inherited Create(True);
-    FreeOnTerminate := true;
-  end;
-end;
 
 { AppThread }
 

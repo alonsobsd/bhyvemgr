@@ -95,6 +95,7 @@ end;
 
 procedure TFormNetworkDevice.FillComboDevice(Combo: TComboBox);
 begin
+  Combo.Clear;
   Combo.Items.Add('e1000');
   Combo.Items.Add('virtio-net');
 end;

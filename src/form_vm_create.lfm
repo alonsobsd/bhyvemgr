@@ -9,7 +9,7 @@ object FormVmCreate: TFormVmCreate
   ClientWidth = 733
   Position = poDesktopCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.6.0.0'
+  LCLVersion = '4.8.0.0'
   OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   object BitBtnCreateVm: TBitBtn

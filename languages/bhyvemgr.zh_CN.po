@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bhyve 管理器\n"
 "POT-Creation-Date: 2025-09-08\n"
-"PO-Revision-Date: 2025-11-11\n"
+"PO-Revision-Date: 2026-08-02\n"
 "Last-Translator: ykla <yklaxds@gmail.com>\n"
 "Language-Team: ykla <yklaxds@gmail.com>\n"
 "Language: zh_CN\n"
@@ -200,7 +200,6 @@ msgid "Path"
 msgstr "路径"
 
 #: tformdisplaydevice.bitbtnclose.caption
-#, fuzzy
 msgctxt "tformdisplaydevice.bitbtnclose.caption"
 msgid "Close"
 msgstr "关闭"
@@ -630,10 +629,6 @@ msgctxt "tformsettings.checkboxusepf.caption"
 msgid "Use PF/NAT support"
 msgstr "使用 PF/NAT 支持"
 
-#: tformsettings.checkboxusesudo.caption
-msgid "Use sudo instead of doas"
-msgstr "使用 sudo 替代 doas"
-
 #: tformsettings.checkboxusesystray.caption
 msgid "Enable systray icon (need restart)"
 msgstr "启用系统托盘图标（需重启）"
@@ -682,17 +677,9 @@ msgstr "/usr/sbin/bhyvectl"
 msgid "/usr/sbin/bhyveload"
 msgstr "/usr/sbin/bhyveload"
 
-#: tformsettings.filenameeditdoas.text
-msgid "/usr/local/bin/doas"
-msgstr "/usr/local/bin/doas"
-
 #: tformsettings.filenameeditqemuimg.text
 msgid "/usr/local/bin/qemu-img"
 msgstr "/usr/local/bin/qemu-img"
-
-#: tformsettings.filenameeditsudo.text
-msgid "/usr/local/bin/sudo"
-msgstr "/usr/local/bin/sudo"
 
 #: tformsettings.filenameeditswtpm.text
 msgid "/usr/local/bin/swtpm"
@@ -739,10 +726,6 @@ msgstr "远程工具设置"
 #: tformsettings.groupboxswtpmtoolpaths.caption
 msgid "Swtpm tool paths"
 msgstr "swtpm 工具路径"
-
-#: tformsettings.groupboxusertoolpaths.caption
-msgid "User tool paths"
-msgstr "用户工具路径"
 
 #: tformsettings.groupboxzfssettings.caption
 msgid "ZFS settings"
@@ -811,14 +794,6 @@ msgstr "bhyvectl"
 #: tformsettings.label30.caption
 msgid "External IPv4"
 msgstr "外部 IPv4"
-
-#: tformsettings.label31.caption
-msgid "sudo"
-msgstr "sudo"
-
-#: tformsettings.label32.caption
-msgid "doas"
-msgstr "doas"
 
 #: tformsettings.label33.caption
 msgid "Bridge IPv6"
@@ -1481,10 +1456,6 @@ msgstr "未找到 dnsmasq。要解决此问题请安装 dns/dnsmasq"
 msgid "DNS Server IPv6 is not valid."
 msgstr "DNS 服务器 IPv6 地址无效。"
 
-#: unit_language.check_doas
-msgid "doas was not found. Please install security/doas for fix it"
-msgstr "未找到 doas。要解决此问题请安装 security/doas"
-
 #: unit_language.check_gateway
 msgid "Gateway is not valid."
 msgstr "网关无效。"
@@ -1578,10 +1549,6 @@ msgstr "您必须选择虚拟存储类型，例如镜像文件等。"
 msgid "A valid subnet must be defined. It will be used for assign/generate ip address."
 msgstr "必须定义有效的子网。它将用于分配和生成 IP 地址。"
 
-#: unit_language.check_sudo
-msgid "sudo was not found. Please install security/sudo for fix it"
-msgstr "未找到 sudo，要解决此问题请安装 security/sudo"
-
 #: unit_language.check_support_file
 #, object-pascal-format
 msgid "%s file is not supported."
@@ -1632,16 +1599,6 @@ msgstr "虚拟机名称无效。有效字符为 [a-z][-_][0-9]。"
 msgid "Virtual machine port is not valid."
 msgstr "虚拟机端口无效。"
 
-#: unit_language.check_vm_running
-msgid ""
-"bhyvemgr detects VMs running. You must stop them before of close this app. \n"
-"\n"
-"Do you really want to close?"
-msgstr ""
-"bhyve 管理器检测到有虚拟机正在运行。您必须先停止它们，然后再退出此应用程序。\n"
-"\n"
-"您确定要退出吗？"
-
 #: unit_language.check_vm_type
 msgid "A type must be selected."
 msgstr "必须选择一种类型。"
@@ -1664,8 +1621,8 @@ msgid "%s could not be compatible with bhyve."
 msgstr "bhyve 可能不兼容 %s。"
 
 #: unit_language.configuration_notice
-msgid "A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press \"Save settings button\" if everything is ok."
-msgstr "已生成配置文件。将打开设置表单，可查看或修改 bhyve 管理器的选项。若一切正常，请点击“保存设置”按钮。"
+msgid "No configuration file was found. A settings form will open so you can review or modify bhyvemgr settings. If everything looks correct, click the \"Save Settings\" button."
+msgstr "未找到配置文件。系统将打开设置界面，以便您查看或修改 bhyvemgr 的设置。如果各项设置无误，请点击“保存设置”按钮。"
 
 #: unit_language.confirmation_message
 msgid "Confirmation message"
@@ -1678,8 +1635,8 @@ msgstr "正在转换…"
 
 #: unit_language.copy_status
 #, object-pascal-format
-msgid "Copying %s MB from image..."
-msgstr "已从镜像复制 %s MB……"
+msgid "Copying %0:s MB from image to %1:s VM directory..."
+msgstr "正在将 %0:s MB 从镜像复制到 %1:s 虚拟机目录……"
 
 #: unit_language.debugln_bhyve_finished
 msgid "Bhyvemgr was finished"
@@ -1711,12 +1668,12 @@ msgstr "Bhyve 设置：qcow2 转换支持将不可用。未安装 qemu-tools。"
 
 #: unit_language.debugln_dataset_status
 #, object-pascal-format
-msgid "%0:s: : Can not create %1:s: dataset"
+msgid "%0:s: : Cannot create %1:s: dataset"
 msgstr "%0:s：无法创建数据集 %1:s"
 
 #: unit_language.debugln_directory_status
 #, object-pascal-format
-msgid "%0:s: : Can not create %1:s: directory"
+msgid "%0:s: : Cannot create %1:s: directory"
 msgstr "%0:s：无法创建目录 %1:s"
 
 #: unit_language.device_remove_notice
@@ -1744,6 +1701,19 @@ msgstr "正在下载……"
 msgid "%0:s: value has been changed to %1:s"
 msgstr "%0:s：值已更改为 %1:s"
 
+#: unit_language.error_daemon_connection
+msgid "The connection to the bhyvemgrd was lost. The app interface will now close."
+msgstr "与 bhyvemgrd 的连接已断开。应用程序界面即将关闭。"
+
+#: unit_language.error_file_creation
+#, object-pascal-format
+msgid "Cannot create the configuration file %s"
+msgstr "无法创建配置文件 %s"
+
+#: unit_language.error_kernel_modules
+msgid "The application has been closed. Check that the vmm, nmdm, and mac_do kernel modules are loaded."
+msgstr "应用程序已关闭。请检查 vmm、nmdm 和 mac_do 内核模块是否已加载。"
+
 #: unit_language.error_message
 msgid "Error message"
 msgstr "错误信息"
@@ -1752,6 +1722,15 @@ msgstr "错误信息"
 #, object-pascal-format
 msgid "Error saving data to %s file"
 msgstr "保存数据到 %s 文件时出错"
+
+#: unit_language.error_socket
+msgid "Cannot create UNIX socket"
+msgstr "无法创建 UNIX 套接字"
+
+#: unit_language.error_socket_connection
+#, object-pascal-format
+msgid "Cannot connect to %s"
+msgstr "无法连接到 %s"
 
 #: unit_language.error_status
 #, object-pascal-format
@@ -1926,6 +1905,14 @@ msgstr "尝试重新加载 %s PF 规则时发生错误。"
 msgid "Settings were saved successfully"
 msgstr "设置已成功保存"
 
+#: unit_language.settings_saved_restart
+msgid "Please restart the application. You can start the bhyvemgrd service now."
+msgstr "请重新启动应用程序。您现在可以启动 bhyvemgrd 服务了。"
+
+#: unit_language.success_socket_connection
+msgid "Connected to bhyvemgrd daemon"
+msgstr "已连接到 bhyvemgrd 守护进程"
+
 #: unit_language.virtual_machine
 msgid "virtual machine"
 msgstr "虚拟机"
@@ -2001,6 +1988,11 @@ msgstr "虚拟机 %s 的数据已删除"
 #, object-pascal-format
 msgid "%s VM have been started"
 msgstr "虚拟机 %s 已启动"
+
+#: unit_language.vm_suspended_status
+#, object-pascal-format
+msgid "%s VM has been suspended"
+msgstr "%s 虚拟机已挂起"
 
 #: unit_language.vm_triplefault_status
 #, object-pascal-format

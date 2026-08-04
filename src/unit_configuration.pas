@@ -44,7 +44,6 @@ Type
       private
         ConfigFile : TIniFile;
         PathFile : String;
-
       public
         constructor Create(Path : String);
         destructor Destroy; override;
@@ -55,21 +54,17 @@ Type
         function GeneralConfig():Boolean;
    end;
 
-   { BhyveConfigurationClass }
+   { BhyvemgrdConfigurationClass }
 
-   BhyveConfigurationClass = class
+   BhyvemgrdConfigurationClass = class
       private
-        ConfigList : TStringList;
+        ConfigFile : TIniFile;
         PathFile : String;
       public
         constructor Create(Path : String);
         destructor Destroy; override;
-        function SetOption(Key : String; Value : String):Boolean;
-        function GetOption(Key : String; Value : String = ''):String;
-        function DelOption(Key : String):Boolean;
-        function LoadFromStringList(ValueList : TStringList):Boolean;
-        function LoadFromFile(Path : String):Boolean;
-        procedure SaveConfig();
+        function SetOption(Section : String; Key : String; Value : String):Boolean;
+        function GetOption(Section : String; Key : String; Value : String = ''):String;
    end;
 
 implementation
@@ -138,9 +133,6 @@ begin
   if ConfigFile.ReadString('general','use_dnsmasq', EmptyStr).IsEmpty then
     ConfigFile.WriteString('general','use_dnsmasq', 'yes');
 
-  if ConfigFile.ReadString('general','use_sudo', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('general','use_sudo', 'yes');
-
   if ConfigFile.ReadString('general','use_systray', EmptyStr).IsEmpty then
     ConfigFile.WriteString('general','use_systray', 'yes');
 
@@ -159,77 +151,14 @@ begin
   if ConfigFile.ReadString('bhyve-tools','bhyveload_cmd', EmptyStr).IsEmpty then
     ConfigFile.WriteString('bhyve-tools','bhyveload_cmd', '/usr/sbin/bhyveload');
 
-  if ConfigFile.ReadString('extra-tools','chown_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','chown_cmd', '/usr/sbin/chown');
-
-  if ConfigFile.ReadString('extra-tools','chmod_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','chmod_cmd', '/bin/chmod');
-
-  if ConfigFile.ReadString('extra-tools','cp_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','cp_cmd', '/bin/cp');
-
-  if ConfigFile.ReadString('extra-tools','fetch_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','fetch_cmd', '/usr/bin/fetch');
-
-  if ConfigFile.ReadString('extra-tools','file_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','file_cmd', '/usr/bin/file');
-
-  if ConfigFile.ReadString('extra-tools','ifconfig_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','ifconfig_cmd', '/sbin/ifconfig');
-
-  if ConfigFile.ReadString('extra-tools','install_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','install_cmd', '/usr/bin/install');
-
-  if ConfigFile.ReadString('extra-tools','kill_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','kill_cmd', '/bin/kill');
-
-  if ConfigFile.ReadString('extra-tools','kldload_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','kldload_cmd', '/sbin/kldload');
-
-  if ConfigFile.ReadString('extra-tools','kldstat_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','kldstat_cmd', '/sbin/kldstat');
-
-  if ConfigFile.ReadString('extra-tools','makefs_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','makefs_cmd', '/usr/sbin/makefs');
-
-  if ConfigFile.ReadString('extra-tools','pciconf_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','pciconf_cmd', '/usr/sbin/pciconf');
-
-  if ConfigFile.ReadString('extra-tools','pfctl_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','pfctl_cmd', '/sbin/pfctl');
-
-  if ConfigFile.ReadString('extra-tools','pgrep_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','pgrep_cmd', '/usr/bin/pgrep');
-
   if ConfigFile.ReadString('extra-tools','qemu-img_cmd', EmptyStr).IsEmpty then
     ConfigFile.WriteString('extra-tools','qemu-img_cmd', '/usr/local/bin/qemu-img');
-
-  if ConfigFile.ReadString('extra-tools','rm_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','rm_cmd', '/bin/rm');
-
-  if ConfigFile.ReadString('extra-tools','service_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','service_cmd', '/usr/sbin/service');
 
   if ConfigFile.ReadString('extra-tools','swtpm_cmd', EmptyStr).IsEmpty then
     ConfigFile.WriteString('extra-tools','swtpm_cmd', '/usr/local/bin/swtpm');
 
   if ConfigFile.ReadString('extra-tools','swtpm_ioctl_cmd', EmptyStr).IsEmpty then
     ConfigFile.WriteString('extra-tools','swtpm_ioctl_cmd', '/usr/local/bin/swtpm_ioctl');
-
-  if ConfigFile.ReadString('extra-tools','sysctl_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','sysctl_cmd', '/sbin/sysctl');
-
-  if ConfigFile.ReadString('extra-tools','truncate_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','truncate_cmd', '/usr/bin/truncate');
-
-  if ConfigFile.ReadString('extra-tools','xz_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','xz_cmd', '/usr/bin/xz');
-
-  if ConfigFile.ReadString('extra-tools','zfs_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','zfs_cmd', '/sbin/zfs');
-
-  if ConfigFile.ReadString('extra-tools','zpool_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('extra-tools','zpool_cmd', '/sbin/zpool');
 
   if ConfigFile.ReadString('network','bridge_interface', EmptyStr).IsEmpty then
     ConfigFile.WriteString('network','bridge_interface', 'bhyve0');
@@ -258,14 +187,6 @@ begin
   if ConfigFile.ReadString('remote-tools','xfreerdp_args', EmptyStr).IsEmpty then
     ConfigFile.WriteString('remote-tools','xfreerdp_args', '/cert:tofu /sound:sys:oss /network:lan /bpp:32 /gfx:rfx:on /log-level:ERROR');
 
-  if ConfigFile.ReadString('user-tools','doas_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('user-tools','doas_cmd', '/usr/local/bin/doas');
-
-  if ConfigFile.ReadString('user-tools','sudo_cmd', EmptyStr).IsEmpty then
-    ConfigFile.WriteString('user-tools','sudo_cmd', '/usr/local/bin/sudo');
-
-  SetZpoolCmd('/sbin/zpool');
-
   ZfsPoolList.Text:=GetZpoolList();
 
   if ZfsPoolList.Count > 0 then
@@ -288,7 +209,7 @@ begin
        ConfigFile.WriteString('zfs','zfs_zpool', 'zroot');
 
      if ConfigFile.ReadString('zfs','zfs_create_options', EmptyStr).IsEmpty then
-       ConfigFile.WriteString('zfs','zfs_create_options','-o compress=lz4');
+       ConfigFile.WriteString('zfs','zfs_create_options','-o compress=lz4 -o atime=off');
 
      if ConfigFile.ReadString('general','use_zfs', EmptyStr).IsEmpty then
        ConfigFile.WriteString('general','use_zfs' , 'no');
@@ -308,64 +229,37 @@ begin
    Result:=True;
 end;
 
-{ BhyveConfigurationClass }
+{ BhyvemgrdConfigurationClass }
 
-constructor BhyveConfigurationClass.Create(Path: String);
+constructor BhyvemgrdConfigurationClass.Create(Path: String);
 begin
   PathFile:=Path;
-  ConfigList:=TStringList.Create();
+  ConfigFile:=TIniFile.Create(PathFile);
 
   if not FileExists(PathFile) then
-    FileCreate(PathFile);
-
-end;
-
-destructor BhyveConfigurationClass.Destroy;
-begin
-  ConfigList.Free;
-  inherited Destroy;
-end;
-
-function BhyveConfigurationClass.SetOption(Key: String; Value: String): Boolean;
-begin
-  ConfigList.Values[Key]:=Value;
-
-  Result:=True;
-end;
-
-function BhyveConfigurationClass.GetOption(Key: String; Value: String): String;
-begin
-  Result:=ConfigList.Values[Key];
-end;
-
-function BhyveConfigurationClass.DelOption(Key: String): Boolean;
-begin
-  Result:=True;
-
-  if (ConfigList.IndexOfName(Key) = -1) then
-    Result:=False
+    SetNewConfig(True)
   else
-    ConfigList.Delete(ConfigList.IndexOfName(Key));
+    SetNewConfig(False);
 end;
 
-function BhyveConfigurationClass.LoadFromStringList(ValueList : TStringList): Boolean;
+destructor BhyvemgrdConfigurationClass.Destroy;
 begin
-  ConfigList.Text:=ValueList.Text;
+  ConfigFile.Free;
+  inherited;
+end;
+
+function BhyvemgrdConfigurationClass.SetOption(Section: String; Key: String;
+  Value: String): Boolean;
+begin
+  ConfigFile.WriteString(Section, Key, Value);
 
   Result:=True;
 end;
 
-function BhyveConfigurationClass.LoadFromFile(Path: String): Boolean;
+function BhyvemgrdConfigurationClass.GetOption(Section: String; Key: String;
+  Value: String): String;
 begin
-  ConfigList.LoadFromFile(PathFile);
-
-  Result:=True;
-end;
-
-procedure BhyveConfigurationClass.SaveConfig();
-begin
-  ConfigList.Sorted:=True;
-  ConfigList.SaveToFile(PathFile);
+  Result:=ConfigFile.ReadString(Section, Key, Value);
 end;
 
 end.

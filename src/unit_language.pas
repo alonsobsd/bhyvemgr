@@ -57,12 +57,11 @@ resourcestring
   { form_main strings }
   debugln_bhyve_started = 'Bhyvemgr was started';
   debugln_bhyve_finished = 'Bhyvemgr was finished';
-  debugln_dataset_status = '%0:s: : Can not create %1:s: dataset';
-  debugln_directory_status = '%0:s: : Can not create %1:s: directory';
-  copy_status = 'Copying %s MB from image...';
+  debugln_dataset_status = '%0:s: : Cannot create %1:s: dataset';
+  debugln_directory_status = '%0:s: : Cannot create %1:s: directory';
+  copy_status = 'Copying %0:s MB from image to %1:s VM directory...';
   edit_global_status = '%0:s: value has been changed to %1:s';
-  configuration_notice = 'A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press "Save settings button" if everything is ok.';
-  check_vm_running = 'bhyvemgr detects VMs running. You must stop them before of close this app. '+sLineBreak+sLineBreak+'Do you really want to close?';
+  configuration_notice = 'No configuration file was found. A settings form will open so you can review or modify bhyvemgr settings. If everything looks correct, click the "Save Settings" button.';
   device_remove_notice = 'This action will remove all files/resources created by this device. Do you want remove %s device?';
   device_status = '%s device can not added/updated.';
   vm_start_status = '%s VM have been started';
@@ -74,6 +73,7 @@ resourcestring
   vm_triplefault_status = '%s VM is triple fault';
   vm_exiterror_status = '%s VM exited due to an error';
   vm_exit_status = '%s VM exited';
+  vm_suspended_status = '%s VM has been suspended';
   exception_status = 'An exception was raised: %s';
   vm_remove_notice = 'Do you want remove %s VM data?';
   vm_remove_force = '%s VM data cannot be removed.'+sLineBreak+sLineBreak+'Do you want force it?';
@@ -86,6 +86,11 @@ resourcestring
   information_message = 'Information message';
   warning_message = 'Warning message';
   error_saving_file = 'Error saving data to %s file';
+  error_socket = 'Cannot create UNIX socket';
+  error_socket_connection = 'Cannot connect to %s';
+  success_socket_connection = 'Connected to bhyvemgrd daemon';
+  error_daemon_connection = 'The connection to the bhyvemgrd was lost. The app interface will now close.';
+  error_kernel_modules = 'The application has been closed. Check that the vmm, nmdm, and mac_do kernel modules are loaded.';
   { form_settings strings }
   debugln_bhyve_settings_opened = 'Bhyve Settings : settings form was opened.';
   debugln_check_freerdp = 'Bhyve Settings : freerdp support will not be available. net/freerdp3 is not installed.';
@@ -93,12 +98,11 @@ resourcestring
   debugln_bhyve_settings_closed = 'Bhyve Settings : settings form was closed.';
   debugln_bhyve_settings_saved = 'Bhyve Settings : settings were saved successfully.';
   settings_saved = 'Settings were saved successfully';
+  settings_saved_restart = 'Please restart the application. You can start the bhyvemgrd service now.';
   check_zfs = 'Support for zfs/zpool is not available';
   check_dnsmasq = 'dnsmasq was not found. Please install dns/dnsmasq for fix it';
   check_ipv6 = 'A valid IPv6 prefix must be defined. It will be used to assign virtual machine ipv6 addresses.';
   check_pf = 'pfctl was not found. Please install OpenBSD packet filter for fix it.';
-  check_sudo = 'sudo was not found. Please install security/sudo for fix it';
-  check_doas = 'doas was not found. Please install security/doas for fix it';
   check_bridge = 'A bridge name must be defined. It will be used by bhyvemgr for virtual machines network settings.';
   check_subnet = 'A valid subnet must be defined. It will be used for assign/generate ip address.';
   check_nat = 'A valid external interface and external IPv4 must be selected. It will be used for define PF rules.';
@@ -106,6 +110,7 @@ resourcestring
   check_base_binary = '%s binary was not found';
   calculated_ipv6 = 'Now, assign this IPv6 address to %s interface. Do not forget add accept_rtadv and auto_linklocal options to it too.';
   no_calculated_ipv6 = '%s IPv6 address can not calculated. IPv6 prefix or Mac address are not valid.';
+  error_file_creation = 'Cannot create the configuration file %s';
   { form_vm_create strings }
   convert_status = 'Converting...';
   download_status = 'Downloading...';

@@ -177,7 +177,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_component, unit_global, unit_util, unit_language;
+  unit_component, unit_global, unit_util, unit_helper_client, unit_language;
 
 { TFormVmCreate }
 
@@ -397,7 +397,7 @@ begin
 
         if ProgressBarImage.Max > 0 then
         begin
-          MyAppThread := AppProgressBarThread.Create(XzCmd, ['-dk', ImageFile]);
+          MyAppThread := AppProgressBarThread.Create(XZ_CMD, ['-dk', ImageFile]);
 
           LabelDownloadStatus.Visible:=True;
           LabelDownloadStatus.Caption:=extract_status;
@@ -411,7 +411,7 @@ begin
         else
         begin
           StatusBarVmCreate.Font.Color:=clRed;
-          StatusBarVmCreate.SimpleText:=Format(retrieve_size, [ExtractFileName(XzCmd), ImageFile]);
+          StatusBarVmCreate.SimpleText:=Format(retrieve_size, [ExtractFileName(XZ_CMD), ImageFile]);
         end;
       end;
   end;
@@ -793,7 +793,7 @@ begin
   end;
 
   if not FileExists(CloudVmImagesPath) then
-    CreateDirectory(CloudVmImagesPath, GetCurrentUserName());
+    CreateDirectoryHelper(CloudVmImagesPath, GetCurrentUserName());
 
   case CheckFileExtension(EditUrlImage.Text) of
     '.qcow2.xz',
@@ -820,14 +820,14 @@ begin
             RemoveFile(CloudVmImagesPath+'/'+RawFileName);
         end;
 
-        if FileExists(FetchCmd) and not FileExists(CloudVmImagesPath+'/'+RawFileName) and not
+        if FileExists(FETCH_CMD) and not FileExists(CloudVmImagesPath+'/'+RawFileName) and not
            FileExists(CloudVmImagesPath+'/'+RemoteFile) then
         begin
           ProgressBarImage.Max:=ConvertFileSize(GetRemoteSize(EditUrlImage.Text), 'M');
 
           if ProgressBarImage.Max > 0 then
           begin
-            MyAppThread := AppProgressBarThread.Create(FetchCmd, ['-n', '-T', '3', EditUrlImage.Text]);
+            MyAppThread := AppProgressBarThread.Create(FETCH_CMD, ['-n', '-T', '3', EditUrlImage.Text]);
             MyAppThread.OnShowStatus := @ShowStatus;
             MyAppThread.OnEndStatus:= @EndStatus;
             MyAppThread.Start;
@@ -838,7 +838,7 @@ begin
           else
           begin
             StatusBarVmCreate.Font.Color:=clRed;
-            StatusBarVmCreate.SimpleText:=Format(retrieve_size, [ExtractFileName(FetchCmd), ExtractFileName(EditUrlImage.Text) ]);
+            StatusBarVmCreate.SimpleText:=Format(retrieve_size, [ExtractFileName(FETCH_CMD), ExtractFileName(EditUrlImage.Text) ]);
           end;
         end
         else
@@ -1055,7 +1055,7 @@ begin
       CanClose := false
     else
     begin
-      KillPid(ProcessPid);
+      KillPidHelper(ProcessPid);
 
       CanClose := True;
     end;

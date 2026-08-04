@@ -1,7 +1,6 @@
 {"version":1,"strings":[
 {"hash":22043347,"name":"tformsettings.caption","sourcebytes":[66,104,121,118,101,32,77,97,110,97,103,101,114,32,45,32,83,101,116,116,105,110,103,115],"value":"Bhyve Manager - Settings"},
 {"hash":3792691,"name":"tformsettings.tabsheetgeneral.caption","sourcebytes":[71,101,110,101,114,97,108,32,115,101,116,116,105,110,103,115],"value":"General settings"},
-{"hash":22403619,"name":"tformsettings.checkboxusesudo.caption","sourcebytes":[85,115,101,32,115,117,100,111,32,105,110,115,116,101,97,100,32,111,102,32,100,111,97,115],"value":"Use sudo instead of doas"},
 {"hash":156349299,"name":"tformsettings.groupboxzfssettings.caption","sourcebytes":[90,70,83,32,115,101,116,116,105,110,103,115],"value":"ZFS settings"},
 {"hash":6387292,"name":"tformsettings.label27.caption","sourcebytes":[90,112,111,111,108],"value":"Zpool"},
 {"hash":8492644,"name":"tformsettings.comboboxzpool.text","sourcebytes":[122,114,111,111,116],"value":"zroot"},
@@ -57,11 +56,6 @@
 {"hash":105246995,"name":"tformsettings.groupboxextratoolpaths.caption","sourcebytes":[69,120,116,114,97,32,116,111,111,108,32,112,97,116,104,115],"value":"Extra tool paths"},
 {"hash":206059847,"name":"tformsettings.label5.caption","sourcebytes":[113,101,109,117,45,105,109,103],"value":"qemu-img"},
 {"hash":166417799,"name":"tformsettings.filenameeditqemuimg.text","sourcebytes":[47,117,115,114,47,108,111,99,97,108,47,98,105,110,47,113,101,109,117,45,105,109,103],"value":"/usr/local/bin/qemu-img"},
-{"hash":37650483,"name":"tformsettings.groupboxusertoolpaths.caption","sourcebytes":[85,115,101,114,32,116,111,111,108,32,112,97,116,104,115],"value":"User tool paths"},
-{"hash":502703,"name":"tformsettings.label31.caption","sourcebytes":[115,117,100,111],"value":"sudo"},
-{"hash":225142799,"name":"tformsettings.filenameeditsudo.text","sourcebytes":[47,117,115,114,47,108,111,99,97,108,47,98,105,110,47,115,117,100,111],"value":"/usr/local/bin/sudo"},
-{"hash":439683,"name":"tformsettings.label32.caption","sourcebytes":[100,111,97,115],"value":"doas"},
-{"hash":224949795,"name":"tformsettings.filenameeditdoas.text","sourcebytes":[47,117,115,114,47,108,111,99,97,108,47,98,105,110,47,100,111,97,115],"value":"/usr/local/bin/doas"},
 {"hash":87462691,"name":"tformsettings.bitbtnsavesettings.caption","sourcebytes":[83,97,118,101,32,115,101,116,116,105,110,103,115],"value":"Save settings"},
 {"hash":265525203,"name":"tformsettings.bitbtnclosesettings.caption","sourcebytes":[67,108,111,115,101,32,115,101,116,116,105,110,103,115],"value":"Close settings"}
 ]}

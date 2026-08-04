@@ -548,7 +548,7 @@ var
   i : Integer;
   keyboard_layouts : TStringList;
 begin
-  keyboard_layouts:=FindAllFiles(KeyBoardLayoutPath, '', False);
+  keyboard_layouts:=FindAllFiles(KEYBOARDLAYOUT_PATH, '', False);
   keyboard_layouts.Sorted:=True;
 
   for i:=0 to keyboard_layouts.Count-1 do

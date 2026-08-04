@@ -618,10 +618,6 @@ msgctxt "tformsettings.checkboxusepf.caption"
 msgid "Use PF/NAT support"
 msgstr ""
 
-#: tformsettings.checkboxusesudo.caption
-msgid "Use sudo instead of doas"
-msgstr ""
-
 #: tformsettings.checkboxusesystray.caption
 msgid "Enable systray icon (need restart)"
 msgstr ""
@@ -670,16 +666,8 @@ msgstr ""
 msgid "/usr/sbin/bhyveload"
 msgstr ""
 
-#: tformsettings.filenameeditdoas.text
-msgid "/usr/local/bin/doas"
-msgstr ""
-
 #: tformsettings.filenameeditqemuimg.text
 msgid "/usr/local/bin/qemu-img"
-msgstr ""
-
-#: tformsettings.filenameeditsudo.text
-msgid "/usr/local/bin/sudo"
 msgstr ""
 
 #: tformsettings.filenameeditswtpm.text
@@ -726,10 +714,6 @@ msgstr ""
 
 #: tformsettings.groupboxswtpmtoolpaths.caption
 msgid "Swtpm tool paths"
-msgstr ""
-
-#: tformsettings.groupboxusertoolpaths.caption
-msgid "User tool paths"
 msgstr ""
 
 #: tformsettings.groupboxzfssettings.caption
@@ -798,14 +782,6 @@ msgstr ""
 
 #: tformsettings.label30.caption
 msgid "External IPv4"
-msgstr ""
-
-#: tformsettings.label31.caption
-msgid "sudo"
-msgstr ""
-
-#: tformsettings.label32.caption
-msgid "doas"
 msgstr ""
 
 #: tformsettings.label33.caption
@@ -1466,10 +1442,6 @@ msgstr ""
 msgid "DNS Server IPv6 is not valid."
 msgstr ""
 
-#: unit_language.check_doas
-msgid "doas was not found. Please install security/doas for fix it"
-msgstr ""
-
 #: unit_language.check_gateway
 msgid "Gateway is not valid."
 msgstr ""
@@ -1563,10 +1535,6 @@ msgstr ""
 msgid "A valid subnet must be defined. It will be used for assign/generate ip address."
 msgstr ""
 
-#: unit_language.check_sudo
-msgid "sudo was not found. Please install security/sudo for fix it"
-msgstr ""
-
 #: unit_language.check_support_file
 #, object-pascal-format
 msgid "%s file is not supported."
@@ -1617,13 +1585,6 @@ msgstr ""
 msgid "Virtual machine port is not valid."
 msgstr ""
 
-#: unit_language.check_vm_running
-msgid ""
-"bhyvemgr detects VMs running. You must stop them before of close this app. \n"
-"\n"
-"Do you really want to close?"
-msgstr ""
-
 #: unit_language.check_vm_type
 msgid "A type must be selected."
 msgstr ""
@@ -1646,7 +1607,7 @@ msgid "%s could not be compatible with bhyve."
 msgstr ""
 
 #: unit_language.configuration_notice
-msgid "A configuration file was generated. A settings form will be open to review / modify bhyvemgr options. Press \"Save settings button\" if everything is ok."
+msgid "No configuration file was found. A settings form will open so you can review or modify bhyvemgr settings. If everything looks correct, click the \"Save Settings\" button."
 msgstr ""
 
 #: unit_language.confirmation_message
@@ -1660,7 +1621,7 @@ msgstr ""
 
 #: unit_language.copy_status
 #, object-pascal-format
-msgid "Copying %s MB from image..."
+msgid "Copying %0:s MB from image to %1:s VM directory..."
 msgstr ""
 
 #: unit_language.debugln_bhyve_finished
@@ -1693,12 +1654,12 @@ msgstr ""
 
 #: unit_language.debugln_dataset_status
 #, object-pascal-format
-msgid "%0:s: : Can not create %1:s: dataset"
+msgid "%0:s: : Cannot create %1:s: dataset"
 msgstr ""
 
 #: unit_language.debugln_directory_status
 #, object-pascal-format
-msgid "%0:s: : Can not create %1:s: directory"
+msgid "%0:s: : Cannot create %1:s: directory"
 msgstr ""
 
 #: unit_language.device_remove_notice
@@ -1726,6 +1687,19 @@ msgstr ""
 msgid "%0:s: value has been changed to %1:s"
 msgstr ""
 
+#: unit_language.error_daemon_connection
+msgid "The connection to the bhyvemgrd was lost. The app interface will now close."
+msgstr ""
+
+#: unit_language.error_file_creation
+#, object-pascal-format
+msgid "Cannot create the configuration file %s"
+msgstr ""
+
+#: unit_language.error_kernel_modules
+msgid "The application has been closed. Check that the vmm, nmdm, and mac_do kernel modules are loaded."
+msgstr ""
+
 #: unit_language.error_message
 msgid "Error message"
 msgstr ""
@@ -1733,6 +1707,15 @@ msgstr ""
 #: unit_language.error_saving_file
 #, object-pascal-format
 msgid "Error saving data to %s file"
+msgstr ""
+
+#: unit_language.error_socket
+msgid "Cannot create UNIX socket"
+msgstr ""
+
+#: unit_language.error_socket_connection
+#, object-pascal-format
+msgid "Cannot connect to %s"
 msgstr ""
 
 #: unit_language.error_status
@@ -1908,6 +1891,14 @@ msgstr ""
 msgid "Settings were saved successfully"
 msgstr ""
 
+#: unit_language.settings_saved_restart
+msgid "Please restart the application. You can start the bhyvemgrd service now."
+msgstr ""
+
+#: unit_language.success_socket_connection
+msgid "Connected to bhyvemgrd daemon"
+msgstr ""
+
 #: unit_language.virtual_machine
 msgid "virtual machine"
 msgstr ""
@@ -1979,6 +1970,11 @@ msgstr ""
 #: unit_language.vm_start_status
 #, object-pascal-format
 msgid "%s VM have been started"
+msgstr ""
+
+#: unit_language.vm_suspended_status
+#, object-pascal-format
+msgid "%s VM has been suspended"
 msgstr ""
 
 #: unit_language.vm_triplefault_status

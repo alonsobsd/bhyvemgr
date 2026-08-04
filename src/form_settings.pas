@@ -51,7 +51,6 @@ type
     CheckBoxUseIpv6: TCheckBox;
     CheckBoxUseSystray: TCheckBox;
     CheckBoxUseDnsmasq: TCheckBox;
-    CheckBoxUseSudo: TCheckBox;
     CheckBoxUseZfs: TCheckBox;
     ComboBoxInterface: TComboBox;
     ComboBoxBridgeInterface: TComboBox;
@@ -68,8 +67,6 @@ type
     EditRdpArgs: TEdit;
     FileNameEditBhyve: TFileNameEdit;
     FileNameEditQemuImg: TFileNameEdit;
-    FileNameEditDoas: TFileNameEdit;
-    FileNameEditSudo: TFileNameEdit;
     FileNameEditVncviewer: TFileNameEdit;
     FileNameEditBhyvectl: TFileNameEdit;
     FileNameEditXfreerdp: TFileNameEdit;
@@ -82,7 +79,6 @@ type
     GroupBoxRemoteToolPaths: TGroupBox;
     GroupBoxSwtpmToolPaths: TGroupBox;
     GroupBoxExtraToolPaths: TGroupBox;
-    GroupBoxUserToolPaths: TGroupBox;
     GroupBoxZfsSettings: TGroupBox;
     GroupBoxRemoteToolSettings: TGroupBox;
     Label1: TLabel;
@@ -96,8 +92,6 @@ type
     Label34: TLabel;
     Label35: TLabel;
     Label5: TLabel;
-    Label31: TLabel;
-    Label32: TLabel;
     Label2: TLabel;
     Label22: TLabel;
     Label23: TLabel;
@@ -144,7 +138,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_configuration, unit_component, unit_global, unit_util, unit_language, LazLogger;
+  unit_configuration, unit_component, unit_global, unit_util, unit_helper_client, unit_language, LazLogger;
 
 { TFormSettings }
 
@@ -167,7 +161,7 @@ begin
 
   DebugLogger.UseStdOut:= False;
   DebugLogger.CloseLogFileBetweenWrites:= true;
-  DebugLogger.LogName:= GetUserDir + '.config/bhyvemgr/bhyvemgr.log';
+  DebugLogger.LogName:= GetUserDir + BHYVEMGR_LOG_FILE;
 
   DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_bhyve_settings_opened);
 end;
@@ -180,7 +174,7 @@ begin
 
   if CheckBoxUseZfs.Checked then
   begin
-    if not CheckZfsSupport() or not FileExists(ZfsCmd) or not FileExists(ZpoolCmd)
+    if not CheckZfsSupport() or not FileExists(ZFS_CMD) or not FileExists(ZPOOL_CMD)
        or (ComboBoxZpool.ItemIndex = -1) then
     begin
       StatusBarBhyveSettings.SimpleText:= check_zfs;
@@ -194,7 +188,7 @@ begin
 
   if CheckBoxUseDnsmasq.Checked then
   begin
-    if not FileExists(DnsmasqBinPath) then
+    if not FileExists(DNSMASQBIN_CMD) then
     begin
       StatusBarBhyveSettings.SimpleText:=check_dnsmasq;
 
@@ -220,36 +214,11 @@ begin
 
   if CheckBoxUsePF.Checked then
   begin
-    if not (FileExists(PfctlCmd)) then
+    if not (FileExists(PFCTL_CMD)) then
     begin
       StatusBarBhyveSettings.SimpleText:=check_pf;
       Result:=False;
 
-      Exit;
-    end;
-  end;
-
-  if CheckBoxUseSudo.Checked then
-  begin
-    if not FileExists(FileNameEditSudo.FileName) or not (ExtractFileName(FileNameEditSudo.FileName) = 'sudo') then
-    begin
-      StatusBarBhyveSettings.SimpleText:=check_sudo;
-
-      PageControlSettings.ActivePage:=TabSheetPaths;
-
-      Result:=False;
-      Exit;
-    end;
-  end
-  else
-  begin
-    if not FileExists(FileNameEditDoas.FileName) or not (ExtractFileName(FileNameEditDoas.FileName) = 'doas') then
-    begin
-      StatusBarBhyveSettings.SimpleText:=check_doas;
-
-      PageControlSettings.ActivePage:=TabSheetPaths;
-
-      Result:=False;
       Exit;
     end;
   end;
@@ -347,79 +316,79 @@ begin
   begin
     DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_check_freerdp);
   end
-  else if not FileExists(ChownCmd) or not (ExtractFileName(ChownCmd) = 'chown') then
+  else if not FileExists(CHOWN_CMD) or not (ExtractFileName(CHOWN_CMD) = 'chown') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['chown']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(ChmodCmd) or not (ExtractFileName(ChmodCmd) = 'chmod') then
+  else if not FileExists(CHMOD_CMD) or not (ExtractFileName(CHMOD_CMD) = 'chmod') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['chmod']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(CpCmd) or not (ExtractFileName(CpCmd) = 'cp') then
+  else if not FileExists(CP_CMD) or not (ExtractFileName(CP_CMD) = 'cp') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['cp']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(IfconfigCmd) or not (ExtractFileName(IfconfigCmd) = 'ifconfig') then
+  else if not FileExists(IFCONFIG_CMD) or not (ExtractFileName(IFCONFIG_CMD) = 'ifconfig') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['ifconfig']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(InstallCmd) or not (ExtractFileName(InstallCmd) = 'install') then
+  else if not FileExists(INSTALL_CMD) or not (ExtractFileName(INSTALL_CMD) = 'install') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['install']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(FetchCmd) or not (ExtractFileName(FetchCmd) = 'fetch') then
+  else if not FileExists(FETCH_CMD) or not (ExtractFileName(FETCH_CMD) = 'fetch') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['fetch']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(FileCmd) or not (ExtractFileName(FileCmd) = 'file') then
+  else if not FileExists(FILE_CMD) or not (ExtractFileName(FILE_CMD) = 'file') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['file']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(KillCmd) or not (ExtractFileName(KillCmd) = 'kill') then
+  else if not FileExists(KILL_CMD) or not (ExtractFileName(KILL_CMD) = 'kill') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['kill']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(KldloadCmd) or not (ExtractFileName(KldloadCmd) = 'kldload') then
+  else if not FileExists(KLDLOAD_CMD) or not (ExtractFileName(KLDLOAD_CMD) = 'kldload') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['kldload']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(KldstatCmd) or not (ExtractFileName(KldstatCmd) = 'kldstat') then
+  else if not FileExists(KLDSTAT_CMD) or not (ExtractFileName(KLDSTAT_CMD) = 'kldstat') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['kldstat']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(MakefsCmd) or not (ExtractFileName(MakefsCmd) = 'makefs') then
+  else if not FileExists(MAKEFS_CMD) or not (ExtractFileName(MAKEFS_CMD) = 'makefs') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['makefs']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(PciconfCmd) or not (ExtractFileName(PciconfCmd) = 'pciconf') then
+  else if not FileExists(PCICONF_CMD) or not (ExtractFileName(PCICONF_CMD) = 'pciconf') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['pciconf']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(PgrepCmd) or not (ExtractFileName(PgrepCmd) = 'pgrep') then
+  else if not FileExists(PGREP_CMD) or not (ExtractFileName(PGREP_CMD) = 'pgrep') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['pgrep']);
     Result:=False;
@@ -429,31 +398,31 @@ begin
   begin
     DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_check_qemu);
   end
-  else if not FileExists(RmCmd) or not (ExtractFileName(RmCmd) = 'rm') then
+  else if not FileExists(RM_CMD) or not (ExtractFileName(RM_CMD) = 'rm') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['rm']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(ServiceCmd) or not (ExtractFileName(ServiceCmd) = 'service') then
+  else if not FileExists(SERVICE_CMD) or not (ExtractFileName(SERVICE_CMD) = 'service') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['service']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(SysctlCmd) or not (ExtractFileName(SysctlCmd) = 'sysctl') then
+  else if not FileExists(SYSCTL_CMD) or not (ExtractFileName(SYSCTL_CMD) = 'sysctl') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['sysctl']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(TruncateCmd) or not (ExtractFileName(TruncateCmd) = 'truncate') then
+  else if not FileExists(TRUNCATE_CMD) or not (ExtractFileName(TRUNCATE_CMD) = 'truncate') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['truncate']);
     Result:=False;
     Exit;
   end
-  else if not FileExists(XzCmd) or not (ExtractFileName(XzCmd) = 'xz') then
+  else if not FileExists(XZ_CMD) or not (ExtractFileName(XZ_CMD) = 'xz') then
   begin
     StatusBarBhyveSettings.SimpleText:=Format(check_base_binary, ['xz']);
     Result:=False;
@@ -528,157 +497,155 @@ end;
 procedure TFormSettings.BitBtnSaveSettingsClick(Sender: TObject);
 var
   ConfigFile : ConfigurationClass;
+  BhyvemgrdConfigFile : BhyvemgrdConfigurationClass;
 begin
-  ConfigFile:=ConfigurationClass.Create(GetUserDir + '.config/bhyvemgr/config.conf');
-
-  if FormValidate() then
+  if not CheckFileWriteAccess(GetUserDir + BHYVEMGR_CONFIG_FILE) then
   begin
-    if CheckBoxUseSudo.Checked then
-    begin
-      ConfigFile.SetOption('general', 'use_sudo', 'yes');
-      SetUseSudo('yes');
-    end
-    else
-    begin
-      ConfigFile.SetOption('general', 'use_sudo', 'no');
-      SetUseSudo('no');
-    end;
-
-    if CheckBoxUseZfs.Checked then
-    begin
-      ConfigFile.SetOption('general', 'use_zfs', 'yes');
-      ConfigFile.SetOption('zfs', 'zfs_zpool', ComboBoxZpool.Text);
-      ConfigFile.SetOption('zfs', 'zfs_create_options', EditZfsCreateOptions.Text);
-
-      SetUseZfs('yes');
-      SetZfsZpool(ComboBoxZpool.Text);
-      SetZfsCreateOptions(EditZfsCreateOptions.Text);
-    end
-    else
-    begin
-      ConfigFile.SetOption('general', 'use_zfs', 'no');
-      SetUseZfs('no');
-    end;
-
-    if CheckBoxUseDnsmasq.Checked then
-    begin
-      ConfigFile.SetOption('general', 'use_dnsmasq', 'yes');
-      ConfigFile.SetOption('network', 'bridge_interface', ComboBoxBridgeInterface.Text);
-      ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
-
-      if not DirectoryExists(DnsmasqDirectory) then
-        CreateDirectory(DnsmasqDirectory, 'root', '770');
-
-      SetUseDnsmasq('yes');
-      SetBridgeInterface(ComboBoxBridgeInterface.Text);
-      SetSubnet(EditSubnet.Text);
-    end
-    else
-    begin
-      ConfigFile.SetOption('general', 'use_dnsmasq', 'no');
-      ConfigFile.SetOption('network', 'bridge_interface', ComboBoxBridgeInterface.Text);
-      ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
-
-      SetUseDnsmasq('no');
-      SetBridgeInterface(ComboBoxBridgeInterface.Text);
-      SetSubnet(EditSubnet.Text);
-    end;
-
-    if CheckBoxUseSystray.Checked then
-    begin
-      ConfigFile.SetOption('general', 'use_systray', 'yes');
-      SetUseSystray('yes');
-    end
-    else
-    begin
-      ConfigFile.SetOption('general', 'use_systray', 'no');
-      SetUseSystray('no');
-    end;
-
-    if CheckBoxUseIpv6.Checked then
-    begin
-      ConfigFile.SetOption('general', 'use_ipv6', 'yes');
-      ConfigFile.SetOption('network', 'ipv6_prefix', EditIpv6Prefix.Text);
-      SetUseIpv6('yes');
-      SetIpv6Prefix(EditIpv6Prefix.Text);
-    end
-    else
-    begin
-      ConfigFile.SetOption('general', 'use_ipv6', 'no');
-      SetUseIpv6('no');
-      SetIpv6Prefix(EmptyStr);
-    end;
-
-    if CheckBoxUsePF.Checked then
-    begin
-      ConfigFile.SetOption('general', 'use_pf', 'yes');
-      ConfigFile.SetOption('network', 'external_interface', ComboBoxInterface.Text);
-      ConfigFile.SetOption('network', 'external_ipv4', ComboBoxIp4.Text);
-      ConfigFile.SetOption('network', 'external_ipv6', ComboBoxIp6.Text);
-      SetUsePf('yes');
-      SetExternalInterface(ComboBoxInterface.Text);
-      SetExternalIpv4(ComboBoxIp4.Text);
-      SetExternalIpv6(ComboBoxIp6.Text);
-    end
-    else
-    begin
-      ConfigFile.SetOption('general', 'use_pf', 'no');
-      SetUsePf('no');
-      SetExternalInterface(EmptyStr);
-      SetExternalIpv4(EmptyStr);
-      SetExternalIpv6(EmptyStr);
-    end;
-
-    ConfigFile.SetOption('general','vm_path', EditVmPathSetting.Text);
-    ConfigFile.SetOption('general','cloudvm_images_path', DirectoryEditImagesPath.Directory);
-
-    ConfigFile.SetOption('bhyve-tools','bhyve_cmd', FileNameEditBhyve.FileName);
-    ConfigFile.SetOption('bhyve-tools','bhyvectl_cmd', FileNameEditBhyvectl.FileName);
-    ConfigFile.SetOption('bhyve-tools','bhyveload_cmd', FileNameEditBhyveload.FileName);
-
-    ConfigFile.SetOption('extra-tools','swtpm_cmd', FileNameEditSwtpm.FileName);
-    ConfigFile.SetOption('extra-tools','swtpm_ioctl_cmd', FileNameEditSwtpmIoctl.FileName);
-    ConfigFile.SetOption('extra-tools','qemu-img_cmd', FileNameEditQemuImg.FileName);
-
-    ConfigFile.SetOption('remote-tools','vncviewer_cmd', FileNameEditVncviewer.FileName);
-    ConfigFile.SetOption('remote-tools','xfreerdp_cmd', FileNameEditXfreerdp.FileName);
-    ConfigFile.SetOption('remote-tools','xfreerdp_args', EditRdpArgs.Text);
-
-    ConfigFile.SetOption('user-tools','doas_cmd', FileNameEditDoas.FileName);
-    ConfigFile.SetOption('user-tools','sudo_cmd', FileNameEditSudo.FileName);
-
-    SetVmPath(EditVmPathSetting.Text);
-    SetCloudVmImagesPath(DirectoryEditImagesPath.Directory);
-
-    SetBhyveCmd(FileNameEditBhyve.FileName);
-    SetBhyvectlCmd(FileNameEditBhyvectl.FileName);
-    SetBhyveloadCmd(FileNameEditBhyveload.FileName);
-
-    SetSwtpmCmd(FileNameEditSwtpm.FileName);
-    SetSwtpmIoctlCmd(FileNameEditSwtpmIoctl.FileName);
-    SetQemuImgCmd(FileNameEditQemuImg.FileName);
-
-    SetVncviewerCmd(FileNameEditVncviewer.FileName);
-    SetXfreerdpCmd(FileNameEditXfreerdp.FileName);
-    SetXfreerdpArgs(EditRdpArgs.Text);
-
-    SetSudoCmd(FileNameEditSudo.FileName);
-    SetDoasCmd(FileNameEditDoas.FileName);
-
-    if UseZfs = 'yes' then
-      ZfsCreateDataset(VmPath.Remove(0,1))
-    else
-      CreateDirectory(VmPath, GetCurrentUserName());
-
-    StatusBarBhyveSettings.Font.Color:=clTeal;
-    StatusBarBhyveSettings.SimpleText:=EmptyStr;
-
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+ debugln_bhyve_settings_saved);
-    MessageDialog(mtInformation, settings_saved);
-
-    SetNewConfig(False);
+    MessageDialog(mtError, Format(error_file_creation, [GetUserDir + BHYVEMGR_CONFIG_FILE]));
+    Exit;
   end;
-  ConfigFile.Free;
+
+  if not CheckFileWriteAccess(COMMON_CONFIG_FILE) then
+  begin
+    MessageDialog(mtError, Format(error_file_creation, [COMMON_CONFIG_FILE]));
+    Exit;
+  end;
+
+  try
+    ConfigFile:=ConfigurationClass.Create(GetUserDir + BHYVEMGR_CONFIG_FILE);
+    BhyvemgrdConfigFile:=BhyvemgrdConfigurationClass.Create(COMMON_CONFIG_FILE);
+
+    if FormValidate() then
+    begin
+      if CheckBoxUseZfs.Checked then
+      begin
+        ConfigFile.SetOption('general', 'use_zfs', 'yes');
+        ConfigFile.SetOption('zfs', 'zfs_zpool', ComboBoxZpool.Text);
+        ConfigFile.SetOption('zfs', 'zfs_create_options', EditZfsCreateOptions.Text);
+
+        SetUseZfs('yes');
+        SetZfsZpool(ComboBoxZpool.Text);
+        SetZfsCreateOptions(EditZfsCreateOptions.Text);
+      end
+      else
+      begin
+        ConfigFile.SetOption('general', 'use_zfs', 'no');
+        SetUseZfs('no');
+      end;
+
+      if CheckBoxUseDnsmasq.Checked then
+      begin
+        ConfigFile.SetOption('general', 'use_dnsmasq', 'yes');
+        ConfigFile.SetOption('network', 'bridge_interface', ComboBoxBridgeInterface.Text);
+        ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
+
+        SetUseDnsmasq('yes');
+        SetBridgeInterface(ComboBoxBridgeInterface.Text);
+        SetSubnet(EditSubnet.Text);
+      end
+      else
+      begin
+        ConfigFile.SetOption('general', 'use_dnsmasq', 'no');
+        ConfigFile.SetOption('network', 'bridge_interface', ComboBoxBridgeInterface.Text);
+        ConfigFile.SetOption('network', 'subnet', EditSubnet.Text);
+
+        SetUseDnsmasq('no');
+        SetBridgeInterface(ComboBoxBridgeInterface.Text);
+        SetSubnet(EditSubnet.Text);
+      end;
+
+      if CheckBoxUseSystray.Checked then
+      begin
+        ConfigFile.SetOption('general', 'use_systray', 'yes');
+        SetUseSystray('yes');
+      end
+      else
+      begin
+        ConfigFile.SetOption('general', 'use_systray', 'no');
+        SetUseSystray('no');
+      end;
+
+      if CheckBoxUseIpv6.Checked then
+      begin
+        ConfigFile.SetOption('general', 'use_ipv6', 'yes');
+        ConfigFile.SetOption('network', 'ipv6_prefix', EditIpv6Prefix.Text);
+        SetUseIpv6('yes');
+        SetIpv6Prefix(EditIpv6Prefix.Text);
+      end
+      else
+      begin
+        ConfigFile.SetOption('general', 'use_ipv6', 'no');
+        SetUseIpv6('no');
+        SetIpv6Prefix(EmptyStr);
+      end;
+
+      if CheckBoxUsePF.Checked then
+      begin
+        ConfigFile.SetOption('general', 'use_pf', 'yes');
+        ConfigFile.SetOption('network', 'external_interface', ComboBoxInterface.Text);
+        ConfigFile.SetOption('network', 'external_ipv4', ComboBoxIp4.Text);
+        ConfigFile.SetOption('network', 'external_ipv6', ComboBoxIp6.Text);
+        SetUsePf('yes');
+        SetExternalInterface(ComboBoxInterface.Text);
+        SetExternalIpv4(ComboBoxIp4.Text);
+        SetExternalIpv6(ComboBoxIp6.Text);
+      end
+      else
+      begin
+        ConfigFile.SetOption('general', 'use_pf', 'no');
+        SetUsePf('no');
+        SetExternalInterface(EmptyStr);
+        SetExternalIpv4(EmptyStr);
+        SetExternalIpv6(EmptyStr);
+      end;
+
+      ConfigFile.SetOption('general','vm_path', EditVmPathSetting.Text);
+      ConfigFile.SetOption('general','cloudvm_images_path', DirectoryEditImagesPath.Directory);
+
+      ConfigFile.SetOption('bhyve-tools','bhyve_cmd', FileNameEditBhyve.FileName);
+      ConfigFile.SetOption('bhyve-tools','bhyvectl_cmd', FileNameEditBhyvectl.FileName);
+      ConfigFile.SetOption('bhyve-tools','bhyveload_cmd', FileNameEditBhyveload.FileName);
+
+      ConfigFile.SetOption('extra-tools','swtpm_cmd', FileNameEditSwtpm.FileName);
+      ConfigFile.SetOption('extra-tools','swtpm_ioctl_cmd', FileNameEditSwtpmIoctl.FileName);
+      ConfigFile.SetOption('extra-tools','qemu-img_cmd', FileNameEditQemuImg.FileName);
+
+      ConfigFile.SetOption('remote-tools','vncviewer_cmd', FileNameEditVncviewer.FileName);
+      ConfigFile.SetOption('remote-tools','xfreerdp_cmd', FileNameEditXfreerdp.FileName);
+      ConfigFile.SetOption('remote-tools','xfreerdp_args', EditRdpArgs.Text);
+
+      BhyvemgrdConfigFile.SetOption('common', 'vm_path', EditVmPathSetting.Text);
+
+      SetVmPath(EditVmPathSetting.Text);
+      SetCloudVmImagesPath(DirectoryEditImagesPath.Directory);
+
+      SetBhyveCmd(FileNameEditBhyve.FileName);
+      SetBhyvectlCmd(FileNameEditBhyvectl.FileName);
+      SetBhyveloadCmd(FileNameEditBhyveload.FileName);
+
+      SetSwtpmCmd(FileNameEditSwtpm.FileName);
+      SetSwtpmIoctlCmd(FileNameEditSwtpmIoctl.FileName);
+      SetQemuImgCmd(FileNameEditQemuImg.FileName);
+
+      SetVncviewerCmd(FileNameEditVncviewer.FileName);
+      SetXfreerdpCmd(FileNameEditXfreerdp.FileName);
+      SetXfreerdpArgs(EditRdpArgs.Text);
+
+      StatusBarBhyveSettings.Font.Color:=clTeal;
+      StatusBarBhyveSettings.SimpleText:=EmptyStr;
+
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+ debugln_bhyve_settings_saved);
+      MessageDialog(mtInformation, settings_saved);
+
+      if NewConfig then
+        StatusBarBhyveSettings.SimpleText:=settings_saved_restart;
+
+      SetNewConfig(False);
+    end;
+  finally
+    ConfigFile.Free;
+    BhyvemgrdConfigFile.Free;
+  end;
 end;
 
 procedure TFormSettings.CheckBoxUsePFChange(Sender: TObject);
@@ -791,11 +758,6 @@ begin
     GroupBoxNatSettings.Enabled:=False;
   end;
 
-  if UseSudo = 'yes' then
-    CheckBoxUseSudo.Checked:=True
-  else
-    CheckBoxUseSudo.Checked:=False;
-
   if UseSystray = 'yes' then
     CheckBoxUseSystray.Checked:=True
   else
@@ -837,9 +799,6 @@ begin
   FileNameEditVncviewer.Text:=VncviewerCmd;
   FileNameEditXfreerdp.Text:=XfreerdpCmd;
   EditRdpArgs.Text:=XfreerdpArgs;
-
-  FileNameEditDoas.Text:=DoasCmd;
-  FileNameEditSudo.Text:=SudoCmd;
 
   FileNameEditSwtpm.Text:=SwtpmCmd;
   FileNameEditSwtpmIoctl.Text:=SwtpmIoctlCmd;

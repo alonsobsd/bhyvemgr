@@ -9,7 +9,7 @@ object FormPacketFilterRules: TFormPacketFilterRules
   ClientWidth = 777
   Position = poDesktopCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.6.0.0'
+  LCLVersion = '4.8.0.0'
   object PageControlPacketFilter: TPageControl
     Left = 8
     Height = 392

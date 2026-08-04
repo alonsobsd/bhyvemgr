@@ -36,13 +36,11 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, FileUtil, Graphics, Dialogs, StdCtrls, Menus, ExtCtrls,
-  ComCtrls, Buttons, RegExpr, StrUtils, unit_component, unit_device, unit_thread, LCLTranslator,
-  Translations;
+  ComCtrls, Buttons, RegExpr, StrUtils, unit_component, unit_device, unit_thread, unit_socket,
+  unit_request, LCLTranslator, Translations, BaseUnix, Sockets, fpjson ,jsonparser, unit_helper_client;
 
 type
-
   { TFormBhyveManager }
-
   TFormBhyveManager = class(TForm)
     ComboBoxLanguage: TComboBox;
     ImageLanguage: TImage;
@@ -74,6 +72,7 @@ type
     GlobalSettingsTreeView: TTreeView;
     VirtualMachinesTreeView: TTreeView;
     procedure ComboBoxLanguageChange(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure ShowHideClick(Sender: TObject);
     procedure DeviceSettingsTreeViewDeletion(Sender: TObject; Node: TTreeNode);
     procedure FormActivate(Sender: TObject);
@@ -134,8 +133,10 @@ type
     DeviceImageList : TDeviceImageList;
     SystemImageList : TSystemImageList;
     ActionImageList : TActionImageList;
-    MyVmThread: VmThread;
+    SocketThread : TSocketThread;
+    RequestManager: TRequestManager;
     ProcessPid : Integer;
+    VirtualMachineListJson : TJSONObject;
     function FillDetailAudioDevice(Details : String; pci : String; device : String):TAudioDeviceClass;
     function FillDetailConsoleDevice(Details : String; pci : String; device : String; port : Integer):TSerialVirtioConsoleDeviceClass;
     function FillDetailDisplayDevice(Details : String; pci : String; device : String):TDisplayDeviceClass;
@@ -162,9 +163,11 @@ type
     function LoadNetworkDevice():TStringArray;
     procedure ResetTreeView(TreeView : TTreeView);
     function SaveVirtualMachineConfig():Boolean;
-    procedure VirtualMachineShowStatus(Status: Integer; Message : String; VmName : String; ErrorMessage : String);
     procedure AppShowStatus(Status: Integer; AppPid: Integer);
     procedure AppEndStatus(Status: Integer; AppName : String; AppPid: Integer);
+    procedure SocketHelper(Message : String);
+    procedure SocketDisconnected;
+    function ConnectToHelper(out ErrorMessage: String): Boolean;
   public
 
   end;
@@ -190,7 +193,6 @@ var
   GlobalSettingDefaultValueList : TStringList;
   GlobalSettingCategoryList : TStringList;
   NetworkDeviceList : TStringList;
-  VirtualMachineList : TStringList;
   DevicesList : TStringList;
   TmpDevicesStringList : TStringList;
   NodeIndex : Integer;
@@ -213,6 +215,10 @@ uses
 
 procedure TFormBhyveManager.FormCreate(Sender: TObject);
 begin
+  SocketThread := nil;
+
+  VirtualMachineListJson := TJSONObject.Create;
+
   { Temporary workaround when LCLGTK2 is used with latest version of Lazarus }
   {$ifdef LCLGTK2}
   FormBhyveManager.BorderStyle:=bsSizeable;
@@ -308,7 +314,6 @@ begin
   GlobalSettingCategoryList := TStringList.Create;
   DevicesList := TStringList.Create;
   NetworkDeviceList := TStringList.Create;
-  VirtualMachineList := TStringList.Create;
 
   TmpDevicesStringList := TStringList.Create;
   ProcessPid:=-1;
@@ -316,7 +321,6 @@ begin
   FillComboLanguage(ComboBoxLanguage);
   ComboBoxLanguage.ItemIndex:=ComboBoxLanguage.Items.IndexOf(Language);
 
-  FillVirtualMachineList();
   FillDeviceCategoryList();
   FillGlobalCategoryList();
   FillDeviceDetailList();
@@ -748,7 +752,7 @@ begin
             Nodo.SelectedIndex:=0;
           end;
 
-        if CheckVmRunning(VirtualMachine.name) > 0 then
+        if (VirtualMachineListJson.Objects['vms'].Objects[VirtualMachine.name].Strings['state']) = 'vmRunning' then
           GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name + ' : Running')
         else
           GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name);
@@ -867,196 +871,6 @@ begin
 end;
 
 {
-  This procedure runs rutines depending of a virtual machine status code when
-  MyVmThread thread calls an OnExitStatus event. The MyVmThread thread is used
-  to run a virtual machine from bhyvemgr.
-}
-procedure TFormBhyveManager.VirtualMachineShowStatus(Status: Integer;
-  Message: String; VmName : String; ErrorMessage : String);
-var
-  i : Integer;
-  PidNumber : Integer;
-begin
-  { Rebooting }
-  if Status = 0 then
-  begin
-    if DirectoryExists(VmPath+'/'+VmName+'/vtcon') then
-    begin
-      RemoveDirectory(VmName+'/vtcon', True);
-      CreateDirectory(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName());
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
-    begin
-      PfUnloadRules(VmName, 'nat');
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
-    begin
-      PfUnloadRules(VmName, 'rdr');
-      PfUnloadRules(VmName, 'pass-in');
-      PfUnloadRules(VmName, 'pass-out');
-    end;
-
-    StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText := Message;
-
-    if UseSystray = 'yes' then
-    begin
-      TrayIcon.TrayIcon.BalloonHint:=Message;
-      TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
-      TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
-      TrayIcon.TrayIcon.ShowBalloonHint;
-    end;
-
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
-
-    MyVmThread := VmThread.Create(VmName);
-    MyVmThread.OnExitStatus := @VirtualMachineShowStatus;
-    MyVmThread.Start;
-
-    Sleep(100);
-
-    if FileExists(VmPath+'/'+VmName+'/vnc.sock') then
-    begin
-      Chmod(VmPath+'/'+VmName+'/vnc.sock');
-      Chown(VmPath+'/'+VmName+'/vnc.sock', GetCurrentUserName());
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
-    begin
-      PfloadRules(VmName, 'nat');
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
-    begin
-      PfloadRules(VmName, 'rdr');
-      PfloadRules(VmName, 'pass-in');
-      PfloadRules(VmName, 'pass-out');
-    end;
-  end
-  { Powered off and Halted}
-  else if (Status = 1) OR (Status = 2) then
-  begin
-    for i:=NetworkDeviceList.Count-1 downto 0 do
-    begin
-      if NetworkDeviceList.ValueFromIndex[i] = VmName then
-      begin
-          DestroyNetworkInterface(NetworkDeviceList.Names[i]);
-          NetworkDeviceList.Delete(i);
-      end;
-    end;
-
-    if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
-      VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
-
-    if VirtualMachinesTreeView.Selected.Text = VmName then
-    begin
-      SpeedButtonVncVm.Enabled:=False;
-      SpeedButtonRemoveVm.Enabled:=True;
-      SpeedButtonStartVm.Enabled:=True;
-      SpeedButtonStopVm.Enabled:=False;
-      SpeedButtonReloadVmConfig.Enabled:=True;
-    end;
-
-    DestroyVirtualMachine(VmName);
-    RemoveDirectory(VmName+'/vtcon', True);
-    RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
-
-    if GetOsreldate.ToInt64 >= 1403000 then
-    begin
-      PidNumber:=CheckTpmSocketRunning(VmName);
-      if PidNumber > 0 then
-        KillPid(PidNumber);
-    end;
-
-    StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText := Message;
-
-    if UseSystray = 'yes' then
-    begin
-      TrayIcon.TrayIcon.BalloonHint:=Message;
-      TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
-      TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
-      TrayIcon.TrayIcon.ShowBalloonHint;
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
-    begin
-      PfUnloadRules(VmName, 'nat');
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
-    begin
-      PfUnloadRules(VmName, 'rdr');
-      PfUnloadRules(VmName, 'pass-in');
-      PfUnloadRules(VmName, 'pass-out');
-    end;
-
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
-  end
-  { Other exit status }
-  else if Status > 2 then
-  begin
-    if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
-      VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
-
-    if VirtualMachinesTreeView.Selected.Text = VmName then
-    begin
-      SpeedButtonVncVm.Enabled:=False;
-      SpeedButtonStopVm.Enabled:=False;
-      SpeedButtonStartVm.Enabled:=True;
-      SpeedButtonRemoveVm.Enabled:=True;
-    end;
-
-    if (Status = 4) or (Status = 6) then
-    begin
-      for i:=NetworkDeviceList.Count-1 downto 0 do
-      begin
-        if NetworkDeviceList.ValueFromIndex[i] = VmName then
-        begin
-            DestroyNetworkInterface(NetworkDeviceList.Names[i]);
-            NetworkDeviceList.Delete(i);
-        end;
-      end;
-
-      DestroyVirtualMachine(VmName);
-      RemoveDirectory(VmName+'/vtcon', True);
-      RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
-
-      if GetOsreldate.ToInt64 >= 1403000 then
-      begin
-        PidNumber:=CheckTpmSocketRunning(VmName);
-        if PidNumber > 0 then
-          KillPid(PidNumber);
-      end;
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
-    begin
-      PfUnloadRules(VmName, 'nat');
-    end;
-
-    if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
-    begin
-      PfUnloadRules(VmName, 'rdr');
-      PfUnloadRules(VmName, 'pass-in');
-      PfUnloadRules(VmName, 'pass-out');
-    end;
-
-    StatusBarBhyveManager.SimpleText := EmptyStr;
-    MessageDialog(mtError, Message);
-
-    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Message);
-
-    if not ErrorMessage.IsEmpty then
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : '+ErrorMessage);
-
-    MyVmThread.Terminate;
-  end;
-end;
-
-{
   This procedure is called to show us the copy status of image files while it
   is not finishedd.
 }
@@ -1069,7 +883,7 @@ begin
   total:=ConvertFileSize(GetFileSize(DiskFile), 'M');
 
   StatusBarBhyveManager.Font.Color:=clTeal;
-  StatusBarBhyveManager.SimpleText:=Format(copy_status, [total.ToString]);
+  StatusBarBhyveManager.SimpleText:=Format(copy_status, [total.ToString, FormVmCreate.EditVmName.Text]);
 end;
 
 {
@@ -1086,7 +900,7 @@ begin
     total:=ConvertFileSize(GetFileSize(RemoteFile), 'M');
 
     StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText:=Format(copy_status, [total.ToString]);
+    StatusBarBhyveManager.SimpleText:=Format(copy_status, [total.ToString, FormVmCreate.EditVmName.Text]);
 
     FillVirtualMachine(FormVmCreate.EditVmName.Text);
     VirtualMachinesTreeView.AlphaSort;
@@ -1100,6 +914,299 @@ begin
   begin
     FormVmCreate.StatusBarVmCreate.Font.Color:=clRed;
     FormVmCreate.StatusBarVmCreate.SimpleText:=Format(app_error_status, [FormVmCreate.EditVmName.Text, AppName, Status.ToString]);
+  end;
+end;
+
+{
+  This procedure is called from SocketThread syncronize when a json data is
+  coming from server.
+}
+procedure TFormBhyveManager.SocketHelper(Message: String);
+var
+  Root: TJSONObject;
+  i : Integer;
+  VmName : String;
+  PidNumber : Int64;
+  InfoMessage : String;
+  Req : TJSONObject;
+begin
+ Root := GetJSON(Message) as TJSONObject;
+ InfoMessage:=EmptyStr;
+
+ case Root.Strings['type'] of
+     'snapshot' :
+       begin
+         FreeAndNil(VirtualMachineListJson);
+         VirtualMachineListJson := Root;
+         FillVirtualMachineList();
+         Exit;
+       end;
+     'event' :
+       begin
+         if (Root.Strings['event'] = 'vm_state_init') then
+           VirtualMachinesTreeView.Selected.Text:=VirtualMachine.name+' : Running'
+         else
+         begin
+           VmName:=Root.Strings['vmname'];
+           { Poweroff and halted states }
+           if (Root.Strings['state'] = 'vmPowerOff') or (Root.Strings['state'] = 'vmHalted') then
+           begin
+             NetworkDeviceList.Text:=GetVmNetworkInterfaceList(VmName);
+
+             for i:=0 to NetworkDeviceList.Count-1 do
+             begin
+               DestroyNetworkInterfaceHelper(NetworkDeviceList[i]);
+             end;
+
+             if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
+               VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
+
+             if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Text = VmName) then
+             begin
+               SpeedButtonVncVm.Enabled:=False;
+               SpeedButtonRemoveVm.Enabled:=True;
+               SpeedButtonStartVm.Enabled:=True;
+               SpeedButtonStopVm.Enabled:=False;
+               SpeedButtonReloadVmConfig.Enabled:=True;
+             end;
+
+             DestroyVirtualMachineHelper(VmName);
+             RemoveDirectoryHelper(VmName, 'vtcon', True);
+             RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
+
+             if GetOsreldate.ToInt64 >= 1403000 then
+             begin
+               PidNumber:=CheckTpmSocketRunning(VmName);
+               if PidNumber > 0 then
+                 KillPidHelper(PidNumber);
+             end;
+
+             case Root.Strings['state'] of
+                 'vmPowerOff':InfoMessage:=Format(vm_poweroff_status, [VmName]);
+                 'vmHalted':InfoMessage:=Format(vm_halt_status, [VmName]);
+             end;
+
+             StatusBarBhyveManager.Font.Color:=clTeal;
+             StatusBarBhyveManager.SimpleText:=InfoMessage;
+
+             if UseSystray = 'yes' then
+             begin
+               TrayIcon.TrayIcon.BalloonHint:=InfoMessage;
+               TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
+               TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
+               TrayIcon.TrayIcon.ShowBalloonHint;
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
+             begin
+               PfUnloadRulesHelper(VmName, 'nat');
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
+             begin
+               PfUnloadRulesHelper(VmName, 'rdr');
+               PfUnloadRulesHelper(VmName, 'pass-in');
+               PfUnloadRulesHelper(VmName, 'pass-out');
+             end;
+
+             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+InfoMessage);
+           end
+           { End poweroff and halted states }
+           { Rebooted state }
+           else if Root.Strings['state'] = 'vmRebooted' then
+           begin
+             if DirectoryExists(VmPath+'/'+VmName+'/vtcon') then
+             begin
+               RemoveDirectoryHelper(VmName, 'vtcon', True);
+               CreateDirectoryHelper(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName());
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
+             begin
+               PfUnloadRulesHelper(VmName, 'nat');
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
+             begin
+               PfUnloadRulesHelper(VmName, 'rdr');
+               PfUnloadRulesHelper(VmName, 'pass-in');
+               PfUnloadRulesHelper(VmName, 'pass-out');
+             end;
+
+             StatusBarBhyveManager.Font.Color:=clTeal;
+             StatusBarBhyveManager.SimpleText := Format(vm_reboot_status, [VmName]);;
+
+             if UseSystray = 'yes' then
+             begin
+               TrayIcon.TrayIcon.BalloonHint:=Format(vm_reboot_status, [VmName]);
+               TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
+               TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
+               TrayIcon.TrayIcon.ShowBalloonHint;
+             end;
+
+             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_reboot_status, [VmName]));
+
+             Req := TJSONObject.Create;
+             try
+               Req.Add('type', 'event');
+               Req.Add('id', GenerateUuid());
+               Req.Add('method', 'vm.start');
+               Req.Add('params', TJSONObject.Create(['vmname', VmName]));
+
+               SocketThread.SendJSON(Req.AsJSON);
+             finally
+               Req.Free;
+             end;
+
+             Sleep(100);
+
+             if FileExists(VmPath+'/'+VmName+'/vnc.sock') then
+             begin
+               ChmodHelper(VmPath+'/'+VmName+'/vnc.sock');
+               ChownHelper(VmPath+'/'+VmName+'/vnc.sock', GetCurrentUserName());
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
+             begin
+               PfLoadRulesHelper(VmName, 'nat');
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
+             begin
+               PfLoadRulesHelper(VmName, 'rdr');
+               PfLoadRulesHelper(VmName, 'pass-in');
+               PfLoadRulesHelper(VmName, 'pass-out');
+             end;
+           end
+           { End rebooted state }
+           { other states }
+           else
+           begin
+             if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
+               VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
+
+             if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Text = VmName) then
+             begin
+               SpeedButtonVncVm.Enabled:=False;
+               SpeedButtonStopVm.Enabled:=False;
+               SpeedButtonStartVm.Enabled:=True;
+               SpeedButtonRemoveVm.Enabled:=True;
+             end;
+
+             if (Root.Strings['state'] = 'vmExited') or (Root.Strings['state'] = 'vmException') then
+             begin
+               NetworkDeviceList.Text:=GetVmNetworkInterfaceList(VmName);
+
+               for i:=0 to NetworkDeviceList.Count-1 do
+               begin
+                 DestroyNetworkInterfaceHelper(NetworkDeviceList[i]);
+               end;
+
+               DestroyVirtualMachineHelper(VmName);
+               RemoveDirectoryHelper(VmName, 'vtcon', True);
+               RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
+
+               if GetOsreldate.ToInt64 >= 1403000 then
+               begin
+                 PidNumber:=CheckTpmSocketRunning(VmName);
+                 if PidNumber > 0 then
+                   KillPidHelper(PidNumber);
+               end;
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
+             begin
+               PfUnloadRulesHelper(VmName, 'nat');
+             end;
+
+             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
+             begin
+               PfUnloadRulesHelper(VmName, 'rdr');
+               PfUnloadRulesHelper(VmName, 'pass-in');
+               PfUnloadRulesHelper(VmName, 'pass-out');
+             end;
+
+             case Root.Strings['state'] of
+                 'vmTripleFault':InfoMessage:=Format(vm_triplefault_status, [VmName]);
+                 'vmExited':InfoMessage:=Format(vm_exit_status, [VmName]);
+                 'vmSuspended':InfoMessage:=Format(vm_suspended_status, [VmName]);
+                 'vmException':InfoMessage:=Format(vm_exiterror_status, [VmName]);
+             end;
+
+             StatusBarBhyveManager.SimpleText := EmptyStr;
+             MessageDialog(mtError, InfoMessage);
+
+             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : '+InfoMessage);
+           end;
+           { End other states }
+         end;
+       end;
+ end;
+
+ Root.Free;
+end;
+
+{
+  This procedure is called when the connection to bhyvemgrd service is lost
+}
+procedure TFormBhyveManager.SocketDisconnected;
+begin
+ FormBhyveManager.Enabled:=False;
+
+ MessageDialog(mtError, error_daemon_connection);
+
+ Close;
+end;
+
+{
+  Procedure for connect bhyvemgr to bhyvemgrd service
+}
+function TFormBhyveManager.ConnectToHelper(out ErrorMessage: String): Boolean;
+var
+  Sock: LongInt;
+  Addr: sockaddr_un;
+begin
+  Result := False;
+  ErrorMessage := EmptyStr;
+
+  Sock := fpSocket(AF_UNIX, SOCK_STREAM, 0);
+
+  if Sock < 0 then
+  begin
+    ErrorMessage := error_socket;
+    Exit;
+  end;
+
+  try
+    FillChar(Addr, SizeOf(Addr), 0);
+
+    Addr.sun_family := AF_UNIX;
+
+    StrPLCopy(Addr.sun_path, BHYVEMGRD_SOCKET, SizeOf(Addr.sun_path) - 1);
+
+    if fpConnect(Sock, @Addr, SizeOf(Addr.sun_family) + StrLen(@Addr.sun_path) + 1) <> 0 then
+    begin
+      ErrorMessage := Format(error_socket_connection, [BHYVEMGRD_SOCKET]);
+      Exit;
+    end;
+
+    DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+success_socket_connection);
+
+    RequestManager := TRequestManager.Create;
+    SocketThread := TSocketThread.Create(Sock);
+
+    SocketThread.OnDisconnected := @SocketDisconnected;
+    SocketThread.OnProcessMessage := @SocketHelper;
+    SocketThread.OnProcessResponse := @RequestManager.Complete;
+
+    HelperSocketThread := SocketThread;
+    HelperRequestManager := RequestManager;
+
+    Result := True;
+    Sock := -1;
+  finally;
+    if Sock >= 0 then
+      fpClose(Sock);
   end;
 end;
 
@@ -1357,10 +1464,10 @@ begin
   if (FormChangeValue.SettingType = 'bootrom') then
   begin
     {$ifdef CPUAMD64}
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUefiPath+'/'+FormChangeValue.ComboBoxValue.Text;
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BOOTROMUEFI_PATH+'/'+FormChangeValue.ComboBoxValue.Text;
     {$endif CPUAMD64}
     {$ifdef CPUAARCH64}
-    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BootRomUbootPath+'/'+FormChangeValue.ComboBoxValue.Text;
+    GlobalSettingsTreeView.Items.Item[NodeIndex].Text:=ExtractVarName(GlobalSettingsTreeView.Selected.Text)+' : '+BOOTROMUBOOT_PATH+'/'+FormChangeValue.ComboBoxValue.Text;
     {$endif CPUAARCH64}
   end
   else if (FormChangeValue.SettingType = 'bootvars') then
@@ -1372,7 +1479,7 @@ begin
       if not FileExists(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text) then
       begin
         CreateFile(VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text, GetCurrentUserName());
-        CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text);
+        CopyFile(BOOTROMUEFI_PATH+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name+'/'+FormChangeValue.ComboBoxValue.Text);
       end;
     end
     else
@@ -1436,10 +1543,8 @@ procedure TFormBhyveManager.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 var
   i, j : Integer;
-  flag : Boolean;
   Node : TTreeNode;
 begin
-  flag:=False;
   CanClose:=True;
 
   if FormVmCreate.IsVisible and (FormVmCreate.ProcessPid > 0) then
@@ -1453,35 +1558,11 @@ begin
   begin
     if MessageDialog(mtConfirmation, check_create_task_confirmation) = mrYes then
     begin
-      KillPid(ProcessPid);
+      KillPidHelper(ProcessPid);
       ProcessPid:=-1;
       StatusBarBhyveManager.SimpleText:=EmptyStr;
       Exit;
     end;
-  end;
-
-  for i:=0 to VirtualMachinesTreeView.Items.TopLvlCount-1 do
-  begin
-    if flag then
-      Break;
-
-    for j:=0 to VirtualMachinesTreeView.Items.TopLvlItems[i].Count-1 do
-    begin
-      Node:=VirtualMachinesTreeView.Items.TopLvlItems[i].Items[j];
-{      VirtualMachine := TVirtualMachineClass(node.Data);
-      if CheckVmRunning(VirtualMachine.name) > 0 then }
-      if ExtractVarValue(Node.Text) = 'Running' then
-      begin
-        flag:=True;
-        Break;
-      end
-    end;
-  end;
-
-  if flag then
-  begin
-    if MessageDialog(mtConfirmation, check_vm_running) = mrNo then
-      CanClose := False;
   end;
 end;
 
@@ -1490,11 +1571,27 @@ end;
   window correctly when LCLGTK2 is used with latest version of Lazarus.
 }
 procedure TFormBhyveManager.FormShow(Sender: TObject);
+var
+  ErrorMessage: String;
 begin
-  {$ifdef LCLGTK2}
+ {$ifdef LCLGTK2}
   FormBhyveManager.BorderStyle:=bsSingle;
   FormBhyveManager.Height:=619;
   {$endif}
+
+  if NewConfig then
+  begin
+    SpeedButtonAddVm.Enabled:=False;
+    ComboBoxLanguage.Enabled:=False;
+    Exit;
+  end;
+
+  if not ConnectToHelper(ErrorMessage) then
+  begin
+    MessageDialog(mtError, ErrorMessage);
+    Close;
+    Exit;
+  end;
 end;
 
 {
@@ -1518,11 +1615,14 @@ begin
    FormBhyveManager.Hide;
 end;
 
+{
+  This procedure allows changing string translations on the fly
+}
 procedure TFormBhyveManager.ComboBoxLanguageChange(Sender: TObject);
 var
   ConfigFile : ConfigurationClass;
 begin
-  ConfigFile:=ConfigurationClass.Create(GetUserDir + '.config/bhyvemgr/config.conf');
+  ConfigFile:=ConfigurationClass.Create(GetUserDir + BHYVEMGR_CONFIG_FILE);
 
   SetDefaultLang(ComboBoxLanguage.Text, DatadirPath+'languages');
   Translations.TranslateUnitResourceStrings('LCLStrConsts', DatadirPath+'languages/lcl/lclstrconsts.'+ComboBoxLanguage.Text+'.po');
@@ -1552,6 +1652,29 @@ begin
   StatusBarBhyveManager.SimpleText:=EmptyStr;
 
   ConfigFile.Free;
+end;
+
+{
+  Procedure for release memory from some objects
+}
+
+procedure TFormBhyveManager.FormDestroy(Sender: TObject);
+begin
+ if Assigned(SocketThread) then
+ begin
+   SocketThread.OnProcessResponse := nil;
+   SocketThread.OnProcessMessage := nil;
+
+   SocketThread.Terminate;
+   SocketThread.WaitFor;
+   FreeAndNil(SocketThread);
+ end;
+
+ if Assigned(RequestManager) then
+ begin
+   RequestManager.Free;
+   RequestManager := nil;
+ end;
 end;
 
 {
@@ -1601,8 +1724,7 @@ begin
   TrayIconPopup.Free;
   TrayIcon.Free;
   NetworkDeviceList.Free;
-  VirtualMachineList.Free;
-
+  FreeAndNil(VirtualMachineListJson);
   TmpDevicesStringList.Free;
   DebugLogger.Free;
 end;
@@ -2269,9 +2391,17 @@ procedure TFormBhyveManager.RemoveDevice(Sender: TObject);
 var
   i : Integer;
   PciSlot : String;
+  VmName : String;
 begin
+   VmName:=EmptyStr;
+
   if (Assigned(DeviceSettingsTreeView.Selected)) and (DeviceSettingsTreeView.Selected.Level = 1) then
   begin
+    PciSlot:=EmptyStr;
+
+    if Assigned(VirtualMachinesTreeView.Selected) then
+      VmName:=VirtualMachinesTreeView.Selected.Text;
+
     if (MessageDialog(mtConfirmation, Format(device_remove_notice, [ExtractVarValue(DeviceSettingsTreeView.Selected.Text)])) = mrYes) then
     begin
 
@@ -2337,8 +2467,8 @@ begin
 
                       case StorageAhciDevice.storage_type of
                           'image file': if StorageAhciDevice.device_type = 'hd' then RemoveFile(StorageAhciDevice.path);
-                          'zfs sparse volume': ZfsDestroy(StorageAhciDevice.path.Remove(0,10), False);
-                          'zfs volume': ZfsDestroy(StorageAhciDevice.path.Remove(0,10), False);
+                          'zfs sparse volume': ZfsDestroyHelper(VmName, 'zvol', ExtractFileName(StorageAhciDevice.path), False);
+                          'zfs volume': ZfsDestroyHelper(VmName, 'zvol', ExtractFileName(StorageAhciDevice.path), False);
                       end;
                     end;
                   'nvme':
@@ -2348,8 +2478,8 @@ begin
 
                       case StorageNvmeDevice.storage_type of
                           'image file': RemoveFile(StorageNvmeDevice.devpath);
-                          'zfs sparse volume': ZfsDestroy(StorageNvmeDevice.devpath.Remove(0,10), False);
-                          'zfs volume': ZfsDestroy(StorageNvmeDevice.devpath.Remove(0,10), False);
+                          'zfs sparse volume': ZfsDestroyHelper(VmName, 'zvol', ExtractFileName(StorageNvmeDevice.devpath), False);
+                          'zfs volume': ZfsDestroyHelper(VmName,'zvol', ExtractFileName(StorageNvmeDevice.devpath), False);
                       end;
                     end;
                   'virtio-blk':
@@ -2359,8 +2489,8 @@ begin
 
                       case StorageVirtioBlkDevice.storage_type of
                           'image file': RemoveFile(StorageVirtioBlkDevice.path);
-                          'zfs sparse volume': ZfsDestroy(StorageVirtioBlkDevice.path.Remove(0,10), False);
-                          'zfs volume': ZfsDestroy(StorageVirtioBlkDevice.path.Remove(0,10), False);
+                          'zfs sparse volume': ZfsDestroyHelper(VmName, 'zvol', ExtractFileName(StorageVirtioBlkDevice.path), False);
+                          'zfs volume': ZfsDestroyHelper(VmName, 'zvol', ExtractFileName(StorageVirtioBlkDevice.path), False);
                       end;
                     end;
               end;
@@ -2730,7 +2860,7 @@ begin
    if GetOsreldate.ToInt64 < 1500023 then
    begin
      {$ifdef CPUAMD64}
-     TmpDevicesStringList.Values['lpc.bootrom']:= BootRomUefiPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     TmpDevicesStringList.Values['lpc.bootrom']:= BOOTROMUEFI_PATH+'/'+FormLpcDevice.ComboBoxBootrom.Text;
      if Trim(FormLpcDevice.ComboBoxBootvars.Text).IsEmpty then
      begin
        TmpDevicesStringList.Values['lpc.bootvars']:= VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text;
@@ -2738,12 +2868,12 @@ begin
        if not FileExists(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text) then
        begin
          CreateFile(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text, GetCurrentUserName());
-         CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text);
+         CopyFile(BOOTROMUEFI_PATH+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text);
        end;
      end;
      {$endif CPUAMD64}
      {$ifdef CPUAARCH64}
-     TmpDevicesStringList.Values['lpc.bootrom']:=BootRomUbootPath+'/'+FormLpcDevice.ComboBoxBootrom.Text;
+     TmpDevicesStringList.Values['lpc.bootrom']:=BOOTROMUBOOT_PATH+'/'+FormLpcDevice.ComboBoxBootrom.Text;
      {$endif CPUAARCH64}
    end;
 
@@ -2785,7 +2915,7 @@ begin
        if not FileExists(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text) then
        begin
          CreateFile(VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text, GetCurrentUserName());
-         CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text);
+         CopyFile(BOOTROMUEFI_PATH+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormLpcDevice.FormVmName+'/'+FormLpcDevice.ComboBoxBootvars.Text);
        end;
 
        TmpDevicesStringList.Values['lpc.bootvars']:= VmPath+'/'+FormLpcDevice.FormVmName+'/'+ FormLpcDevice.ComboBoxBootvars.Text;
@@ -3047,10 +3177,15 @@ var
   PciSlot : String;
   StoragePath : String;
   StorageSize : String;
+  VmName : String;
   i : Integer;
 begin
   StoragePath:=FormStorageDevice.FileNameEditStoragePath.FileName;
   StorageSize:=FormStorageDevice.SpinEditExDiskSize.Text;
+  VmName:=EmptyStr;
+
+  if Assigned(VirtualMachinesTreeView.Selected) then
+    VmName:=VirtualMachinesTreeView.Selected.Text;
 
   if (FormStorageDevice.FormAction = 'Add') and FormStorageDevice.FormValidate() then
   begin
@@ -3115,8 +3250,8 @@ begin
                     CreateFile(StoragePath, GetCurrentUserName());
                     TruncateImage(StoragePath, StorageSize+'G');
                   end;
-                'zfs sparse volume': ZfsCreateZvol(StoragePath.Remove(0,10), StorageSize+'G' , True);
-                'zfs volume': ZfsCreateZvol(StoragePath.Remove(0,10), StorageSize+'G' , False);
+                'zfs sparse volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , True);
+                'zfs volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , False);
             end;
 
             GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageAhciDevice.device+'-'+StorageAhciDevice.device_type);
@@ -3170,8 +3305,8 @@ begin
                     CreateFile(StoragePath, GetCurrentUserName());
                     TruncateImage(StoragePath, StorageSize+'G');
                   end;
-                'zfs sparse volume': ZfsCreateZvol(StoragePath.Remove(0,10), StorageSize+'G' , True);
-                'zfs volume': ZfsCreateZvol(StoragePath.Remove(0,10), StorageSize+'G' , False);
+                'zfs sparse volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , True);
+                'zfs volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , False);
             end;
 
             GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageNvmeDevice.device);
@@ -3209,8 +3344,8 @@ begin
                     CreateFile(StoragePath, GetCurrentUserName());
                     TruncateImage(StoragePath, StorageSize+'G');
                   end;
-                'zfs sparse volume': ZfsCreateZvol(StoragePath.Remove(0,10), StorageSize+'G' , True);
-                'zfs volume': ZfsCreateZvol(StoragePath.Remove(0,10), StorageSize+'G' , False);
+                'zfs sparse volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , True);
+                'zfs volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , False);
             end;
 
             GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageVirtioBlkDevice.device);
@@ -3284,7 +3419,7 @@ begin
                   if StorageAhciDevice.storage_type = 'image file' then
                     TruncateImage(StorageAhciDevice.path, FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G')
                   else
-                    ZfsSetPropertyValue(StorageAhciDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
+                    ZfsSetPropertyValueHelper(StorageAhciDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
 
                   StorageAhciDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
                 end;
@@ -3333,7 +3468,7 @@ begin
                   if StorageNvmeDevice.storage_type = 'image file' then
                     TruncateImage(StorageNvmeDevice.devpath, FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G')
                   else
-                    ZfsSetPropertyValue(StorageNvmeDevice.devpath.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
+                    ZfsSetPropertyValueHelper(StorageNvmeDevice.devpath.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
 
                   StorageNvmeDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
                 end;
@@ -3386,7 +3521,7 @@ begin
                   if StorageVirtioBlkDevice.storage_type = 'image file' then
                     TruncateImage(StorageVirtioBlkDevice.path, FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G')
                   else
-                    ZfsSetPropertyValue(StorageVirtioBlkDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
+                    ZfsSetPropertyValueHelper(StorageVirtioBlkDevice.path.Replace('/dev/zvol/', EmptyStr), 'volsize', FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G');
 
                   StorageVirtioBlkDevice.storage_size:=FormStorageDevice.SpinEditExDiskSize.Value.ToString+'G';
                 end;
@@ -3433,6 +3568,7 @@ var
   Path : String = '.path';
   PciSlot : String;
   SeedRunCmd : String;
+  Req : TJSONObject;
   MyAppThread : AppProgressBarThread;
 begin
   if FormVmCreate.FormValidate() then
@@ -3456,13 +3592,19 @@ begin
       begin
         if not DirectoryExists(VmPath) then
         begin
-          if not (ZfsCreateDataset(VmPath.Remove(0,1), True)) then
+          if not (ZfsCreateDatasetHelper('root', EmptyStr, GetZfsCreateOptions, True)) then
           begin
             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_dataset_status, [FormVmCreate.EditVmName.Text, VmPath]));
             Exit;
-          end;
+          end
         end;
-        if not ZfsCreateDataset(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text) then
+
+        if ZfsCreateDatasetHelper('vm', FormVmCreate.EditVmName.Text, GetZfsCreateOptions) then
+        begin
+          ChmodHelper(VmPath+'/'+FormVmCreate.EditVmName.Text);
+          ChownHelper(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName());
+        end
+        else
         begin
           DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_dataset_status, [FormVmCreate.EditVmName.Text, VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text]));
           Exit;
@@ -3470,7 +3612,7 @@ begin
       end
       else
       begin
-        if not CreateDirectory(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName()) then
+        if not CreateDirectoryHelper(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName()) then
         begin
           DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_directory_status, [FormVmCreate.EditVmName.Text, VmPath+'/'+FormVmCreate.EditVmName.Text]));
           Exit;
@@ -3504,29 +3646,29 @@ begin
       if GetOsreldate.ToInt64 >= 1500023 then
       begin
         {$ifdef CPUAMD64}
-        NewBhyveConfig.Values['bootrom'] := BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
+        NewBhyveConfig.Values['bootrom'] := BOOTROMUEFI_PATH+ '/' +'BHYVE_UEFI.fd';
         if FormVmCreate.CheckBoxUEFIBootvars.Checked then
         begin
           NewBhyveConfig.Values['bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
 
           CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
-          CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
+          CopyFile(BOOTROMUEFI_PATH+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
         end;
         {$endif CPUAMD64}
         {$ifdef CPUAARCH64}
-        NewBhyveConfig.Values['bootrom'] := BootRomUbootPath+ '/' +'u-boot.bin';
+        NewBhyveConfig.Values['bootrom'] := BOOTROMUBOOT_PATH+ '/' +'u-boot.bin';
         {$endif CPUAARCH64}
       end
       else
       begin
         {$ifdef CPUAMD64}
-        NewBhyveConfig.Values['lpc.bootrom']:=BootRomUefiPath+ '/' +'BHYVE_UEFI.fd';
+        NewBhyveConfig.Values['lpc.bootrom']:=BOOTROMUEFI_PATH+ '/' +'BHYVE_UEFI.fd';
         if FormVmCreate.CheckBoxUEFIBootvars.Checked then
         begin
           NewBhyveConfig.Values['lpc.bootvars'] := VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd';
 
           CreateFile(VmPath+'/'+FormVmCreate.EditVmName.Text+'/uefi-vars.fd', GetCurrentUserName());
-          CopyFile(BootRomUefiPath+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
+          CopyFile(BOOTROMUEFI_PATH+'/BHYVE_UEFI_VARS.fd', VmPath+'/'+FormVmCreate.EditVmName.Text+ '/' +'uefi-vars.fd');
         end;
         {$endif CPUAMD64}
       end;
@@ -3584,7 +3726,7 @@ begin
 
                 TotalSize:=ConvertFileSize(GetRemoteSize(FormVmCreate.FileNameEditImageFile.FileName), 'M');
 
-                MyAppThread := AppProgressBarThread.Create(CpCmd, [FormVmCreate.FileNameEditImageFile.FileName, FormVmCreate.EditVmFolderPath.Text+'/'+DiskName]);
+                MyAppThread := AppProgressBarThread.Create(CP_CMD, [FormVmCreate.FileNameEditImageFile.FileName, FormVmCreate.EditVmFolderPath.Text+'/'+DiskName]);
                 MyAppThread.OnShowStatus := @AppShowStatus;
                 MyAppThread.OnEndStatus:= @AppEndStatus;
                 MyAppThread.Start;
@@ -3599,7 +3741,7 @@ begin
               if UseZfs = 'yes' then
               begin
                 DiskName:=GetNewStorageName('/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text, True);
-                ZfsCreateZvol(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , True);
+                ZfsCreateZvolHelper(FormVmCreate.EditVmName.Text, DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , True);
                 NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:='/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName;
               end;
             end;
@@ -3608,7 +3750,7 @@ begin
               if UseZfs = 'yes' then
               begin
                 DiskName:=GetNewStorageName('/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text, True);
-                ZfsCreateZvol(VmPath.Remove(0,1)+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , False);
+                ZfsCreateZvolHelper(FormVmCreate.EditVmName.Text, DiskName, FormVmCreate.SpinEditExDiskSize.Text+'G' , False);
                 NewBhyveConfig.Values['pci.0.'+PciSlot+'.0'+Path]:='/dev/zvol'+VmPath+'/'+FormVmCreate.EditVmName.Text+'/'+DiskName;
               end;
             end;
@@ -3616,7 +3758,7 @@ begin
 
         if FormVmCreate.CheckBoxImageMinimal.Checked then
         begin
-          CreateDirectory(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
+          CreateDirectoryHelper(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
           SeedImageConfig.LoadFromFile(DatadirPath+'templates/user-data');
 
           if FormVmCreate.CheckBoxImageUseSudo.Checked or FormVmCreate.CheckBoxImageUseDoas.Checked then
@@ -3708,7 +3850,7 @@ begin
 
         if FormVmCreate.CheckBoxImageFiles.Checked then
         begin
-          CreateDirectory(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
+          CreateDirectoryHelper(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
 
           if FileExists(FormVmCreate.FileNameEditMetaData.FileName) then
           begin
@@ -3815,6 +3957,9 @@ begin
 
       if UseDnsmasq = 'yes' then
       begin
+        if not DirectoryExists(DNSMASQDIRECTORY_PATH) then
+          CreateDirectoryHelper(DNSMASQDIRECTORY_PATH, 'root', '770');
+
         if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
           AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress)
         else
@@ -3829,7 +3974,7 @@ begin
           AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, Ip6Address, MacAddress);
         end;
 
-        RestartService('dnsmasq');
+        RestartServiceHelper('dnsmasq');
       end;
 
       if not (IpAddress.IsEmpty) then
@@ -3839,6 +3984,18 @@ begin
       begin
         NewVMConfig.SetOption('general','ip6address', Ip6Address );
         NewVMConfig.SetOption('general','ipv6', 'True');
+      end;
+
+      Req := TJSONObject.Create;
+      try
+        Req.Add('type', 'type');
+        Req.Add('id', GenerateUuid());
+        Req.Add('method', 'vm.create');
+        Req.Add('params', TJSONObject.Create(['vmname', FormVmCreate.EditVmName.Text]));
+
+        SocketThread.SendJSON(Req.AsJSON);
+      finally
+        Req.Free;
       end;
 
       FormVmCreate.Hide;
@@ -3999,7 +4156,7 @@ begin
         if CheckVmRunning(FormVmInfo.EditVmName.Text) > 0 then
         begin
           if MessageDialog(mtConfirmation, Format(vm_apply_nat_confirmation, [FormVmInfo.EditVmName.Text])) = mrYes then
-            PfLoadRules(FormVmInfo.EditVmName.Text, 'nat');
+            PfLoadRulesHelper(FormVmInfo.EditVmName.Text, 'nat');
         end;
       end;
     end
@@ -4019,9 +4176,9 @@ begin
       begin
         if MessageDialog(mtConfirmation, Format(vm_apply_rules_confirmation, [FormVmInfo.EditVmName.Text])) = mrYes then
         begin
-          PfLoadRules(FormVmInfo.EditVmName.Text, 'rdr');
-          PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-in');
-          PfLoadRules(FormVmInfo.EditVmName.Text, 'pass-out');
+          PfLoadRulesHelper(FormVmInfo.EditVmName.Text, 'rdr');
+          PfLoadRulesHelper(FormVmInfo.EditVmName.Text, 'pass-in');
+          PfLoadRulesHelper(FormVmInfo.EditVmName.Text, 'pass-out');
         end;
       end;
     end
@@ -4050,12 +4207,6 @@ begin
 
       VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).ImageIndex:=PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]);
       VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).SelectedIndex:=PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]);
-    end
-    else
-    begin
-      ResetTreeView(VirtualMachinesTreeView);
-      VirtualMachinesTreeView.Items.Clear;
-      FillVirtualMachineList();
     end;
 
     FormVmInfo.Hide;
@@ -4083,6 +4234,7 @@ var
   Status : Boolean;
   VmName : String;
   ParentNode : String;
+  Req : TJSONObject;
 begin
   Status:=False;
 
@@ -4097,20 +4249,20 @@ begin
     begin
       if UseZfs = 'yes' then
       begin
-        if ZfsDestroy(VmPath.Remove(0,1)+'/'+VirtualMachine.name) then
+        if ZfsDestroyHelper(VmName, 'vm', EmptyStr) then
           Status:=True
         else
         begin
           if (MessageDialog(mtWarning, Format(vm_remove_force, [VmName])) = mrYes) then
           begin
-            if ZfsDestroy(VmPath.Remove(0,1)+'/'+VirtualMachine.name, True, True) then
+            if ZfsDestroyHelper(VmName, 'vm', EmptyStr, True, True) then
               Status:=True;
           end;
         end;
       end
       else
       begin
-        if RemoveDirectory(VmName, True) then
+        if RemoveDirectoryHelper(VmName, 'vm', True) then
           Status:=True;
       end;
     end;
@@ -4130,6 +4282,18 @@ begin
       begin
         VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Data:=Nil;
         VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Delete;
+      end;
+
+      Req := TJSONObject.Create;
+      try
+        Req.Add('type', 'type');
+        Req.Add('id', GenerateUuid());
+        Req.Add('method', 'vm.delete');
+        Req.Add('params', TJSONObject.Create(['vmname', VmName]));
+
+        SocketThread.SendJSON(Req.AsJSON);
+      finally
+        Req.Free;
       end;
 
       StatusBarBhyveManager.Font.Color:=clTeal;
@@ -4159,6 +4323,7 @@ var
   IpAddress : String;
   Ip6Address : String;
   VmConfig : ConfigurationClass;
+  Req : TJSONObject;
 begin
   GlobalNode:=VirtualMachinesTreeView.Selected;
 
@@ -4166,7 +4331,7 @@ begin
 
   if DeviceSettingsTreeView.Items.TopLvlItems[1].Count > 0 then
   begin
-    CreateDirectory(VmPath+'/'+VirtualMachine.name+'/vtcon', GetCurrentUserName());
+    CreateDirectoryHelper(VmPath+'/'+VirtualMachine.name+'/vtcon', GetCurrentUserName());
   end;
 
   { Remove this condition once bhyve is updated on FreeBSD 14.x }
@@ -4176,15 +4341,23 @@ begin
        and (ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) = 'swtpm') then
     begin
       if not (DirectoryExists(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)))) then
-        CreateDirectory(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)), GetCurrentUserName(), '750');
+        CreateDirectoryHelper(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)), GetCurrentUserName(), '750');
 
       CreateTpmSocket(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)));
     end;
   end;
 
-  MyVmThread := VmThread.Create(VirtualMachine.name);
-  MyVmThread.OnExitStatus := @VirtualMachineShowStatus;
-  MyVmThread.Start;
+  Req := TJSONObject.Create;
+  try
+    Req.Add('type', 'event');
+    Req.Add('id', GenerateUuid());
+    Req.Add('method', 'vm.start');
+    Req.Add('params', TJSONObject.Create(['vmname', VirtualMachine.name]));
+
+    SocketThread.SendJSON(Req.AsJSON);
+  finally
+    Req.Free;
+  end;
 
   Sleep(100);
 
@@ -4205,22 +4378,22 @@ begin
         Node:=DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[i];
         NetworkDevice:=TNetworkDeviceClass(Node.Data);
 
-        CreateNetworkDevice(NetworkDevice.backend, VirtualMachine.name, '');
+        CreateNetworkDeviceHelper(NetworkDevice.backend, VirtualMachine.name, '');
 
         if i=0 then
         begin
-          AttachDeviceToBridge(BridgeInterface, NetworkDevice.backend, VirtualMachine.name);
+          AttachDeviceToBridgeHelper(BridgeInterface, NetworkDevice.backend);
 
           if VirtualMachine.nat then
           begin
-            PfLoadRules(VirtualMachine.name, 'nat');
+            PfLoadRulesHelper(VirtualMachine.name, 'nat');
           end;
 
           if VirtualMachine.pf then
           begin
-            PfLoadRules(VirtualMachine.name, 'rdr');
-            PfLoadRules(VirtualMachine.name, 'pass-in');
-            PfLoadRules(VirtualMachine.name, 'pass-out');
+            PfLoadRulesHelper(VirtualMachine.name, 'rdr');
+            PfLoadRulesHelper(VirtualMachine.name, 'pass-in');
+            PfLoadRulesHelper(VirtualMachine.name, 'pass-out');
           end;
 
           if UseDnsmasq = 'yes' then
@@ -4235,7 +4408,7 @@ begin
               IpAddress:=GetNewIpAddress(GetSubnet);
               VmConfig.SetOption('general','ipaddress', IpAddress );
               AddDnsmasqDhcpHostEntry(VirtualMachine.name, IpAddress, NetworkDevice.mac);
-              RestartService('dnsmasq');
+              RestartServiceHelper('dnsmasq');
             end;
 
             if (UseIpv6 = 'yes') and (Virtualmachine.ipv6 = True) and
@@ -4244,7 +4417,7 @@ begin
               Ip6Address:=GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac );
               VmConfig.SetOption('general','ip6address', Ip6Address );
               AddDnsmasqHostRecordEntry(VirtualMachine.name, Ip6Address, NetworkDevice.mac);
-              RestartService('dnsmasq');
+              RestartServiceHelper('dnsmasq');
             end;
 
             VmConfig.Free;
@@ -4253,12 +4426,9 @@ begin
 
         if FileExists(VmPath+'/'+VirtualMachine.name+'/vnc.sock') then
         begin
-          Chmod(VmPath+'/'+VirtualMachine.name+'/vnc.sock');
-          Chown(VmPath+'/'+VirtualMachine.name+'/vnc.sock', GetCurrentUserName());
+          ChmodHelper(VmPath+'/'+VirtualMachine.name+'/vnc.sock');
+          ChownHelper(VmPath+'/'+VirtualMachine.name+'/vnc.sock', GetCurrentUserName());
         end;
-
-        NetworkDeviceList.Values[NetworkDevice.backend]:=VirtualMachine.name;
-        VirtualMachineList.Values[VirtualMachine.name]:='Running';
       end;
     end;
 
@@ -4267,8 +4437,6 @@ begin
     SpeedButtonStopVm.Enabled:=True;
 
     SpeedButtonReloadVmConfig.Enabled:=False;
-
-    VirtualMachinesTreeView.Selected.Text:=VirtualMachine.name+' : Running';
 
     StatusBarBhyveManager.Font.Color := clTeal;
     StatusBarBhyveManager.SimpleText := Format(vm_start_status, [VirtualMachine.name]);
@@ -4299,7 +4467,7 @@ begin
 
   if PidNumber > 0 then
   begin
-    KillPid(PidNumber, '-SIGTERM');
+    KillPidHelper(PidNumber, '-SIGTERM');
   end
 end;
 
@@ -4468,7 +4636,7 @@ begin
     SpeedButtonStopVm.Enabled:=False;
     SpeedButtonReloadVmConfig.Enabled:=True;
 
-    if CheckVmRunning(VirtualMachine.name) > 0 then
+    if VirtualMachinesTreeView.Selected.Text = VirtualMachine.name + ' : Running' then
     begin
       SpeedButtonStartVm.Enabled:=False;
       SpeedButtonStopVm.Enabled:=True;
