@@ -137,6 +137,7 @@ type
     RequestManager: TRequestManager;
     ProcessPid : Integer;
     VirtualMachineListJson : TJSONObject;
+    ConnectionErrorMessage : String;
     function FillDetailAudioDevice(Details : String; pci : String; device : String):TAudioDeviceClass;
     function FillDetailConsoleDevice(Details : String; pci : String; device : String; port : Integer):TSerialVirtioConsoleDeviceClass;
     function FillDetailDisplayDevice(Details : String; pci : String; device : String):TDisplayDeviceClass;
@@ -198,8 +199,11 @@ uses
 { TFormBhyveManager }
 
 procedure TFormBhyveManager.FormCreate(Sender: TObject);
+var
+  ErrorMessage : String;
 begin
   SocketThread := nil;
+  ConnectionErrorMessage:=EmptyStr;
 
   VirtualMachineListJson := TJSONObject.Create;
 
@@ -308,6 +312,11 @@ begin
   FillDeviceCategoryList();
   FillGlobalCategoryList();
   FillDeviceDetailList();
+
+  if not ConnectToHelper(ErrorMessage) then
+  begin
+    ConnectionErrorMessage:=ErrorMessage;
+  end;
 end;
 
 {
@@ -956,7 +965,6 @@ begin
  case Root.Strings['type'] of
      'snapshot' :
        begin
-         FreeAndNil(VirtualMachineListJson);
          VirtualMachineListJson := Root;
          FillVirtualMachineList();
          VirtualMachineListJson.Free;
@@ -1589,8 +1597,6 @@ end;
   window correctly when LCLGTK2 is used with latest version of Lazarus.
 }
 procedure TFormBhyveManager.FormShow(Sender: TObject);
-var
-  ErrorMessage: String;
 begin
  {$ifdef LCLGTK2}
   FormBhyveManager.BorderStyle:=bsSingle;
@@ -1604,12 +1610,14 @@ begin
     Exit;
   end;
 
-  if not ConnectToHelper(ErrorMessage) then
+  if ConnectionErrorMessage <> EmptyStr then
   begin
-    MessageDialog(mtError, ErrorMessage);
+    MessageDialog(mtError, ConnectionErrorMessage);
     Close;
     Exit;
   end;
+
+
 end;
 
 {

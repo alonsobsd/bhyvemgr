@@ -136,10 +136,11 @@ end;
 procedure TSocketThread.SendJSON(const JSON:String);
 begin
   EnterCriticalSection(FLock);
-
-  FPendingBuffer := FPendingBuffer + JSON + LineEnding;
-
-  LeaveCriticalSection(FLock);
+  try
+    FPendingBuffer := FPendingBuffer + JSON + LineEnding;
+  finally
+    LeaveCriticalSection(FLock);
+  end;
 end;
 
 procedure TSocketThread.MovePendingToOutput;
@@ -148,11 +149,12 @@ var
 begin
   EnterCriticalSection(FLock);
 
-  Data := FPendingBuffer;
-
-  FPendingBuffer := EmptyStr;
-
-  LeaveCriticalSection(FLock);
+  try
+    Data := FPendingBuffer;
+    FPendingBuffer := EmptyStr;
+  finally
+    LeaveCriticalSection(FLock);
+  end;
 
   if Data <> EmptyStr then
     FOutputBuffer := FOutputBuffer + Data;
@@ -165,7 +167,7 @@ begin
   if FOutputBuffer = EmptyStr then
     Exit;
 
-  Sent := fpSend(FSocket, @FOutputBuffer[1], Length(FOutputBuffer), 0);
+  Sent := fpSend(FSocket, @FOutputBuffer[1], Length(FOutputBuffer), MSG_DONTWAIT or MSG_NOSIGNAL);
 
   if Sent > 0 then
   begin
