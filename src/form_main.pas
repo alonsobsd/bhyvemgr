@@ -174,21 +174,6 @@ type
 
 var
   FormBhyveManager: TFormBhyveManager;
-  AudioDevice: TAudioDeviceClass;
-  HostBridgeDevice: THostbridgeDeviceClass;
-  InputDevice: TVirtioInputDeviceClass;
-  DisplayDevice: TDisplayDeviceClass;
-  LPCDevice : TLPCDeviceClass;
-  NetworkDevice : TNetworkDeviceClass;
-  PassthruDevice : TPassthruDeviceClass;
-  RNGDevice : TRNGDeviceClass;
-  SerialVirtioConsoleDevice : TSerialVirtioConsoleDeviceClass;
-  ShareFolderDevice : TShareFolderDeviceClass;
-  StorageAhciDevice : TStorageAhciDeviceClass;
-  StorageVirtioBlkDevice : TStorageVirtioBlkDeviceClass;
-  StorageNvmeDevice : TStorageNvmeDeviceClass;
-  UsbXhciDevice : TUsbXhciDeviceClass;
-  VirtualMachine : TVirtualMachineClass;
   GlobalSettingTypeList : TStringList;
   GlobalSettingDefaultValueList : TStringList;
   GlobalSettingCategoryList : TStringList;
@@ -196,7 +181,6 @@ var
   DevicesList : TStringList;
   TmpDevicesStringList : TStringList;
   NodeIndex : Integer;
-  GlobalNode : TTreeNode;
   DiskFile : String;
   TotalSize : Int64;
 
@@ -395,31 +379,34 @@ end;
 procedure TFormBhyveManager.FillGlobalCategoryList();
 var
   i: Integer;
+  Node : TTreeNode;
   GlobalCategoryList: TStringList;
 begin
   GlobalCategoryList := TStringList.Create;
 
-  GlobalCategoryList.Add('System');
-  GlobalCategoryList.Add('Processor');
-  GlobalCategoryList.Add('Memory');
-  GlobalCategoryList.Add('ACPI');
-  GlobalCategoryList.Add('Debugging');
-  GlobalCategoryList.Add('TPM');
-  GlobalCategoryList.Add('BIOS');
-  {$ifdef CPUAMD64}
-  GlobalCategoryList.Add('x86');
-  {$endif}
+  try
+    GlobalCategoryList.Add('System');
+    GlobalCategoryList.Add('Processor');
+    GlobalCategoryList.Add('Memory');
+    GlobalCategoryList.Add('ACPI');
+    GlobalCategoryList.Add('Debugging');
+    GlobalCategoryList.Add('TPM');
+    GlobalCategoryList.Add('BIOS');
+    {$ifdef CPUAMD64}
+    GlobalCategoryList.Add('x86');
+    {$endif}
 
-  GlobalSettingsTreeView.Items.Clear;
+    GlobalSettingsTreeView.Items.Clear;
 
-  for i:=0 to GlobalCategoryList.Count-1 do
-  begin
-    GlobalNode:=GlobalSettingsTreeView.Items.Add(Nil, GlobalCategoryList.ValueFromIndex[i]);
-    GlobalNode.ImageIndex:=0;
-    GlobalNode.SelectedIndex:=0;
+    for i:=0 to GlobalCategoryList.Count-1 do
+    begin
+      Node:=GlobalSettingsTreeView.Items.Add(Nil, GlobalCategoryList.ValueFromIndex[i]);
+      Node.ImageIndex:=0;
+      Node.SelectedIndex:=0;
+    end;
+  finally
+    GlobalCategoryList.Free;
   end;
-
-  GlobalCategoryList.Free;
 end;
 
 {
@@ -659,38 +646,41 @@ procedure TFormBhyveManager.FillDeviceCategoryList();
 var
   i: Integer;
   DevicesCategoryList: TStringList;
+  Node : TTreeNode;
 begin
   DevicesCategoryList := TStringList.Create;
 
-  DevicesCategoryList.Add('Audio');
-  DevicesCategoryList.Add('Console');
-  {$ifdef CPUAMD64}
-  DevicesCategoryList.Add('Display');
-  {$endif}
-  DevicesCategoryList.Add('Hostbridge');
-  DevicesCategoryList.Add('Input');
-  {$ifdef CPUAMD64}
-  DevicesCategoryList.Add('LPC');
-  {$endif}
-  DevicesCategoryList.Add('Network');
-  {$ifdef CPUAMD64}
-  DevicesCategoryList.Add('Passthru');
-  {$endif}
-  DevicesCategoryList.Add('RNG');
-  DevicesCategoryList.Add('Shared folders');
-  DevicesCategoryList.Add('Storage');
-  DevicesCategoryList.Add('USB');
+  try
+    DevicesCategoryList.Add('Audio');
+    DevicesCategoryList.Add('Console');
+    {$ifdef CPUAMD64}
+    DevicesCategoryList.Add('Display');
+    {$endif}
+    DevicesCategoryList.Add('Hostbridge');
+    DevicesCategoryList.Add('Input');
+    {$ifdef CPUAMD64}
+    DevicesCategoryList.Add('LPC');
+    {$endif}
+    DevicesCategoryList.Add('Network');
+    {$ifdef CPUAMD64}
+    DevicesCategoryList.Add('Passthru');
+    {$endif}
+    DevicesCategoryList.Add('RNG');
+    DevicesCategoryList.Add('Shared folders');
+    DevicesCategoryList.Add('Storage');
+    DevicesCategoryList.Add('USB');
 
-  DeviceSettingsTreeView.Items.Clear;
+    DeviceSettingsTreeView.Items.Clear;
 
-  for i:=0 to DevicesCategoryList.Count-1 do
-  begin
-    GlobalNode:=DeviceSettingsTreeView.Items.Add(Nil, DevicesCategoryList.ValueFromIndex[i]);
-    GlobalNode.ImageIndex:=0;
-    GlobalNode.SelectedIndex:=0;
+    for i:=0 to DevicesCategoryList.Count-1 do
+    begin
+      Node:=DeviceSettingsTreeView.Items.Add(Nil, DevicesCategoryList.ValueFromIndex[i]);
+      Node.ImageIndex:=0;
+      Node.SelectedIndex:=0;
+    end;
+  finally
+    DevicesCategoryList.Free;
   end;
-
-  DevicesCategoryList.Free;
 end;
 
 {
@@ -734,38 +724,48 @@ procedure TFormBhyveManager.FillVirtualMachineList();
 var
   i : integer;
   Directories : TStringList;
-  Nodo : TTreeNode;
+  ParentNode : TTreeNode;
+  Node : TTreeNode;
+  VirtualMachineNode : TVirtualMachineClass;
 begin
   Directories:=FindAllDirectories(VmPath, False);
-  Directories.Sorted:=True;
 
-  for i:=0 to Directories.Count-1 do
-  begin
-    if FileExists(Directories[i]+'/bhyve_config.conf') and FileExists(Directories[i]+'/'+ExtractFileName(Directories[i])+'.conf') then
-      begin
-        VirtualMachine:=LoadVirtualMachineData(Directories[i]+'/'+ExtractFileName(Directories[i])+'.conf');
+  try
+    Directories.Sorted:=True;
 
-        if VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type) = Nil then
+    for i:=0 to Directories.Count-1 do
+    begin
+      if FileExists(Directories[i]+'/bhyve_config.conf') and FileExists(Directories[i]+'/'+ExtractFileName(Directories[i])+'.conf') then
+        begin
+          VirtualMachineNode:=LoadVirtualMachineData(Directories[i]+'/'+ExtractFileName(Directories[i])+'.conf');
+
+          if not Assigned(VirtualMachineNode) then
+            Continue;
+
+          ParentNode := VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachineNode.system_type);
+
+          if not Assigned(ParentNode) then
           begin
-            Nodo := VirtualMachinesTreeView.Items.Add(Nil, VirtualMachine.system_type);
-            Nodo.ImageIndex:=0;
-            Nodo.SelectedIndex:=0;
+            ParentNode := VirtualMachinesTreeView.Items.Add(Nil, VirtualMachineNode.system_type);
+            ParentNode.ImageIndex:=0;
+            ParentNode.SelectedIndex:=0;
           end;
 
-        if (VirtualMachineListJson.Objects['vms'].Objects[VirtualMachine.name].Strings['state']) = 'vmRunning' then
-          GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name + ' : Running')
-        else
-          GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name);
+          if (VirtualMachineListJson.Objects['vms'].Objects[VirtualMachineNode.name].Strings['state']) = 'vmRunning' then
+            Node:=VirtualMachinesTreeView.Items.AddChild(ParentNode, VirtualMachineNode.name + ' : Running')
+          else
+            Node:=VirtualMachinesTreeView.Items.AddChild(ParentNode, VirtualMachineNode.name);
 
-        GlobalNode.ImageIndex:=VirtualMachine.image;
-        GlobalNode.SelectedIndex:=VirtualMachine.image;
-        GlobalNode.Data:=VirtualMachine;
-      end;
+          Node.ImageIndex:=VirtualMachineNode.image;
+          Node.SelectedIndex:=VirtualMachineNode.image;
+          Node.Data:=VirtualMachineNode;
+        end;
+    end;
+
+    VirtualMachinesTreeView.AlphaSort;
+  finally
+    Directories.Free;
   end;
-
-  Directories.Free;
-
-  VirtualMachinesTreeView.AlphaSort;
 end;
 
 {
@@ -776,27 +776,34 @@ end;
 }
 procedure TFormBhyveManager.FillVirtualMachine(VmName: String);
 var
-  Nodo : TTreeNode;
+  ParentNode : TTreeNode;
+  Node : TTreeNode;
+  VirtualMachineNode : TVirtualMachineClass;
 begin
   if FileExists(VmPath+'/'+VmName+'/bhyve_config.conf') and FileExists(VmPath+'/'+VmName+'/'+VmName+'.conf') then
     begin
-      VirtualMachine:=LoadVirtualMachineData(VmPath+'/'+VmName+'/'+VmName+'.conf');
+      VirtualMachineNode:=LoadVirtualMachineData(VmPath+'/'+VmName+'/'+VmName+'.conf');
 
-      if VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type) = Nil then
-        begin
-          Nodo := VirtualMachinesTreeView.Items.Add(Nil, VirtualMachine.system_type);
-          Nodo.ImageIndex:=0;
-          Nodo.SelectedIndex:=0;
-        end;
+      if not Assigned(VirtualMachineNode) then
+        Exit;
 
-      if CheckVmRunning(VirtualMachine.name) > 0 then
-        GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name + ' : Running')
+      ParentNode := VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachineNode.system_type);
+
+      if not Assigned(ParentNode) then
+      begin
+        ParentNode := VirtualMachinesTreeView.Items.Add(Nil, VirtualMachineNode.system_type);
+        ParentNode.ImageIndex:=0;
+        ParentNode.SelectedIndex:=0;
+      end;
+
+      if CheckVmRunning(VirtualMachineNode.name) > 0 then
+        Node:=VirtualMachinesTreeView.Items.AddChild(ParentNode , VirtualMachineNode.name + ' : Running')
       else
-        GlobalNode:=VirtualMachinesTreeView.Items.AddChild(VirtualMachinesTreeView.Items.FindNodeWithText(VirtualMachine.system_type), VirtualMachine.name);
+        Node:=VirtualMachinesTreeView.Items.AddChild(ParentNode, VirtualMachineNode.name);
 
-      GlobalNode.ImageIndex:=VirtualMachine.image;
-      GlobalNode.SelectedIndex:=VirtualMachine.image;
-      GlobalNode.Data:=VirtualMachine;
+      Node.ImageIndex:=VirtualMachineNode.image;
+      Node.SelectedIndex:=VirtualMachineNode.image;
+      Node.Data:=VirtualMachineNode;
     end;
 end;
 
@@ -806,19 +813,23 @@ end;
 }
 procedure TFormBhyveManager.ResetTreeView(TreeView: TTreeView);
 var
-  i : Integer;
-  j : Integer;
+  i: Integer;
+  j: Integer;
+  Node: TTreeNode;
 begin
-  for i:=0 to TreeView.Items.TopLvlCount-1 do
+  for i := TreeView.Items.TopLvlCount - 1 downto 0 do
   begin
-    if (TreeView.Items.TopLvlItems[i].Count > 0) then
+    for j := TreeView.Items.TopLvlItems[i].Count - 1 downto 0 do
     begin
-      for j:=TreeView.Items.TopLvlItems[i].Count-1 downto 0 do
+      Node := TreeView.Items.TopLvlItems[i].Items[j];
+
+      if Assigned(Node.Data) then
       begin
-        TObject(TreeView.Items.TopLvlItems[i].Items[j].Data).Free;
-        TreeView.Items.TopLvlItems[i].Items[j].Data:=Nil;
-        TreeView.Items.TopLvlItems[i].Items[j].Delete;
+        TObject(Node.Data).Free;
+        Node.Data := nil;
       end;
+
+      Node.Delete;
     end;
   end;
 end;
@@ -829,45 +840,54 @@ end;
 }
 function TFormBhyveManager.SaveVirtualMachineConfig(): Boolean;
 var
+  VirtualMachineNode : TVirtualMachineClass;
+  Node : TTreeNode;
   TmpGlobalSettingList : TStringList;
   i : Integer;
   j : Integer;
 begin
   Result:=False;
 
+  Node:=VirtualMachinesTreeView.Selected;
+
+  if not Assigned(Node) then
+    Exit;
+
+  if not Assigned(Node.Data) then
+    Exit;
+
+  VirtualMachineNode := TVirtualMachineClass(Node.Data);
+
   TmpGlobalSettingList:= TStringList.Create;
 
-  TmpGlobalSettingList.Values['name']:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name;
+  try
+    TmpGlobalSettingList.Values['name']:=VirtualMachineNode.name;
 
-  for i:=0 to GlobalSettingsTreeView.Items.TopLvlCount-1 do
-  begin
-    for j:=0 to GlobalSettingsTreeView.Items.TopLvlItems[i].Count-1 do
+    for i:=0 to GlobalSettingsTreeView.Items.TopLvlCount-1 do
     begin
-      if GlobalSettingDefaultValueList.Values[ExtractVarName(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text)] <> ExtractVarValue(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text) then
+      for j:=0 to GlobalSettingsTreeView.Items.TopLvlItems[i].Count-1 do
       begin
-        TmpGlobalSettingList.Values[ExtractVarName(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text)] := ExtractVarValue(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text);
+        if GlobalSettingDefaultValueList.Values[ExtractVarName(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text)] <> ExtractVarValue(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text) then
+        begin
+          TmpGlobalSettingList.Values[ExtractVarName(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text)] := ExtractVarValue(GlobalSettingsTreeView.Items.TopLvlItems[i].Items[j].Text);
+        end;
       end;
     end;
-  end;
 
- TmpGlobalSettingList.Sorted:=True;
- TmpDevicesStringList.Sorted:=True;
+   TmpGlobalSettingList.Sorted:=True;
+   TmpDevicesStringList.Sorted:=True;
 
+   TmpGlobalSettingList.Text:=TmpGlobalSettingList.Text + TmpDevicesStringList.Text;
 
- GlobalNode:=VirtualMachinesTreeView.Selected;
- VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
+   CreateFile(VmPath+'/'+VirtualMachineNode.name+'/bhyve_config.conf', GetCurrentUserName(), BHYVEMGRD_GROUP, '640');
 
- TmpGlobalSettingList.Text:=TmpGlobalSettingList.Text + TmpDevicesStringList.Text;
+   TmpGlobalSettingList.SaveToFile(VmPath+'/'+VirtualMachineNode.name+'/bhyve_config.conf');
 
- CreateFile(VmPath+'/'+VirtualMachine.name+'/bhyve_config.conf', GetCurrentUserName());
-
- try
-   TmpGlobalSettingList.SaveToFile(VmPath+'/'+VirtualMachine.name+'/bhyve_config.conf');
    Result:=True;
- finally
-   TmpDevicesStringList.Sorted:=False;
-   TmpGlobalSettingList.Free;
- end;
+  finally
+    TmpDevicesStringList.Sorted:=False;
+    TmpGlobalSettingList.Free;
+  end;
 end;
 
 {
@@ -939,12 +959,13 @@ begin
          FreeAndNil(VirtualMachineListJson);
          VirtualMachineListJson := Root;
          FillVirtualMachineList();
+         VirtualMachineListJson.Free;
          Exit;
        end;
      'event' :
        begin
          if (Root.Strings['event'] = 'vm_state_init') then
-           VirtualMachinesTreeView.Selected.Text:=VirtualMachine.name+' : Running'
+           VirtualMachinesTreeView.Selected.Text:=VirtualMachinesTreeView.Selected.Text+' : Running'
          else
          begin
            VmName:=Root.Strings['vmname'];
@@ -1018,7 +1039,7 @@ begin
              if DirectoryExists(VmPath+'/'+VmName+'/vtcon') then
              begin
                RemoveDirectoryHelper(VmName, 'vtcon', True);
-               CreateDirectoryHelper(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName());
+               CreateDirectoryHelper(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
              end;
 
              if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
@@ -1541,9 +1562,6 @@ end;
 }
 procedure TFormBhyveManager.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
-var
-  i, j : Integer;
-  Node : TTreeNode;
 begin
   CanClose:=True;
 
@@ -1710,7 +1728,6 @@ procedure TFormBhyveManager.FormClose(Sender: TObject; var CloseAction: TCloseAc
 begin
   DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+debugln_bhyve_finished);
 
-  GlobalNode.Free;
   GlobalSettingTypeList.Free;
   GlobalSettingDefaultValueList.Free;
   GlobalSettingCategoryList.Free;
@@ -1724,7 +1741,6 @@ begin
   TrayIconPopup.Free;
   TrayIcon.Free;
   NetworkDeviceList.Free;
-  FreeAndNil(VirtualMachineListJson);
   TmpDevicesStringList.Free;
   DebugLogger.Free;
 end;
@@ -1738,7 +1754,10 @@ procedure TFormBhyveManager.AddDevice(Sender: TObject);
 var
   i : Integer;
   Node : TTreeNode;
+  DeviceNode : TTreeNode;
   PciSlot : String;
+  RNGDevice : TRNGDeviceClass;
+  UsbXhciDevice : TUsbXhciDeviceClass;
 begin
   Node := DeviceSettingsTreeView.Selected;
 
@@ -1870,12 +1889,12 @@ begin
 
               RNGDevice:=FillDetailRngDevice(TmpDevicesStringList.Text, PciSlot, 'virtio-rnd');
 
-              GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindTopLvlNode('RNG'), 'device : '+RNGDevice.device);
-              GlobalNode.Data:=RNGDevice;
-              GlobalNode.ImageIndex:=12;
-              GlobalNode.SelectedIndex:=12;
+              DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindTopLvlNode('RNG'), 'device : '+RNGDevice.device);
+              DeviceNode.Data:=RNGDevice;
+              DeviceNode.ImageIndex:=12;
+              DeviceNode.SelectedIndex:=12;
 
-              DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+RNGDevice.pci);
+              DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+RNGDevice.pci);
 
               SaveVirtualMachineConfig();
             end;
@@ -1914,13 +1933,13 @@ begin
 
               UsbXhciDevice:=FillDetailUsbXhciDevice(TmpDevicesStringList.Text, PciSlot, 'xhci', 1);
 
-              GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindTopLvlNode('USB'), 'device : '+UsbXhciDevice.device+'-'+UsbXhciDevice.slot_device);
-              GlobalNode.Data:=UsbXhciDevice;
-              GlobalNode.ImageIndex:=14;
-              GlobalNode.SelectedIndex:=14;
+              DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindTopLvlNode('USB'), 'device : '+UsbXhciDevice.device+'-'+UsbXhciDevice.slot_device);
+              DeviceNode.Data:=UsbXhciDevice;
+              DeviceNode.ImageIndex:=14;
+              DeviceNode.SelectedIndex:=14;
 
-              DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+UsbXhciDevice.pci);
-              DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'slot : '+UsbXhciDevice.slot.ToString);
+              DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+UsbXhciDevice.pci);
+              DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'slot : '+UsbXhciDevice.slot.ToString);
 
               SaveVirtualMachineConfig();
             end;
@@ -1949,16 +1968,18 @@ end;
 procedure TFormBhyveManager.CopyComCommandClick(Sender: TObject);
 var
   ComDevice : String;
+  VirtualMachineNode : TVirtualMachineClass;
+  LPCDevice : TLPCDeviceClass;
 begin
   if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Level <> 0) then
   begin
-    VirtualMachine:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data);
+    VirtualMachineNode:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data);
 
     {$ifdef CPUAARCH64}
     ComDevice:=GlobalSettingsTreeView.Items.FindTopLvlNode('System').Items[1].Text;
 
     if ComDevice.Contains('/dev/nmdm') then
-      Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachine.name+'.1B';
+      Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachineNode.name+'.1B';
 
     if ComDevice.Contains('tcp=') and not ComDevice.Contains('[') then
       Clipboard.AsText:='netcat 127.0.0.1 '+ExtractPortValue(ComDevice)
@@ -1970,7 +1991,7 @@ begin
     ComDevice:=LPCDevice.com1;
 
     if ComDevice.Contains('/dev/nmdm') then
-      Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachine.name+'.1B';
+      Clipboard.AsText:='cu -l /dev/nmdm-'+VirtualMachineNode.name+'.1B';
 
     if ComDevice.Contains('tcp=') and not ComDevice.Contains('[') then
       Clipboard.AsText:='netcat 127.0.0.1 '+ExtractPortValue(ComDevice)
@@ -2010,6 +2031,18 @@ end;
 procedure TFormBhyveManager.EditDevice(Sender: TObject);
 var
   Node : TTreeNode;
+  AudioDevice: TAudioDeviceClass;
+  HostBridgeDevice: THostbridgeDeviceClass;
+  InputDevice: TVirtioInputDeviceClass;
+  DisplayDevice: TDisplayDeviceClass;
+  LPCDevice : TLPCDeviceClass;
+  NetworkDevice : TNetworkDeviceClass;
+  PassthruDevice : TPassthruDeviceClass;
+  SerialVirtioConsoleDevice : TSerialVirtioConsoleDeviceClass;
+  ShareFolderDevice : TShareFolderDeviceClass;
+  StorageAhciDevice : TStorageAhciDeviceClass;
+  StorageVirtioBlkDevice : TStorageVirtioBlkDeviceClass;
+  StorageNvmeDevice : TStorageNvmeDeviceClass;
 begin
   Node := DeviceSettingsTreeView.Selected;
 
@@ -2392,6 +2425,20 @@ var
   i : Integer;
   PciSlot : String;
   VmName : String;
+  AudioDevice: TAudioDeviceClass;
+  HostBridgeDevice: THostbridgeDeviceClass;
+  InputDevice: TVirtioInputDeviceClass;
+  DisplayDevice: TDisplayDeviceClass;
+  LPCDevice : TLPCDeviceClass;
+  NetworkDevice : TNetworkDeviceClass;
+  PassthruDevice : TPassthruDeviceClass;
+  RNGDevice : TRNGDeviceClass;
+  SerialVirtioConsoleDevice : TSerialVirtioConsoleDeviceClass;
+  ShareFolderDevice : TShareFolderDeviceClass;
+  StorageAhciDevice : TStorageAhciDeviceClass;
+  StorageVirtioBlkDevice : TStorageVirtioBlkDeviceClass;
+  StorageNvmeDevice : TStorageNvmeDeviceClass;
+  UsbXhciDevice : TUsbXhciDeviceClass;
 begin
    VmName:=EmptyStr;
 
@@ -2516,8 +2563,6 @@ begin
           end;
       end;
 
-      TObject(DeviceSettingsTreeView.Selected.Data).Free;
-      DeviceSettingsTreeView.Selected.Data:=Nil;
       DeviceSettingsTreeView.Selected.Delete;
 
       SaveVirtualMachineConfig();
@@ -2562,6 +2607,8 @@ end;
 procedure TFormBhyveManager.SaveAudioDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  AudioDevice: TAudioDeviceClass;
 begin
  if (FormAudioDevice.FormAction = 'Add') and FormAudioDevice.FormValidate() then
  begin
@@ -2573,12 +2620,12 @@ begin
 
    AudioDevice:=FillDetailAudioDevice(TmpDevicesStringList.Text, PciSlot, 'hda');
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Audio'), 'device : '+AudioDevice.device);
-   GlobalNode.Data:=AudioDevice;
-   GlobalNode.ImageIndex:=1;
-   GlobalNode.SelectedIndex:=1;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Audio'), 'device : '+AudioDevice.device);
+   DeviceNode.Data:=AudioDevice;
+   DeviceNode.ImageIndex:=1;
+   DeviceNode.SelectedIndex:=1;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+AudioDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+AudioDevice.pci);
 
    FormAudioDevice.Hide;
 
@@ -2586,6 +2633,9 @@ begin
  end
  else if (FormAudioDevice.FormAction = 'Update') and FormAudioDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   AudioDevice := TAudioDeviceClass(DeviceNode.Data);
+
    PciSlot:=AudioDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.play']:=FormAudioDevice.EditPlayDevice.Text;
@@ -2612,6 +2662,8 @@ procedure TFormBhyveManager.SaveConsoleDevice(Sender: TObject);
 var
   i : Integer;
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  SerialVirtioConsoleDevice : TSerialVirtioConsoleDeviceClass;
 begin
  if (FormConsoleDevice.FormAction = 'Add') and FormConsoleDevice.FormValidate() then
  begin
@@ -2623,13 +2675,13 @@ begin
 
    SerialVirtioConsoleDevice:=FillDetailConsoleDevice(TmpDevicesStringList.Text, PciSlot, FormConsoleDevice.ComboBoxDevice.Text, 0);
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Console'), 'device : '+SerialVirtioConsoleDevice.device);
-   GlobalNode.Data:=SerialVirtioConsoleDevice;
-   GlobalNode.ImageIndex:=3;
-   GlobalNode.SelectedIndex:=3;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Console'), 'device : '+SerialVirtioConsoleDevice.device);
+   DeviceNode.Data:=SerialVirtioConsoleDevice;
+   DeviceNode.ImageIndex:=3;
+   DeviceNode.SelectedIndex:=3;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+SerialVirtioConsoleDevice.pci);
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(SerialVirtioConsoleDevice.port));
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+SerialVirtioConsoleDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'port : '+IntToStr(SerialVirtioConsoleDevice.port));
 
    FormConsoleDevice.Hide;
 
@@ -2637,6 +2689,9 @@ begin
  end
  else if (FormConsoleDevice.FormAction = 'Update') and FormConsoleDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   SerialVirtioConsoleDevice := TSerialVirtioConsoleDeviceClass(DeviceNode.Data);
+
    PciSlot:=SerialVirtioConsoleDevice.pci;
 
    for i:=TmpDevicesStringList.Count-1 downto 0 do
@@ -2672,6 +2727,8 @@ end;
 procedure TFormBhyveManager.SaveDisplayDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  DisplayDevice: TDisplayDeviceClass;
 begin
  if (FormDisplayDevice.FormAction = 'Add') and FormDisplayDevice.FormValidate() then
  begin
@@ -2692,12 +2749,12 @@ begin
 
    DisplayDevice:=FillDetailDisplayDevice(TmpDevicesStringList.Text, PciSlot, 'fbuf');
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Display'), 'device : '+DisplayDevice.device);
-   GlobalNode.Data:=DisplayDevice;
-   GlobalNode.ImageIndex:=4;
-   GlobalNode.SelectedIndex:=4;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Display'), 'device : '+DisplayDevice.device);
+   DeviceNode.Data:=DisplayDevice;
+   DeviceNode.ImageIndex:=4;
+   DeviceNode.SelectedIndex:=4;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+DisplayDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+DisplayDevice.pci);
 
    FormDisplayDevice.Hide;
 
@@ -2705,6 +2762,9 @@ begin
  end
  else if (FormDisplayDevice.FormAction = 'Update') and FormDisplayDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   DisplayDevice := TDisplayDeviceClass(DeviceNode.Data);
+
    PciSlot:=DisplayDevice.pci;
 
    if Trim(FormDisplayDevice.ComboBoxHost.Text).Contains('unix') then
@@ -2756,6 +2816,8 @@ end;
 procedure TFormBhyveManager.SaveHostbridgeDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  HostBridgeDevice: THostbridgeDeviceClass;
 begin
  if (FormHostbridgeDevice.FormAction = 'Add') and FormHostbridgeDevice.FormValidate() then
  begin
@@ -2765,12 +2827,12 @@ begin
 
    HostBridgeDevice:=FillDetailHostbridgeDevice(TmpDevicesStringList.Text, PciSlot, FormHostbridgeDevice.ComboBoxHostbridgeDevice.Text);
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Hostbridge'), 'device : '+HostBridgeDevice.device);
-   GlobalNode.Data:=HostBridgeDevice;
-   GlobalNode.ImageIndex:=6;
-   GlobalNode.SelectedIndex:=6;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Hostbridge'), 'device : '+HostBridgeDevice.device);
+   DeviceNode.Data:=HostBridgeDevice;
+   DeviceNode.ImageIndex:=6;
+   DeviceNode.SelectedIndex:=6;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+HostBridgeDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+HostBridgeDevice.pci);
 
    FormHostbridgeDevice.Hide;
 
@@ -2778,6 +2840,9 @@ begin
  end
  else if (FormHostbridgeDevice.FormAction = 'Update') and FormHostbridgeDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   HostBridgeDevice := THostbridgeDeviceClass(DeviceNode.Data);
+
    PciSlot:=HostBridgeDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormHostbridgeDevice.ComboBoxHostbridgeDevice.Text;
@@ -2803,6 +2868,8 @@ end;
 procedure TFormBhyveManager.SaveInputDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  InputDevice: TVirtioInputDeviceClass;
 begin
  if (FormInputDevice.FormAction = 'Add') and FormInputDevice.FormValidate() then
  begin
@@ -2813,12 +2880,12 @@ begin
 
    InputDevice:=FillDetailInputDevice(TmpDevicesStringList.Text, PciSlot, 'virtio-input');
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Input'), 'device : '+InputDevice.device);
-   GlobalNode.Data:=InputDevice;
-   GlobalNode.ImageIndex:=7;
-   GlobalNode.SelectedIndex:=7;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Input'), 'device : '+InputDevice.device);
+   DeviceNode.Data:=InputDevice;
+   DeviceNode.ImageIndex:=7;
+   DeviceNode.SelectedIndex:=7;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+InputDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+InputDevice.pci);
 
    FormInputDevice.Hide;
 
@@ -2826,6 +2893,9 @@ begin
  end
  else if (FormInputDevice.FormAction = 'Update') and FormInputDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   InputDevice := TVirtioInputDeviceClass(DeviceNode.Data);
+
    PciSlot:=InputDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.path']:=FormInputDevice.ComboBoxInputDevice.Text;
@@ -2849,6 +2919,8 @@ end;
 procedure TFormBhyveManager.SaveLpcDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  LPCDevice : TLPCDeviceClass;
 begin
  if (FormLpcDevice.FormAction = 'Add') and FormLpcDevice.FormValidate() then
  begin
@@ -2886,12 +2958,12 @@ begin
 
    LPCDevice:=FillDetailLpcDevice(TmpDevicesStringList.Text, PciSlot, 'lpc');
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('LPC'), 'device : '+LPCDevice.device);
-   GlobalNode.Data:=LPCDevice;
-   GlobalNode.ImageIndex:=8;
-   GlobalNode.SelectedIndex:=8;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('LPC'), 'device : '+LPCDevice.device);
+   DeviceNode.Data:=LPCDevice;
+   DeviceNode.ImageIndex:=8;
+   DeviceNode.SelectedIndex:=8;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+LPCDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+LPCDevice.pci);
 
    FormLpcDevice.Hide;
 
@@ -2899,6 +2971,9 @@ begin
  end
  else if (FormLpcDevice.FormAction = 'Update') and FormLpcDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   LPCDevice := TLPCDeviceClass(DeviceNode.Data);
+
    PciSlot:=LPCDevice.pci;
 
    if GetOsreldate.ToInt64 < 1500023 then
@@ -2992,6 +3067,8 @@ end;
 procedure TFormBhyveManager.SaveNetworkDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  NetworkDevice : TNetworkDeviceClass;
 begin
  if (FormNetworkDevice.FormAction = 'Add') and FormNetworkDevice.FormValidate() then
  begin
@@ -3004,12 +3081,12 @@ begin
 
    NetworkDevice:=FillDetailNetworkDevice(TmpDevicesStringList.Text, PciSlot, FormNetworkDevice.ComboBoxDevice.Text);
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Network'), 'device : '+NetworkDevice.device);
-   GlobalNode.Data:=NetworkDevice;
-   GlobalNode.ImageIndex:=9;
-   GlobalNode.SelectedIndex:=9;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Network'), 'device : '+NetworkDevice.device);
+   DeviceNode.Data:=NetworkDevice;
+   DeviceNode.ImageIndex:=9;
+   DeviceNode.SelectedIndex:=9;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+NetworkDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+NetworkDevice.pci);
 
    FormNetworkDevice.Hide;
 
@@ -3017,6 +3094,9 @@ begin
  end
  else if (FormNetworkDevice.FormAction = 'Update') and FormNetworkDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   NetworkDevice := TNetworkDeviceClass(DeviceNode.Data);
+
    PciSlot:=NetworkDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormNetworkDevice.ComboBoxDevice.Text;
@@ -3055,6 +3135,8 @@ end;
 procedure TFormBhyveManager.SavePassthruDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  PassthruDevice : TPassthruDeviceClass;
 begin
  if (FormPassthruDevice.FormAction = 'Add') and FormPassthruDevice.FormValidate() then
  begin
@@ -3066,12 +3148,12 @@ begin
 
    PassthruDevice:=FillDetailPassthruDevice(TmpDevicesStringList.Text, PciSlot, 'passthru');
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Passthru'), 'device : '+PassthruDevice.device+'-'+PassthruDevice.pptdev);
-   GlobalNode.Data:=PassthruDevice;
-   GlobalNode.ImageIndex:=11;
-   GlobalNode.SelectedIndex:=11;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Passthru'), 'device : '+PassthruDevice.device+'-'+PassthruDevice.pptdev);
+   DeviceNode.Data:=PassthruDevice;
+   DeviceNode.ImageIndex:=11;
+   DeviceNode.SelectedIndex:=11;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+PassthruDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+PassthruDevice.pci);
 
    FormPassthruDevice.Hide;
 
@@ -3079,6 +3161,9 @@ begin
  end
  else if (FormPassthruDevice.FormAction = 'Update') and FormPassthruDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   PassthruDevice := TPassthruDeviceClass(DeviceNode.Data);
+
    PciSlot:=PassthruDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.pptdev']:=FormPassthruDevice.ComboBoxDevice.Text;
@@ -3114,6 +3199,8 @@ end;
 procedure TFormBhyveManager.SaveShareFolderDevice(Sender: TObject);
 var
   PciSlot : String;
+  DeviceNode : TTreeNode;
+  ShareFolderDevice : TShareFolderDeviceClass;
 begin
  if (FormShareFolderDevice.FormAction = 'Add') and FormShareFolderDevice.FormValidate() then
  begin
@@ -3126,12 +3213,12 @@ begin
 
    ShareFolderDevice:=FillDetailShareFolderDevice(TmpDevicesStringList.Text, PciSlot, FormShareFolderDevice.ComboBoxDevice.Text);
 
-   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Shared folders'), 'device : '+ShareFolderDevice.device);
-   GlobalNode.Data:=ShareFolderDevice;
-   GlobalNode.ImageIndex:=13;
-   GlobalNode.SelectedIndex:=13;
+   DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Shared folders'), 'device : '+ShareFolderDevice.device);
+   DeviceNode.Data:=ShareFolderDevice;
+   DeviceNode.ImageIndex:=13;
+   DeviceNode.SelectedIndex:=13;
 
-   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+ShareFolderDevice.pci);
+   DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+ShareFolderDevice.pci);
 
    FormShareFolderDevice.Hide;
 
@@ -3139,6 +3226,9 @@ begin
  end
  else if (FormShareFolderDevice.FormAction = 'Update') and FormShareFolderDevice.FormValidate() then
  begin
+   DeviceNode := DeviceSettingsTreeView.Selected;
+   ShareFolderDevice := TShareFolderDeviceClass(DeviceNode.Data);
+
    PciSlot:=ShareFolderDevice.pci;
 
    TmpDevicesStringList.Values['pci.'+PciSlot+'.device']:=FormShareFolderDevice.ComboBoxDevice.Text;
@@ -3179,6 +3269,10 @@ var
   StorageSize : String;
   VmName : String;
   i : Integer;
+  DeviceNode : TTreeNode;
+  StorageAhciDevice : TStorageAhciDeviceClass;
+  StorageVirtioBlkDevice : TStorageVirtioBlkDeviceClass;
+  StorageNvmeDevice : TStorageNvmeDeviceClass;
 begin
   StoragePath:=FormStorageDevice.FileNameEditStoragePath.FileName;
   StorageSize:=FormStorageDevice.SpinEditExDiskSize.Text;
@@ -3209,13 +3303,13 @@ begin
             StorageAhciDevice.storage_size:='0G';
             StorageAhciDevice.storage_type:='image file';
 
-            GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageAhciDevice.device+'-'+StorageAhciDevice.device_type);
-            GlobalNode.Data:=StorageAhciDevice;
-            GlobalNode.ImageIndex:=2;
-            GlobalNode.SelectedIndex:=2;
+            DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageAhciDevice.device+'-'+StorageAhciDevice.device_type);
+            DeviceNode.Data:=StorageAhciDevice;
+            DeviceNode.ImageIndex:=2;
+            DeviceNode.SelectedIndex:=2;
 
-            DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageAhciDevice.pci);
-            DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(StorageAhciDevice.port));
+            DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+StorageAhciDevice.pci);
+            DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'port : '+IntToStr(StorageAhciDevice.port));
 
             FormStorageDevice.Hide;
 
@@ -3254,13 +3348,13 @@ begin
                 'zfs volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , False);
             end;
 
-            GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageAhciDevice.device+'-'+StorageAhciDevice.device_type);
-            GlobalNode.Data:=StorageAhciDevice;
-            GlobalNode.ImageIndex:=5;
-            GlobalNode.SelectedIndex:=5;
+            DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageAhciDevice.device+'-'+StorageAhciDevice.device_type);
+            DeviceNode.Data:=StorageAhciDevice;
+            DeviceNode.ImageIndex:=5;
+            DeviceNode.SelectedIndex:=5;
 
-            DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageAhciDevice.pci);
-            DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(StorageAhciDevice.port));
+            DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+StorageAhciDevice.pci);
+            DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'port : '+IntToStr(StorageAhciDevice.port));
 
             FormStorageDevice.Hide;
 
@@ -3309,12 +3403,12 @@ begin
                 'zfs volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , False);
             end;
 
-            GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageNvmeDevice.device);
-            GlobalNode.Data:=StorageNvmeDevice;
-            GlobalNode.ImageIndex:=10;
-            GlobalNode.SelectedIndex:=10;
+            DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageNvmeDevice.device);
+            DeviceNode.Data:=StorageNvmeDevice;
+            DeviceNode.ImageIndex:=10;
+            DeviceNode.SelectedIndex:=10;
 
-            DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageNvmeDevice.pci);
+            DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+StorageNvmeDevice.pci);
 
             FormStorageDevice.Hide;
 
@@ -3348,12 +3442,12 @@ begin
                 'zfs volume': ZfsCreateZvolHelper(VmName, ExtractFileName(StoragePath), StorageSize+'G' , False);
             end;
 
-            GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageVirtioBlkDevice.device);
-            GlobalNode.Data:=StorageVirtioBlkDevice;
-            GlobalNode.ImageIndex:=5;
-            GlobalNode.SelectedIndex:=5;
+            DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageVirtioBlkDevice.device);
+            DeviceNode.Data:=StorageVirtioBlkDevice;
+            DeviceNode.ImageIndex:=5;
+            DeviceNode.SelectedIndex:=5;
 
-            DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageVirtioBlkDevice.pci);
+            DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+StorageVirtioBlkDevice.pci);
 
             FormStorageDevice.Hide;
 
@@ -3366,6 +3460,9 @@ begin
         case FormStorageDevice.ComboBoxStorageDevice.Text of
             'ahci-cd':
               begin
+                DeviceNode := DeviceSettingsTreeView.Selected;
+                StorageAhciDevice := TStorageAhciDeviceClass(DeviceNode.Data);
+
                 PciSlot:=StorageAhciDevice.pci;
 
                 for i:=TmpDevicesStringList.Count-1 downto 0 do
@@ -3400,6 +3497,9 @@ begin
               end;
             'ahci-hd':
               begin
+                DeviceNode := DeviceSettingsTreeView.Selected;
+                StorageAhciDevice := TStorageAhciDeviceClass(DeviceNode.Data);
+
                 PciSlot:=StorageAhciDevice.pci;
 
                 for i:=TmpDevicesStringList.Count-1 downto 0 do
@@ -3450,6 +3550,9 @@ begin
               end;
             'nvme':
               begin
+                DeviceNode := DeviceSettingsTreeView.Selected;
+                StorageNvmeDevice := TStorageNvmeDeviceClass(DeviceNode.Data);
+
                 PciSlot:=StorageNvmeDevice.pci;
 
                 for i:=TmpDevicesStringList.Count-1 downto 0 do
@@ -3503,6 +3606,9 @@ begin
               end;
             'virtio-blk':
               begin
+                DeviceNode := DeviceSettingsTreeView.Selected;
+                StorageVirtioBlkDevice := TStorageVirtioBlkDeviceClass(DeviceNode.Data);
+
                 PciSlot:=StorageVirtioBlkDevice.pci;
 
                 for i:=TmpDevicesStringList.Count-1 downto 0 do
@@ -3573,6 +3679,10 @@ var
 begin
   if FormVmCreate.FormValidate() then
   begin
+    SeedImageConfig:=Nil;
+    NewBhyveConfig:=Nil;
+    NewVMConfig:=Nil;
+
     try
       FormVmCreate.StatusBarVmCreate.Font.Color:=clTeal;
       FormVmCreate.StatusBarVmCreate.SimpleText:=Format(vm_try_status, [FormVmCreate.EditVmName.Text]);
@@ -3580,9 +3690,8 @@ begin
 
       Application.ProcessMessages;
 
-      NewBhyveConfig:=TStringList.Create;
       SeedImageConfig:=TStringList.Create;
-      NewVMConfig:=Nil;
+      NewBhyveConfig:=TStringList.Create;
 
       IpAddress:=EmptyStr;
       Ip6Address:=EmptyStr;
@@ -3612,14 +3721,14 @@ begin
       end
       else
       begin
-        if not CreateDirectoryHelper(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName()) then
+        if not CreateDirectoryHelper(VmPath+'/'+FormVmCreate.EditVmName.Text, GetCurrentUserName(), BHYVEMGRD_GROUP, '750') then
         begin
           DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(debugln_directory_status, [FormVmCreate.EditVmName.Text, VmPath+'/'+FormVmCreate.EditVmName.Text]));
           Exit;
         end;
       end;
 
-      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf', GetCurrentUserName());
+      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf', GetCurrentUserName(), BHYVEMGRD_GROUP, '640');
       NewVMConfig:=ConfigurationClass.Create(FormVmCreate.EditVmFolderPath.Text+'/'+FormVmCreate.EditVmName.Text+'.conf');
 
       Uuid:=GenerateUuid();
@@ -3758,7 +3867,7 @@ begin
 
         if FormVmCreate.CheckBoxImageMinimal.Checked then
         begin
-          CreateDirectoryHelper(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
+          CreateDirectoryHelper(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
           SeedImageConfig.LoadFromFile(DatadirPath+'templates/user-data');
 
           if FormVmCreate.CheckBoxImageUseSudo.Checked or FormVmCreate.CheckBoxImageUseDoas.Checked then
@@ -3850,7 +3959,7 @@ begin
 
         if FormVmCreate.CheckBoxImageFiles.Checked then
         begin
-          CreateDirectoryHelper(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName());
+          CreateDirectoryHelper(FormVmCreate.EditVmFolderPath.Text+'/cloud-data', GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
 
           if FileExists(FormVmCreate.FileNameEditMetaData.FileName) then
           begin
@@ -3936,7 +4045,7 @@ begin
 
       NewBhyveConfig.Sorted:=True;
 
-      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf', GetCurrentUserName());
+      CreateFile(FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf', GetCurrentUserName(), BHYVEMGRD_GROUP, '640');
       NewBhyveConfig.SaveToFile(FormVmCreate.EditVmFolderPath.Text+'/bhyve_config.conf');
 
       NewVMConfig.SetOption('general','name', FormVmCreate.EditVmName.Text);
@@ -3957,8 +4066,11 @@ begin
 
       if UseDnsmasq = 'yes' then
       begin
-        if not DirectoryExists(DNSMASQDIRECTORY_PATH) then
-          CreateDirectoryHelper(DNSMASQDIRECTORY_PATH, 'root', '770');
+        if not DirectoryExists(DNSMASQDHCP_PATH) then
+          CreateDirectoryHelper(DNSMASQDHCP_PATH, 'root', BHYVEMGRD_GROUP, '775');
+
+        if not DirectoryExists(DNSMASQHOST_PATH) then
+          CreateDirectoryHelper(DNSMASQHOST_PATH, 'root', BHYVEMGRD_GROUP, '775');
 
         if FormVmCreate.CheckBoxUseStaticIpv4.Checked then
           AddDnsmasqHostRecordEntry(FormVmCreate.EditVmName.Text, IpAddress, MacAddress)
@@ -4025,32 +4137,35 @@ end;
   form is opened to do some changes.
 }
 procedure TFormBhyveManager.EditVirtualMachineInfo(Sender: TObject);
+var
+  VirtualMachineNode : TVirtualMachineClass;
+  Node : TTreeNode;
 begin
   if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
   begin
-    GlobalNode:=VirtualMachinesTreeView.Selected;
-    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
+    Node:=VirtualMachinesTreeView.Selected;
+    VirtualMachineNode := TVirtualMachineClass(Node.Data);
 
     FormVmInfo.BitBtnSave.OnClick:=@SaveVirtualMachineInfoClick;
     FormVmInfo.Visible:=True;
     FormVmInfo.ComboBoxVmType.Clear;
     FillComboSystemType(FormVmInfo.ComboBoxVmType);
-    FormVmInfo.ComboBoxVmType.ItemIndex:=FormVmInfo.ComboBoxVmType.Items.IndexOf(VirtualMachine.system_type);
+    FormVmInfo.ComboBoxVmType.ItemIndex:=FormVmInfo.ComboBoxVmType.Items.IndexOf(VirtualMachineNode.system_type);
     FormVmInfo.ComboBoxVmVersion.Clear;
     FillComboSystemVersion(FormVmInfo.ComboBoxVmVersion, FormVmInfo.ComboBoxVmType.Text);
-    FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachine.system_version);
-    FormVmInfo.EditVmName.Text:=VirtualMachine.name;
-    FormVmInfo.EditVmDescription.Text:=VirtualMachine.description;
-    FormVmInfo.EditVmIpv4Address.Text:=VirtualMachine.ipaddress;
-    FormVmInfo.EditVmIpv6Address.Text:=VirtualMachine.ip6address;
-    FormVmInfo.Ip4Address:=VirtualMachine.ipaddress;
+    FormVmInfo.ComboBoxVmVersion.ItemIndex:=FormVmInfo.ComboBoxVmVersion.Items.IndexOf(VirtualMachineNode.system_version);
+    FormVmInfo.EditVmName.Text:=VirtualMachineNode.name;
+    FormVmInfo.EditVmDescription.Text:=VirtualMachineNode.description;
+    FormVmInfo.EditVmIpv4Address.Text:=VirtualMachineNode.ipaddress;
+    FormVmInfo.EditVmIpv6Address.Text:=VirtualMachineNode.ip6address;
+    FormVmInfo.Ip4Address:=VirtualMachineNode.ipaddress;
 
     if Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data) then
       FormVmInfo.MacAddress:=TNetworkDeviceClass(DeviceSettingsTreeView.Items.FindTopLvlNode('Network').Items[0].Data).mac
     else
       FormVmInfo.MacAddress:=EmptyStr;
 
-    if VirtualMachine.rdp = StrToBool('True') then
+    if VirtualMachineNode.rdp = StrToBool('True') then
       FormVmInfo.CheckBoxRDP.Checked:=True
     else
       FormVmInfo.CheckBoxRDP.Checked:=False;
@@ -4059,7 +4174,7 @@ begin
     begin
       FormVmInfo.CheckBoxIpv6.Enabled:=True;
 
-      if VirtualMachine.ipv6 = StrToBool('True') then
+      if VirtualMachineNode.ipv6 = StrToBool('True') then
         FormVmInfo.CheckBoxIpv6.Checked:=True
       else
         FormVmInfo.CheckBoxIpv6.Checked:=False;
@@ -4075,12 +4190,12 @@ begin
       FormVmInfo.CheckBoxNat.Enabled:=True;
       FormVmInfo.CheckBoxPf.Enabled:=True;
 
-      if VirtualMachine.nat = StrToBool('True') then
+      if VirtualMachineNode.nat = StrToBool('True') then
         FormVmInfo.CheckBoxNat.Checked:=True
       else
         FormVmInfo.CheckBoxNat.Checked:=False;
 
-      if VirtualMachine.pf = StrToBool('True') then
+      if VirtualMachineNode.pf = StrToBool('True') then
         FormVmInfo.CheckBoxPf.Checked:=True
       else
         FormVmInfo.CheckBoxPf.Checked:=False;
@@ -4099,16 +4214,19 @@ end;
   form is opened to do some changes.
 }
 procedure TFormBhyveManager.PacketFilterRulesVm(Sender: TObject);
+var
+  VirtualMachineNode : TVirtualMachineClass;
+  Node : TTreeNode;
 begin
   if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
   begin
-    GlobalNode:=VirtualMachinesTreeView.Selected;
-    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
+    Node:=VirtualMachinesTreeView.Selected;
+    VirtualMachineNode := TVirtualMachineClass(Node.Data);
 
     FormPacketFilterRules.Visible:=True;
-    FormPacketFilterRules.VmIp4Adress:=VirtualMachine.ipaddress;
-    FormPacketFilterRules.VmIp6Adress:=VirtualMachine.ip6address;
-    FormPacketFilterRules.VmName:=VirtualMachine.name;
+    FormPacketFilterRules.VmIp4Adress:=VirtualMachineNode.ipaddress;
+    FormPacketFilterRules.VmIp6Adress:=VirtualMachineNode.ip6address;
+    FormPacketFilterRules.VmName:=VirtualMachineNode.name;
     FormPacketFilterRules.LoadDefaultValues();
   end;
 end;
@@ -4219,9 +4337,15 @@ end;
   bhyve_config.conf file data.
 }
 procedure TFormBhyveManager.SpeedButtonReloadVmConfigClick(Sender: TObject);
+var
+  VirtualMachineNode : TVirtualMachineClass;
+  Node : TTreeNode;
 begin
+  Node:=VirtualMachinesTreeView.Selected;
+  VirtualMachineNode:=TVirtualMachineClass(Node.Data);
+
   ResetTreeView(DeviceSettingsTreeView);
-  LoadDeviceSettingsValues(VirtualMachine.name);
+  LoadDeviceSettingsValues(VirtualMachineNode.name);
 end;
 
 {
@@ -4233,82 +4357,97 @@ procedure TFormBhyveManager.SpeedButtonRemoveVmClick(Sender: TObject);
 var
   Status : Boolean;
   VmName : String;
-  ParentNode : String;
+  Node: TTreeNode;
+  ParentName : String;
+  ParentNode: TTreeNode;
+  VirtualMachineNode : TVirtualMachineClass;
   Req : TJSONObject;
 begin
-  Status:=False;
+  Status := False;
 
-  if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) and not (CheckVmRunning(VirtualMachine.name) > 0) then
+  Node := VirtualMachinesTreeView.Selected;
+
+  if not Assigned(Node) then
+    Exit;
+
+  if Node.Level <> 1 then
+    Exit;
+
+  VirtualMachineNode := TVirtualMachineClass(Node.Data);
+
+  if not Assigned(VirtualMachineNode) then
+    Exit;
+
+  if CheckVmRunning(VirtualMachineNode.Name) > 0 then
+    Exit;
+
+  VmName := VirtualMachineNode.Name;
+
+  if MessageDialog(mtConfirmation, Format(vm_remove_notice, [VmName])) <> mrYes then
+    Exit;
+
+  if UseZfs = 'yes' then
   begin
-    GlobalNode:=VirtualMachinesTreeView.Selected;
-    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
-
-    VmName:=VirtualMachine.name;
-
-    if (MessageDialog(mtConfirmation, Format(vm_remove_notice, [VmName])) = mrYes) then
-    begin
-      if UseZfs = 'yes' then
-      begin
-        if ZfsDestroyHelper(VmName, 'vm', EmptyStr) then
-          Status:=True
-        else
-        begin
-          if (MessageDialog(mtWarning, Format(vm_remove_force, [VmName])) = mrYes) then
-          begin
-            if ZfsDestroyHelper(VmName, 'vm', EmptyStr, True, True) then
-              Status:=True;
-          end;
-        end;
-      end
-      else
-      begin
-        if RemoveDirectoryHelper(VmName, 'vm', True) then
-          Status:=True;
-      end;
-    end;
-
-    if Status then
-    begin
-      if UseDnsmasq = 'yes' then
-        RemoveDnsmasqEntry(VmName);
-
-      ParentNode:=VirtualMachinesTreeView.Selected.Parent.Text;
-
-      TObject(VirtualMachinesTreeView.Selected.Data).Free;
-      VirtualMachinesTreeView.Selected.Data:=Nil;
-      VirtualMachinesTreeView.Selected.Delete;
-
-      if VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Count = 0 then
-      begin
-        VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Data:=Nil;
-        VirtualMachinesTreeView.Items.FindTopLvlNode(ParentNode).Delete;
-      end;
-
-      Req := TJSONObject.Create;
-      try
-        Req.Add('type', 'type');
-        Req.Add('id', GenerateUuid());
-        Req.Add('method', 'vm.delete');
-        Req.Add('params', TJSONObject.Create(['vmname', VmName]));
-
-        SocketThread.SendJSON(Req.AsJSON);
-      finally
-        Req.Free;
-      end;
-
-      StatusBarBhyveManager.Font.Color:=clTeal;
-      StatusBarBhyveManager.SimpleText:=Format(vm_remove_status, [VmName]);
-
-      MessageDialog(mtInformation, Format(vm_remove_status, [VmName]));
-
-      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_remove_status, [VmName]));
-    end
+    if ZfsDestroyHelper(VmName, 'vm', EmptyStr) then
+      Status := True
     else
     begin
-      StatusBarBhyveManager.Font.Color:=clRed;
-      StatusBarBhyveManager.SimpleText:=Format(vm_notremove_status, [VmName]);
+      if MessageDialog(mtWarning, Format(vm_remove_force, [VmName])) = mrYes then
+      begin
+        if ZfsDestroyHelper(VmName, 'vm', EmptyStr, True, True) then
+          Status := True;
+      end;
     end;
+  end
+  else
+  begin
+    if RemoveDirectoryHelper(VmName, 'vm', True) then
+      Status := True;
   end;
+
+  if not Status then
+  begin
+    StatusBarBhyveManager.Font.Color := clRed;
+    StatusBarBhyveManager.SimpleText := Format(vm_notremove_status, [VmName]);
+    Exit;
+  end;
+
+  if UseDnsmasq = 'yes' then
+    RemoveDnsmasqEntry(VmName);
+
+  if Assigned(Node.Parent) then
+    ParentName := Node.Parent.Text
+  else
+    ParentName := EmptyStr;
+
+  Node.Delete;
+
+  if ParentName <> EmptyStr then
+  begin
+    ParentNode := VirtualMachinesTreeView.Items.FindTopLvlNode(ParentName);
+
+    if Assigned(ParentNode) and (ParentNode.Count = 0) then
+      ParentNode.Delete;
+  end;
+
+  Req := TJSONObject.Create;
+  try
+    Req.Add('type', 'type');
+    Req.Add('id', GenerateUuid());
+    Req.Add('method', 'vm.delete');
+    Req.Add('params', TJSONObject.Create(['vmname', VmName]));
+
+    SocketThread.SendJSON(Req.AsJSON);
+  finally
+    Req.Free;
+  end;
+
+  StatusBarBhyveManager.Font.Color := clTeal;
+  StatusBarBhyveManager.SimpleText := Format(vm_remove_status, [VmName]);
+
+  MessageDialog(mtInformation, Format(vm_remove_status, [VmName]));
+
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now) +'] : ' +Format(vm_remove_status, [VmName]));
 end;
 
 {
@@ -4323,25 +4462,26 @@ var
   IpAddress : String;
   Ip6Address : String;
   VmConfig : ConfigurationClass;
+  VirtualMachineNode : TVirtualMachineClass;
   Req : TJSONObject;
+  NetworkDevice : TNetworkDeviceClass;
 begin
-  GlobalNode:=VirtualMachinesTreeView.Selected;
-
-  VirtualMachine:=TVirtualMachineClass(GlobalNode.Data);
+  Node:=VirtualMachinesTreeView.Selected;
+  VirtualMachineNode:=TVirtualMachineClass(Node.Data);
 
   if DeviceSettingsTreeView.Items.TopLvlItems[1].Count > 0 then
   begin
-    CreateDirectoryHelper(VmPath+'/'+VirtualMachine.name+'/vtcon', GetCurrentUserName());
+    CreateDirectoryHelper(VmPath+'/'+VirtualMachineNode.name+'/vtcon', GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
   end;
 
   { Remove this condition once bhyve is updated on FreeBSD 14.x }
   if GetOsreldate.ToInt64 >= 1403000 then
   begin
-    if (CheckTpmSocketRunning(VirtualMachine.name) = -1) and (Assigned(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM')))
+    if (CheckTpmSocketRunning(VirtualMachineNode.name) = -1) and (Assigned(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM')))
        and (ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) = 'swtpm') then
     begin
       if not (DirectoryExists(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)))) then
-        CreateDirectoryHelper(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)), GetCurrentUserName(), '750');
+        CreateDirectoryHelper(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)), GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
 
       CreateTpmSocket(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)));
     end;
@@ -4352,7 +4492,7 @@ begin
     Req.Add('type', 'event');
     Req.Add('id', GenerateUuid());
     Req.Add('method', 'vm.start');
-    Req.Add('params', TJSONObject.Create(['vmname', VirtualMachine.name]));
+    Req.Add('params', TJSONObject.Create(['vmname', VirtualMachineNode.name]));
 
     SocketThread.SendJSON(Req.AsJSON);
   finally
@@ -4361,9 +4501,9 @@ begin
 
   Sleep(100);
 
-  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_start_status, [VirtualMachine.name]));
+  DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_start_status, [VirtualMachineNode.name]));
 
-  if CheckVmRunning(VirtualMachine.name) > 0 then
+  if CheckVmRunning(VirtualMachineNode.name) > 0 then
   begin
     if (Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Display')))
        and (DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Count = 1) then
@@ -4378,27 +4518,27 @@ begin
         Node:=DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[i];
         NetworkDevice:=TNetworkDeviceClass(Node.Data);
 
-        CreateNetworkDeviceHelper(NetworkDevice.backend, VirtualMachine.name, '');
+        CreateNetworkDeviceHelper(NetworkDevice.backend, VirtualMachineNode.name, '');
 
         if i=0 then
         begin
           AttachDeviceToBridgeHelper(BridgeInterface, NetworkDevice.backend);
 
-          if VirtualMachine.nat then
+          if VirtualMachineNode.nat then
           begin
-            PfLoadRulesHelper(VirtualMachine.name, 'nat');
+            PfLoadRulesHelper(VirtualMachineNode.name, 'nat');
           end;
 
-          if VirtualMachine.pf then
+          if VirtualMachineNode.pf then
           begin
-            PfLoadRulesHelper(VirtualMachine.name, 'rdr');
-            PfLoadRulesHelper(VirtualMachine.name, 'pass-in');
-            PfLoadRulesHelper(VirtualMachine.name, 'pass-out');
+            PfLoadRulesHelper(VirtualMachineNode.name, 'rdr');
+            PfLoadRulesHelper(VirtualMachineNode.name, 'pass-in');
+            PfLoadRulesHelper(VirtualMachineNode.name, 'pass-out');
           end;
 
           if UseDnsmasq = 'yes' then
           begin
-            VmConfig:=ConfigurationClass.Create(VmPath+'/'+VirtualMachine.name+'/'+VirtualMachine.name+'.conf');
+            VmConfig:=ConfigurationClass.Create(VmPath+'/'+VirtualMachineNode.name+'/'+VirtualMachineNode.name+'.conf');
 
             IpAddress:=VmConfig.GetOption('general', 'ipaddress', '');
             Ip6Address:=VmConfig.GetOption('general', 'ip6address', '');
@@ -4407,16 +4547,16 @@ begin
             begin
               IpAddress:=GetNewIpAddress(GetSubnet);
               VmConfig.SetOption('general','ipaddress', IpAddress );
-              AddDnsmasqDhcpHostEntry(VirtualMachine.name, IpAddress, NetworkDevice.mac);
+              AddDnsmasqDhcpHostEntry(VirtualMachineNode.name, IpAddress, NetworkDevice.mac);
               RestartServiceHelper('dnsmasq');
             end;
 
-            if (UseIpv6 = 'yes') and (Virtualmachine.ipv6 = True) and
+            if (UseIpv6 = 'yes') and (VirtualMachineNode.ipv6 = True) and
                ((Ip6Address.IsEmpty) or not (Ip6Address = GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac))) then
             begin
               Ip6Address:=GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac );
               VmConfig.SetOption('general','ip6address', Ip6Address );
-              AddDnsmasqHostRecordEntry(VirtualMachine.name, Ip6Address, NetworkDevice.mac);
+              AddDnsmasqHostRecordEntry(VirtualMachineNode.name, Ip6Address, NetworkDevice.mac);
               RestartServiceHelper('dnsmasq');
             end;
 
@@ -4424,10 +4564,10 @@ begin
           end;
         end;
 
-        if FileExists(VmPath+'/'+VirtualMachine.name+'/vnc.sock') then
+        if FileExists(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock') then
         begin
-          ChmodHelper(VmPath+'/'+VirtualMachine.name+'/vnc.sock');
-          ChownHelper(VmPath+'/'+VirtualMachine.name+'/vnc.sock', GetCurrentUserName());
+          ChmodHelper(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock');
+          ChownHelper(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock', GetCurrentUserName());
         end;
       end;
     end;
@@ -4439,7 +4579,7 @@ begin
     SpeedButtonReloadVmConfig.Enabled:=False;
 
     StatusBarBhyveManager.Font.Color := clTeal;
-    StatusBarBhyveManager.SimpleText := Format(vm_start_status, [VirtualMachine.name]);
+    StatusBarBhyveManager.SimpleText := Format(vm_start_status, [VirtualMachineNode.name]);
   end
   else
   begin
@@ -4459,11 +4599,13 @@ end;
 procedure TFormBhyveManager.SpeedButtonStopVmClick(Sender: TObject);
 var
   PidNumber : Integer;
+  Node : TTreeNode;
+  VirtualMachineNode : TVirtualMachineClass;
 begin
-  GlobalNode:=VirtualMachinesTreeView.Selected;
-  VirtualMachine:=TVirtualMachineClass(GlobalNode.Data);
+  Node:=VirtualMachinesTreeView.Selected;
+  VirtualMachineNode:=TVirtualMachineClass(Node.Data);
 
-  PidNumber:=CheckVmRunning(VirtualMachine.name);
+  PidNumber:=CheckVmRunning(VirtualMachineNode.name);
 
   if PidNumber > 0 then
   begin
@@ -4478,6 +4620,7 @@ end;
 procedure TFormBhyveManager.SpeedButtonVncVmClick(Sender: TObject);
 var
   DisplayNode : TTreeNode;
+  DisplayDevice : TDisplayDeviceClass;
 begin
   if (Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Display')))
      and (DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Count = 1) then
@@ -4494,6 +4637,9 @@ end;
   event is generated.
 }
 procedure TFormBhyveManager.VirtualMachinesTreeViewDblClick(Sender: TObject);
+var
+  Node : TTreeNode;
+  VirtualMachineNode : TVirtualMachineClass;
 begin
   if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
   begin
@@ -4505,11 +4651,12 @@ begin
     LoadGlobalSettingsValues(VirtualMachinesTreeView.Selected.Text);
     LoadDeviceSettingsValues(VirtualMachinesTreeView.Selected.Text);
 
-    GlobalNode:=VirtualMachinesTreeView.Selected;
-    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
-    EditDescription.Text:=VirtualMachine.description;
-    EditSystemType.Text:=VirtualMachine.system_type;
-    EditSystemVersion.Text:=VirtualMachine.system_version;
+    Node:=VirtualMachinesTreeView.Selected;
+    VirtualMachineNode := TVirtualMachineClass(Node.Data);
+
+    EditDescription.Text:=VirtualMachineNode.description;
+    EditSystemType.Text:=VirtualMachineNode.system_type;
+    EditSystemVersion.Text:=VirtualMachineNode.system_version;
   end;
 end;
 
@@ -4520,9 +4667,10 @@ end;
 procedure TFormBhyveManager.DeviceSettingsTreeViewDeletion(Sender: TObject;
   Node: TTreeNode);
 begin
-  if assigned(TObject(Node.Data)) then
+  if Assigned(TObject(Node.Data)) then
   begin
     TObject(Node.Data).Free;
+    Node.Data:=Nil;
   end;
 end;
 
@@ -4533,9 +4681,10 @@ end;
 procedure TFormBhyveManager.VirtualMachinesTreeViewDeletion(Sender: TObject;
   Node: TTreeNode);
 begin
-  if assigned(TObject(Node.Data)) then
+  if Assigned(Node.Data) then
   begin
-    TObject(Node.Data).Free;
+    TVirtualMachineClass(Node.Data).Free;
+    Node.Data:=Nil;
   end;
 end;
 
@@ -4608,6 +4757,9 @@ end;
 }
 procedure TFormBhyveManager.VirtualMachinesTreeViewSelectionChanged(
   Sender: TObject);
+var
+  Node : TTreeNode;
+  VirtualMachineNode : TVirtualMachineClass;
 begin
   if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
   begin
@@ -4617,18 +4769,18 @@ begin
     FillGlobalCategoryList();
     FillGlobalCategoryDetailList();
 
-    GlobalNode:=VirtualMachinesTreeView.Selected;
-    VirtualMachine := TVirtualMachineClass(GlobalNode.Data);
+    Node:=VirtualMachinesTreeView.Selected;
+    VirtualMachineNode := TVirtualMachineClass(Node.Data);
 
-    LoadGlobalSettingsValues(VirtualMachine.name);
-    LoadDeviceSettingsValues(VirtualMachine.name);
+    LoadGlobalSettingsValues(VirtualMachineNode.name);
+    LoadDeviceSettingsValues(VirtualMachineNode.name); //aqui tambien error
 
-    EditDescription.Text:=VirtualMachine.description;
-    EditSystemType.Text:=VirtualMachine.system_type;
-    EditSystemVersion.Text:=VirtualMachine.system_version;
+    EditDescription.Text:=VirtualMachineNode.description;
+    EditSystemType.Text:=VirtualMachineNode.system_type;
+    EditSystemVersion.Text:=VirtualMachineNode.system_version;
 
     StatusBarBhyveManager.Font.Color:=clTeal;
-    StatusBarBhyveManager.SimpleText:=virtual_machine+' : '+VirtualMachine.name;
+    StatusBarBhyveManager.SimpleText:=virtual_machine+' : '+VirtualMachineNode.name;
 
     SpeedButtonStartVm.Enabled:=True;
     SpeedButtonRemoveVm.Enabled:=True;
@@ -4636,7 +4788,7 @@ begin
     SpeedButtonStopVm.Enabled:=False;
     SpeedButtonReloadVmConfig.Enabled:=True;
 
-    if VirtualMachinesTreeView.Selected.Text = VirtualMachine.name + ' : Running' then
+    if VirtualMachinesTreeView.Selected.Text = VirtualMachineNode.name + ' : Running' then
     begin
       SpeedButtonStartVm.Enabled:=False;
       SpeedButtonStopVm.Enabled:=True;
@@ -4680,6 +4832,7 @@ function TFormBhyveManager.FillDetailAudioDevice(Details: String; pci: String;
   device: String): TAudioDeviceClass;
 var
   RegexObj: TRegExpr;
+  AudioDevice : TAudioDeviceClass;
 begin
   AudioDevice := TAudioDeviceClass.Create;
 
@@ -4712,6 +4865,7 @@ function TFormBhyveManager.FillDetailConsoleDevice(Details: String;
   pci: String; device: String; port : Integer): TSerialVirtioConsoleDeviceClass;
 var
   RegexObj: TRegExpr;
+  SerialVirtioConsoleDevice : TSerialVirtioConsoleDeviceClass;
 begin
   SerialVirtioConsoleDevice := TSerialVirtioConsoleDeviceClass.Create;
 
@@ -4744,6 +4898,7 @@ function TFormBhyveManager.FillDetailDisplayDevice(Details: String;
   pci: String; device: String): TDisplayDeviceClass;
 var
   RegexObj: TRegExpr;
+  DisplayDevice : TDisplayDeviceClass;
 begin
   DisplayDevice := TDisplayDeviceClass.Create;
 
@@ -4784,6 +4939,7 @@ function TFormBhyveManager.FillDetailHostbridgeDevice(Details: String;
   pci: String; device: String): THostbridgeDeviceClass;
 var
   RegexObj: TRegExpr;
+  HostBridgeDevice : THostbridgeDeviceClass;
 begin
   HostbridgeDevice := THostbridgeDeviceClass.Create;
 
@@ -4814,6 +4970,7 @@ function TFormBhyveManager.FillDetailInputDevice(Details: String; pci: String;
   device: String): TVirtioInputDeviceClass;
 var
   RegexObj: TRegExpr;
+  InputDevice : TVirtioInputDeviceClass;
 begin
   InputDevice := TVirtioInputDeviceClass.Create;
 
@@ -4844,6 +5001,7 @@ function TFormBhyveManager.FillDetailLpcDevice(Details: String; pci: String;
   device: String): TLPCDeviceClass;
 var
   RegexObj: TRegExpr;
+  LPCDevice : TLPCDeviceClass;
 begin
   LPCDevice := TLPCDeviceClass.Create;
 
@@ -4881,6 +5039,7 @@ function TFormBhyveManager.FillDetailNetworkDevice(Details: String;
   pci: String; device: String): TNetworkDeviceClass;
 var
   RegexObj: TRegExpr;
+  NetworkDevice : TNetworkDeviceClass;
 begin
   NetworkDevice := TNetworkDeviceClass.Create;
 
@@ -4919,6 +5078,7 @@ function TFormBhyveManager.FillDetailPassthruDevice(Details: String;
   pci: String; device: String): TPassthruDeviceClass;
 var
   RegexObj: TRegExpr;
+  PassthruDevice : TPassthruDeviceClass;
 begin
   PassthruDevice := TPassthruDeviceClass.Create;
 
@@ -4953,6 +5113,7 @@ function TFormBhyveManager.FillDetailRngDevice(Details: String; pci: String;
   device: String): TRNGDeviceClass;
 var
   RegexObj: TRegExpr;
+  RNGDevice : TRNGDeviceClass;
 begin
   RNGDevice := TRNGDeviceClass.Create;
 
@@ -4983,6 +5144,7 @@ function TFormBhyveManager.FillDetailShareFolderDevice(Details: String;
   pci: String; device: String): TShareFolderDeviceClass;
 var
   RegexObj: TRegExpr;
+  ShareFolderDevice : TShareFolderDeviceClass;
 begin
   ShareFolderDevice := TShareFolderDeviceClass.Create;
 
@@ -5016,6 +5178,7 @@ function TFormBhyveManager.FillDetailStorageAhciDevice(Details: String;
   pci: String; device: String; port: Integer): TStorageAhciDeviceClass;
 var
   RegexObj: TRegExpr;
+  StorageAhciDevice : TStorageAhciDeviceClass;
 begin
   StorageAhciDevice := TStorageAhciDeviceClass.Create;
 
@@ -5059,6 +5222,7 @@ function TFormBhyveManager.FillDetailStorageNvmeDevice(Details: String;
   pci: String; device: String): TStorageNvmeDeviceClass;
 var
   RegexObj: TRegExpr;
+  StorageNvmeDevice : TStorageNvmeDeviceClass;
 begin
   StorageNvmeDevice := TStorageNvmeDeviceClass.Create;
 
@@ -5103,6 +5267,7 @@ function TFormBhyveManager.FillDetailStorageVirtioBlkDevice(Details: String;
   pci: String; device: String): TStorageVirtioBlkDeviceClass;
 var
   RegexObj: TRegExpr;
+  StorageVirtioBlkDevice : TStorageVirtioBlkDeviceClass;
 begin
   StorageVirtioBlkDevice := TStorageVirtioBlkDeviceClass.Create;
 
@@ -5141,6 +5306,7 @@ function TFormBhyveManager.FillDetailUsbXhciDevice(Details: String;
   pci: String; device: String; slot: Integer): TUsbXhciDeviceClass;
 var
   RegexObj: TRegExpr;
+  UsbXhciDevice : TUsbXhciDeviceClass;
 begin
   UsbXhciDevice := TUsbXhciDeviceClass.Create;
 
@@ -5209,6 +5375,21 @@ var
   RegexObj1: TRegExpr;
   ImageIndex : Integer;
   i : Integer;
+  DeviceNode : TTreeNode;
+  AudioDevice: TAudioDeviceClass;
+  HostBridgeDevice: THostbridgeDeviceClass;
+  InputDevice: TVirtioInputDeviceClass;
+  DisplayDevice: TDisplayDeviceClass;
+  LPCDevice : TLPCDeviceClass;
+  NetworkDevice : TNetworkDeviceClass;
+  PassthruDevice : TPassthruDeviceClass;
+  RNGDevice : TRNGDeviceClass;
+  SerialVirtioConsoleDevice : TSerialVirtioConsoleDeviceClass;
+  ShareFolderDevice : TShareFolderDeviceClass;
+  StorageAhciDevice : TStorageAhciDeviceClass;
+  StorageVirtioBlkDevice : TStorageVirtioBlkDeviceClass;
+  StorageNvmeDevice : TStorageNvmeDeviceClass;
+  UsbXhciDevice : TUsbXhciDeviceClass;
 begin
   sl:=TStringList.Create;
   slf:=TStringList.Create;
@@ -5239,6 +5420,7 @@ begin
     TmpDevicesStringList.Text:=slf.Text;
 
     RegexObj.Expression := 'pci\.(\d+\.\d+\.\d+).device=(\S+)';
+
     if RegexObj.Exec(slf.Text) then
     begin
       repeat
@@ -5247,120 +5429,124 @@ begin
               begin
                 AudioDevice:=FillDetailAudioDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Audio'), 'device : '+AudioDevice.device);
-                GlobalNode.Data:=AudioDevice;
-                GlobalNode.ImageIndex:=1;
-                GlobalNode.SelectedIndex:=1;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Audio'), 'device : '+AudioDevice.device);
+                DeviceNode.Data:=AudioDevice;
+                DeviceNode.ImageIndex:=1;
+                DeviceNode.SelectedIndex:=1;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+AudioDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+AudioDevice.pci);
               end;
             'Console':
               begin
                 RegexObj1 := TRegExpr.Create;
-                RegexObj1.Expression := 'pci.'+RegexObj.Match[1]+'.port.(\d+).name=(\S+)';
 
-                if RegexObj1.Exec(slf.Text) then
-                begin
-                  repeat
-                   SerialVirtioConsoleDevice:=FillDetailConsoleDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2], StrToInt(RegexObj1.Match[1]));
-                   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Console'), 'device : '+SerialVirtioConsoleDevice.device);
-                   GlobalNode.Data:=SerialVirtioConsoleDevice;
-                   GlobalNode.ImageIndex:=3;
-                   GlobalNode.SelectedIndex:=3;
+                try
+                  RegexObj1.Expression := 'pci.'+RegexObj.Match[1]+'.port.(\d+).name=(\S+)';
 
-                   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+SerialVirtioConsoleDevice.pci);
-                   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(SerialVirtioConsoleDevice.port));
-                  until not RegexObj1.ExecNext;
+                  if RegexObj1.Exec(slf.Text) then
+                  begin
+                    repeat
+                     SerialVirtioConsoleDevice:=FillDetailConsoleDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2], StrToInt(RegexObj1.Match[1]));
+                     DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Console'), 'device : '+SerialVirtioConsoleDevice.device);
+                     DeviceNode.Data:=SerialVirtioConsoleDevice;
+                     DeviceNode.ImageIndex:=3;
+                     DeviceNode.SelectedIndex:=3;
+
+                     DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+SerialVirtioConsoleDevice.pci);
+                     DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'port : '+IntToStr(SerialVirtioConsoleDevice.port));
+                    until not RegexObj1.ExecNext;
+                  end;
+                finally
+                  RegexObj1.Free;
                 end;
-                RegexObj1.Free;
               end;
             'Hostbridge':
               begin
                 HostBridgeDevice:=FillDetailHostbridgeDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Hostbridge'), 'device : '+HostBridgeDevice.device);
-                GlobalNode.Data:=HostBridgeDevice;
-                GlobalNode.ImageIndex:=6;
-                GlobalNode.SelectedIndex:=6;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Hostbridge'), 'device : '+HostBridgeDevice.device);
+                DeviceNode.Data:=HostBridgeDevice;
+                DeviceNode.ImageIndex:=6;
+                DeviceNode.SelectedIndex:=6;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+HostBridgeDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+HostBridgeDevice.pci);
               end;
             'Input':
               begin
                 InputDevice:=FillDetailInputDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Input'), 'device : '+InputDevice.device);
-                GlobalNode.Data:=InputDevice;
-                GlobalNode.ImageIndex:=7;
-                GlobalNode.SelectedIndex:=7;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Input'), 'device : '+InputDevice.device);
+                DeviceNode.Data:=InputDevice;
+                DeviceNode.ImageIndex:=7;
+                DeviceNode.SelectedIndex:=7;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+InputDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+InputDevice.pci);
               end;
             'Display':
               begin
                 DisplayDevice:=FillDetailDisplayDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Display'), 'device : '+DisplayDevice.device);
-                GlobalNode.Data:=DisplayDevice;
-                GlobalNode.ImageIndex:=4;
-                GlobalNode.SelectedIndex:=4;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Display'), 'device : '+DisplayDevice.device);
+                DeviceNode.Data:=DisplayDevice;
+                DeviceNode.ImageIndex:=4;
+                DeviceNode.SelectedIndex:=4;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+DisplayDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+DisplayDevice.pci);
               end;
             'LPC':
               begin
                 LPCDevice:=FillDetailLpcDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('LPC'), 'device : '+LPCDevice.device);
-                GlobalNode.Data:=LPCDevice;
-                GlobalNode.ImageIndex:=8;
-                GlobalNode.SelectedIndex:=8;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('LPC'), 'device : '+LPCDevice.device);
+                DeviceNode.Data:=LPCDevice;
+                DeviceNode.ImageIndex:=8;
+                DeviceNode.SelectedIndex:=8;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+LPCDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+LPCDevice.pci);
               end;
             'Network':
               begin
                 NetworkDevice:=FillDetailNetworkDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Network'), 'device : '+NetworkDevice.device);
-                GlobalNode.Data:=NetworkDevice;
-                GlobalNode.ImageIndex:=9;
-                GlobalNode.SelectedIndex:=9;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Network'), 'device : '+NetworkDevice.device);
+                DeviceNode.Data:=NetworkDevice;
+                DeviceNode.ImageIndex:=9;
+                DeviceNode.SelectedIndex:=9;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+NetworkDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+NetworkDevice.pci);
               end;
             'Passthru':
               begin
                 PassthruDevice:=FillDetailPassthruDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Passthru'), 'device : '+PassthruDevice.device+'-'+PassthruDevice.pptdev);
-                GlobalNode.Data:=PassthruDevice;
-                GlobalNode.ImageIndex:=11;
-                GlobalNode.SelectedIndex:=11;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Passthru'), 'device : '+PassthruDevice.device+'-'+PassthruDevice.pptdev);
+                DeviceNode.Data:=PassthruDevice;
+                DeviceNode.ImageIndex:=11;
+                DeviceNode.SelectedIndex:=11;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+PassthruDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+PassthruDevice.pci);
               end;
             'RNG':
               begin
                 RNGDevice:=FillDetailRngDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('RNG'), 'device : '+RNGDevice.device);
-                GlobalNode.Data:=RNGDevice;
-                GlobalNode.ImageIndex:=12;
-                GlobalNode.SelectedIndex:=12;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('RNG'), 'device : '+RNGDevice.device);
+                DeviceNode.Data:=RNGDevice;
+                DeviceNode.ImageIndex:=12;
+                DeviceNode.SelectedIndex:=12;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+RNGDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+RNGDevice.pci);
               end;
             'Shared folders':
               begin
                 ShareFolderDevice:=FillDetailShareFolderDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2]);
 
-                GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Shared folders'), 'device : '+ShareFolderDevice.device);
-                GlobalNode.Data:=ShareFolderDevice;
-                GlobalNode.ImageIndex:=13;
-                GlobalNode.SelectedIndex:=13;
+                DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Shared folders'), 'device : '+ShareFolderDevice.device);
+                DeviceNode.Data:=ShareFolderDevice;
+                DeviceNode.ImageIndex:=13;
+                DeviceNode.SelectedIndex:=13;
 
-                DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+ShareFolderDevice.pci);
+                DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+ShareFolderDevice.pci);
               end;
             'Storage':
               begin
@@ -5368,36 +5554,40 @@ begin
                     'ahci':
                       begin
                         RegexObj1 := TRegExpr.Create;
-                        RegexObj1.Expression := 'pci.'+RegexObj.Match[1]+'.port.(\d+).type=(\S+)';
 
-                        if RegexObj1.Exec(slf.Text) then
-                        begin
-                          repeat
-                           StorageAhciDevice:=FillDetailStorageAhciDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2], StrToInt(RegexObj1.Match[1]));
+                        try
+                          RegexObj1.Expression := 'pci.'+RegexObj.Match[1]+'.port.(\d+).type=(\S+)';
 
-                           if StorageAhciDevice.device_type = 'hd' then
-                           begin
-                             StorageAhciDevice.storage_size:=GetStorageSize(StorageAhciDevice.path);
-                             StorageAhciDevice.storage_type:=GetStorageType(StorageAhciDevice.path);
-                             ImageIndex:=5;
-                           end
-                           else
-                           begin
-                             StorageAhciDevice.storage_size:='0G';
-                             StorageAhciDevice.storage_type:='image file';
-                             ImageIndex:=2;
-                           end;
+                          if RegexObj1.Exec(slf.Text) then
+                          begin
+                            repeat
+                             StorageAhciDevice:=FillDetailStorageAhciDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2], StrToInt(RegexObj1.Match[1]));
 
-                           GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageAhciDevice.device+'-'+StorageAhciDevice.device_type);
-                           GlobalNode.Data:=StorageAhciDevice;
-                           GlobalNode.ImageIndex:=ImageIndex;
-                           GlobalNode.SelectedIndex:=ImageIndex;
+                             if StorageAhciDevice.device_type = 'hd' then
+                             begin
+                               StorageAhciDevice.storage_size:=GetStorageSize(StorageAhciDevice.path);
+                               StorageAhciDevice.storage_type:=GetStorageType(StorageAhciDevice.path);
+                               ImageIndex:=5;
+                             end
+                             else
+                             begin
+                               StorageAhciDevice.storage_size:='0G';
+                               StorageAhciDevice.storage_type:='image file';
+                               ImageIndex:=2;
+                             end;
 
-                           DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageAhciDevice.pci);
-                           DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'port : '+IntToStr(StorageAhciDevice.port));
-                          until not RegexObj1.ExecNext;
+                             DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageAhciDevice.device+'-'+StorageAhciDevice.device_type);
+                             DeviceNode.Data:=StorageAhciDevice;
+                             DeviceNode.ImageIndex:=ImageIndex;
+                             DeviceNode.SelectedIndex:=ImageIndex;
+
+                             DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+StorageAhciDevice.pci);
+                             DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'port : '+IntToStr(StorageAhciDevice.port));
+                            until not RegexObj1.ExecNext;
+                          end;
+                        finally
+                          RegexObj1.Free;
                         end;
-                        RegexObj1.Free;
                       end;
                     'nvme':
                       begin
@@ -5405,12 +5595,12 @@ begin
                         StorageNvmeDevice.storage_size:=GetStorageSize(StorageNvmeDevice.devpath);
                         StorageNvmeDevice.storage_type:=GetStorageType(StorageNvmeDevice.devpath);
 
-                        GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageNvmeDevice.device);
-                        GlobalNode.Data:=StorageNvmeDevice;
-                        GlobalNode.ImageIndex:=10;
-                        GlobalNode.SelectedIndex:=10;
+                        DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageNvmeDevice.device);
+                        DeviceNode.Data:=StorageNvmeDevice;
+                        DeviceNode.ImageIndex:=10;
+                        DeviceNode.SelectedIndex:=10;
 
-                        DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageNvmeDevice.pci);
+                        DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+StorageNvmeDevice.pci);
                       end;
                     'virtio-blk':
                       begin
@@ -5418,34 +5608,38 @@ begin
                         StorageVirtioBlkDevice.storage_size:=GetStorageSize(StorageVirtioBlkDevice.path);
                         StorageVirtioBlkDevice.storage_type:=GetStorageType(StorageVirtioBlkDevice.path);;
 
-                        GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageVirtioBlkDevice.device);
-                        GlobalNode.Data:=StorageVirtioBlkDevice;
-                        GlobalNode.ImageIndex:=5;
-                        GlobalNode.SelectedIndex:=5;
+                        DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('Storage'), 'device : '+StorageVirtioBlkDevice.device);
+                        DeviceNode.Data:=StorageVirtioBlkDevice;
+                        DeviceNode.ImageIndex:=5;
+                        DeviceNode.SelectedIndex:=5;
 
-                        DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+StorageVirtioBlkDevice.pci);
+                        DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+StorageVirtioBlkDevice.pci);
                       end;
                 end;
               end;
             'USB':
               begin
                 RegexObj1 := TRegExpr.Create;
-                RegexObj1.Expression := 'pci.'+RegexObj.Match[1]+'.slot.(\d+).device=(\S+)';
 
-                if RegexObj1.Exec(slf.Text) then
-                begin
-                  repeat
-                   UsbXhciDevice:=FillDetailUsbXhciDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2], StrToInt(RegexObj1.Match[1]));
-                   GlobalNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('USB'), 'device : '+UsbXhciDevice.device+'-'+UsbXhciDevice.slot_device);
-                   GlobalNode.Data:=UsbXhciDevice;
-                   GlobalNode.ImageIndex:=14;
-                   GlobalNode.SelectedIndex:=14;
+                try
+                  RegexObj1.Expression := 'pci.'+RegexObj.Match[1]+'.slot.(\d+).device=(\S+)';
 
-                   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'pci : '+UsbXhciDevice.pci);
-                   DeviceSettingsTreeView.Items.AddChild(GlobalNode, 'slot : '+IntToStr(UsbXhciDevice.slot));
-                  until not RegexObj1.ExecNext;
+                  if RegexObj1.Exec(slf.Text) then
+                  begin
+                    repeat
+                     UsbXhciDevice:=FillDetailUsbXhciDevice(slf.Text, RegexObj.Match[1], RegexObj.Match[2], StrToInt(RegexObj1.Match[1]));
+                     DeviceNode:=DeviceSettingsTreeView.Items.AddChild(DeviceSettingsTreeView.Items.FindNodeWithText('USB'), 'device : '+UsbXhciDevice.device+'-'+UsbXhciDevice.slot_device);
+                     DeviceNode.Data:=UsbXhciDevice;
+                     DeviceNode.ImageIndex:=14;
+                     DeviceNode.SelectedIndex:=14;
+
+                     DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'pci : '+UsbXhciDevice.pci);
+                     DeviceSettingsTreeView.Items.AddChild(DeviceNode, 'slot : '+IntToStr(UsbXhciDevice.slot));
+                    until not RegexObj1.ExecNext;
+                  end;
+                finally
+                  RegexObj1.Free;
                 end;
-                RegexObj1.Free;
               end;
         end;
       until not RegexObj.ExecNext;
@@ -5467,6 +5661,7 @@ var
   i : Integer;
   DevicesArray : TStringArray;
   node : TTreeNode;
+  NetworkDevice : TNetworkDeviceClass;
 begin
   DevicesArray:=[];
 
@@ -5490,49 +5685,58 @@ function TFormBhyveManager.LoadVirtualMachineData(ConfigPath: String
   ): TVirtualMachineClass;
 var
   Configuration : ConfigurationClass;
+  VirtualMachineInfo : TVirtualMachineClass;
 begin
+  Result:=Nil;
+
   Configuration:= ConfigurationClass.Create(ConfigPath);
 
-  VirtualMachine := TVirtualMachineClass.Create;
+  try
+    VirtualMachineInfo := TVirtualMachineClass.Create;
 
-  VirtualMachine.name:=Configuration.GetOption('general','name');
-  VirtualMachine.description:=Configuration.GetOption('general','description');
-  VirtualMachine.uuid:=Configuration.GetOption('general','uuid');
-  VirtualMachine.config_path:=Configuration.GetOption('general','config_path');
-  VirtualMachine.system_type:=Configuration.GetOption('general','type');
-  VirtualMachine.system_version:=Configuration.GetOption('general','version');
-  VirtualMachine.image:=StrToInt(Configuration.GetOption('general','image'));
-  VirtualMachine.ipaddress:=Configuration.GetOption('general','ipaddress');
+    try
+      VirtualMachineInfo.name:=Configuration.GetOption('general','name');
+      VirtualMachineInfo.description:=Configuration.GetOption('general','description');
+      VirtualMachineInfo.uuid:=Configuration.GetOption('general','uuid');
+      VirtualMachineInfo.config_path:=Configuration.GetOption('general','config_path');
+      VirtualMachineInfo.system_type:=Configuration.GetOption('general','type');
+      VirtualMachineInfo.system_version:=Configuration.GetOption('general','version');
+      VirtualMachineInfo.image:=StrToInt(Configuration.GetOption('general','image'));
+      VirtualMachineInfo.ipaddress:=Configuration.GetOption('general','ipaddress');
 
-  if Configuration.GetOption('general','rdp') = 'True' then
-    VirtualMachine.rdp:=True
-  else
-    VirtualMachine.rdp:=False;
+      if Configuration.GetOption('general','rdp') = 'True' then
+        VirtualMachineInfo.rdp:=True
+      else
+        VirtualMachineInfo.rdp:=False;
 
-  if (UsePf = 'yes') and (Configuration.GetOption('general','nat') = 'True') then
-    VirtualMachine.nat:=True
-  else
-    VirtualMachine.nat:=False;
+      if (UsePf = 'yes') and (Configuration.GetOption('general','nat') = 'True') then
+        VirtualMachineInfo.nat:=True
+      else
+        VirtualMachineInfo.nat:=False;
 
-  if (UsePf = 'yes') and (Configuration.GetOption('general','pf') = 'True') then
-    VirtualMachine.pf:=True
-  else
-    VirtualMachine.pf:=False;
+      if (UsePf = 'yes') and (Configuration.GetOption('general','pf') = 'True') then
+        VirtualMachineInfo.pf:=True
+      else
+        VirtualMachineInfo.pf:=False;
 
-  if (UseIpv6 = 'yes') and (Configuration.GetOption('general','ipv6') = 'True') then
-  begin
-    VirtualMachine.ip6address:=Configuration.GetOption('general','ip6address');
-    VirtualMachine.ipv6:=True;
-  end
-  else
-  begin
-    VirtualMachine.ipv6:=False;
-    VirtualMachine.ip6address:=EmptyStr;
+      if (UseIpv6 = 'yes') and (Configuration.GetOption('general','ipv6') = 'True') then
+      begin
+        VirtualMachineInfo.ip6address:=Configuration.GetOption('general','ip6address');
+        VirtualMachineInfo.ipv6:=True;
+      end
+      else
+      begin
+        VirtualMachineInfo.ipv6:=False;
+        VirtualMachineInfo.ip6address:=EmptyStr;
+      end;
+      Result:=VirtualMachineInfo;
+    except
+      VirtualMachineInfo.Free;
+      Result := nil;
+    end;
+  finally
+    Configuration.Free;
   end;
-
-  Configuration.Free;
-
-  Result:=VirtualMachine;
 end;
 
 end.

@@ -135,7 +135,7 @@ property ZfsCreateOptions:string read GetZfsCreateOptions write SetZfsCreateOpti
 const
   BhyveOui = '58:9c:fc:0';
   {$IFDEF DEBUG}
-  DatadirPath = '';
+  DatadirPath = './';
   {$ELSE}
   DatadirPath = '/usr/local/share/bhyvemgr/';
   {$ENDIF}
@@ -165,6 +165,7 @@ const
   { bhyve and bhyvemgrd configuration files }
   BHYVEMGRD_SOCKET = '/var/run/bhyvemgrd/bhyvemgrd.sock';
   BHYVEMGRD_CONFIG_FILE = '/usr/local/etc/bhyvemgrd/daemon.conf';
+  BHYVEMGRD_GROUP = 'bhyvemgrd';
   BHYVEMGR_CONFIG_FILE = '.config/bhyvemgr/gui.conf';
   COMMON_CONFIG_FILE = '/usr/local/etc/bhyvemgrd/common.conf';
   { bhyve log file }
@@ -174,7 +175,8 @@ const
   BOOTROMUBOOT_PATH= '/usr/local/share/u-boot/u-boot-bhyve-arm64';
   { Keyboard layouts path }
   KEYBOARDLAYOUT_PATH = '/usr/share/bhyve/kbdlayout';
-  DNSMASQDIRECTORY_PATH = '/usr/local/etc/dnsmasq.d/bhyvemgr';
+  DNSMASQDHCP_PATH = '/usr/local/etc/dnsmasq.d/bhyvemgr-dhcp';
+  DNSMASQHOST_PATH = '/usr/local/etc/dnsmasq.d/bhyvemgr-host';
   DNSMASQBIN_CMD = '/usr/local/sbin/dnsmasq';
   SERVICES_FILE = '/etc/services';
 

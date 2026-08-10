@@ -72,6 +72,9 @@ type
 
 implementation
 
+uses
+  LazLogger;
+
 { TPendingRequest }
 constructor TPendingRequest.Create;
 begin
@@ -161,7 +164,7 @@ begin
         Request := FRequests.Data[Index];
         Request.Response := Response;
         Request.Event.SetEvent;
-      end;
+      end
     finally
       LeaveCriticalSection(FLock);
     end;

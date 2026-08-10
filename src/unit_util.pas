@@ -61,7 +61,7 @@ function CheckTpmSocketRunning(const Name: String):Integer;
 function CheckZfsDataset(const Dataset: String): Boolean;
 function CheckZfsSupport():Boolean;
 function ConvertFileSize(Size: Int64; SizeUnit: String): Int64;
-function CreateFile(const FileName: String; const UserName : String; FileMode : String = '600'):Boolean;
+function CreateFile(const FileName: String; const UserName : String; const GroupName : String = 'bhyvemgrd'; FileMode : String = '600'):Boolean;
 function CreateSeedIso(const SourceDirectory: String; const DestinationSeedFile : String):Boolean;
 function CreateTpmSocket(const Path: String):Boolean;
 function ExtractCidr(const Network: String): String;
@@ -335,7 +335,7 @@ begin
     ConfigFile:=DirePath+'/'+RulesType+'.rules';
 
     if not DirectoryExists(VmPath+'/'+DirePath) then
-      CreateDirectoryHelper(DirePath, GetCurrentUserName(), '750');
+      CreateDirectoryHelper(DirePath, GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
 
     try
       FilePath.Text:=VmRules;
@@ -350,7 +350,7 @@ begin
       else
       begin
         if not FileExists(ConfigFile) then
-          CreateFile(ConfigFile, GetCurrentUserName(), '660');
+          CreateFile(ConfigFile, GetCurrentUserName(), BHYVEMGRD_GROUP, '640');
         FilePath.SaveToFile(ConfigFile);
       end;
     except
@@ -818,17 +818,17 @@ begin
   Result:=False;
 
   FilePath:=TStringList.Create;
-  ConfigFile:=DNSMASQDIRECTORY_PATH+'/'+VmName+'.conf';
+  ConfigFile:=DNSMASQDHCP_PATH+'/'+VmName+'.conf';
 
   if not FileExists(ConfigFile) then
-    CreateFile(ConfigFile, GetCurrentUserName(), '660');
+    CreateFile(ConfigFile, GetCurrentUserName(), BHYVEMGRD_GROUP, '644');
 
   try
     FilePath.LoadFromFile(ConfigFile);
 
-    if FilePath.IndexOf('dhcp-host='+MacAddreess+','+VmName+','+IpAddress) = -1 then
+    if FilePath.IndexOf(MacAddreess+','+VmName+','+IpAddress) = -1 then
     begin
-      FilePath.Add('dhcp-host='+MacAddreess+','+VmName+','+IpAddress);
+      FilePath.Add(MacAddreess+','+VmName+','+IpAddress);
       FilePath.SaveToFile(ConfigFile);
     end;
   except
@@ -847,17 +847,17 @@ begin
   Result:=False;
 
   FilePath:=TStringList.Create;
-  ConfigFile:=DNSMASQDIRECTORY_PATH+'/'+VmName+'.conf';
+  ConfigFile:=DNSMASQHOST_PATH+'/'+VmName+'.conf';
 
   if not FileExists(ConfigFile) then
-    CreateFile(ConfigFile, GetCurrentUserName(), '660');
+    CreateFile(ConfigFile, GetCurrentUserName(), BHYVEMGRD_GROUP, '644');
 
   try
     FilePath.LoadFromFile(ConfigFile);
 
-    if FilePath.IndexOf('host-record='+VmName+','+Ip6Address) = -1 then
+    if FilePath.IndexOf(Ip6Address+' '+VmName) = -1 then
     begin
-      FilePath.Add('host-record='+VmName+','+Ip6Address);
+      FilePath.Add(Ip6Address+' '+VmName);
       FilePath.SaveToFile(ConfigFile);
     end;
 
@@ -1118,17 +1118,10 @@ var
 begin
   Result:=-1;
 
-  PidNumber:= GetPIDValueHelper(Format('^bhyve: %s$', [Name]));
+  PidNumber:= GetPIDValueHelper(Format('^bhyve: %s$|^%s -k %s/%s/bhyve_config.conf', [Name, BhyveCmd, VmPath, Name]));
 
   if PidNumber > 0 then
     Result:=PidNumber
-  else
-  begin
-    PidNumber:=GetPIDValueHelper(Format('^%s -k %s/%s/bhyve_config.conf', [BhyveCmd, VmPath, Name]));
-
-    if PidNumber  > 0 then
-      Result:=PidNumber;
-  end;
 end;
 
 function CheckTpmSocketRunning(const Name: String): Integer;
@@ -1183,7 +1176,7 @@ begin
   end;
 end;
 
-function CreateFile(const FileName: String; const UserName: String; FileMode : String = '600'): Boolean;
+function CreateFile(const FileName: String; const UserName: String; const GroupName : String = 'bhyvemgrd'; FileMode : String = '600'): Boolean;
 var
   output : String;
   status : Boolean;
@@ -1192,7 +1185,7 @@ begin
 
   if FileExists(INSTALL_CMD) then
   begin
-    status:=RunCommand(INSTALL_CMD, ['-m', FileMode, '-o', UserName, '/dev/null', FileName], output, [poStderrToOutPut]);
+    status:=RunCommand(INSTALL_CMD, ['-m', FileMode, '-o', UserName, '-g', GroupName, '/dev/null', FileName], output, [poStderrToOutPut]);
 
     if status then
       Result:=status
@@ -2027,7 +2020,7 @@ begin
   end;
 
   if not FileExists(xfreerdp_args_file) then
-    CreateFile(xfreerdp_args_file, GetCurrentUserName(), '600');
+    CreateFile(xfreerdp_args_file, GetCurrentUserName());
 
   xfreerdp_args_list.SaveToFile(xfreerdp_args_file);
   parameters:=['/args-from:file:'+xfreerdp_args_file];
@@ -2053,14 +2046,19 @@ end;
 
 function RemoveDnsmasqEntry(const VmName: String): Boolean;
 var
-  Path : String;
+  DhcpPath : String;
+  HostPath : String;
 begin
   Result:=False;
 
-  Path:=DNSMASQDIRECTORY_PATH+'/'+VmName+'.conf';
+  DhcpPath:=DNSMASQDHCP_PATH+'/'+VmName+'.conf';
+  HostPath:=DNSMASQHOST_PATH+'/'+VmName+'.conf';
 
-  if FpUnlink(Path) = 0 then
+  if FpUnlink(DhcpPath) = 0 then
   begin
+    if FileExists(HostPath) then
+      FpUnlink(HostPath);
+
     RestartServiceHelper('dnsmasq');
     Result:=True;
   end;
