@@ -92,7 +92,7 @@ When bhyvemgr starts in the first time, this will create a initial config file. 
 <img width="811" height="564" alt="image" src="https://github.com/user-attachments/assets/beac6634-d779-4177-8689-773e076ea1e3" />
 
 ## v2.0.0 and later
-In this case, bhyve will create two configuration files: **gui.conf** and **common.conf**. The **common.conf** file is required for both bhyvemgr and bhyvemgrd. Take a look at [migration guide](https://github.com/alonsobsd/bhyvemgr/wiki/new_version_migration) if you are planning move from 1.15.0 to 2.0.0.
+In this case, bhyvemgr will create two configuration files: **gui.conf** and **common.conf**. The **common.conf** file is required for both bhyvemgr and bhyvemgrd. Take a look at [migration guide](https://github.com/alonsobsd/bhyvemgr/wiki/new_version_migration) if you are planning move from 1.15.0 to 2.0.0.
 
 # Demo
 
