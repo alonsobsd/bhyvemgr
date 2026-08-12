@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bhyve 管理器\n"
 "POT-Creation-Date: 2025-09-08\n"
-"PO-Revision-Date: 2026-08-02\n"
+"PO-Revision-Date: 2026-08-11\n"
 "Last-Translator: ykla <yklaxds@gmail.com>\n"
 "Language-Team: ykla <yklaxds@gmail.com>\n"
 "Language: zh_CN\n"
@@ -1382,6 +1382,10 @@ msgstr "联网"
 #, object-pascal-format
 msgid "%0:s: VM : %1:s: process generated an error: %2:s:"
 msgstr "%0:s：虚拟机 %1:s：进程出错：%2:s："
+
+#: unit_language.app_exit_confirmation
+msgid "Do you really want to close bhyvemgr?"
+msgstr "您真的要关闭 bhyvemgr 吗？"
 
 #: unit_language.calculated_ipv6
 #, object-pascal-format

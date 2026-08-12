@@ -175,7 +175,7 @@ begin
     SetOsreldate(Trim(CheckSysctl('kern.osreldate')));
 
     RequireDerivedFormResource:=True;
-  Application.Scaled:=True;
+    Application.Scaled:=True;
     Application.Initialize;
     Application.CreateForm(TFormBhyveManager, FormBhyveManager);
     Application.Run;

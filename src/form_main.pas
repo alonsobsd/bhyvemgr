@@ -205,8 +205,6 @@ begin
   SocketThread := nil;
   ConnectionErrorMessage:=EmptyStr;
 
-  VirtualMachineListJson := TJSONObject.Create;
-
   { Temporary workaround when LCLGTK2 is used with latest version of Lazarus }
   {$ifdef LCLGTK2}
   FormBhyveManager.BorderStyle:=bsSizeable;
@@ -967,7 +965,6 @@ begin
        begin
          VirtualMachineListJson := Root;
          FillVirtualMachineList();
-         VirtualMachineListJson.Free;
          Exit;
        end;
      'event' :
@@ -976,159 +973,30 @@ begin
            VirtualMachinesTreeView.Selected.Text:=VirtualMachinesTreeView.Selected.Text+' : Running'
          else
          begin
-           VmName:=Root.Strings['vmname'];
-           { Poweroff and halted states }
-           if (Root.Strings['state'] = 'vmPowerOff') or (Root.Strings['state'] = 'vmHalted') then
+           if Root.Find('state') <> nil then
            begin
-             NetworkDeviceList.Text:=GetVmNetworkInterfaceList(VmName);
+             VmName:=Root.Strings['vmname'];
 
-             for i:=0 to NetworkDeviceList.Count-1 do
-             begin
-               DestroyNetworkInterfaceHelper(NetworkDeviceList[i]);
-             end;
-
-             if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
-               VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
-
-             if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Text = VmName) then
-             begin
-               SpeedButtonVncVm.Enabled:=False;
-               SpeedButtonRemoveVm.Enabled:=True;
-               SpeedButtonStartVm.Enabled:=True;
-               SpeedButtonStopVm.Enabled:=False;
-               SpeedButtonReloadVmConfig.Enabled:=True;
-             end;
-
-             DestroyVirtualMachineHelper(VmName);
-             RemoveDirectoryHelper(VmName, 'vtcon', True);
-             RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
-
-             if GetOsreldate.ToInt64 >= 1403000 then
-             begin
-               PidNumber:=CheckTpmSocketRunning(VmName);
-               if PidNumber > 0 then
-                 KillPidHelper(PidNumber);
-             end;
-
-             case Root.Strings['state'] of
-                 'vmPowerOff':InfoMessage:=Format(vm_poweroff_status, [VmName]);
-                 'vmHalted':InfoMessage:=Format(vm_halt_status, [VmName]);
-             end;
-
-             StatusBarBhyveManager.Font.Color:=clTeal;
-             StatusBarBhyveManager.SimpleText:=InfoMessage;
-
-             if UseSystray = 'yes' then
-             begin
-               TrayIcon.TrayIcon.BalloonHint:=InfoMessage;
-               TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
-               TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
-               TrayIcon.TrayIcon.ShowBalloonHint;
-             end;
-
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
-             begin
-               PfUnloadRulesHelper(VmName, 'nat');
-             end;
-
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
-             begin
-               PfUnloadRulesHelper(VmName, 'rdr');
-               PfUnloadRulesHelper(VmName, 'pass-in');
-               PfUnloadRulesHelper(VmName, 'pass-out');
-             end;
-
-             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+InfoMessage);
-           end
-           { End poweroff and halted states }
-           { Rebooted state }
-           else if Root.Strings['state'] = 'vmRebooted' then
-           begin
-             if DirectoryExists(VmPath+'/'+VmName+'/vtcon') then
-             begin
-               RemoveDirectoryHelper(VmName, 'vtcon', True);
-               CreateDirectoryHelper(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
-             end;
-
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
-             begin
-               PfUnloadRulesHelper(VmName, 'nat');
-             end;
-
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
-             begin
-               PfUnloadRulesHelper(VmName, 'rdr');
-               PfUnloadRulesHelper(VmName, 'pass-in');
-               PfUnloadRulesHelper(VmName, 'pass-out');
-             end;
-
-             StatusBarBhyveManager.Font.Color:=clTeal;
-             StatusBarBhyveManager.SimpleText := Format(vm_reboot_status, [VmName]);;
-
-             if UseSystray = 'yes' then
-             begin
-               TrayIcon.TrayIcon.BalloonHint:=Format(vm_reboot_status, [VmName]);
-               TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
-               TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
-               TrayIcon.TrayIcon.ShowBalloonHint;
-             end;
-
-             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_reboot_status, [VmName]));
-
-             Req := TJSONObject.Create;
-             try
-               Req.Add('type', 'event');
-               Req.Add('id', GenerateUuid());
-               Req.Add('method', 'vm.start');
-               Req.Add('params', TJSONObject.Create(['vmname', VmName]));
-
-               SocketThread.SendJSON(Req.AsJSON);
-             finally
-               Req.Free;
-             end;
-
-             Sleep(100);
-
-             if FileExists(VmPath+'/'+VmName+'/vnc.sock') then
-             begin
-               ChmodHelper(VmPath+'/'+VmName+'/vnc.sock');
-               ChownHelper(VmPath+'/'+VmName+'/vnc.sock', GetCurrentUserName());
-             end;
-
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
-             begin
-               PfLoadRulesHelper(VmName, 'nat');
-             end;
-
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
-             begin
-               PfLoadRulesHelper(VmName, 'rdr');
-               PfLoadRulesHelper(VmName, 'pass-in');
-               PfLoadRulesHelper(VmName, 'pass-out');
-             end;
-           end
-           { End rebooted state }
-           { other states }
-           else
-           begin
-             if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
-               VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
-
-             if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Text = VmName) then
-             begin
-               SpeedButtonVncVm.Enabled:=False;
-               SpeedButtonStopVm.Enabled:=False;
-               SpeedButtonStartVm.Enabled:=True;
-               SpeedButtonRemoveVm.Enabled:=True;
-             end;
-
-             if (Root.Strings['state'] = 'vmExited') or (Root.Strings['state'] = 'vmException') then
+             { Poweroff and halted states }
+             if (Root.Strings['state'] = 'vmPowerOff') or (Root.Strings['state'] = 'vmHalted') then
              begin
                NetworkDeviceList.Text:=GetVmNetworkInterfaceList(VmName);
 
                for i:=0 to NetworkDeviceList.Count-1 do
                begin
                  DestroyNetworkInterfaceHelper(NetworkDeviceList[i]);
+               end;
+
+               if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
+                 VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
+
+               if Assigned(VirtualMachinesTreeView.Selected) and (VirtualMachinesTreeView.Selected.Text = VmName) then
+               begin
+                 SpeedButtonVncVm.Enabled:=False;
+                 SpeedButtonRemoveVm.Enabled:=True;
+                 SpeedButtonStartVm.Enabled:=True;
+                 SpeedButtonStopVm.Enabled:=False;
+                 SpeedButtonReloadVmConfig.Enabled:=True;
                end;
 
                DestroyVirtualMachineHelper(VmName);
@@ -1141,33 +1009,166 @@ begin
                  if PidNumber > 0 then
                    KillPidHelper(PidNumber);
                end;
-             end;
 
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
+               case Root.Strings['state'] of
+                   'vmPowerOff':InfoMessage:=Format(vm_poweroff_status, [VmName]);
+                   'vmHalted':InfoMessage:=Format(vm_halt_status, [VmName]);
+               end;
+
+               StatusBarBhyveManager.Font.Color:=clTeal;
+               StatusBarBhyveManager.SimpleText:=InfoMessage;
+
+               if UseSystray = 'yes' then
+               begin
+                 TrayIcon.TrayIcon.BalloonHint:=InfoMessage;
+                 TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
+                 TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
+                 TrayIcon.TrayIcon.ShowBalloonHint;
+               end;
+
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
+               begin
+                 PfUnloadRulesHelper(VmName, 'nat');
+               end;
+
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
+               begin
+                 PfUnloadRulesHelper(VmName, 'rdr');
+                 PfUnloadRulesHelper(VmName, 'pass-in');
+                 PfUnloadRulesHelper(VmName, 'pass-out');
+               end;
+
+               DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+InfoMessage);
+             end
+             { End poweroff and halted states }
+             { Rebooted state }
+             else if Root.Strings['state'] = 'vmRebooted' then
              begin
-               PfUnloadRulesHelper(VmName, 'nat');
-             end;
+               if DirectoryExists(VmPath+'/'+VmName+'/vtcon') then
+               begin
+                 RemoveDirectoryHelper(VmName, 'vtcon', True);
+                 CreateDirectoryHelper(VmPath+'/'+VmName+'/vtcon', GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
+               end;
 
-             if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
+               begin
+                 PfUnloadRulesHelper(VmName, 'nat');
+               end;
+
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
+               begin
+                 PfUnloadRulesHelper(VmName, 'rdr');
+                 PfUnloadRulesHelper(VmName, 'pass-in');
+                 PfUnloadRulesHelper(VmName, 'pass-out');
+               end;
+
+               StatusBarBhyveManager.Font.Color:=clTeal;
+               StatusBarBhyveManager.SimpleText := Format(vm_reboot_status, [VmName]);;
+
+               if UseSystray = 'yes' then
+               begin
+                 TrayIcon.TrayIcon.BalloonHint:=Format(vm_reboot_status, [VmName]);
+                 TrayIcon.TrayIcon.BalloonTimeout:=TrayIconNotifytimeout;
+                 TrayIcon.TrayIcon.BalloonFlags:=bfInfo;
+                 TrayIcon.TrayIcon.ShowBalloonHint;
+               end;
+
+               DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_reboot_status, [VmName]));
+
+               Req := TJSONObject.Create;
+               try
+                 Req.Add('type', 'event');
+                 Req.Add('id', GenerateUuid());
+                 Req.Add('method', 'vm.start');
+                 Req.Add('params', TJSONObject.Create(['vmname', VmName, 'isrebooting' , 'True']));
+
+                 SocketThread.SendJSON(Req.AsJSON);
+               finally
+                 Req.Free;
+               end;
+
+               Sleep(100);
+
+               if FileExists(VmPath+'/'+VmName+'/vnc.sock') then
+               begin
+                 ChmodHelper(VmPath+'/'+VmName+'/vnc.sock');
+                 ChownHelper(VmPath+'/'+VmName+'/vnc.sock', GetCurrentUserName());
+               end;
+
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).nat then
+               begin
+                 PfLoadRulesHelper(VmName, 'nat');
+               end;
+
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Data).pf then
+               begin
+                 PfLoadRulesHelper(VmName, 'rdr');
+                 PfLoadRulesHelper(VmName, 'pass-in');
+                 PfLoadRulesHelper(VmName, 'pass-out');
+               end;
+             end
+             { End rebooted state }
+             { other states }
+             else
              begin
-               PfUnloadRulesHelper(VmName, 'rdr');
-               PfUnloadRulesHelper(VmName, 'pass-in');
-               PfUnloadRulesHelper(VmName, 'pass-out');
+               if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running')) then
+                 VirtualMachinesTreeView.Items.FindNodeWithText(VmName+' : Running').Text:=VmName;
+
+               if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Text = VmName) then
+               begin
+                 SpeedButtonVncVm.Enabled:=False;
+                 SpeedButtonStopVm.Enabled:=False;
+                 SpeedButtonStartVm.Enabled:=True;
+                 SpeedButtonRemoveVm.Enabled:=True;
+               end;
+
+               if (Root.Strings['state'] = 'vmExited') or (Root.Strings['state'] = 'vmException') then
+               begin
+                 NetworkDeviceList.Text:=GetVmNetworkInterfaceList(VmName);
+
+                 for i:=0 to NetworkDeviceList.Count-1 do
+                 begin
+                   DestroyNetworkInterfaceHelper(NetworkDeviceList[i]);
+                 end;
+
+                 DestroyVirtualMachineHelper(VmName);
+                 RemoveDirectoryHelper(VmName, 'vtcon', True);
+                 RemoveFile(VmPath+'/'+VmName+'/vnc.sock');
+
+                 if GetOsreldate.ToInt64 >= 1403000 then
+                 begin
+                   PidNumber:=CheckTpmSocketRunning(VmName);
+                   if PidNumber > 0 then
+                     KillPidHelper(PidNumber);
+                 end;
+               end;
+
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).nat then
+               begin
+                 PfUnloadRulesHelper(VmName, 'nat');
+               end;
+
+               if TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(VmName).Data).pf then
+               begin
+                 PfUnloadRulesHelper(VmName, 'rdr');
+                 PfUnloadRulesHelper(VmName, 'pass-in');
+                 PfUnloadRulesHelper(VmName, 'pass-out');
+               end;
+
+               case Root.Strings['state'] of
+                   'vmTripleFault':InfoMessage:=Format(vm_triplefault_status, [VmName]);
+                   'vmExited':InfoMessage:=Format(vm_exit_status, [VmName]);
+                   'vmSuspended':InfoMessage:=Format(vm_suspended_status, [VmName]);
+                   'vmException':InfoMessage:=Format(vm_exiterror_status, [VmName]);
+               end;
+
+               StatusBarBhyveManager.SimpleText := EmptyStr;
+               MessageDialog(mtError, InfoMessage);
+
+               DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : '+InfoMessage);
              end;
-
-             case Root.Strings['state'] of
-                 'vmTripleFault':InfoMessage:=Format(vm_triplefault_status, [VmName]);
-                 'vmExited':InfoMessage:=Format(vm_exit_status, [VmName]);
-                 'vmSuspended':InfoMessage:=Format(vm_suspended_status, [VmName]);
-                 'vmException':InfoMessage:=Format(vm_exiterror_status, [VmName]);
-             end;
-
-             StatusBarBhyveManager.SimpleText := EmptyStr;
-             MessageDialog(mtError, InfoMessage);
-
-             DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+VmName+' VM : '+InfoMessage);
+             { End other states }
            end;
-           { End other states }
          end;
        end;
  end;
@@ -1246,6 +1247,8 @@ end;
 procedure TFormBhyveManager.OpenFormGlobalChangeValue(Sender: TObject);
 var
   SettingName : String;
+  VirtualMachineNode : TVirtualMachineClass;
+  Node : TTreeNode;
 begin
   if GlobalSettingTypeList.Values[extractVarName(GlobalSettingsTreeView.Selected.Text)] = 'Boolean' then
   begin
@@ -1335,13 +1338,14 @@ begin
         {$ifdef CPUAARCH64}
         'console':
         begin
+          Node:=VirtualMachinesTreeView.Selected;
           NodeIndex:=GlobalSettingsTreeView.Selected.AbsoluteIndex;
-          VirtualMachine:=TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data);
+          VirtualMachineNode:=TVirtualMachineClass(Node.Data);
 
           FormChangeValue.ShowComboBox();
           FormChangeValue.ComboBoxValue.Clear;
           FormChangeValue.SettingType:=SettingName;
-          FormChangeValue.ComboBoxValue.Items.Add('/dev/nmdm-'+VirtualMachine.name+'.1A');
+          FormChangeValue.ComboBoxValue.Items.Add('/dev/nmdm-'+VirtualMachineNode.name+'.1A');
           FormChangeValue.ComboBoxValue.Items.Add('tcp=0.0.0.0:'+GetNewComPortNumber());
           FormChangeValue.ComboBoxValue.Items.Add('tcp=127.0.0.1:'+GetNewComPortNumber());
           if UseIpv6 = 'yes' then
@@ -1590,6 +1594,11 @@ begin
       Exit;
     end;
   end;
+
+  if MessageDialog(mtConfirmation, app_exit_confirmation) = mrYes then
+    Exit
+  else
+    CanClose:=False;
 end;
 
 {
@@ -1701,6 +1710,8 @@ begin
    RequestManager.Free;
    RequestManager := nil;
  end;
+
+ VirtualMachineListJson.Free;
 end;
 
 {

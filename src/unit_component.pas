@@ -35,7 +35,7 @@ unit unit_component;
 interface
 
 uses
-  Classes, SysUtils, Menus, Dialogs, Controls, StdCtrls, ExtCtrls, FileUtil, LCLTranslator;
+  Classes, SysUtils, Menus, Dialogs, Controls, StdCtrls, ExtCtrls, FileUtil;
 
 type
 

@@ -9,7 +9,7 @@ object FormVmInfo: TFormVmInfo
   ClientWidth = 618
   Position = poMainFormCenter
   ShowInTaskBar = stAlways
-  LCLVersion = '4.6.0.0'
+  LCLVersion = '4.8.0.0'
   OnShow = FormShow
   object BitBtnSave: TBitBtn
     Left = 160

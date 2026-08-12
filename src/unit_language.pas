@@ -64,6 +64,7 @@ resourcestring
   configuration_notice = 'No configuration file was found. A settings form will open so you can review or modify bhyvemgr settings. If everything looks correct, click the "Save Settings" button.';
   device_remove_notice = 'This action will remove all files/resources created by this device. Do you want remove %s device?';
   device_status = '%s device can not added/updated.';
+  app_exit_confirmation = 'Do you really want to close bhyvemgr?';
   vm_start_status = '%s VM have been started';
   vm_try_status = 'Trying create %s virtual machine...';
   vm_create_status = 'A new %s virtual machine was created';

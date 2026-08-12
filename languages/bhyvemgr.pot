@@ -1372,6 +1372,10 @@ msgstr ""
 msgid "%0:s: VM : %1:s: process generated an error: %2:s:"
 msgstr ""
 
+#: unit_language.app_exit_confirmation
+msgid "Do you really want to close bhyvemgr?"
+msgstr ""
+
 #: unit_language.calculated_ipv6
 #, object-pascal-format
 msgid "Now, assign this IPv6 address to %s interface. Do not forget add accept_rtadv and auto_linklocal options to it too."

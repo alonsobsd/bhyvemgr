@@ -35,7 +35,7 @@ unit form_about;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, LCLIntf, InterfaceBase, LCLTranslator;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls, LCLIntf, InterfaceBase;
 
 type
 

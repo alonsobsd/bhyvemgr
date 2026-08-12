@@ -36,7 +36,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, StdCtrls,
-  EditBtn, Buttons, Clipbrd, LCLTranslator;
+  EditBtn, Buttons, Clipbrd;
 
 type
 
