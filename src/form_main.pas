@@ -138,6 +138,7 @@ type
     ProcessPid : Integer;
     VirtualMachineListJson : TJSONObject;
     ConnectionErrorMessage : String;
+    CloseConfirmation : Boolean;
     function FillDetailAudioDevice(Details : String; pci : String; device : String):TAudioDeviceClass;
     function FillDetailConsoleDevice(Details : String; pci : String; device : String; port : Integer):TSerialVirtioConsoleDeviceClass;
     function FillDetailDisplayDevice(Details : String; pci : String; device : String):TDisplayDeviceClass;
@@ -204,6 +205,7 @@ var
 begin
   SocketThread := nil;
   ConnectionErrorMessage:=EmptyStr;
+  CloseConfirmation:=True;
 
   { Temporary workaround when LCLGTK2 is used with latest version of Lazarus }
   {$ifdef LCLGTK2}
@@ -311,9 +313,13 @@ begin
   FillGlobalCategoryList();
   FillDeviceDetailList();
 
-  if not ConnectToHelper(ErrorMessage) then
+  if not NewConfig then
   begin
-    ConnectionErrorMessage:=ErrorMessage;
+    if not ConnectToHelper(ErrorMessage) then
+    begin
+      ConnectionErrorMessage:=ErrorMessage;
+      CloseConfirmation:=False;
+    end;
   end;
 end;
 
@@ -1185,6 +1191,8 @@ begin
 
  MessageDialog(mtError, error_daemon_connection);
 
+ CloseConfirmation:=False;
+
  Close;
 end;
 
@@ -1595,6 +1603,9 @@ begin
     end;
   end;
 
+  if not CloseConfirmation then
+    Exit;
+
   if MessageDialog(mtConfirmation, app_exit_confirmation) = mrYes then
     Exit
   else
@@ -1625,8 +1636,6 @@ begin
     Close;
     Exit;
   end;
-
-
 end;
 
 {
