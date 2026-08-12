@@ -18,11 +18,38 @@ jobs:
     name: A job to run test in FreeBSD
     steps:
     - uses: actions/checkout@v7
-    - name: bhyvemgr testing on FreeBSD VM
-      id: test
+    - name: bhyvemgr testing on FreeBSD VM amd64
+      id: test1
       uses: vmactions/freebsd-vm@v1.5.3
       with:
         release: "15.1"
+        arch : amd64
+        usesh: true
+        prepare: |
+          sed -i "" -e 's|quarterly|latest|g' /etc/pkg/FreeBSD.conf        
+          export IGNORE_OSVERSION=yes
+          pkg update -f
+          pkg install -y pcre2
+          pkg install -y lazarus-qt6
+
+        run: |
+          set -e -x
+          chmod +x build.sh
+           ./build.sh release qt6
+          pkg remove -y lazarus-qt6
+          pkg install -y lazarus-qt5
+          ./build.sh release qt5
+          pkg remove -y lazarus-qt5
+          pkg install -y lazarus-gtk2
+          ./build.sh release gtk2
+          
+    - uses: actions/checkout@v7
+    - name: bhyvemgr testing on FreeBSD VM aarch64
+      id: test2
+      uses: vmactions/freebsd-vm@v1.5.3
+      with:
+        release: "15.1"
+        arch : aarch64
         usesh: true
         prepare: |
           sed -i "" -e 's|quarterly|latest|g' /etc/pkg/FreeBSD.conf        
