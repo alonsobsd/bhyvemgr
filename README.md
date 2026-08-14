@@ -82,7 +82,7 @@ permit keepenv nopass :wheel as root cmd /sbin/zfs
 ```
 ## v2.0.0 and later
 
-The new version of bhyvemgr doesn't require root privileges via sudo or doas on FreeBSD. Privileged operations are handled by [bhyvemgrd](https://github.com/alonsobsd/bhyvemgrd) and [mdo/mac_do](https://man.freebsd.org/cgi/man.cgi?query=mdo&apropos=0&sektion=0&manpath=FreeBSD+14.4-RELEASE&format=html) instead , helping to mitigate security risks. See the [bhyvemgrd README](https://github.com/alonsobsd/bhyvemgrd/blob/main/README.md) for details about how to configure and run it.
+The new version of bhyvemgr doesn't require root privileges via sudo or doas on FreeBSD. Privileged operations are handled by [bhyvemgrd](https://github.com/alonsobsd/bhyvemgrd), [mac_do/mdo](https://man.freebsd.org/cgi/man.cgi?query=mdo&apropos=0&sektion=0&manpath=FreeBSD+14.4-RELEASE&format=html) or [mac_do/setcred/exec_paths](https://man.freebsd.org/cgi/man.cgi?query=setcred&apropos=0&sektion=0&manpath=FreeBSD+14.4-RELEASE&format=html) instead , helping to mitigate security risks. See the [bhyvemgrd README](https://github.com/alonsobsd/bhyvemgrd/blob/main/README.md) for details about how to configure and run it.
 
 # Run bhyvemgr for the first time
 ## v1.15.0 and below
