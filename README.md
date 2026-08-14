@@ -15,7 +15,8 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - bridge/tap support
 - bhyve_config configuration variables support
 - basic sudo/doas support (only bhyvemgr <= 1.15.0)
-- mac_do/mdo support (only bhyvemgr >= 2.0.0)
+- mac_do/mdo support (only bhyvemgr >= 2.0.0 and bhyvemgrd >= 1.0.0)
+- mac_do/setcred/exec_paths support (only bhyvemgr >= 2.0.0, bhyvemgrd >= 1.1.0 and FreeBSD >= 1501501)
 - uefi/uboot support only
 - swtpm support
 - ipv4/ipv6 support
@@ -92,7 +93,7 @@ When bhyvemgr starts in the first time, this will create a initial config file. 
 <img width="811" height="564" alt="image" src="https://github.com/user-attachments/assets/beac6634-d779-4177-8689-773e076ea1e3" />
 
 ## v2.0.0 and later
-In this case, bhyvemgr will create two configuration files: **gui.conf** and **common.conf**. The **common.conf** file is required for both bhyvemgr and bhyvemgrd. Take a look at [migration guide](https://github.com/alonsobsd/bhyvemgr/wiki/new_version_migration) if you are planning move from 1.15.0 to 2.0.0.
+In this case, bhyvemgr will create two configuration files: **gui.conf** and **common.conf**. The **common.conf** file is required for both bhyvemgr and bhyvemgrd. Take a look at [migration guide](https://github.com/alonsobsd/bhyvemgr/wiki/new_version_migration) if you are planning move from 1.15.0 to 2.0.0 or later.
 
 # Demo
 
