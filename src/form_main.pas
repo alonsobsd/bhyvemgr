@@ -1255,8 +1255,10 @@ end;
 procedure TFormBhyveManager.OpenFormGlobalChangeValue(Sender: TObject);
 var
   SettingName : String;
+  {$ifdef CPUAARCH64}
   VirtualMachineNode : TVirtualMachineClass;
   Node : TTreeNode;
+  {$endif}
 begin
   if GlobalSettingTypeList.Values[extractVarName(GlobalSettingsTreeView.Selected.Text)] = 'Boolean' then
   begin
@@ -4489,13 +4491,17 @@ var
   Node : TTreeNode;
   IpAddress : String;
   Ip6Address : String;
+  NewIp6Address : String;
   VmConfig : ConfigurationClass;
   VirtualMachineNode : TVirtualMachineClass;
   Req : TJSONObject;
   NetworkDevice : TNetworkDeviceClass;
+  SerialVirtioConsoleDevice : TSerialVirtioConsoleDeviceClass;
 begin
   Node:=VirtualMachinesTreeView.Selected;
   VirtualMachineNode:=TVirtualMachineClass(Node.Data);
+
+  NewIp6Address:=EmptyStr;
 
   if DeviceSettingsTreeView.Items.TopLvlItems[1].Count > 0 then
   begin
@@ -4505,13 +4511,15 @@ begin
   { Remove this condition once bhyve is updated on FreeBSD 14.x }
   if GetOsreldate.ToInt64 >= 1403000 then
   begin
-    if (CheckTpmSocketRunning(VirtualMachineNode.name) = -1) and (Assigned(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM')))
-       and (ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[1].Text) = 'swtpm') then
-    begin
-      if not (DirectoryExists(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)))) then
-        CreateDirectoryHelper(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)), GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
+    Node:=GlobalSettingsTreeView.Items.FindTopLvlNode('TPM');
 
-      CreateTpmSocket(ExtractFilePath(ExtractVarValue(GlobalSettingsTreeView.Items.FindTopLvlNode('TPM').Items[0].Text)));
+    if (CheckTpmSocketRunning(VirtualMachineNode.name) = -1) and (Assigned(Node))
+       and (ExtractVarValue(Node.Items[1].Text) = 'swtpm') then
+    begin
+      if not (DirectoryExists(ExtractFilePath(ExtractVarValue(Node.Items[0].Text)))) then
+        CreateDirectoryHelper(ExtractFilePath(ExtractVarValue(Node.Items[0].Text)), GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
+
+      CreateTpmSocket(ExtractFilePath(ExtractVarValue(Node.Items[0].Text)));
     end;
   end;
 
@@ -4533,18 +4541,20 @@ begin
 
   if CheckVmRunning(VirtualMachineNode.name) > 0 then
   begin
-    if (Assigned(DeviceSettingsTreeView.Items.FindTopLvlNode('Display')))
-       and (DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Count = 1) then
+    Node:=DeviceSettingsTreeView.Items.FindTopLvlNode('Display');
+
+    if (Assigned(Node) and (Node.Count = 1)) then
       SpeedButtonVncVm.Enabled:=True
     else
       SpeedButtonVncVm.Enabled:=False;
 
-    if Assigned(DeviceSettingsTreeView.Items.FindNodeWithText('Network')) then
+    Node:=DeviceSettingsTreeView.Items.FindNodeWithText('Network');
+
+    if Assigned(Node) then
     begin
-      for i:=0 to DeviceSettingsTreeView.Items.FindNodeWithText('Network').Count-1 do
+      for i:=0 to Node.Count-1 do
       begin
-        Node:=DeviceSettingsTreeView.Items.FindNodeWithText('Network').Items[i];
-        NetworkDevice:=TNetworkDeviceClass(Node.Data);
+        NetworkDevice:=TNetworkDeviceClass(Node.Items[i].Data);
 
         CreateNetworkDeviceHelper(NetworkDevice.backend, VirtualMachineNode.name, '');
 
@@ -4568,36 +4578,52 @@ begin
           begin
             VmConfig:=ConfigurationClass.Create(VmPath+'/'+VirtualMachineNode.name+'/'+VirtualMachineNode.name+'.conf');
 
-            IpAddress:=VmConfig.GetOption('general', 'ipaddress', '');
-            Ip6Address:=VmConfig.GetOption('general', 'ip6address', '');
+            try
+              IpAddress:=VmConfig.GetOption('general', 'ipaddress', '');
+              Ip6Address:=VmConfig.GetOption('general', 'ip6address', '');
 
-            if (IpAddress.IsEmpty) then
-            begin
-              IpAddress:=GetNewIpAddress(GetSubnet);
-              VmConfig.SetOption('general','ipaddress', IpAddress );
-              AddDnsmasqDhcpHostEntry(VirtualMachineNode.name, IpAddress, NetworkDevice.mac);
-              RestartServiceHelper('dnsmasq');
+              if (IpAddress.IsEmpty) then
+              begin
+                IpAddress:=GetNewIpAddress(GetSubnet);
+                VmConfig.SetOption('general','ipaddress', IpAddress );
+                AddDnsmasqDhcpHostEntry(VirtualMachineNode.name, IpAddress, NetworkDevice.mac);
+                RestartServiceHelper('dnsmasq');
+              end;
+
+              NewIp6Address:=GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac);
+
+              if (UseIpv6 = 'yes') and (VirtualMachineNode.ipv6 = True) and
+                 ((Ip6Address.IsEmpty) or (Ip6Address <> NewIp6Address)) then
+              begin
+                Ip6Address:=NewIp6Address;
+                VmConfig.SetOption('general','ip6address', Ip6Address );
+                AddDnsmasqHostRecordEntry(VirtualMachineNode.name, Ip6Address, NetworkDevice.mac);
+                RestartServiceHelper('dnsmasq');
+              end;
+            finally
+              VmConfig.Free;
             end;
-
-            if (UseIpv6 = 'yes') and (VirtualMachineNode.ipv6 = True) and
-               ((Ip6Address.IsEmpty) or not (Ip6Address = GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac))) then
-            begin
-              Ip6Address:=GetNewIp6Address(GetIpv6Prefix, NetworkDevice.mac );
-              VmConfig.SetOption('general','ip6address', Ip6Address );
-              AddDnsmasqHostRecordEntry(VirtualMachineNode.name, Ip6Address, NetworkDevice.mac);
-              RestartServiceHelper('dnsmasq');
-            end;
-
-            VmConfig.Free;
           end;
         end;
-
-        if FileExists(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock') then
-        begin
-          ChmodHelper(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock');
-          ChownHelper(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock', GetCurrentUserName());
-        end;
       end;
+    end;
+
+    Node:=DeviceSettingsTreeView.Items.FindNodeWithText('Console');
+
+    if Assigned(Node) then
+    begin
+      for i:=0 to Node.Count-1 do
+       begin
+         SerialVirtioConsoleDevice:=TSerialVirtioConsoleDeviceClass(Node.Items[i].Data);
+         ChmodHelper(SerialVirtioConsoleDevice.path);
+         ChownHelper(SerialVirtioConsoleDevice.path, GetCurrentUserName());
+       end;
+    end;
+
+    if FileExists(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock') then
+    begin
+      ChmodHelper(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock');
+      ChownHelper(VmPath+'/'+VirtualMachineNode.name+'/vnc.sock', GetCurrentUserName());
     end;
 
     SpeedButtonRemoveVm.Enabled:=False;

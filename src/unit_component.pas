@@ -492,6 +492,9 @@ begin
   { Index 26 }
   Image.Picture.LoadFromFile(DatadirPath+'images/systems/devuan.png');
   SystemList.Add(Image.Picture.Bitmap, nil);
+  { Index 27 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/systems/haiku.png');
+  SystemList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;
 end;
@@ -781,6 +784,7 @@ begin
     end;
   'Other':
     begin
+      combo.AddItem('Haiku', TObject(27));
       combo.AddItem('Other', TObject(9));
     end;
   end;

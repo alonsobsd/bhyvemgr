@@ -513,7 +513,7 @@ begin
   try
     Params.Add('vmname', VmName);
     Params.Add('diretype', DireType);
-    Params.Add('recursive', BoolToStr(Recursive, 'true', 'false'));
+    Params.Add('recursive', Recursive);
 
     Resp := ExecuteHelper('fs.rmdir', Params, 3000, IsTimedout);
     try
@@ -550,7 +550,7 @@ begin
     Params.Add('vmname', VmName);
     Params.Add('zfstype', ZfsType);
     Params.Add('options', ZfsOptions);
-    Params.Add('mountpoint', BoolToStr(WithMountpoint, 'true', 'false'));
+    Params.Add('mountpoint', WithMountpoint);
 
     Resp := ExecuteHelper('zfs.create_dataset', Params, 50000, IsTimedout);
     try
@@ -587,7 +587,7 @@ begin
     Params.Add('vmname', VmName);
     Params.Add('diskname', DiskName);
     Params.Add('volsize', ZvolSize);
-    Params.Add('sparse', BoolToStr(ZvolSparse, 'true', 'false'));
+    Params.Add('sparse', ZvolSparse);
 
     Resp := ExecuteHelper('zfs.create_zvol', Params, 5000, IsTimedout);
     try
@@ -624,8 +624,8 @@ begin
     Params.Add('vmname', VmName);
     Params.Add('zfstype', ZfsType);
     Params.Add('zfsdevice', ZfsDevice);
-    Params.Add('recursive', BoolToStr(Recursive, 'true', 'false'));
-    Params.Add('force', BoolToStr(Force, 'true', 'false'));
+    Params.Add('recursive', Recursive);
+    Params.Add('force', Force);
 
     Resp := ExecuteHelper('zfs.destroy', Params, 5000, IsTimedout);
     try
