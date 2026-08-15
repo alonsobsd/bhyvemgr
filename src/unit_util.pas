@@ -113,7 +113,7 @@ function RemoveFile(const Path: String):Boolean;
 function RemoveDnsmasqEntry(const VmName: String):Boolean;
 function StopVirtualMachine(Pid : Integer):Boolean;
 function TruncateImage(const ImagePath : String; ImageSize : String):Boolean;
-function VncConnect(VmHost : String; VmName : String):Boolean;
+function VncConnect(VmHost : String):Boolean;
 function ZfsGetPropertyValue(const ZfsPath : String; ZfsProperty : String; ZfsField : String):String;
 
 implementation
@@ -2093,7 +2093,7 @@ begin
   end;
 end;
 
-function VncConnect(VmHost: String; VmName : String): Boolean;
+function VncConnect(VmHost: String): Boolean;
 var
   vnc_cmd : String;
 begin

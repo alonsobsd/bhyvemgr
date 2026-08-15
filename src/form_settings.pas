@@ -138,7 +138,7 @@ implementation
 {$R *.lfm}
 
 uses
-  unit_configuration, unit_component, unit_global, unit_util, unit_helper_client, unit_language, LazLogger;
+  unit_configuration, unit_component, unit_global, unit_util, unit_language, LazLogger;
 
 { TFormSettings }
 

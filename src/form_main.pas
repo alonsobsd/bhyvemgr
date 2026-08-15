@@ -740,11 +740,16 @@ var
   ParentNode : TTreeNode;
   Node : TTreeNode;
   VirtualMachineNode : TVirtualMachineClass;
+  VirtualMachineNodes : TJSONObject;
+  VirtualMachineState : String;
 begin
   Directories:=FindAllDirectories(VmPath, False);
 
   try
     Directories.Sorted:=True;
+
+    if Assigned(VirtualMachineListJson.Find('vms')) then
+      VirtualMachineNodes:=VirtualMachineListJson.Objects['vms'];
 
     for i:=0 to Directories.Count-1 do
     begin
@@ -764,7 +769,12 @@ begin
             ParentNode.SelectedIndex:=0;
           end;
 
-          if (VirtualMachineListJson.Objects['vms'].Objects[VirtualMachineNode.name].Strings['state']) = 'vmRunning' then
+          VirtualMachineState:=EmptyStr;
+
+          if Assigned(VirtualMachineNodes.Find(VirtualMachineNode.name)) then
+            VirtualMachineState := VirtualMachineNodes.Objects[VirtualMachineNode.name].Get('state', EmptyStr);
+
+          if VirtualMachineState = 'vmRunning' then
             Node:=VirtualMachinesTreeView.Items.AddChild(ParentNode, VirtualMachineNode.name + ' : Running')
           else
             Node:=VirtualMachinesTreeView.Items.AddChild(ParentNode, VirtualMachineNode.name);
@@ -4681,7 +4691,7 @@ begin
   begin
     DisplayNode:=DeviceSettingsTreeView.Items.FindTopLvlNode('Display').Items[0];
     DisplayDevice:=TDisplayDeviceClass(DisplayNode.Data);
-    VncConnect(DisplayDevice.tcp, TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name);
+    VncConnect(DisplayDevice.tcp);
   end;
 end;
 
