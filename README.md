@@ -23,6 +23,7 @@ Bhyvemgr is a bhyve management GUI written in Freepascal/Lazarus on FreeBSD. It 
 - aarch64 and amd64 support
 - i18n support
 - PF/NAT support
+- Storage ZFS snapshots support (only bhyvemgr >= 2.1.0 and bhyvemgrd >= 1.2.0) 
 - and more
 
 # Bhyvemgr dependencies
