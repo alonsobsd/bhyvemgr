@@ -52,6 +52,7 @@ resourcestring
   popup_copy_com1_command = 'Copy COM1 command';
   popup_copy_ipv4 = 'Copy IPv4 address';
   popup_copy_ipv6 = 'Copy IPv6 address';
+  popup_storage_snapshot = 'Storage snapshot';
   popup_tray_show_hide = 'Show/Hide Bhyvemgr';
   popup_tray_quit = 'Quit Bhyvemgr';
   { form_main strings }
@@ -183,6 +184,16 @@ resourcestring
   rdr_grid_source = 'Source';
   rdr_grid_host_port = 'Host port';
   rdr_grid_vm_port = 'VM port';
+  { form_storage_snapshot strings }
+  storage_snapshot_not_create = 'Cannot create a snapshot while %s VM is running.';
+  storage_snapshot_create_confirmation = 'Do you want to create %s VM storage snapshot?';
+  storage_snapshot_create_success = 'Storage snapshot was created successfully.';
+  storage_snapshot_remove_confirmation = 'Do you want to remove %s storage snapshot?';
+  storage_snapshot_remove_success = 'Storage snapshot was removed successfully.';
+  storage_snapshot_not_restore = 'Cannot restore snapshot while %s VM is running.';
+  storage_snapshot_restore_confirmation = 'Do you want to restore %s storage snapshot?';
+  storage_snapshot_restore_success = 'Storage snapshot was restored successfully.';
+  storage_snapshot_check_suffix = '%s suffix is not valid. Valid format is [A-Za-z0-9][A-Za-z0-9_-].';
 
 implementation
 

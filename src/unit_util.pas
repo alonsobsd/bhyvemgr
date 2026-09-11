@@ -52,6 +52,7 @@ function CheckIpvAddress(const Address: String):Boolean;
 function CheckMacAddress(const Mac: String):Boolean;
 function CheckNetworkDeviceName(const Name: String):Boolean;
 function CheckNetworkPort(Port: String):Boolean;
+function CheckSnapshotSuffix(const Suffix: String):Boolean;
 function CheckSysctl(const Name: String):String;
 function CheckUrl(const Url: String):Boolean;
 function CheckUserName(const Name: String):Boolean;
@@ -102,9 +103,11 @@ function GetPciDeviceList(const Device : String):String;
 function GetRemoteSize(const Url : String): Int64;
 function GetServicePortList(Protocol : String):TStringList;
 function GetStorageSize(const StoragePath : String): String;
+function GetStorageSnapshotList(Const VmName : String):String;
 function GetStorageType(const StoragePath : String): String;
 function GetVmNetworkInterfaceList(VmName : String): String;
 function GetZpoolList():String;
+function InitTpmSocket(const Path: String):Boolean;
 function InstallFile(const SourceFileName: String; const DestinationFileName : String; const UserName : String; FileMode : String = '600'):Boolean;
 function PfCreateRules(const VmName : String; const VmRules: String; const RulesType : String):Boolean;
 function NetworkAddress(const Subnet : String):String;
@@ -1046,6 +1049,22 @@ begin
   RegText.Free
 end;
 
+function CheckSnapshotSuffix(const Suffix: String): Boolean;
+var
+  RegText: TRegExpr;
+begin
+  Result:=False;
+
+  RegText := TRegExpr.Create('^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$');
+
+  if RegText.Exec(Suffix) then
+  begin
+    Result:=True;
+  end;
+
+  RegText.Free
+end;
+
 function CheckSysctl(const Name: String): String;
 var
   output : String;
@@ -1228,8 +1247,9 @@ begin
   swtpm_cmd:=SwtpmCmd;
 
   parameters:=['socket', '--tpmstate', 'backend-uri=file:///'+Path+'swtpm.state', '--tpm2'];
-  parameters:=parameters+['--server', 'type=unixio,path='+Path+'swtpm.sock', '--log'];
-  parameters:=parameters+['file='+Path+'swtpm.log', '--flags', 'not-need-init', '--daemon'];
+  parameters:=parameters+['--server', 'type=unixio,path='+Path+'swtpm.sock'];
+  parameters:=parameters+['--ctrl', 'type=unixio,path='+Path+'swtpm.sock.ctrl'];
+  parameters:=parameters+['--log', 'file='+Path+'swtpm.log', '--daemon'];
 
   if FileExists(swtpm_cmd) and DirectoryExists(Path) then
   begin
@@ -1902,6 +1922,32 @@ begin
   end;
 end;
 
+function GetStorageSnapshotList(const VmName: String): String;
+var
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+  ZfsPath :  String;
+begin
+  Result:=EmptyStr;
+
+  ZfsPath := VmPath.Remove(0,1)+'/'+VmName;
+
+  parameters:=['list','-H', '-t' ,'snapshot', '-o', 'name,type,refer', ZfsPath];
+
+  if FileExists(ZFS_CMD) then
+  begin
+    status:=RunCommand(ZFS_CMD, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=output
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetStorageSnapshotList : '+ ZfsPath+' : '+output);
+    end;
+  end;
+end;
+
 function GetStorageType(const StoragePath: String): String;
 begin
   Result:=EmptyStr;
@@ -1969,6 +2015,32 @@ begin
     else
     begin
       DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : GetZpoolList : '+output);
+    end;
+  end;
+end;
+
+function InitTpmSocket(const Path: String): Boolean;
+var
+  swtpmioctl_cmd : String;
+  output : String;
+  status : Boolean;
+  parameters : TStringArray;
+begin
+  Result:=False;
+
+  swtpmioctl_cmd:=SwtpmIoctlCmd;
+
+  parameters:=['--unix', Path+'swtpm.sock.ctrl', '-i'];
+
+  if FileExists(swtpmioctl_cmd) and DirectoryExists(Path) then
+  begin
+    status:=RunCommand(swtpmioctl_cmd, parameters, output, [poStderrToOutPut]);
+
+    if status then
+      Result:=status
+    else
+    begin
+      DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : InitTpmSocket : '+ Path+' : '+output);
     end;
   end;
 end;

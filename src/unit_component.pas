@@ -289,6 +289,14 @@ begin
   PopupMenuItem:=TMenuItem.Create(PopupMenu);
   PopupMenuItem.Caption:=popup_copy_ipv6;
   PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:='-';
+  PopupMenu.Items.Add(PopupMenuItem);
+
+  PopupMenuItem:=TMenuItem.Create(PopupMenu);
+  PopupMenuItem.Caption:=popup_storage_snapshot;
+  PopupMenu.Items.Add(PopupMenuItem);
 end;
 
 constructor TDeviceImageList.Create(component: TComponent);
@@ -394,6 +402,9 @@ begin
   ActionList.Add(Image.Picture.Bitmap, nil);
   { Index 10 }
   Image.Picture.LoadFromFile(DatadirPath+'images/menu/pf.png');
+  ActionList.Add(Image.Picture.Bitmap, nil);
+  { Index 11 }
+  Image.Picture.LoadFromFile(DatadirPath+'images/menu/snapshot.png');
   ActionList.Add(Image.Picture.Bitmap, nil);
 
   Image.Free;

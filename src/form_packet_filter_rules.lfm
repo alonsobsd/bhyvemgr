@@ -1,7 +1,7 @@
 object FormPacketFilterRules: TFormPacketFilterRules
-  Left = 545
+  Left = 889
   Height = 466
-  Top = 303
+  Top = 415
   Width = 777
   BorderStyle = bsSingle
   Caption = 'Bhyve Manager - Packet Filter rules'

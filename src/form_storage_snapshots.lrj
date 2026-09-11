@@ -1,0 +1,12 @@
+{"version":1,"strings":[
+{"hash":72230099,"name":"tformstoragesnapshot.caption","sourcebytes":[66,104,121,118,101,32,77,97,110,97,103,101,114,32,45,32,83,116,111,114,97,103,101,32,115,110,97,112,115,104,111,116,115],"value":"Bhyve Manager - Storage snapshots"},
+{"hash":3792691,"name":"tformstoragesnapshot.groupbox9.caption","sourcebytes":[71,101,110,101,114,97,108,32,115,101,116,116,105,110,103,115],"value":"General settings"},
+{"hash":1453,"name":"tformstoragesnapshot.label1.caption","sourcebytes":[86,77],"value":"VM"},
+{"hash":123294117,"name":"tformstoragesnapshot.editvirtualmachine.text","sourcebytes":[69,100,105,116,86,105,114,116,117,97,108,77,97,99,104,105,110,101],"value":"EditVirtualMachine"},
+{"hash":95145224,"name":"tformstoragesnapshot.label2.caption","sourcebytes":[83,117,102,102,105,120],"value":"Suffix"},
+{"hash":160912840,"name":"tformstoragesnapshot.editsnapshotsuffix.text","sourcebytes":[69,100,105,116,83,110,97,112,115,104,111,116,83,117,102,102,105,120],"value":"EditSnapshotSuffix"},
+{"hash":252552260,"name":"tformstoragesnapshot.bitbtncreatesnapshot.caption","sourcebytes":[67,114,101,97,116,101,32,115,110,97,112,115,104,111,116],"value":"Create snapshot"},
+{"hash":15446532,"name":"tformstoragesnapshot.bitbtnremovesnapshot.caption","sourcebytes":[82,101,109,111,118,101,32,115,110,97,112,115,104,111,116],"value":"Remove snapshot"},
+{"hash":267019812,"name":"tformstoragesnapshot.bitbtnrestoresnapshot.caption","sourcebytes":[82,101,115,116,111,114,101,32,115,110,97,112,115,104,111,116],"value":"Restore snapshot"},
+{"hash":4863637,"name":"tformstoragesnapshot.bitbtnclose.caption","sourcebytes":[67,108,111,115,101],"value":"Close"}
+]}

@@ -24,9 +24,12 @@ function PfUnloadRulesHelper(const VmName : String; const RulesType : String):Bo
 function RestartServiceHelper(const Service: String): Boolean;
 function RemoveDirectoryHelper(const VmName : String; const DireType: String; Recursive: Boolean): Boolean;
 function ZfsCreateDatasetHelper(const ZfsType: String; const VmName : String; ZfsOptions : String; const WithMountpoint : Boolean = False): Boolean;
+function ZfsCreateSnapshotHelper(const VmName: String; const Suffix: String):Boolean;
 function ZfsCreateZvolHelper(const VmName: String; const DiskName: String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
 function ZfsDestroyHelper(const VmName : String; const ZfsType: String; const ZfsDevice : String; Recursive : Boolean = True; Force : Boolean = False):Boolean;
+function ZfsDestroySnapshotHelper(const VmName : String; const Snapshot: String):Boolean;
 function ZfsSetPropertyValueHelper(const ZfsPath : String; ZfsProperty : String; ZfsValue : String):String;
+function ZfsRollbackSnapshotHelper(const VmName : String; const Snapshot: String):Boolean;
 
 implementation
 
@@ -575,6 +578,41 @@ begin
   end;
 end;
 
+function ZfsCreateSnapshotHelper(const VmName: String; const Suffix: String): Boolean;
+var
+  Params: TJSONObject;
+  Resp: TJSONObject;
+  IsTimedout : Boolean;
+begin
+  Params := TJSONObject.Create;
+
+  try
+    Params.Add('vmname', VmName);
+    Params.Add('suffix', Suffix);
+
+    Resp := ExecuteHelper('zfs.create_snapshot', Params, 5000, IsTimedout);
+    try
+      if IsTimedout then
+      begin
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateSnapshotHelper: timeout : '+VmName);
+        Exit(False);
+      end;
+
+      if not Assigned(Resp) then
+      begin
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsCreateSnapshotHelper: without respond : '+VmName);
+        Exit(False);
+      end;
+
+      Result := Resp.Get('success', False);
+    finally
+      Resp.Free;
+    end;
+  finally
+    Params.Free;
+  end;
+end;
+
 function ZfsCreateZvolHelper(const VmName: String; const DiskName: String; ZvolSize : String; ZvolSparse : Boolean = False):Boolean;
 var
   Params: TJSONObject;
@@ -650,6 +688,42 @@ begin
   end;
 end;
 
+function ZfsDestroySnapshotHelper(const VmName: String; const Snapshot: String
+  ): Boolean;
+var
+  Params: TJSONObject;
+  Resp: TJSONObject;
+  IsTimedout : Boolean;
+begin
+  Params := TJSONObject.Create;
+
+  try
+    Params.Add('vmname', VmName);
+    Params.Add('snapshot', Snapshot);
+
+    Resp := ExecuteHelper('zfs.destroy_snapshot', Params, 5000, IsTimedout);
+    try
+      if IsTimedout then
+      begin
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsDestroySnapshotHelper: timeout : '+VmName+'@'+Snapshot);
+        Exit(False);
+      end;
+
+      if not Assigned(Resp) then
+      begin
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsDestroySnapshotHelper: without respond : '+VmName+'@'+Snapshot);
+        Exit(False);
+      end;
+
+      Result := Resp.Get('success', False);
+    finally
+      Resp.Free;
+    end;
+  finally
+    Params.Free;
+  end;
+end;
+
 function ZfsSetPropertyValueHelper(const ZfsPath : String; ZfsProperty : String; ZfsValue : String):String;
 var
   Params: TJSONObject;
@@ -678,6 +752,42 @@ begin
       end;
 
       Result := Resp.Get('output', EmptyStr);
+    finally
+      Resp.Free;
+    end;
+  finally
+    Params.Free;
+  end;
+end;
+
+function ZfsRollbackSnapshotHelper(const VmName: String; const Snapshot: String
+  ): Boolean;
+var
+  Params: TJSONObject;
+  Resp: TJSONObject;
+  IsTimedout : Boolean;
+begin
+  Params := TJSONObject.Create;
+
+  try
+    Params.Add('vmname', VmName);
+    Params.Add('snapshot', Snapshot);
+
+    Resp := ExecuteHelper('zfs.rollback_snapshot', Params, 5000, IsTimedout);
+    try
+      if IsTimedout then
+      begin
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsRollbackSnapshotHelper: timeout : '+VmName+'@'+Snapshot);
+        Exit(False);
+      end;
+
+      if not Assigned(Resp) then
+      begin
+        DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : ZfsRollbackSnapshotHelper: without respond : '+VmName+'@'+Snapshot);
+        Exit(False);
+      end;
+
+      Result := Resp.Get('success', False);
     finally
       Resp.Free;
     end;

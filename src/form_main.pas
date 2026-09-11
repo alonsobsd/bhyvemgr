@@ -103,6 +103,7 @@ type
     procedure PacketFilterRulesVm(Sender: TObject);
     procedure RemoveDevice(Sender: TObject);
     procedure RemoteDesktopProtocolVm(Sender: TObject);
+    procedure RestoreStorageSnapshot(Sender: TObject);
     procedure SaveAudioDevice(Sender: TObject);
     procedure SaveConsoleDevice(Sender: TObject);
     procedure SaveDisplayDevice(Sender: TObject);
@@ -170,6 +171,7 @@ type
     procedure SocketHelper(Message : String);
     procedure SocketDisconnected;
     function ConnectToHelper(out ErrorMessage: String): Boolean;
+    procedure StorageSnapshotClick(Sender: TObject);
   public
 
   end;
@@ -194,8 +196,8 @@ uses
   form_about, form_audio_device, form_change_value, form_console_device, form_display_device,
   form_hostbridge_device, form_input_device, form_lpc_device, form_network_device, form_passthru_device,
   form_rdp_connection, form_share_folder_device, form_storage_device, form_settings, form_vm_create,
-  form_vm_info, form_packet_filter_rules, unit_configuration, unit_global, unit_util, unit_language,
-  Clipbrd, LazLogger;
+  form_vm_info, form_packet_filter_rules, form_storage_snapshots, unit_configuration, unit_global,
+  unit_util, unit_language, Clipbrd, LazLogger;
 
 { TFormBhyveManager }
 
@@ -219,6 +221,7 @@ begin
   FormVmInfo:=TFormVmInfo.Create(FormBhyveManager);
   FormRdpConnection:=TFormRdpConnection.Create(FormBhyveManager);
   FormPacketFilterRules:=TFormPacketFilterRules.Create(FormBhyveManager);
+  FormStorageSnapshot:=TFormStorageSnapshot.Create(FormBhyveManager);
 
   SettingsPageControl.TabIndex:=0;
 
@@ -257,6 +260,7 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[7].ImageIndex:=7;
   VirtualMachinesPopup.PopupMenu.Items[8].ImageIndex:=9;
   VirtualMachinesPopup.PopupMenu.Items[9].ImageIndex:=9;
+  VirtualMachinesPopup.PopupMenu.Items[11].ImageIndex:=11;
 
   VirtualMachinesPopup.PopupMenu.Items[0].OnClick:=@SpeedButtonAddVmClick;
   VirtualMachinesPopup.PopupMenu.Items[1].OnClick:=@EditVirtualMachineInfo;
@@ -267,6 +271,7 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[7].OnClick:=@CopyComCommandClick;
   VirtualMachinesPopup.PopupMenu.Items[8].OnClick:=@CopyIpv4AddressClick;
   VirtualMachinesPopup.PopupMenu.Items[9].OnClick:=@CopyIpv6AddressClick;
+  VirtualMachinesPopup.PopupMenu.Items[11].OnClick:=@StorageSnapshotClick;
 
   // Devices Popup Menu
   DevicesPopup:= TDevicesPopupMenu.Create(FormBhyveManager);
@@ -1091,6 +1096,9 @@ begin
 
                DebugLn('['+FormatDateTime('DD-MM-YYYY HH:NN:SS', Now)+'] : '+Format(vm_reboot_status, [VmName]));
 
+               if FileExists(VmPath+'/tpm/swtpm.sock.ctrl') then
+                 InitTpmSocket(VmPath+'/tpm/swtpm.sock.ctrl');
+
                Req := TJSONObject.Create;
                try
                  Req.Add('type', 'event');
@@ -1255,6 +1263,23 @@ begin
   finally;
     if Sock >= 0 then
       fpClose(Sock);
+  end;
+end;
+
+procedure TFormBhyveManager.StorageSnapshotClick(Sender: TObject);
+var
+  VirtualMachineNode : TVirtualMachineClass;
+  Node : TTreeNode;
+begin
+  if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
+  begin
+    Node:=VirtualMachinesTreeView.Selected;
+    VirtualMachineNode := TVirtualMachineClass(Node.Data);
+
+    FormStorageSnapshot.BitBtnRestoreSnapshot.OnClick:=@RestoreStorageSnapshot;
+    FormStorageSnapshot.Visible:=True;
+    FormStorageSnapshot.EditVirtualMachine.Text:=VirtualMachineNode.name;
+    FormStorageSnapshot.LoadDefaultValues();
   end;
 end;
 
@@ -1697,6 +1722,7 @@ begin
   VirtualMachinesPopup.PopupMenu.Items[7].Caption:=popup_copy_com1_command;
   VirtualMachinesPopup.PopupMenu.Items[8].Caption:=popup_copy_ipv4;
   VirtualMachinesPopup.PopupMenu.Items[9].Caption:=popup_copy_ipv6;
+  VirtualMachinesPopup.PopupMenu.Items[11].Caption:=popup_storage_snapshot;
 
   DevicesPopup.PopupMenu.Items[0].Caption:=popup_add_device;
   DevicesPopup.PopupMenu.Items[1].Caption:=popup_edit_device;
@@ -2637,6 +2663,80 @@ begin
       FormRdpConnection.FormUserName:=FormRdpConnection.EditUsername.Text;
       FormRdpConnection.FormResolution:=FormRdpConnection.ComboBoxResolution.Text;
       FormRdpConnection.Hide;
+    end;
+  end;
+end;
+
+procedure TFormBhyveManager.RestoreStorageSnapshot(Sender: TObject);
+var
+  VmName : String;
+  Snapshot : String;
+  VirtualMachineNode : TVirtualMachineClass;
+  NodeName : String;
+begin
+  VmName:=FormStorageSnapshot.EditVirtualMachine.Text;
+  Snapshot:=ExtractDelimited(2, FormStorageSnapshot.StringGridSnapshots.Cells[0, FormStorageSnapshot.SnapshotRowNumber], ['@']);
+  NodeName:=EmptyStr;
+
+  FormStorageSnapshot.StatusBarStorageSnapshot.SimpleText:=EmptyStr;
+
+  if not CheckVmRunning(VmName) > 0 then
+  begin
+    FormStorageSnapshot.StatusBarStorageSnapshot.Font.Color:=clRed;
+    FormStorageSnapshot.StatusBarStorageSnapshot.SimpleText:=Format(storage_snapshot_not_restore, [VmName]);
+    Exit;
+  end;
+
+  if MessageDialog(mtConfirmation, Format(storage_snapshot_restore_confirmation, [VmName+'@'+Snapshot])) = mrYes then
+  begin
+    if ZfsRollbackSnapshotHelper(VmName, Snapshot) then
+    begin
+      VirtualMachineNode:=LoadVirtualMachineData(VmPath+'/'+VmName+'/'+VmName+'.conf');
+
+      if Assigned(VirtualMachineNode) then
+        NodeName:=VirtualMachineNode.name;
+
+      if Assigned(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName)) then
+      begin
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).system_version:=VirtualMachineNode.system_version;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).system_type:=VirtualMachineNode.system_type;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).description:=VirtualMachineNode.description;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).image:=VirtualMachineNode.image;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).rdp:=VirtualMachineNode.rdp;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).ipv6:=VirtualMachineNode.ipv6;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).ipaddress:=VirtualMachineNode.ipaddress;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).ip6address:=VirtualMachineNode.ip6address;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).nat:=VirtualMachineNode.nat;
+        TVirtualMachineClass(VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).Data).pf:=VirtualMachineNode.pf;
+
+        VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).ImageIndex:=VirtualMachineNode.image;
+        VirtualMachinesTreeView.Items.FindNodeWithText(NodeName).SelectedIndex:=VirtualMachineNode.image;
+
+        if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
+        begin
+          if (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name = NodeName) then
+          begin
+            EditDescription.Text:=VirtualMachineNode.description;
+            EditSystemType.Text:=VirtualMachineNode.system_type;
+            EditSystemVersion.Text:=VirtualMachineNode.system_version;
+
+            GlobalSettingsTreeView.Items.Clear;
+            LoadGlobalSettingsValues(NodeName);
+
+            ResetTreeView(DeviceSettingsTreeView);
+            LoadDeviceSettingsValues(NodeName);
+          end;
+        end;
+      end;
+
+      FormStorageSnapshot.StatusBarStorageSnapshot.Font.Color:=clTeal;
+      FormStorageSnapshot.StatusBarStorageSnapshot.SimpleText:=storage_snapshot_restore_success;
+
+      FormStorageSnapshot.ClearStringGrid(FormStorageSnapshot.StringGridSnapshots);
+      FormStorageSnapshot.LoadSnapshots();
+
+      if Assigned(VirtualMachineNode) then
+        VirtualMachineNode.Free;
     end;
   end;
 end;
@@ -4365,6 +4465,16 @@ begin
 
       VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).ImageIndex:=PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]);
       VirtualMachinesTreeView.Items.FindNodeWithText(NodoName).SelectedIndex:=PtrInt(FormVmInfo.ComboBoxVmVersion.Items.Objects[FormVmInfo.ComboBoxVmVersion.ItemIndex]);
+
+      if (Assigned(VirtualMachinesTreeView.Selected)) and (VirtualMachinesTreeView.Selected.Level = 1) then
+      begin
+        if (TVirtualMachineClass(VirtualMachinesTreeView.Selected.Data).name = NodoName) then
+        begin
+          EditDescription.Text:=FormVmInfo.EditVmDescription.Text;
+          EditSystemType.Text:=FormVmInfo.ComboBoxVmType.Text;
+          EditSystemVersion.Text:=FormVmInfo.ComboBoxVmVersion.Text;
+        end;
+      end;
     end;
 
     FormVmInfo.Hide;
@@ -4530,6 +4640,7 @@ begin
         CreateDirectoryHelper(ExtractFilePath(ExtractVarValue(Node.Items[0].Text)), GetCurrentUserName(), BHYVEMGRD_GROUP, '750');
 
       CreateTpmSocket(ExtractFilePath(ExtractVarValue(Node.Items[0].Text)));
+      InitTpmSocket(ExtractFilePath(ExtractVarValue(Node.Items[0].Text)));
     end;
   end;
 
@@ -4781,6 +4892,8 @@ begin
         VirtualMachinesPopup.PopupMenu.Items.Items[8].Enabled:=False;
         // Copy IPv6 address
         VirtualMachinesPopup.PopupMenu.Items.Items[9].Enabled:=False;
+        // Storage snapshot
+        VirtualMachinesPopup.PopupMenu.Items.Items[11].Enabled:=False;
 
         VirtualMachinesPopup.PopupMenu.PopUp;
       end
@@ -4808,6 +4921,11 @@ begin
           VirtualMachinesPopup.PopupMenu.Items.Items[9].Enabled:=True
         else
           VirtualMachinesPopup.PopupMenu.Items.Items[9].Enabled:=False;
+
+        if UseZfs = 'yes' then
+          VirtualMachinesPopup.PopupMenu.Items.Items[11].Enabled:=True
+        else
+          VirtualMachinesPopup.PopupMenu.Items.Items[11].Enabled:=False;
 
         VirtualMachinesPopup.PopupMenu.PopUp;
       end;
@@ -4837,7 +4955,7 @@ begin
     VirtualMachineNode := TVirtualMachineClass(Node.Data);
 
     LoadGlobalSettingsValues(VirtualMachineNode.name);
-    LoadDeviceSettingsValues(VirtualMachineNode.name); //aqui tambien error
+    LoadDeviceSettingsValues(VirtualMachineNode.name);
 
     EditDescription.Text:=VirtualMachineNode.description;
     EditSystemType.Text:=VirtualMachineNode.system_type;

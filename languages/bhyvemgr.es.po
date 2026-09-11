@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Bhyvemgr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-02\n"
-"PO-Revision-Date: 2026-08-11\n"
+"PO-Revision-Date: 2026-09-11\n"
 "Last-Translator: Alonso Cárdenas <acardenas@bsd-peru.org>\n"
 "Language-Team: Español; Castellano <>\n"
 "Language: es\n"
@@ -1048,6 +1048,53 @@ msgstr ""
 msgid "Sectsz"
 msgstr ""
 
+#: tformstoragesnapshot.bitbtnclose.caption
+msgctxt "tformstoragesnapshot.bitbtnclose.caption"
+msgid "Close"
+msgstr "Cerrar"
+
+#: tformstoragesnapshot.bitbtncreatesnapshot.caption
+msgctxt "tformstoragesnapshot.bitbtncreatesnapshot.caption"
+msgid "Create snapshot"
+msgstr "Crear instantánea"
+
+#: tformstoragesnapshot.bitbtnremovesnapshot.caption
+msgctxt "tformstoragesnapshot.bitbtnremovesnapshot.caption"
+msgid "Remove snapshot"
+msgstr "Remover instantánea"
+
+#: tformstoragesnapshot.bitbtnrestoresnapshot.caption
+msgctxt "tformstoragesnapshot.bitbtnrestoresnapshot.caption"
+msgid "Restore snapshot"
+msgstr "Restaurar instantánea"
+
+#: tformstoragesnapshot.caption
+msgctxt "tformstoragesnapshot.caption"
+msgid "Bhyve Manager - Storage snapshots"
+msgstr "Bhyve Manager - Instantáneas de almacenamiento"
+
+#: tformstoragesnapshot.editsnapshotsuffix.text
+msgid "EditSnapshotSuffix"
+msgstr ""
+
+#: tformstoragesnapshot.editvirtualmachine.text
+msgid "EditVirtualMachine"
+msgstr ""
+
+#: tformstoragesnapshot.groupbox9.caption
+msgctxt "tformstoragesnapshot.groupbox9.caption"
+msgid "General settings"
+msgstr "Configuración general"
+
+#: tformstoragesnapshot.label1.caption
+msgctxt "tformstoragesnapshot.label1.caption"
+msgid "VM"
+msgstr "VM"
+
+#: tformstoragesnapshot.label2.caption
+msgid "Suffix"
+msgstr "Sufijo"
+
 #: tformvmcreate.bitbtnclose.caption
 msgctxt "tformvmcreate.bitbtnclose.caption"
 msgid "Close"
@@ -1287,6 +1334,7 @@ msgid "Do not add virtual disk"
 msgstr "No agregar un disco virtual"
 
 #: tformvmcreate.tabsheetgeneral.caption
+msgctxt "tformvmcreate.tabsheetgeneral.caption"
 msgid "General"
 msgstr ""
 
@@ -1858,6 +1906,10 @@ msgctxt "unit_language.popup_remove_vm"
 msgid "Remove virtual machine"
 msgstr "Remover máquina virtual"
 
+#: unit_language.popup_storage_snapshot
+msgid "Storage snapshot"
+msgstr "Instantánea de almacenamiento"
+
 #: unit_language.popup_tray_quit
 msgctxt "unit_language.popup_tray_quit"
 msgid "Quit Bhyvemgr"
@@ -1913,6 +1965,48 @@ msgstr "La configuracion fue grabada satisfactoriamente"
 #: unit_language.settings_saved_restart
 msgid "Please restart the application. You can start the bhyvemgrd service now."
 msgstr "Por favor, reinicia la aplicación. Puedes iniciar el servicio bhyvemgrd ahora."
+
+#: unit_language.storage_snapshot_check_suffix
+#, object-pascal-format
+msgid "%s suffix is not valid. Valid format is [A-Za-z0-9][A-Za-z0-9_-]."
+msgstr "sufijo %s no es válido. El formato válido es [A-Za-z0-9][A-Za-z0-9_-]."
+
+#: unit_language.storage_snapshot_create_confirmation
+#, object-pascal-format
+msgid "Do you want to create %s VM storage snapshot?"
+msgstr "Deseas crear una instantánea de almacenamiento de la máquina virtual %s?"
+
+#: unit_language.storage_snapshot_create_success
+msgid "Storage snapshot was created successfully."
+msgstr "La instantánea de almacenamiento fue creada satisfactoriamente."
+
+#: unit_language.storage_snapshot_not_create
+#, object-pascal-format
+msgid "Cannot create a snapshot while %s VM is running."
+msgstr "No puede crear una instantánea mientras la máquina virtual %s este en ejecución."
+
+#: unit_language.storage_snapshot_not_restore
+#, object-pascal-format
+msgid "Cannot restore snapshot while %s VM is running."
+msgstr "No puede restaurar una instantánea mientras la máquina virtual %s este en ejecución."
+
+#: unit_language.storage_snapshot_remove_confirmation
+#, object-pascal-format
+msgid "Do you want to remove %s storage snapshot?"
+msgstr "Deseas remover la instantánea de almacenamiento %s?"
+
+#: unit_language.storage_snapshot_remove_success
+msgid "Storage snapshot was removed successfully."
+msgstr "La instántanea de almacenamiento fue removida satisfactoriamente."
+
+#: unit_language.storage_snapshot_restore_confirmation
+#, object-pascal-format
+msgid "Do you want to restore %s storage snapshot?"
+msgstr "Deseas restaurar la instantánea de almacenamiento %s?"
+
+#: unit_language.storage_snapshot_restore_success
+msgid "Storage snapshot was restored successfully."
+msgstr "La instántanea de almacenamiento fue restaurada satisfactoriamente."
 
 #: unit_language.success_socket_connection
 msgid "Connected to bhyvemgrd daemon"

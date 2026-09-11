@@ -49,7 +49,7 @@ uses
   form_network_device, form_storage_device, form_about, form_settings,
   form_share_folder_device, form_console_device, form_passthru_device,
   form_input_device, form_rdp_connection, form_vm_info,
-  form_packet_filter_rules, unit_socket;
+  form_packet_filter_rules, unit_socket, form_storage_snapshots;
 
 {$R *.res}
 var

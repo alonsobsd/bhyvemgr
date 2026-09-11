@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bhyve 管理器\n"
 "POT-Creation-Date: 2025-09-08\n"
-"PO-Revision-Date: 2026-08-11\n"
+"PO-Revision-Date: 2026-09-11\n"
 "Last-Translator: ykla <yklaxds@gmail.com>\n"
 "Language-Team: ykla <yklaxds@gmail.com>\n"
 "Language: zh_CN\n"
@@ -1048,6 +1048,53 @@ msgstr "IO 槽"
 msgid "Sectsz"
 msgstr "扇区大小"
 
+#: tformstoragesnapshot.bitbtnclose.caption
+msgctxt "tformstoragesnapshot.bitbtnclose.caption"
+msgid "Close"
+msgstr "关闭"
+
+#: tformstoragesnapshot.bitbtncreatesnapshot.caption
+msgctxt "tformstoragesnapshot.bitbtncreatesnapshot.caption"
+msgid "Create snapshot"
+msgstr "创建快照"
+
+#: tformstoragesnapshot.bitbtnremovesnapshot.caption
+msgctxt "tformstoragesnapshot.bitbtnremovesnapshot.caption"
+msgid "Remove snapshot"
+msgstr "删除快照"
+
+#: tformstoragesnapshot.bitbtnrestoresnapshot.caption
+msgctxt "tformstoragesnapshot.bitbtnrestoresnapshot.caption"
+msgid "Restore snapshot"
+msgstr "还原快照"
+
+#: tformstoragesnapshot.caption
+msgctxt "tformstoragesnapshot.caption"
+msgid "Bhyve Manager - Storage snapshots"
+msgstr "Bhyve Manager - 存储快照"
+
+#: tformstoragesnapshot.editsnapshotsuffix.text
+msgid "EditSnapshotSuffix"
+msgstr ""
+
+#: tformstoragesnapshot.editvirtualmachine.text
+msgid "EditVirtualMachine"
+msgstr ""
+
+#: tformstoragesnapshot.groupbox9.caption
+msgctxt "tformstoragesnapshot.groupbox9.caption"
+msgid "General settings"
+msgstr "通用"
+
+#: tformstoragesnapshot.label1.caption
+msgctxt "tformstoragesnapshot.label1.caption"
+msgid "VM"
+msgstr "名称"
+
+#: tformstoragesnapshot.label2.caption
+msgid "Suffix"
+msgstr "后缀"
+
 #: tformvmcreate.bitbtnclose.caption
 msgctxt "tformvmcreate.bitbtnclose.caption"
 msgid "Close"
@@ -1287,6 +1334,7 @@ msgid "Do not add virtual disk"
 msgstr "不添加虚拟磁盘"
 
 #: tformvmcreate.tabsheetgeneral.caption
+msgctxt "tformvmcreate.tabsheetgeneral.caption"
 msgid "General"
 msgstr "通用"
 
@@ -1857,6 +1905,10 @@ msgctxt "unit_language.popup_remove_vm"
 msgid "Remove virtual machine"
 msgstr "删除虚拟机"
 
+#: unit_language.popup_storage_snapshot
+msgid "Storage snapshot"
+msgstr "存储快照"
+
 #: unit_language.popup_tray_quit
 msgctxt "unit_language.popup_tray_quit"
 msgid "Quit Bhyvemgr"
@@ -1912,6 +1964,48 @@ msgstr "设置已成功保存"
 #: unit_language.settings_saved_restart
 msgid "Please restart the application. You can start the bhyvemgrd service now."
 msgstr "请重新启动应用程序。您现在可以启动 bhyvemgrd 服务了。"
+
+#: unit_language.storage_snapshot_check_suffix
+#, object-pascal-format
+msgid "%s suffix is not valid. Valid format is [A-Za-z0-9][A-Za-z0-9_-]."
+msgstr "%s 后缀无效。有效格式为 [A-Za-z0-9][A-Za-z0-9_-]。"
+
+#: unit_language.storage_snapshot_create_confirmation
+#, object-pascal-format
+msgid "Do you want to create %s VM storage snapshot?"
+msgstr "您想要创建 %s 虚拟机存储快照吗？"
+
+#: unit_language.storage_snapshot_create_success
+msgid "Storage snapshot was created successfully."
+msgstr "存储快照已成功创建。"
+
+#: unit_language.storage_snapshot_not_create
+#, object-pascal-format
+msgid "Cannot create a snapshot while %s VM is running."
+msgstr "当 %s 虚拟机正在运行时，无法创建快照。"
+
+#: unit_language.storage_snapshot_not_restore
+#, object-pascal-format
+msgid "Cannot restore snapshot while %s VM is running."
+msgstr "当 %s 虚拟机正在运行时，无法还原快照。"
+
+#: unit_language.storage_snapshot_remove_confirmation
+#, object-pascal-format
+msgid "Do you want to remove %s storage snapshot?"
+msgstr "您要删除 %s 存储快照吗？"
+
+#: unit_language.storage_snapshot_remove_success
+msgid "Storage snapshot was removed successfully."
+msgstr "存储快照已成功删除。"
+
+#: unit_language.storage_snapshot_restore_confirmation
+#, object-pascal-format
+msgid "Do you want to restore %s storage snapshot?"
+msgstr "您想要还原 %s 存储快照吗？"
+
+#: unit_language.storage_snapshot_restore_success
+msgid "Storage snapshot was restored successfully."
+msgstr "存储快照已成功还原。"
 
 #: unit_language.success_socket_connection
 msgid "Connected to bhyvemgrd daemon"

@@ -294,6 +294,13 @@
         <Filename Value="unit_helper_client.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="form_storage_snapshots.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormStorageSnapshot"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
