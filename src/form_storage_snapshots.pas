@@ -1,3 +1,9 @@
+{ SPDX-License-Identifier: BSD-3-Clause
+
+Copyright (c) 2026, J. Alonso Cárdenas <acardenas@bsd-peru.org>
+
+}
+
 unit form_storage_snapshots;
 
 {$mode ObjFPC}{$H+}
