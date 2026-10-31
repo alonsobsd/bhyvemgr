@@ -39,7 +39,7 @@ bhyvemgr can use two kind of network settings: *Quick network configuration* or 
 The new version of bhyvemgr doesn't require root privileges via sudo or doas on FreeBSD. Privileged operations are handled by [bhyvemgrd](https://github.com/alonsobsd/bhyvemgrd), [mac_do/mdo](https://man.freebsd.org/cgi/man.cgi?query=mdo&apropos=0&sektion=0&manpath=FreeBSD+14.4-RELEASE&format=html) or [mac_do/setcred/exec_paths](https://man.freebsd.org/cgi/man.cgi?query=setcred&apropos=0&sektion=0&manpath=FreeBSD+14.4-RELEASE&format=html) instead , helping to mitigate security risks. See the [bhyvemgrd README](https://github.com/alonsobsd/bhyvemgrd/blob/main/README.md) for details about how to configure and run it.
 
 # Run bhyvemgr for the first time
-bhyvemgr will create two configuration files: **gui.conf** and **common.conf**. The **common.conf** file is required for both bhyvemgr and bhyvemgrd. Take a look at [migration guide](https://github.com/alonsobsd/bhyvemgr/wiki/new_version_migration) if you are planning move from 1.15.0 to 2.0.0 or later.
+bhyvemgr will create two configuration files: **gui.conf** and **common.conf**. The **common.conf** file is required for both bhyvemgr and bhyvemgrd. Take a look at [migration guide](https://github.com/alonsobsd/bhyvemgr/wiki/new_version_migration) if you are planning move from 1.15.0 to 2.0.0 or later. Don't forget add your user to bhyvemgrd group and do a re-login or restart your system before of run bhyvemgr on first time.
 
 # Demo
 
